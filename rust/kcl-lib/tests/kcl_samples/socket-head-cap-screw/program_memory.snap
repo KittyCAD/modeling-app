@@ -17,6 +17,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "tag": {
             "commentStart": 1519,
             "end": 1530,
+            "moduleId": 0,
             "start": 1519,
             "type": "TagDeclarator",
             "value": "filletEdge"
@@ -46,6 +47,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "tag": {
               "commentStart": 1519,
               "end": 1530,
+              "moduleId": 0,
               "start": 1519,
               "type": "TagDeclarator",
               "value": "filletEdge"
@@ -93,6 +95,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 "tag": {
                   "commentStart": 744,
                   "end": 752,
+                  "moduleId": 0,
                   "start": 744,
                   "type": "TagDeclarator",
                   "value": "topEdge"
@@ -122,6 +125,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "tag": {
                     "commentStart": 744,
                     "end": 752,
+                    "moduleId": 0,
                     "start": 744,
                     "type": "TagDeclarator",
                     "value": "topEdge"
@@ -161,6 +165,14 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0,
                   "units": {
                     "type": "Unknown"
                   }
@@ -332,6 +344,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "tag": {
             "commentStart": 744,
             "end": 752,
+            "moduleId": 0,
             "start": 744,
             "type": "TagDeclarator",
             "value": "topEdge"
@@ -361,6 +374,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "tag": {
               "commentStart": 744,
               "end": 752,
+              "moduleId": 0,
               "start": 744,
               "type": "TagDeclarator",
               "value": "topEdge"
@@ -400,6 +414,14 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -510,7 +532,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
   },
   "boltHexDrive": {
     "type": "Number",
-    "value": 0.1563,
+    "value": 0.15625,
     "ty": {
       "type": "Default",
       "len": {
@@ -523,7 +545,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
   },
   "boltHexFlatLength": {
     "type": "Number",
-    "value": 0.0902,
+    "value": 0.09021097956087902,
     "ty": {
       "type": "Default",
       "len": {
@@ -612,13 +634,13 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "sourceRange": []
             },
             "from": [
-              0.0781,
-              0.0451
+              0.078125,
+              0.04510548978043951
             ],
             "tag": null,
             "to": [
-              0.0781,
-              -0.0451
+              0.07812499999999999,
+              -0.04510548978043951
             ],
             "type": "ToPoint",
             "units": {
@@ -631,70 +653,13 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "sourceRange": []
             },
             "from": [
-              0.0781,
-              -0.0451
+              0.07812499999999999,
+              -0.04510548978043951
             ],
             "tag": null,
             "to": [
               0.0,
-              -0.0902
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              -0.0902
-            ],
-            "tag": null,
-            "to": [
-              -0.0781,
-              -0.0451
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.0781,
-              -0.0451
-            ],
-            "tag": null,
-            "to": [
-              -0.0781,
-              0.0451
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.0781,
-              0.0451
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0902
+              -0.09021097956087903
             ],
             "type": "ToPoint",
             "units": {
@@ -708,12 +673,69 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             },
             "from": [
               0.0,
-              0.0902
+              -0.09021097956087903
             ],
             "tag": null,
             "to": [
-              0.0781,
-              0.0451
+              -0.078125,
+              -0.04510548978043953
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -0.078125,
+              -0.04510548978043953
+            ],
+            "tag": null,
+            "to": [
+              -0.078125,
+              0.04510548978043949
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -0.078125,
+              0.04510548978043949
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              0.09021097956087899
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              0.09021097956087899
+            ],
+            "tag": null,
+            "to": [
+              0.078125,
+              0.04510548978043951
             ],
             "type": "ToPoint",
             "units": {
@@ -754,6 +776,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 "tag": {
                   "commentStart": 744,
                   "end": 752,
+                  "moduleId": 0,
                   "start": 744,
                   "type": "TagDeclarator",
                   "value": "topEdge"
@@ -783,6 +806,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "tag": {
                     "commentStart": 744,
                     "end": 752,
+                    "moduleId": 0,
                     "start": 744,
                     "type": "TagDeclarator",
                     "value": "topEdge"
@@ -822,6 +846,14 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0,
                   "units": {
                     "type": "Unknown"
                   }
@@ -909,12 +941,12 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "start": {
           "from": [
-            0.0781,
-            0.0451
+            0.078125,
+            0.04510548978043951
           ],
           "to": [
-            0.0781,
-            0.0451
+            0.078125,
+            0.04510548978043951
           ],
           "units": {
             "type": "Inches"

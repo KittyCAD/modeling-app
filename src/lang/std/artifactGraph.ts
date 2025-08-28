@@ -6,6 +6,7 @@ import type {
   Plane,
   StartSketchOnFace,
   StartSketchOnPlane,
+  SweepSubType,
   Wall,
 } from '@rust/kcl-lib/bindings/Artifact'
 
@@ -92,7 +93,7 @@ interface SegmentArtifactRich extends BaseArtifact {
 
 interface SweepArtifactRich extends BaseArtifact {
   type: 'sweep'
-  subType: 'extrusion' | 'revolve' | 'revolveAboutEdge' | 'loft' | 'sweep'
+  subType: SweepSubType
   path: PathArtifact
   surfaces: Array<WallArtifact | CapArtifact>
   edges: Array<SweepEdge>

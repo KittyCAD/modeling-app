@@ -3,7 +3,7 @@ import { assign, fromPromise, setup } from 'xstate'
 import type { FileEntry, Project } from '@src/lib/project'
 
 type FileMachineContext = {
-  project: Project
+  project: Project // this is also the root directory
   selectedDirectory: FileEntry
   itemsBeingRenamed: (FileEntry | string)[]
 }
@@ -13,7 +13,12 @@ type FileMachineEvents =
   | { type: 'Open file in new window'; data: { name: string } }
   | {
       type: 'Rename file'
-      data: { oldName: string; newName: string; isDir: boolean }
+      data: {
+        oldName: string
+        newName: string
+        isDir: boolean
+        parentDirectory: FileEntry
+      }
     }
   | {
       type: 'Create file'
@@ -145,7 +150,7 @@ export const fileMachine = setup({
           oldName: string
           newName: string
           isDir: boolean
-          selectedDirectory: FileEntry
+          parentDirectory: FileEntry
         }
       }) => Promise.resolve({ message: '', newPath: '', oldPath: '' })
     ),
@@ -324,14 +329,14 @@ export const fileMachine = setup({
               oldName: '',
               newName: '',
               isDir: false,
-              selectedDirectory: {} as FileEntry,
+              parentDirectory: {} as FileEntry,
             }
           }
           return {
             oldName: event.data.oldName,
             newName: event.data.newName,
             isDir: event.data.isDir,
-            selectedDirectory: context.selectedDirectory,
+            parentDirectory: event.data.parentDirectory,
           }
         },
 

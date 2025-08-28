@@ -1,8 +1,8 @@
+import { v4, NIL as uuidNIL } from 'uuid'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import { default_app_settings } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { TEST } from '@src/env'
 
 import {
   defaultAppSettings,
@@ -27,7 +27,10 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { Setting } from '@src/lib/settings/initialSettings'
-import { createSettings, settings } from '@src/lib/settings/initialSettings'
+import {
+  createSettings,
+  type settings,
+} from '@src/lib/settings/initialSettings'
 import type {
   SaveSettingsPayload,
   SettingsLevel,
@@ -63,6 +66,7 @@ export function configurationToSettingsPayload(
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
       showDebugPanel: configuration?.settings?.app?.show_debug_panel,
+      fixedSizeGrid: configuration?.settings?.app?.fixed_size_grid,
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
@@ -71,6 +75,9 @@ export function configurationToSettingsPayload(
       mouseControls: mouseControlsToCameraSystem(
         configuration?.settings?.modeling?.mouse_controls
       ),
+      enableTouchControls:
+        configuration?.settings?.modeling?.enable_touch_controls,
+      useNewSketchMode: configuration?.settings?.modeling?.use_new_sketch_mode,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
@@ -106,6 +113,7 @@ export function settingsPayloadToConfiguration(
         stream_idle_mode: configuration?.app?.streamIdleMode,
         allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
         show_debug_panel: configuration?.app?.showDebugPanel,
+        fixed_size_grid: configuration?.app?.fixedSizeGrid,
       },
       modeling: {
         base_unit: configuration?.modeling?.defaultUnit,
@@ -114,6 +122,8 @@ export function settingsPayloadToConfiguration(
         mouse_controls: configuration?.modeling?.mouseControls
           ? cameraSystemToMouseControl(configuration?.modeling?.mouseControls)
           : undefined,
+        enable_touch_controls: configuration?.modeling?.enableTouchControls,
+        use_new_sketch_mode: configuration?.modeling?.useNewSketchMode,
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
         show_scale_grid: configuration?.modeling?.showScaleGrid,
@@ -174,6 +184,9 @@ export function projectConfigurationToSettingsPayload(
   configuration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<SaveSettingsPayload> {
   return {
+    meta: {
+      id: configuration?.settings?.meta?.id,
+    },
     app: {
       // do not read in `theme`, because it is blocked on the project level
       themeColor: configuration?.settings?.app?.appearance?.color
@@ -208,6 +221,9 @@ export function settingsPayloadToProjectConfiguration(
 ): DeepPartial<ProjectConfiguration> {
   return {
     settings: {
+      meta: {
+        id: configuration?.meta?.id,
+      },
       app: {
         appearance: {
           color: configuration?.app?.themeColor
@@ -308,11 +324,9 @@ export async function loadAndValidateSettings(
   // Make sure we have wasm initialized.
   await initPromise
 
-  const onDesktop = isDesktop()
-
   // Load the app settings from the file system or localStorage.
-  const appSettingsPayload = onDesktop
-    ? await readAppSettingsFile()
+  const appSettingsPayload = window.electron
+    ? await readAppSettingsFile(window.electron)
     : readLocalStorageAppSettingsFile()
 
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
@@ -320,8 +334,10 @@ export async function loadAndValidateSettings(
   let settingsNext = createSettings()
 
   // Because getting the default directory is async, we need to set it after
-  if (onDesktop) {
-    settings.app.projectDirectory.default = await getInitialDefaultDir()
+  if (window.electron) {
+    settingsNext.app.projectDirectory.default = await getInitialDefaultDir(
+      window.electron
+    )
   }
 
   settingsNext = setSettingsAtLevel(
@@ -332,12 +348,52 @@ export async function loadAndValidateSettings(
 
   // Load the project settings if they exist
   if (projectPath) {
-    const projectSettings = onDesktop
-      ? await readProjectSettingsFile(projectPath)
+    let projectSettings = window.electron
+      ? await readProjectSettingsFile(window.electron, projectPath)
       : readLocalStorageProjectSettingsFile()
 
     if (err(projectSettings))
       return Promise.reject(new Error('Invalid project settings'))
+
+    // An id was missing. Create one and write it to disk immediately.
+    if (
+      !projectSettings.settings?.meta?.id ||
+      projectSettings.settings.meta.id === uuidNIL
+    ) {
+      const projectSettingsParsed =
+        projectConfigurationToSettingsPayload(projectSettings)
+      const projectSettingsNew = {
+        ...projectSettingsParsed,
+        meta: {
+          id: v4(),
+        },
+      }
+
+      // Duplicated from settingsUtils.ts
+      const projectTomlString = serializeProjectConfiguration(
+        settingsPayloadToProjectConfiguration(projectSettingsNew)
+      )
+
+      if (err(projectTomlString))
+        return Promise.reject(
+          new Error('Could not serialize project configuration')
+        )
+      if (window.electron) {
+        await writeProjectSettingsFile(
+          window.electron,
+          projectPath,
+          projectTomlString
+        )
+      } else {
+        localStorage.setItem(
+          localStorageProjectSettingsPath(),
+          projectTomlString
+        )
+      }
+
+      projectSettings =
+        settingsPayloadToProjectConfiguration(projectSettingsNew)
+    }
 
     const projectSettingsPayload = projectSettings
     settingsNext = setSettingsAtLevel(
@@ -360,7 +416,6 @@ export async function saveSettings(
 ) {
   // Make sure we have wasm initialized.
   await initPromise
-  const onDesktop = isDesktop()
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
@@ -370,8 +425,8 @@ export async function saveSettings(
   if (err(appTomlString)) return
 
   // Write the app settings.
-  if (onDesktop) {
-    await writeAppSettingsFile(appTomlString)
+  if (window.electron) {
+    await writeAppSettingsFile(window.electron, appTomlString)
   } else {
     localStorage.setItem(localStorageAppSettingsPath(), appTomlString)
   }
@@ -389,8 +444,12 @@ export async function saveSettings(
   if (err(projectTomlString)) return
 
   // Write the project settings.
-  if (onDesktop) {
-    await writeProjectSettingsFile(projectPath, projectTomlString)
+  if (window.electron) {
+    await writeProjectSettingsFile(
+      window.electron,
+      projectPath,
+      projectTomlString
+    )
   } else {
     localStorage.setItem(localStorageProjectSettingsPath(), projectTomlString)
   }
@@ -540,14 +599,12 @@ export function getSettingInputType(setting: Setting) {
 
 export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {
   let jsAppSettings = default_app_settings()
-  if (!TEST) {
-    // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
-    const settings = await import('@src/lib/singletons').then((module) =>
-      module.getSettings()
-    )
-    if (settings) {
-      jsAppSettings = getAllCurrentSettings(settings)
-    }
+  // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
+  const settings = await import('@src/lib/singletons').then((module) =>
+    module.getSettings()
+  )
+  if (settings) {
+    jsAppSettings = getAllCurrentSettings(settings)
   }
   return settingsPayloadToConfiguration(jsAppSettings)
 }

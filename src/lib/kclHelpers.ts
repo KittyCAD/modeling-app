@@ -1,6 +1,11 @@
 import { executeAstMock } from '@src/lang/langHelpers'
-import { type CallExpressionKw, parse, resultIsOk } from '@src/lang/wasm'
-import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
+import {
+  formatNumberValue,
+  parse,
+  resultIsOk,
+  type SourceRange,
+} from '@src/lang/wasm'
+import type { KclExpression } from '@src/lib/commandTypes'
 import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 
@@ -32,12 +37,27 @@ export async function getCalculatedKclExpressionValue(value: string) {
   const variableDeclaratorAstNode =
     resultDeclaration?.type === 'VariableDeclaration' &&
     resultDeclaration?.declaration.init
-  const resultRawValue = execState.variables[DUMMY_VARIABLE_NAME]?.value
+  const varValue = execState.variables[DUMMY_VARIABLE_NAME]
+  // If the value is a number, attempt to format it with units.
+  const resultValueWithUnits = (() => {
+    if (!varValue || varValue.type !== 'Number') {
+      return undefined
+    }
+    const formatted = formatNumberValue(varValue.value, varValue.ty)
+    if (err(formatted)) return undefined
+    return formatted
+  })()
+  // Prefer the formatted value with units.  Fallback to the raw value.
+  const resultRawValue = varValue?.value
+  const valueAsString = resultValueWithUnits
+    ? resultValueWithUnits
+    : typeof resultRawValue === 'number'
+      ? String(resultRawValue)
+      : 'NAN'
 
   return {
     astNode: variableDeclaratorAstNode,
-    valueAsString:
-      typeof resultRawValue === 'number' ? String(resultRawValue) : 'NAN',
+    valueAsString,
   }
 }
 
@@ -55,22 +75,6 @@ export async function stringToKclExpression(value: string) {
   } satisfies KclExpression
 }
 
-export async function retrieveArgFromPipedCallExpression(
-  callExpression: CallExpressionKw,
-  name: string
-): Promise<KclCommandValue | undefined> {
-  const arg = callExpression.arguments.find(
-    (a) => a.label?.type === 'Identifier' && a.label?.name === name
-  )
-  if (
-    arg?.type === 'LabeledArg' &&
-    (arg.arg.type === 'Name' || arg.arg.type === 'Literal')
-  ) {
-    const value = arg.arg.type === 'Name' ? arg.arg.name.name : arg.arg.raw
-    const result = await stringToKclExpression(value)
-    if (!(err(result) || 'errors' in result)) {
-      return result
-    }
-  }
-  return undefined
+export function getStringValue(code: string, range: SourceRange): string {
+  return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
 }

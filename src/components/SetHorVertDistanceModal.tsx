@@ -10,6 +10,7 @@ import {
 } from '@src/components/AvailableVarsHelpers'
 import type { Expr } from '@src/lang/wasm'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import type { Selections } from '@src/lib/selections'
 
 type ModalResolve = {
   value: string
@@ -25,8 +26,9 @@ type ModalReject = boolean
 type GetInfoModalProps = InstanceProps<ModalResolve, ModalReject> & {
   segName: string
   isSegNameEditable: boolean
-  value?: number
+  value?: string
   initialVariableName: string
+  selectionRanges: Selections
 }
 
 export const createInfoModal = create<
@@ -43,11 +45,14 @@ export const GetInfoModal = ({
   isSegNameEditable,
   value: initialValue,
   initialVariableName,
+  selectionRanges,
 }: GetInfoModalProps) => {
-  const [sign, setSign] = useState(Math.sign(Number(initialValue)))
+  const [sign, setSign] = useState(initialValue?.startsWith('-') ? -1 : 1)
   const [segName, setSegName] = useState(initialSegName)
   const [value, setValue] = useState(
-    initialValue === undefined ? '' : String(Math.abs(initialValue))
+    initialValue?.startsWith('-')
+      ? initialValue.substring(1)
+      : initialValue || ''
   )
   const [shouldCreateVariable, setShouldCreateVariable] = useState(false)
 
@@ -60,7 +65,11 @@ export const GetInfoModal = ({
     newVariableName,
     isNewVariableNameUnique,
     newVariableInsertIndex,
-  } = useCalculateKclExpression({ value: value, initialVariableName })
+  } = useCalculateKclExpression({
+    value: value,
+    initialVariableName,
+    selectionRanges,
+  })
 
   return (
     <Transition appear show={isOpen} as={Fragment}>

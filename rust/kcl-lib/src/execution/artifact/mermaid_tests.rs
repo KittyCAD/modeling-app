@@ -73,11 +73,21 @@ impl Artifact {
                 ids
             }
             Artifact::Plane(_) => Vec::new(),
-            Artifact::Path(a) => vec![a.plane_id],
+            Artifact::Path(a) => {
+                let mut ids = vec![a.plane_id];
+                if let Some(inner_path_id) = a.inner_path_id {
+                    ids.push(inner_path_id);
+                }
+                if let Some(outer_path_id) = a.outer_path_id {
+                    ids.push(outer_path_id);
+                }
+                ids
+            }
             Artifact::Segment(a) => vec![a.path_id],
             Artifact::Solid2d(a) => vec![a.path_id],
             Artifact::StartSketchOnFace(a) => vec![a.face_id],
             Artifact::StartSketchOnPlane(a) => vec![a.plane_id],
+            Artifact::PlaneOfFace(a) => vec![a.face_id],
             Artifact::Sweep(a) => vec![a.path_id],
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
@@ -103,7 +113,8 @@ impl Artifact {
             }
             Artifact::Plane(a) => a.path_ids.clone(),
             Artifact::Path(a) => {
-                // Note: Don't include these since they're parents: plane_id.
+                // Note: Don't include these since they're parents: plane_id,
+                // inner_path_id, outer_path_id.
                 let mut ids = a.seg_ids.clone();
                 if let Some(sweep_id) = a.sweep_id {
                     ids.push(sweep_id);
@@ -139,6 +150,10 @@ impl Artifact {
             }
             Artifact::StartSketchOnPlane { .. } => {
                 // Note: Don't include these since they're parents: plane_id.
+                Vec::new()
+            }
+            Artifact::PlaneOfFace { .. } => {
+                // Note: Don't include these since they're parents: face_id.
                 Vec::new()
             }
             Artifact::Sweep(a) => {
@@ -252,6 +267,7 @@ impl ArtifactGraph {
                 }
                 Artifact::StartSketchOnFace { .. }
                 | Artifact::StartSketchOnPlane { .. }
+                | Artifact::PlaneOfFace { .. }
                 | Artifact::Sweep(_)
                 | Artifact::Wall(_)
                 | Artifact::Cap(_)
@@ -268,7 +284,7 @@ impl ArtifactGraph {
         for (group_id, artifact_ids) in groups {
             let group_id = *stable_id_map.get(&group_id).unwrap();
             writeln!(output, "{prefix}subgraph path{group_id} [Path]")?;
-            let indented = format!("{}  ", prefix);
+            let indented = format!("{prefix}  ");
             for artifact_id in artifact_ids {
                 let artifact = self.map.get(&artifact_id).unwrap();
                 let id = *stable_id_map.get(&artifact_id).unwrap();
@@ -298,97 +314,126 @@ impl ArtifactGraph {
             let range = code_ref.range;
             [range.start(), range.end(), range.module_id().as_usize()]
         }
+        fn node_path_display<W: Write>(
+            output: &mut W,
+            prefix: &str,
+            label: Option<&str>,
+            code_ref: &CodeRef,
+        ) -> std::fmt::Result {
+            // %% is a mermaid comment. Prefix is increased one level since it's
+            // a child of the line above it.
+            let label = label.unwrap_or("");
+            if code_ref.node_path.is_empty() {
+                if !code_ref.range.module_id().is_top_level() {
+                    // This is pointing to another module. We don't care about
+                    // these. It's okay that it's missing, for now.
+                    return Ok(());
+                }
+                return writeln!(output, "{prefix}  %% {label}Missing NodePath");
+            }
+            writeln!(output, "{prefix}  %% {label}{:?}", code_ref.node_path.steps)
+        }
 
         match artifact {
             Artifact::CompositeSolid(composite_solid) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"CompositeSolid {:?}<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"CompositeSolid {:?}<br>{:?}\"]",
                     composite_solid.sub_type,
                     code_ref_display(&composite_solid.code_ref)
                 )?;
+                node_path_display(output, prefix, None, &composite_solid.code_ref)?;
             }
             Artifact::Plane(plane) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"Plane<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"Plane<br>{:?}\"]",
                     code_ref_display(&plane.code_ref)
                 )?;
+                node_path_display(output, prefix, None, &plane.code_ref)?;
             }
             Artifact::Path(path) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"Path<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"Path<br>{:?}\"]",
                     code_ref_display(&path.code_ref)
                 )?;
+                node_path_display(output, prefix, None, &path.code_ref)?;
             }
             Artifact::Segment(segment) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"Segment<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"Segment<br>{:?}\"]",
                     code_ref_display(&segment.code_ref)
                 )?;
+                node_path_display(output, prefix, None, &segment.code_ref)?;
             }
             Artifact::Solid2d(_solid2d) => {
-                writeln!(output, "{prefix}{}[Solid2d]", id)?;
+                writeln!(output, "{prefix}{id}[Solid2d]")?;
             }
             Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"StartSketchOnFace<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"StartSketchOnFace<br>{:?}\"]",
                     code_ref_display(code_ref)
                 )?;
+                node_path_display(output, prefix, None, code_ref)?;
             }
             Artifact::StartSketchOnPlane(StartSketchOnPlane { code_ref, .. }) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"StartSketchOnPlane<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"StartSketchOnPlane<br>{:?}\"]",
                     code_ref_display(code_ref)
                 )?;
+                node_path_display(output, prefix, None, code_ref)?;
+            }
+            Artifact::PlaneOfFace(PlaneOfFace { code_ref, .. }) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"PlaneOfFace<br>{:?}\"]",
+                    code_ref_display(code_ref)
+                )?;
+                node_path_display(output, prefix, None, code_ref)?;
             }
             Artifact::Sweep(sweep) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"Sweep {:?}<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"Sweep {:?}<br>{:?}\"]",
                     sweep.sub_type,
                     code_ref_display(&sweep.code_ref)
                 )?;
+                node_path_display(output, prefix, None, &sweep.code_ref)?;
             }
-            Artifact::Wall(_wall) => {
-                writeln!(output, "{prefix}{}[Wall]", id)?;
+            Artifact::Wall(wall) => {
+                writeln!(output, "{prefix}{id}[Wall]")?;
+                node_path_display(output, prefix, Some("face_code_ref="), &wall.face_code_ref)?;
             }
             Artifact::Cap(cap) => {
-                writeln!(output, "{prefix}{}[\"Cap {:?}\"]", id, cap.sub_type)?;
+                writeln!(output, "{prefix}{id}[\"Cap {:?}\"]", cap.sub_type)?;
+                node_path_display(output, prefix, Some("face_code_ref="), &cap.face_code_ref)?;
             }
             Artifact::SweepEdge(sweep_edge) => {
-                writeln!(output, "{prefix}{}[\"SweepEdge {:?}\"]", id, sweep_edge.sub_type)?;
+                writeln!(output, "{prefix}{id}[\"SweepEdge {:?}\"]", sweep_edge.sub_type)?;
             }
             Artifact::EdgeCut(edge_cut) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"EdgeCut {:?}<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"EdgeCut {:?}<br>{:?}\"]",
                     edge_cut.sub_type,
                     code_ref_display(&edge_cut.code_ref)
                 )?;
+                node_path_display(output, prefix, None, &edge_cut.code_ref)?;
             }
             Artifact::EdgeCutEdge(_edge_cut_edge) => {
-                writeln!(output, "{prefix}{}[EdgeCutEdge]", id)?;
+                writeln!(output, "{prefix}{id}[EdgeCutEdge]")?;
             }
             Artifact::Helix(helix) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"Helix<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"Helix<br>{:?}\"]",
                     code_ref_display(&helix.code_ref)
                 )?;
+                node_path_display(output, prefix, None, &helix.code_ref)?;
             }
         }
         Ok(())
@@ -473,24 +518,24 @@ impl ArtifactGraph {
             match edge.flow {
                 EdgeFlow::SourceToTarget => match edge.direction {
                     EdgeDirection::Forward => {
-                        writeln!(output, "{prefix}{source_id} x{}--> {}", extra, target_id)?;
+                        writeln!(output, "{prefix}{source_id} x{extra}--> {target_id}")?;
                     }
                     EdgeDirection::Backward => {
-                        writeln!(output, "{prefix}{source_id} <{}--x {}", extra, target_id)?;
+                        writeln!(output, "{prefix}{source_id} <{extra}--x {target_id}")?;
                     }
                     EdgeDirection::Bidirectional => {
-                        writeln!(output, "{prefix}{source_id} {}--- {}", extra, target_id)?;
+                        writeln!(output, "{prefix}{source_id} {extra}--- {target_id}")?;
                     }
                 },
                 EdgeFlow::TargetToSource => match edge.direction {
                     EdgeDirection::Forward => {
-                        writeln!(output, "{prefix}{target_id} x{}--> {}", extra, source_id)?;
+                        writeln!(output, "{prefix}{target_id} x{extra}--> {source_id}")?;
                     }
                     EdgeDirection::Backward => {
-                        writeln!(output, "{prefix}{target_id} <{}--x {}", extra, source_id)?;
+                        writeln!(output, "{prefix}{target_id} <{extra}--x {source_id}")?;
                     }
                     EdgeDirection::Bidirectional => {
-                        writeln!(output, "{prefix}{target_id} {}--- {}", extra, source_id)?;
+                        writeln!(output, "{prefix}{target_id} {extra}--- {source_id}")?;
                     }
                 },
             }

@@ -40,6 +40,7 @@ description: Variables in memory after executing helix_simple.kcl
           "tag": {
             "commentStart": 126,
             "end": 134,
+            "moduleId": 0,
             "start": 126,
             "type": "TagDeclarator",
             "value": "edge001"
@@ -82,6 +83,14 @@ description: Variables in memory after executing helix_simple.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -112,7 +121,8 @@ description: Variables in memory after executing helix_simple.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   }
 }

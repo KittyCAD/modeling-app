@@ -57,9 +57,9 @@ fn connectorSketch(@plane, start) {
 
 export fn connector(@plane, length) {
   connectorSketch(plane, start = [-12, 8])
-    |> extrude(length = length)
+    |> extrude(length)
   connectorSketch(plane, start = [16, 8])
-    |> extrude(length = length)
+    |> extrude(length)
   return 0
 }
 
@@ -79,7 +79,7 @@ fn seatSlatSketch(@plane) {
 
 export fn seatSlats(@plane, length) {
   seatSlatSketch(plane)
-    |> extrude(length = length)
+    |> extrude(length)
   return 0
 }
 
@@ -99,7 +99,7 @@ fn backSlatsSketch(@plane) {
 
 export fn backSlats(@plane, length) {
   b = backSlatsSketch(plane)
-    |> extrude(length = length)
+    |> extrude(length)
   return b
 }
 

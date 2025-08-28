@@ -1,0 +1,2 @@
+a = [1mm..3cm]
+assertIs(false, error = "shouldn't make it here")

@@ -1,0 +1,31 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing elliptic_curve_inches_regression.kcl
+---
+// The length unit of this file is inches (in)
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+
+// define a plane plane000
+plane000 = {
+  origin = [0, 0, 0],
+  xAxis = [1, 0, 0],
+  yAxis = [0, -1, 0]
+}
+
+// create a sketch sketch000
+sketch000 = startSketchOn(plane000)
+
+// create sketch profile sketch000Profile003
+sketch000Profile003 = startProfile(sketch000, at = [90.65875528983305, 60.85517063645204])
+  |> elliptic(
+       center = [0, 60.855171],
+       angleStart = 0deg,
+       angleEnd = 180deg,
+       majorAxis = [90.658755, 0],
+       minorRadius = 16.805477,
+     )
+  |> bezierCurve(end = [50.20468, -26.67249], control1 = [15.007446, -25.538491], control2 = [32.368565, -29.659071])
+  |> bezierCurve(end = [53.78895, 13.192256], control1 = [17.836115, 2.986581], control2 = [36.147227, 13.080324])
+  |> bezierCurve(end = [48.136051, -11.042286], control1 = [17.641723, 0.111932], control2 = [34.614058, -9.757945])
+  |> bezierCurve(end = [29.187829, 24.522519], control1 = [13.521993, -1.284341], control2 = [23.593644, 6.016856])
+  |> close()

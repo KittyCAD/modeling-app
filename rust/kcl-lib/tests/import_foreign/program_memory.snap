@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_foreign.kcl
 ---
 {
-  "cube": {
+  "__mod_cube": {
     "type": "Module",
     "value": 1
   },

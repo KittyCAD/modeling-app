@@ -2,13 +2,24 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing argument_error.kcl
 ---
-KCL Semantic error
+KCL Argument error
 
-  × semantic: This function expected the input argument to be of type
-  │ Vec<KclValue> but it's actually of type Function
-   ╭─[5:5]
+  × argument: f requires a value with type `fn(any): any`, but found an array
+  │ of `number`, `number` (with type `[any; 2]`).
+   ╭─[5:1]
  4 │ 
  5 │ map(f, f = [0, 1])
-   ·     ┬
-   ·     ╰── tests/argument_error/input.kcl
+   · ─────────┬────────┬
+   ·          │        ╰── tests/argument_error/input.kcl
+   ·          ╰── tests/argument_error/input.kcl
    ╰────
+  ╰─▶ KCL Argument error
+      
+        × argument: f requires a value with type `fn(any): any`, but found an
+        │ array of `number`, `number` (with type `[any; 2]`).
+         ╭─[5:12]
+       4 │
+       5 │ map(f, f = [0, 1])
+         ·            ───┬──
+         ·               ╰── tests/argument_error/input.kcl
+         ╰────

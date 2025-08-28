@@ -248,6 +248,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -447,173 +455,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
-              }
-            },
-            "start": {
-              "from": [
-                15.0,
-                0.0
-              ],
-              "to": [
-                15.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
               },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 667.5,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  591.5,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  591.5,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  591.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  591.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
+              "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 165.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "type": "plane",
-              "value": "Custom",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -784,6 +630,192 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              }
+            },
+            "start": {
+              "from": [
+                15.0,
+                0.0
+              ],
+              "to": [
+                15.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 667.5,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  15.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  15.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  15.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  591.5,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  591.5,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  591.5,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  591.5,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  15.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  15.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  15.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 165.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "type": "plane",
+              "value": "Custom",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -905,6 +937,14 @@ description: Variables in memory after executing utility-sink.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -960,6 +1000,14 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }
@@ -1039,6 +1087,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -1147,6 +1203,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -1294,6 +1358,14 @@ description: Variables in memory after executing utility-sink.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -1437,6 +1509,14 @@ description: Variables in memory after executing utility-sink.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1461,7 +1541,8 @@ description: Variables in memory after executing utility-sink.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "handleProfileSection": {
@@ -1524,6 +1605,14 @@ description: Variables in memory after executing utility-sink.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1577,6 +1666,14 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }
@@ -1763,173 +1860,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
-              }
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "units": {
-                "type": "Mm"
               },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "height": 834.5,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
+              "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -2103,6 +2038,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -2270,6 +2213,192 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              }
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "units": {
+                "type": "Mm"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": 834.5,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": {
+            "type": "Mm"
+          },
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -2503,6 +2632,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -2670,6 +2807,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -2877,6 +3022,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -3047,6 +3200,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -3149,6 +3310,14 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }
@@ -3335,6 +3504,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -3502,6 +3679,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -3748,6 +3933,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -3918,6 +4111,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -3994,6 +4195,14 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }
@@ -4342,6 +4551,14 @@ description: Variables in memory after executing utility-sink.kcl
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
                   "units": {
                     "type": "Unknown"
                   }
@@ -4735,6 +4952,14 @@ description: Variables in memory after executing utility-sink.kcl
                   "units": {
                     "type": "Unknown"
                   }
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 }
               },
               "start": {
@@ -5055,6 +5280,14 @@ description: Variables in memory after executing utility-sink.kcl
               "units": {
                 "type": "Unknown"
               }
+            },
+            "zAxis": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0,
+              "units": {
+                "type": "Unknown"
+              }
             }
           },
           "start": {
@@ -5275,6 +5508,14 @@ description: Variables in memory after executing utility-sink.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
+            },
+            "zAxis": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0,
               "units": {
                 "type": "Unknown"
               }
@@ -5533,6 +5774,14 @@ description: Variables in memory after executing utility-sink.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -5594,6 +5843,14 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }
@@ -5683,6 +5940,14 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -5794,6 +6059,14 @@ description: Variables in memory after executing utility-sink.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -5902,6 +6175,14 @@ description: Variables in memory after executing utility-sink.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -6007,6 +6288,14 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -6212,6 +6501,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -6379,6 +6676,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }
@@ -6586,6 +6891,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -6756,6 +7069,14 @@ description: Variables in memory after executing utility-sink.kcl
                 "units": {
                   "type": "Unknown"
                 }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -6832,6 +7153,14 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }

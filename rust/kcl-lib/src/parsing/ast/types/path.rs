@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use super::{BodyItem, Expr, MemberObject, Node, Program};
+use super::{BodyItem, Expr, Node, Program};
 use crate::SourceRange;
 
 /// A traversal path through the AST to a node.
@@ -60,16 +60,37 @@ pub enum Step {
 }
 
 impl NodePath {
-    /// Given a program and a [`SourceRange`], return the path to the node that
-    /// contains the range.
-    pub(crate) fn from_range(program: &Node<Program>, range: SourceRange) -> Option<Self> {
-        Self::from_body(&program.body, range, NodePath::default())
+    /// Placeholder for when the AST isn't available to create a real path.  It
+    /// will be filled in later.
+    pub(crate) fn placeholder() -> Self {
+        Self::default()
     }
 
-    fn from_body(body: &[BodyItem], range: SourceRange, mut path: NodePath) -> Option<NodePath> {
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn fill_placeholder(&mut self, program: &Node<Program>, cached_body_items: usize, range: SourceRange) {
+        if !self.is_empty() {
+            return;
+        }
+        *self = Self::from_range(program, cached_body_items, range).unwrap_or_default();
+    }
+
+    /// Given a program and a [`SourceRange`], return the path to the node that
+    /// contains the range.
+    pub(crate) fn from_range(program: &Node<Program>, cached_body_items: usize, range: SourceRange) -> Option<Self> {
+        Self::from_body(&program.body, cached_body_items, range, NodePath::default())
+    }
+
+    fn from_body(
+        body: &[BodyItem],
+        cached_body_items: usize,
+        range: SourceRange,
+        mut path: NodePath,
+    ) -> Option<NodePath> {
         for (i, item) in body.iter().enumerate() {
             if item.contains_range(&range) {
-                path.push(Step::ProgramBodyItem { index: i });
+                path.push(Step::ProgramBodyItem {
+                    index: cached_body_items + i,
+                });
                 return Self::from_body_item(item, range, path);
             }
         }
@@ -88,11 +109,11 @@ impl NodePath {
                                 path.push(Step::ImportStatementItemName);
                                 return Some(path);
                             }
-                            if let Some(alias) = &item.alias {
-                                if alias.contains_range(&range) {
-                                    path.push(Step::ImportStatementItemAlias);
-                                    return Some(path);
-                                }
+                            if let Some(alias) = &item.alias
+                                && alias.contains_range(&range)
+                            {
+                                path.push(Step::ImportStatementItemAlias);
+                                return Some(path);
                             }
                             return Some(path);
                         }
@@ -182,11 +203,11 @@ impl NodePath {
                     path.push(Step::CallKwCallee);
                     return Some(path);
                 }
-                if let Some(unlabeled) = &node.unlabeled {
-                    if unlabeled.contains_range(&range) {
-                        path.push(Step::CallKwUnlabeledArg);
-                        return Self::from_expr(unlabeled, range, path);
-                    }
+                if let Some(unlabeled) = &node.unlabeled
+                    && unlabeled.contains_range(&range)
+                {
+                    path.push(Step::CallKwUnlabeledArg);
+                    return Self::from_expr(unlabeled, range, path);
                 }
                 for (i, arg) in node.arguments.iter().enumerate() {
                     if arg.arg.contains_range(&range) {
@@ -241,11 +262,11 @@ impl NodePath {
             Expr::MemberExpression(node) => {
                 if node.object.contains_range(&range) {
                     path.push(Step::MemberExpressionObject);
-                    return Self::from_member_expr_object(&node.object, range, path);
+                    return NodePath::from_expr(&node.object, range, path);
                 }
                 if node.property.contains_range(&range) {
                     path.push(Step::MemberExpressionProperty);
-                    return Some(path);
+                    return NodePath::from_expr(&node.property, range, path);
                 }
             }
             Expr::UnaryExpression(node) => {
@@ -262,7 +283,7 @@ impl NodePath {
                 }
                 if node.then_val.contains_range(&range) {
                     path.push(Step::IfExpressionThen);
-                    return Self::from_body(&node.then_val.body, range, path);
+                    return Self::from_body(&node.then_val.body, 0, range, path);
                 }
                 for else_if in &node.else_ifs {
                     if else_if.contains_range(&range) {
@@ -273,14 +294,14 @@ impl NodePath {
                         }
                         if else_if.then_val.contains_range(&range) {
                             path.push(Step::IfExpressionElseIfBody);
-                            return Self::from_body(&else_if.then_val.body, range, path);
+                            return Self::from_body(&else_if.then_val.body, 0, range, path);
                         }
                         return Some(path);
                     }
                 }
                 if node.final_else.contains_range(&range) {
                     path.push(Step::IfExpressionElse);
-                    return Self::from_body(&node.final_else.body, range, path);
+                    return Self::from_body(&node.final_else.body, 0, range, path);
                 }
             }
             Expr::LabelledExpression(node) => {
@@ -306,16 +327,8 @@ impl NodePath {
         Some(path)
     }
 
-    fn from_member_expr_object(mut expr: &MemberObject, range: SourceRange, mut path: NodePath) -> Option<NodePath> {
-        while let MemberObject::MemberExpression(node) = expr {
-            if !node.object.contains_range(&range) {
-                break;
-            }
-            path.push(Step::MemberExpressionObject);
-            expr = &node.object;
-        }
-
-        Some(path)
+    pub fn is_empty(&self) -> bool {
+        self.steps.is_empty()
     }
 
     fn push(&mut self, step: Step) {
@@ -341,7 +354,7 @@ mod tests {
         // fn cube(sideLength, center) {
         //    ^^^^
         assert_eq!(
-            NodePath::from_range(&program.ast, range(38, 42)).unwrap(),
+            NodePath::from_range(&program.ast, 0, range(38, 42)).unwrap(),
             NodePath {
                 steps: vec![Step::ProgramBodyItem { index: 0 }, Step::VariableDeclarationDeclaration],
             }
@@ -349,7 +362,7 @@ mod tests {
         // fn cube(sideLength, center) {
         //                     ^^^^^^
         assert_eq!(
-            NodePath::from_range(&program.ast, range(55, 61)).unwrap(),
+            NodePath::from_range(&program.ast, 0, range(55, 61)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 0 },
@@ -362,7 +375,7 @@ mod tests {
         // |> line(endAbsolute = p1)
         //                       ^^
         assert_eq!(
-            NodePath::from_range(&program.ast, range(293, 295)).unwrap(),
+            NodePath::from_range(&program.ast, 0, range(293, 295)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 0 },
@@ -379,7 +392,7 @@ mod tests {
         // myCube = cube(sideLength = 40, center = [0, 0])
         //                                             ^
         assert_eq!(
-            NodePath::from_range(&program.ast, range(485, 486)).unwrap(),
+            NodePath::from_range(&program.ast, 0, range(485, 486)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 1 },
@@ -388,6 +401,21 @@ mod tests {
                     Step::CallKwArg { index: 1 },
                     Step::ArrayElement { index: 1 }
                 ],
+            }
+        );
+    }
+
+    #[test]
+    fn test_node_path_from_range_import() {
+        let code = r#"import "cube.step" as cube
+import "cylinder.kcl" as cylinder
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        // The entire cylinder import statement.
+        assert_eq!(
+            NodePath::from_range(&program.ast, 0, range(27, 60)).unwrap(),
+            NodePath {
+                steps: vec![Step::ProgramBodyItem { index: 1 }],
             }
         );
     }

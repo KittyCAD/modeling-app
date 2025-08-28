@@ -1,0 +1,21 @@
+// Motor
+// A small electric motor to power the fan
+
+// Set Units
+@settings(defaultLengthUnit = mm)
+
+// Import Parameters
+import * from "parameters.kcl"
+
+// Model the motor body and stem
+startPlane = offsetPlane(YZ, offset = 4)
+motorBody = startSketchOn(startPlane)
+  |> circle(center = [0, 0], radius = 10, tag = $seg04)
+  |> extrude(length = 17)
+  |> fillet(radius = 2, tags = [getOppositeEdge(seg04), seg04])
+  |> appearance(color = "#021b55")
+motorStem = startSketchOn(offsetPlane(YZ, offset = 21))
+  |> circle(center = [0, 0], radius = 1)
+  |> extrude(length = 3.8)
+  |> appearance(color = "#cbcccd")
+[motorBody, motorStem]

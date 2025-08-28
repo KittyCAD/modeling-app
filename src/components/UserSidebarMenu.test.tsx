@@ -18,6 +18,7 @@ describe('UserSidebarMenu tests', () => {
       name: 'Test User',
       email: 'kittycad.sidebar.test@example.com',
       image: 'https://placekitten.com/200/200',
+      is_onboarded: false,
       created_at: 'yesteryear',
       updated_at: 'today',
       company: 'Test Company',
@@ -56,6 +57,7 @@ describe('UserSidebarMenu tests', () => {
       id: '8675309',
       email: 'kittycad.sidebar.test@example.com',
       image: 'https://placekitten.com/200/200',
+      is_onboarded: false,
       created_at: 'yesteryear',
       updated_at: 'today',
       company: 'Test Company',
@@ -90,6 +92,7 @@ describe('UserSidebarMenu tests', () => {
       email: 'kittycad.sidebar.test@example.com',
       created_at: 'yesteryear',
       updated_at: 'today',
+      is_onboarded: false,
       company: 'Test Company',
       discord: 'Test User#1234',
       github: 'testuser',
@@ -119,8 +122,7 @@ describe('UserSidebarMenu tests', () => {
 function TestWrap({ children }: { children: React.ReactNode }) {
   // wrap in router and xState context
   // We have to use a memory router in the testing environment,
-  // and we have to use the createMemoryRouter function instead of <MemoryRouter /> as of react-router v6.4:
-  // https://reactrouter.com/en/6.16.0/routers/picking-a-router#using-v64-data-apis
+  // and we have to use the createMemoryRouter function instead of <MemoryRouter /> as of react-router v6.4
   const router = createMemoryRouter(
     createRoutesFromElements(
       <Route path="/file/:id" element={<>{children}</>} />

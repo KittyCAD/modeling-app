@@ -66,6 +66,10 @@ export type CommandBarMachineEvent =
         name: string
         groupId: string
         argDefaultValues?: { [x: string]: unknown }
+
+        // I'm sorry but the way we did share URL called for this.
+        isRestrictedToOrg?: boolean
+        password?: string
       }
     }
   | {
@@ -115,7 +119,7 @@ export const commandBarMachine = setup({
         }
         selectedCommand?.onSubmit(resolvedArgs)
       } else {
-        selectedCommand?.onSubmit()
+        selectedCommand?.onSubmit({ context, event })
       }
     },
     'Clear selected command': assign({
@@ -139,6 +143,7 @@ export const commandBarMachine = setup({
               : !a[1].hidden
         )
         let argIndex = 0
+        let lastRequiredArg: CommandArgumentWithName<unknown> | undefined
 
         while (argIndex < nonHiddenArgs.length) {
           const [argName, argConfig] = nonHiddenArgs[argIndex]
@@ -146,8 +151,16 @@ export const commandBarMachine = setup({
             typeof argConfig.required === 'function'
               ? argConfig.required(context)
               : argConfig.required
+
+          if (argIsRequired) {
+            lastRequiredArg = {
+              ...argConfig,
+              name: argName,
+            }
+          }
+
           const mustNotSkipArg =
-            argIsRequired &&
+            (argIsRequired || argConfig.skip === false) &&
             (!context.argumentsToSubmit.hasOwnProperty(argName) ||
               context.argumentsToSubmit[argName] === undefined ||
               (rejectedArg &&
@@ -155,12 +168,21 @@ export const commandBarMachine = setup({
                 'name' in rejectedArg &&
                 rejectedArg.name === argName))
 
-          if (
-            mustNotSkipArg === true ||
+          if (mustNotSkipArg) {
+            return {
+              ...selectedCommand.args[argName],
+              name: argName,
+            }
+          }
+
+          const reachedEndOfArgs =
             argIndex + 1 === Object.keys(nonHiddenArgs).length
-          ) {
-            // If we have reached the end of the arguments and none are skippable,
-            // return the last argument.
+          if (reachedEndOfArgs) {
+            if (lastRequiredArg) {
+              return lastRequiredArg
+            }
+
+            // Default to the last argument that is not hidden
             return {
               ...selectedCommand.args[argName],
               name: argName,
@@ -218,7 +240,7 @@ export const commandBarMachine = setup({
             cmd.name === event.data.name && cmd.groupId === event.data.groupId
         )
 
-        return !!found ? found : context.selectedCommand
+        return found || context.selectedCommand
       },
     }),
     'Initialize arguments to submit': assign({
@@ -266,7 +288,10 @@ export const commandBarMachine = setup({
           argConfig.skip ||
           (typeof argConfig.hidden === 'function'
             ? argConfig.hidden(context)
-            : argConfig.hidden)
+            : argConfig.hidden) ||
+          (typeof argConfig.required === 'function'
+            ? !argConfig.required(context)
+            : !argConfig.required)
       )
     },
     'Has selected command': ({ context }) => !!context.selectedCommand,
@@ -459,35 +484,6 @@ export const commandBarMachine = setup({
         Open: {
           target: 'Selecting command',
         },
-
-        'Add commands': {
-          target: 'Closed',
-
-          actions: [
-            assign({
-              commands: ({ context, event }) =>
-                [...context.commands, ...event.data.commands].sort(
-                  sortCommands
-                ),
-            }),
-          ],
-        },
-
-        'Remove commands': {
-          target: 'Closed',
-
-          actions: [
-            assign({
-              commands: ({ context, event }) =>
-                context.commands.filter(
-                  (c) =>
-                    !event.data.commands.some(
-                      (c2) => c2.name === c.name && c2.groupId === c.groupId
-                    )
-                ),
-            }),
-          ],
-        },
       },
 
       always: {
@@ -644,6 +640,29 @@ export const commandBarMachine = setup({
     'Find and select command': {
       target: '.Command selected',
       actions: ['Find and select command', 'Initialize arguments to submit'],
+    },
+
+    'Add commands': {
+      actions: [
+        assign({
+          commands: ({ context, event }) =>
+            [...context.commands, ...event.data.commands].sort(sortCommands),
+        }),
+      ],
+    },
+
+    'Remove commands': {
+      actions: [
+        assign({
+          commands: ({ context, event }) =>
+            context.commands.filter(
+              (c) =>
+                !event.data.commands.some(
+                  (c2) => c2.name === c.name && c2.groupId === c.groupId
+                )
+            ),
+        }),
+      ],
     },
   },
 })

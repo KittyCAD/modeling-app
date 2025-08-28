@@ -4,7 +4,6 @@ import * as fsp from 'fs/promises'
 
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { expectPixelColor } from '@e2e/playwright/fixtures/sceneFixture'
 
 test.describe('Command bar tests', () => {
   test('Extrude from command bar selects extrude line after', async ({
@@ -36,7 +35,10 @@ test.describe('Command bar tests', () => {
     await u.closeDebugPanel()
 
     // Click the line of code for xLine.
-    await page.getByText(`close()`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+    await page.getByText(`startProfile(at = [-10, -10])`).click()
+
+    // Wait for the selection to register (TODO: we need a definitive way to wait for this)
+    await page.waitForTimeout(200)
 
     await toolbar.extrudeButton.click()
     await cmdBar.expectState({
@@ -45,10 +47,10 @@ test.describe('Command bar tests', () => {
       currentArgKey: 'sketches',
       currentArgValue: '',
       headerArguments: {
-        Sketches: '',
+        Profiles: '',
         Length: '',
       },
-      highlightedHeaderArg: 'sketches',
+      highlightedHeaderArg: 'Profiles',
     })
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
@@ -56,7 +58,7 @@ test.describe('Command bar tests', () => {
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
-        Sketches: '1 segment',
+        Profiles: '1 profile',
         Length: '5',
       },
     })
@@ -248,6 +250,8 @@ test.describe('Command bar tests', () => {
     page,
     homePage,
     cmdBar,
+    scene,
+    editor,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -263,20 +267,9 @@ test.describe('Command bar tests', () => {
       )
     })
 
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
-
     await homePage.goToModelingScene()
-
-    // Make sure the stream is up
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
-    await u.clearCommandLogs()
-    await page.getByRole('button', { name: 'Extrude' }).isEnabled()
+    await scene.settled(cmdBar)
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await page.keyboard.press('ControlOrMeta+K')
@@ -286,44 +279,121 @@ test.describe('Command bar tests', () => {
     await cmdBar.cmdOptions.getByText('Extrude').click()
 
     // Assert that we're on the selection step
-    await expect(page.getByRole('button', { name: 'sketches' })).toBeDisabled()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'sketches',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '',
+        Length: '',
+      },
+      highlightedHeaderArg: 'Profiles',
+    })
     // Select a face
-    await page.mouse.move(700, 200)
-    await page.mouse.click(700, 200)
+    await editor.selectText('startProfile(at = [-6.95, 10.98])')
     await cmdBar.progressCmdBar()
 
     // Assert that we're on the distance step
-    await expect(
-      page.getByRole('button', { name: 'length', exact: false })
-    ).toBeDisabled()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '',
+      },
+      highlightedHeaderArg: 'length',
+    })
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
-    await page.getByRole('button', { name: 'Create new variable' }).click()
+    await cmdBar.variableCheckbox.click()
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
       'length001'
     )
-
-    const continueButton = page.getByRole('button', { name: 'Continue' })
-    const submitButton = page.getByRole('button', { name: 'Submit command' })
-    await continueButton.click()
+    await cmdBar.progressCmdBar()
 
     // Review step and argument hotkeys
-    await expect(submitButton).toBeEnabled()
-    await expect(submitButton).toBeFocused()
-    await submitButton.press('Shift+Backspace')
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+    })
+    await page.keyboard.press('Meta+Backspace')
 
     // Assert we're back on the distance step
     await expect(
       page.getByRole('button', { name: 'length', exact: false })
     ).toBeDisabled()
 
-    await continueButton.click()
-    await submitButton.click()
+    await cmdBar.progressCmdBar()
 
-    await u.waitForCmdReceive('extrude')
+    // Add optional arg
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+    })
+    await cmdBar.clickOptionalArgument('bidirectionalLength')
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'bidirectionalLength',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BidirectionalLength: '',
+      },
+      highlightedHeaderArg: 'bidirectionalLength',
+    })
+    await page.keyboard.type('10') // Set bidirectional length
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BidirectionalLength: '10',
+      },
+    })
 
-    await expect(page.locator('.cm-content')).toContainText(
+    // Clear optional arg
+    await page.getByRole('button', { name: 'BidirectionalLength' }).click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'bidirectionalLength',
+      currentArgValue: '10',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BidirectionalLength: '10',
+      },
+      highlightedHeaderArg: 'bidirectionalLength',
+    })
+    await cmdBar.clearNonRequiredButton.click()
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+    })
+
+    await cmdBar.progressCmdBar()
+    await scene.settled(cmdBar)
+    await editor.expectEditor.toContain(
       'extrude001 = extrude(sketch001, length = length001)'
     )
   })
@@ -399,7 +469,6 @@ test.describe('Command bar tests', () => {
         sortBy: 'last-modified-desc',
       })
       await page.goto(page.url() + targetURL)
-      expect(page.url()).toContain(targetURL)
     })
 
     await test.step(`Submit the command`, async () => {
@@ -410,7 +479,7 @@ test.describe('Command bar tests', () => {
         currentArgValue: '',
         headerArguments: {
           Method: '',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
         highlightedHeaderArg: 'method',
@@ -421,7 +490,7 @@ test.describe('Command bar tests', () => {
         commandName: 'Import file from URL',
         headerArguments: {
           Method: 'New project',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
       })
@@ -463,7 +532,6 @@ test.describe('Command bar tests', () => {
         sortBy: 'last-modified-desc',
       })
       await page.goto(page.url() + targetURL)
-      expect(page.url()).toContain(targetURL)
     })
 
     await test.step(`Submit the command`, async () => {
@@ -474,7 +542,7 @@ test.describe('Command bar tests', () => {
         currentArgValue: '',
         headerArguments: {
           Method: '',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
         highlightedHeaderArg: 'method',
@@ -487,7 +555,7 @@ test.describe('Command bar tests', () => {
         currentArgValue: '',
         headerArguments: {
           Method: 'Existing project',
-          Name: 'test',
+          Name: 'main.kcl',
           ProjectName: '',
           Code: '1 line',
         },
@@ -500,7 +568,7 @@ test.describe('Command bar tests', () => {
         headerArguments: {
           Method: 'Existing project',
           ProjectName: 'testProjectDir',
-          Name: 'test',
+          Name: 'main.kcl',
           Code: '1 line',
         },
       })
@@ -510,50 +578,9 @@ test.describe('Command bar tests', () => {
     await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
       await editor.expectEditor.toContain('extrusionDistance = 12')
       await toolbar.openPane('files')
-      await toolbar.expectFileTreeState(['main.kcl', 'test.kcl'])
+      await toolbar.expectFileTreeState(['main-1.kcl', 'main.kcl'])
     })
   })
-
-  test(
-    `Zoom to fit to shared model on web`,
-    { tag: ['@web'] },
-    async ({ page, scene }) => {
-      if (process.env.PLATFORM !== 'web') {
-        // This test is web-only
-        // TODO: re-enable on CI as part of a new @web test suite
-        return
-      }
-      await test.step(`Prepare and navigate to home page with query params`, async () => {
-        // a quad in the top left corner of the XZ plane (which is out of the current view)
-        const code = `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [-484.34, 484.95])
-  |> yLine(length = -69.1)
-  |> xLine(length = 66.84)
-  |> yLine(length = 71.37)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-`
-        const targetURL = `?create-file&name=test&units=mm&code=${encodeURIComponent(btoa(code))}&ask-open-desktop`
-        await page.goto(page.url() + targetURL)
-        expect(page.url()).toContain(targetURL)
-      })
-
-      await test.step(`Submit the command`, async () => {
-        await page.getByTestId('continue-to-web-app-button').click()
-
-        await scene.connectionEstablished()
-
-        // This makes SystemIOMachineActors.createKCLFile run after EngineStream/firstPlay
-        await page.waitForTimeout(3000)
-
-        await page.getByTestId('command-bar-submit').click()
-      })
-
-      await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
-        await expectPixelColor(page, [252, 252, 252], { x: 600, y: 260 }, 8)
-      })
-    }
-  )
 
   test(`Can add and edit a named parameter or constant`, async ({
     page,
@@ -566,7 +593,9 @@ profile001 = startProfile(sketch001, at = [-484.34, 484.95])
     const projectName = 'test'
     const beforeKclCode = `a = 5
 b = a * a
-c = 3 + a`
+c = 3 + a
+theta = 45deg
+`
     await context.folderSetupFn(async (dir) => {
       const testProject = join(dir, projectName)
       await fsp.mkdir(testProject, { recursive: true })
@@ -656,9 +685,97 @@ c = 3 + a`
         stage: 'commandBarClosed',
       })
     })
+    await test.step(`Edit a parameter with explicit units via command bar`, async () => {
+      await cmdBar.cmdBarOpenBtn.click()
+      await cmdBar.chooseCommand('edit parameter')
+      await cmdBar
+        .selectOption({
+          name: 'theta',
+        })
+        .click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Edit parameter',
+        currentArgKey: 'value',
+        currentArgValue: '45deg',
+        headerArguments: {
+          Name: 'theta',
+          Value: '',
+        },
+        highlightedHeaderArg: 'value',
+      })
+      await cmdBar.argumentInput
+        .locator('[contenteditable]')
+        .fill('45deg + 1deg')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Edit parameter',
+        headerArguments: {
+          Name: 'theta',
+          Value: '46deg',
+        },
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'commandBarClosed',
+      })
+    })
 
     await editor.expectEditor.toContain(
-      `a = 5b = a * amyParameter001 = ${newValue}c = 3 + a`
+      `a = 5b = a * amyParameter001 = ${newValue}c = 3 + atheta = 45deg + 1deg`
     )
+  })
+
+  test('Command palette can be opened via query parameter', async ({
+    page,
+    homePage,
+    cmdBar,
+  }) => {
+    await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+    await homePage.expectState({
+      projectCards: [],
+      sortBy: 'last-modified-desc',
+    })
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Settings · app · theme',
+      currentArgKey: 'value',
+      currentArgValue: '',
+      headerArguments: {
+        Level: 'user',
+        Value: '',
+      },
+      highlightedHeaderArg: 'value',
+    })
+  })
+
+  test('Text-to-CAD command can be closed with escape while in prompt', async ({
+    page,
+    homePage,
+    cmdBar,
+  }) => {
+    await homePage.expectState({
+      projectCards: [],
+      sortBy: 'last-modified-desc',
+    })
+    await homePage.textToCadBtn.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Text-to-CAD Create',
+      currentArgKey: 'prompt',
+      currentArgValue: '',
+      headerArguments: {
+        Method: 'New project',
+        NewProjectName: 'untitled',
+        Prompt: '',
+      },
+      highlightedHeaderArg: 'prompt',
+    })
+    await page.keyboard.press('Escape')
+    await cmdBar.toBeClosed()
+    await cmdBar.expectState({
+      stage: 'commandBarClosed',
+    })
   })
 })

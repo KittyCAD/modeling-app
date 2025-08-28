@@ -288,7 +288,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
 
     await page.locator('#code-pane button:first-child').click()
@@ -314,7 +314,7 @@ sketch_001 = startSketchOn(XY)
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
   })
 
@@ -511,7 +511,7 @@ sketch_001 = startSketchOn(XY)
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
 
     // focus the editor
@@ -539,7 +539,7 @@ sketch_001 = startSketchOn(XY)
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
   })
 
@@ -573,7 +573,7 @@ sketch_001 = startSketchOn(XY)
 
     await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
 
-    // error in guter
+    // error in gutter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
     // error text on hover
@@ -624,6 +624,11 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await homePage.goToModelingScene()
 
     await scene.connectionEstablished()
+
+    // Wait for highlighting to kick in, a good proxy that the LSP is ready.
+    await expect
+      .poll(() => page.evaluate(() => document.querySelector('.ͼu') !== null))
+      .toBe(true)
 
     // Expect the signature help to NOT be visible
     await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
@@ -681,7 +686,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     // error text on hover
     await page.hover('.cm-lint-marker-info')
     await expect(
-      page.getByText('Identifiers must be lowerCamelCase').first()
+      page.getByText('Identifiers should be lowerCamelCase').first()
     ).toBeVisible()
 
     // select the line that's causing the error and delete it
@@ -912,7 +917,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     |> close()
     |> revolve(
     axis = revolveAxis,
-    angle = 90
+    angle = 90deg
     )
     `
       )
@@ -966,8 +971,6 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
       await page.keyboard.type('12')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
@@ -984,8 +987,6 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Enter')
       // finish line with comment
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
       await page.keyboard.type('5')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
@@ -1001,8 +1002,8 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-        |> startProfile(%, at = [3.14, 12])
-        |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
+    |> startProfile(at = [0, 12])
+    |> xLine(length = 5) // lin`.replaceAll('\n', '')
       )
 
       // expect there to be no KCL errors
@@ -1041,8 +1042,6 @@ sketch001 = startSketchOn(XZ)
       await page.keyboard.press('Tab') // accepting the auto complete, not a new line
 
       await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
-      await page.keyboard.press('Tab')
       await page.keyboard.type('12')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
@@ -1057,7 +1056,6 @@ sketch001 = startSketchOn(XZ)
       await page.waitForTimeout(100)
       // press arrow down then tab to accept xLine
       await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('Tab')
       // finish line with comment
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)
@@ -1076,8 +1074,8 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-        |> startProfile(%, at = [3.14, 12])
-        |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
+    |> startProfile(at = [0, 12])
+    |> xLine(length = 5) // lin`.replaceAll('\n', '')
       )
     })
   })
@@ -1131,6 +1129,8 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(100)
 
     await page.getByText('startProfile(at = [4.61, -14.01])').click()
+    // Wait for the selection to register (TODO: we need a definitive way to wait for this)
+    await page.waitForTimeout(200)
     await toolbar.extrudeButton.click()
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
@@ -1138,7 +1138,7 @@ sketch001 = startSketchOn(XZ)
       currentArgKey: 'length',
       currentArgValue: '5',
       headerArguments: {
-        Sketches: '1 face',
+        Profiles: '1 profile',
         Length: '',
       },
       highlightedHeaderArg: 'length',
@@ -1148,7 +1148,7 @@ sketch001 = startSketchOn(XZ)
     await cmdBar.expectState({
       stage: 'review',
       headerArguments: {
-        Sketches: '1 face',
+        Profiles: '1 profile',
         Length: '5',
       },
       commandName: 'Extrude',
@@ -1182,107 +1182,47 @@ sketch001 = startSketchOn(XZ)
     editor,
     scene,
     cmdBar,
+    toolbar,
   }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `@settings(defaultLengthUnit=in)
-sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [4.61, -10.01])
-  |> line(end = [12.73, -0.09])
-  |> tangentialArc(endAbsolute = [24.95, -0.38])
-  |> close()
-  |> extrude(length = 5)`
-      )
-    })
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+    const ogCode = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()`
+    await page.addInitScript(async (code) => {
+      localStorage.setItem('persistCode', code)
+    }, ogCode)
 
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    await page.waitForTimeout(100)
-    await u.openAndClearDebugPanel()
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: 0, y: -1250, z: 580 },
-        center: { x: 0, y: 0, z: 0 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
-    await page.waitForTimeout(100)
+    let prevContent = await editor.getCurrentCode()
+    await toolbar.editSketch()
 
-    const startPX = [1200 / 2, 500 / 2]
+    // first sketch modification
+    await editor.selectText(
+      'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
+    )
+    await editor.closePane()
+    await page.keyboard.press('Delete')
+    await editor.expectEditor.not.toContain(prevContent)
+    prevContent = await editor.getCurrentCode()
 
-    const dragPX = 40
-
-    await page.getByText('startProfile(at = [4.61, -10.01])').click()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeVisible()
-    await page.getByRole('button', { name: 'Edit Sketch' }).click()
-    await page.waitForTimeout(400)
-    let prevContent = await page.locator('.cm-content').innerText()
-
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
-
-    // drag startProfileAt handle
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: startPX[0] + 68, y: startPX[1] + 147 },
-      targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
-    })
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
-
-    // drag line handle
-    // we wait so it saves the code
-    await page.waitForTimeout(800)
-
-    const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
-    await page.waitForTimeout(100)
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-      targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
-    })
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
-
-    // we wait so it saves the code
-    await page.waitForTimeout(800)
-
-    // drag tangentialArc handle
-    const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
-      targetPosition: {
-        x: tangentEnd.x + dragPX,
-        y: tangentEnd.y + dragPX,
-      },
-    })
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    // second sketch modification
+    await editor.selectText('xLine(length = -10)')
+    await editor.closePane()
+    await page.keyboard.press('Delete')
+    await editor.expectEditor.not.toContain(prevContent)
 
     // expect the code to have changed
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [5.36, -5.36])
-    |> line(end = [12.73, -0.09])
-    |> tangentialArc(endAbsolute = [24.95, -0.38])
-    |> close()
-    |> extrude(length = 5)`,
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> close()`,
       { shouldNormalise: true }
     )
 
@@ -1291,52 +1231,31 @@ sketch001 = startSketchOn(XZ)
     await page.keyboard.press('KeyZ')
     await page.keyboard.up('Control')
 
+    await editor.openPane()
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [2.71, -2.71])
-    |> line(end = [12.73, -0.09])
-    |> tangentialArc(endAbsolute = [24.95, -0.38])
-    |> close()
-    |> extrude(length = 5)`,
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> close()`,
       { shouldNormalise: true }
     )
 
     // Hit undo again.
+    await editor.closePane()
     await page.keyboard.down('Control')
     await page.keyboard.press('KeyZ')
     await page.keyboard.up('Control')
 
-    await editor.expectEditor.toContain(
-      `sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [4.61, -10.01])
-    |> line(end = [12.73, -0.09])
-    |> tangentialArc(endAbsolute = [24.95, -0.38])
-    |> close()
-    |> extrude(length = 5)`,
-      { shouldNormalise: true }
-    )
-
-    // Hit undo again.
-    await page.keyboard.down('Control')
-    await page.keyboard.press('KeyZ')
-    await page.keyboard.up('Control')
-
-    await page.waitForTimeout(100)
-    await editor.expectEditor.toContain(
-      `sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [4.61, -10.01])
-    |> line(end = [12.73, -0.09])
-    |> tangentialArc(endAbsolute = [24.95, -0.38])
-    |> close()
-    |> extrude(length = 5)`,
-      { shouldNormalise: true }
-    )
+    await editor.openPane()
+    await editor.expectEditor.toContain(ogCode, { shouldNormalise: true })
   })
 
   test(
     `Can import a local OBJ file`,
-    { tag: '@electron' },
-    async ({ page, context }, testInfo) => {
+    { tag: '@desktop' },
+    async ({ page, context, scene, cmdBar }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'cube')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -1353,66 +1272,19 @@ sketch001 = startSketchOn(XZ)
       // Locators and constants
       const u = await getUtils(page)
       const projectLink = page.getByRole('link', { name: 'cube' })
-      const gizmo = page.locator('[aria-label*=gizmo]')
-      const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
-      const locationToHaveColor = async (
-        position: { x: number; y: number },
-        color: [number, number, number]
-      ) => {
-        return u.getGreatestPixDiff(position, color)
-      }
-      const notTheOrigin = {
-        x: viewportSize.width * 0.55,
-        y: viewportSize.height * 0.3,
-      }
-      const origin = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
       const errorIndicators = page.locator('.cm-lint-marker-error')
 
-      await test.step(`Open the empty file, see the default planes`, async () => {
+      await test.step(`Open the empty file`, async () => {
         await projectLink.click()
-        await u.waitForPageLoad()
-        await expect
-          .poll(
-            async () =>
-              locationToHaveColor(notTheOrigin, TEST_COLORS.DARK_MODE_PLANE_XZ),
-            {
-              timeout: 5000,
-              message: 'XZ plane color is visible',
-            }
-          )
-          .toBeLessThan(15)
+        await scene.settled(cmdBar)
       })
       await test.step(`Write the import function line`, async () => {
         await u.codeLocator.fill(`import 'cube.obj'\ncube`)
         await page.waitForTimeout(800)
       })
-      await test.step(`Reset the camera before checking`, async () => {
-        await u.doAndWaitForCmd(async () => {
-          await gizmo.click({ button: 'right' })
-          await resetCameraButton.click()
-        }, 'zoom_to_fit')
-      })
-      await test.step(`Verify that we see the imported geometry and no errors`, async () => {
+      await test.step(`Verify that we see no errors`, async () => {
+        await scene.settled(cmdBar)
         await expect(errorIndicators).toHaveCount(0)
-        await expect
-          .poll(
-            async () =>
-              locationToHaveColor(origin, TEST_COLORS.DARK_MODE_PLANE_XZ),
-            {
-              timeout: 3000,
-              message: 'Plane color should not be visible',
-            }
-          )
-          .toBeGreaterThan(15)
-        await expect
-          .poll(
-            async () => locationToHaveColor(origin, TEST_COLORS.DARK_MODE_BKGD),
-            {
-              timeout: 3000,
-              message: 'Background color should not be visible',
-            }
-          )
-          .toBeGreaterThan(15)
       })
     }
   )
@@ -1472,6 +1344,7 @@ sketch001 = startSketchOn(XZ)
     page,
     homePage,
     toolbar,
+    scene,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -1498,9 +1371,15 @@ sketch001 = startSketchOn(XZ)
     await toolbar.editSketch(0)
 
     await page.waitForTimeout(1000)
+    await toolbar.closePane('code')
 
     // Click on the bottom segment that lies on the x axis
-    await page.mouse.click(width * 0.85, height / 2)
+    const clickCoords = await scene.convertPagePositionToStream(
+      0.85,
+      0.5,
+      'ratio'
+    )
+    await page.mouse.click(clickCoords.x, clickCoords.y)
 
     await page.waitForTimeout(1000)
 
@@ -1533,7 +1412,6 @@ sketch001 = startSketchOn(XZ)
     await homePage.goToModelingScene()
 
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
 
     await scene.expectPixelColor(
       TEST_COLORS.DARK_MODE_BKGD,
@@ -1588,5 +1466,68 @@ sketch001 = startSketchOn(XZ)
       // center-rectangle should still be the active option in the rectangle dropdown
       await expect(page.getByTestId('center-rectangle')).toBeVisible()
     })
+  })
+
+  test('syntax errors still show when reopening KCL pane', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+  }) => {
+    const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await homePage.goToModelingScene()
+
+    // Wait for connection, this is especially important for this test, because safeParse is invoked when
+    // connection is established which would interfere with the test if it happened during later steps.
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    // Code with no error
+    await u.codeLocator.fill(`x = 7`)
+    await page.waitForTimeout(200) // allow some time for the error to show potentially
+    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+
+    // Code with error
+    await u.codeLocator.fill(`x 7`)
+    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
+
+    // Close and reopen KCL code panel
+    await u.closeKclCodePanel()
+    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0) // error disappears on close
+    await u.openKclCodePanel()
+
+    // Verify error is still visible
+    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
+  })
+
+  test('Core dump hotkey', async ({ page, scene, cmdBar, homePage }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+    profile001 = circle(sketch001, center = [-100.0, -100.0], radius = 50.0)
+`
+      )
+    })
+
+    const viewportSize = { width: 1200, height: 800 }
+    await page.setBodyDimensions(viewportSize)
+
+    await homePage.goToModelingScene()
+
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
+
+    await page.keyboard.press(`${modifier}+Shift+.`)
+
+    const toast1 = page.getByText('Starting core dump...')
+    await expect(toast1).toBeVisible()
+
+    const toast2 = page.getByText('Core dump completed')
+    await expect(toast2).toBeVisible()
   })
 })

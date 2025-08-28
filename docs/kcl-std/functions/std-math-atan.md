@@ -29,15 +29,14 @@ Consider using `atan2()` instead for the true inverse of tangent.
 ```kcl
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(
-    angle = atan(1.25),
-    length = 20,
-  )
+  |> angledLine(angle = atan(1.25), length = 20)
   |> yLine(endAbsolute = 0)
   |> close()
 
 extrude001 = extrude(sketch001, length = 5)
+
 ```
+
 
 
 

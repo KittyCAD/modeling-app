@@ -2,11 +2,13 @@
 
 use std::path::PathBuf;
 
+use kittycad_modeling_cmds::websocket::RawFile;
+
 use crate::{
+    ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
     engine::new_zoo_client,
     errors::ExecErrorWithState,
     execution::{EnvironmentRef, ExecState, ExecutorContext, ExecutorSettings},
-    ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -29,6 +31,35 @@ pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> 
     res
 }
 
+pub struct Snapshot3d {
+    /// Bytes of the snapshot.
+    pub image: image::DynamicImage,
+    /// Various GLTF files for the resulting export.
+    pub gltf: Vec<RawFile>,
+}
+
+/// Executes a kcl program and takes a snapshot of the result.
+pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) -> Result<Snapshot3d, ExecError> {
+    let ctx = new_context(true, current_file).await?;
+    let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
+    let image = do_execute_and_snapshot(&ctx, program)
+        .await
+        .map(|(_, _, snap)| snap)
+        .map_err(|err| err.error)?;
+    let gltf_res = ctx
+        .export(kittycad_modeling_cmds::format::OutputFormat3d::Gltf(Default::default()))
+        .await;
+    let gltf = match gltf_res {
+        Err(err) if err.message() == "Nothing to export" => Vec::new(),
+        Err(err) => {
+            eprintln!("Error exporting: {}", err.message());
+            Vec::new()
+        }
+        Ok(x) => x,
+    };
+    ctx.close().await;
+    Ok(Snapshot3d { image, gltf })
+}
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 #[cfg(test)]
@@ -36,7 +67,16 @@ pub async fn execute_and_snapshot_ast(
     ast: Program,
     current_file: Option<PathBuf>,
     with_export_step: bool,
-) -> Result<(ExecState, EnvironmentRef, image::DynamicImage, Option<Vec<u8>>), ExecErrorWithState> {
+) -> Result<
+    (
+        ExecState,
+        ExecutorContext,
+        EnvironmentRef,
+        image::DynamicImage,
+        Option<Vec<u8>>,
+    ),
+    ExecErrorWithState,
+> {
     let ctx = new_context(true, current_file).await?;
     let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast).await {
         Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
@@ -55,7 +95,7 @@ pub async fn execute_and_snapshot_ast(
                 // Close the context to avoid any resource leaks.
                 ctx.close().await;
                 return Err(ExecErrorWithState::new(
-                    ExecError::BadExport(format!("Export failed: {:?}", err)),
+                    ExecError::BadExport(format!("Export failed: {err:?}")),
                     exec_state.clone(),
                 ));
             }
@@ -64,7 +104,7 @@ pub async fn execute_and_snapshot_ast(
         step = files.into_iter().next().map(|f| f.contents);
     }
     ctx.close().await;
-    Ok((exec_state, env, img, step))
+    Ok((exec_state, ctx, env, img, step))
 }
 
 pub async fn execute_and_snapshot_no_auth(
@@ -93,7 +133,7 @@ async fn do_execute_and_snapshot(
     for e in exec_state.errors() {
         if e.severity.is_err() {
             return Err(ExecErrorWithState::new(
-                KclErrorWithOutputs::no_outputs(KclError::Semantic(e.clone().into())).into(),
+                KclErrorWithOutputs::no_outputs(KclError::new_semantic(e.clone().into())).into(),
                 exec_state.clone(),
             ));
         }
@@ -132,6 +172,7 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         replay: None,
         project_directory: None,
         current_file: None,
+        fixed_size_grid: true,
     };
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));
@@ -164,7 +205,7 @@ pub async fn execute_and_export_step(
     for e in exec_state.errors() {
         if e.severity.is_err() {
             return Err(ExecErrorWithState::new(
-                KclErrorWithOutputs::no_outputs(KclError::Semantic(e.clone().into())).into(),
+                KclErrorWithOutputs::no_outputs(KclError::new_semantic(e.clone().into())).into(),
                 exec_state.clone(),
             ));
         }
@@ -174,7 +215,7 @@ pub async fn execute_and_export_step(
         Ok(f) => f,
         Err(err) => {
             return Err(ExecErrorWithState::new(
-                ExecError::BadExport(format!("Export failed: {:?}", err)),
+                ExecError::BadExport(format!("Export failed: {err:?}")),
                 exec_state.clone(),
             ));
         }

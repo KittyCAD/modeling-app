@@ -2,12 +2,24 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing array_elem_pop_empty_fail.kcl
 ---
-KCL Semantic error
+KCL Argument error
 
-  × semantic: Cannot pop from an empty array
+  × argument: The input argument of `pop` requires one or more values (`[any;
+  │ 1+]`), but found an empty array (with type `[any; 0]`).
    ╭─[2:8]
  1 │ arr = []
  2 │ fail = pop(arr)
-   ·        ────┬───
+   ·        ────┬───┬
+   ·            │   ╰── tests/array_elem_pop_empty_fail/input.kcl
    ·            ╰── tests/array_elem_pop_empty_fail/input.kcl
    ╰────
+  ╰─▶ KCL Argument error
+      
+        × argument: The input argument of `pop` requires one or more values
+        │ (`[any; 1+]`), but found an empty array (with type `[any; 0]`).
+         ╭─[2:12]
+       1 │ arr = []
+       2 │ fail = pop(arr)
+         ·            ─┬─
+         ·             ╰── tests/array_elem_pop_empty_fail/input.kcl
+         ╰────

@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing spur-reduction-gearset.kcl
+---
+{
+  "seg01": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg01"
+  },
+  "spurGear": {
+    "type": "Function",
+    "value": null
+  }
+}

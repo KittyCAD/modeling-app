@@ -1,8 +1,5 @@
-import type {
-  ArtifactCommand,
-  ArtifactId,
-  ArtifactGraph as RustArtifactGraph,
-} from '@rust/kcl-lib/bindings/Artifact'
+import type { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
+import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
@@ -48,6 +45,7 @@ import {
   default_app_settings,
   default_project_settings,
   format_number_literal,
+  format_number_value,
   get_kcl_version,
   get_tangential_arc_to_info,
   human_display_number,
@@ -69,12 +67,12 @@ import {
   UNLABELED_ARG,
 } from '@src/lang/queryAstConstants'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
+import { isTopLevelModule } from '@src/lang/util'
+import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
   Artifact,
-  ArtifactCommand,
-  ArtifactId,
   Cap as CapArtifact,
   CodeRef,
   CompositeSolid as CompositeSolidArtifact,
@@ -87,6 +85,7 @@ export type {
   SweepEdge,
   Wall as WallArtifact,
 } from '@rust/kcl-lib/bindings/Artifact'
+export type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
 export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
 export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
@@ -140,27 +139,27 @@ export type { Path } from '@rust/kcl-lib/bindings/Path'
 export type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 export type { Solid } from '@rust/kcl-lib/bindings/Solid'
 
-/**
- * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
- * frontend (essentially we're eagerly checking whether the frontend should care about the SourceRange
- * so as not to expose details of the interpreter's current representation of module ids throughout
- * the frontend).
- */
-export function sourceRangeFromRust(s: SourceRange): SourceRange {
-  return [s[0], s[1], s[2]]
+function bestSourceRange(error: RustKclError): SourceRange {
+  if (error.details.sourceRanges.length === 0) {
+    return defaultSourceRange()
+  }
+
+  // When there's an error, the call stack is unwound, and the locations are
+  // built up from deepest location to shallowest. So the deepest call is first.
+  for (const range of error.details.sourceRanges) {
+    // Skip ranges pointing into files that aren't the top-level module.
+    if (isTopLevelModule(range)) {
+      return sourceRangeFromRust(range)
+    }
+  }
+  // We didn't find a top-level module range, so just use the first one.
+  return sourceRangeFromRust(error.details.sourceRanges[0])
 }
 
-/**
- * Create a default SourceRange for testing or as a placeholder.
- */
-export function defaultSourceRange(): SourceRange {
-  return [0, 0, 0]
-}
-
-function firstSourceRange(error: RustKclError): SourceRange {
-  return error.sourceRanges.length > 0
-    ? sourceRangeFromRust(error.sourceRanges[0])
-    : defaultSourceRange()
+export function defaultNodePath(): NodePath {
+  return {
+    steps: [],
+  }
 }
 
 const splitErrors = (
@@ -229,9 +228,11 @@ export const parse = (code: string | Error): ParseResult | Error => {
     const parsed: RustKclError = JSON.parse(e.toString())
     return new KCLError(
       parsed.kind,
-      parsed.msg,
-      firstSourceRange(parsed),
+      parsed.details.msg,
+      bestSourceRange(parsed),
       [],
+      [],
+      {},
       [],
       defaultArtifactGraph(),
       {},
@@ -277,7 +278,6 @@ export const isPathToNode = (input: unknown): input is PathToNode =>
 export interface ExecState {
   variables: { [key in string]?: KclValue }
   operations: Operation[]
-  artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
   errors: CompilationError[]
   filenames: { [x: number]: ModulePath | undefined }
@@ -292,7 +292,6 @@ export function emptyExecState(): ExecState {
   return {
     variables: {},
     operations: [],
-    artifactCommands: [],
     artifactGraph: defaultArtifactGraph(),
     errors: [],
     filenames: [],
@@ -301,32 +300,12 @@ export function emptyExecState(): ExecState {
 }
 
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
-  const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
-  // Translate NodePath to PathToNode.
-  for (const [_id, artifact] of artifactGraph) {
-    if (!artifact) continue
-    if (!('codeRef' in artifact)) continue
-    const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
-    artifact.codeRef.pathToNode = pathToNode
-  }
+  const artifactGraph = artifactGraphFromRust(execOutcome.artifactGraph)
 
   return {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
-    artifactCommands: execOutcome.artifactCommands,
     artifactGraph,
-    errors: execOutcome.errors,
-    filenames: execOutcome.filenames,
-    defaultPlanes: execOutcome.defaultPlanes,
-  }
-}
-
-export function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
-  return {
-    variables: execOutcome.variables,
-    operations: execOutcome.operations,
-    artifactCommands: execOutcome.artifactCommands,
-    artifactGraph: new Map<ArtifactId, Artifact>(),
     errors: execOutcome.errors,
     filenames: execOutcome.filenames,
     defaultPlanes: execOutcome.defaultPlanes,
@@ -335,43 +314,44 @@ export function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
 
 export type ArtifactGraph = Map<ArtifactId, Artifact>
 
-function rustArtifactGraphToMap(
+function artifactGraphFromRust(
   rustArtifactGraph: RustArtifactGraph
 ): ArtifactGraph {
-  const map = new Map<ArtifactId, Artifact>()
+  const artifactGraph = new Map<ArtifactId, Artifact>()
+  // Convert to a Map.
   for (const [id, artifact] of Object.entries(rustArtifactGraph.map)) {
     if (!artifact) continue
-    map.set(id, artifact)
+    artifactGraph.set(id, artifact)
   }
 
-  return map
+  // Translate NodePath to PathToNode.
+  for (const [_id, artifact] of artifactGraph) {
+    if (!artifact) continue
+    if (!('codeRef' in artifact)) continue
+    const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
+    artifact.codeRef.pathToNode = pathToNode
+  }
+  return artifactGraph
 }
 
-// TODO: In the future, make the parameter be a KclValue.
 export function sketchFromKclValueOptional(
-  obj: any,
+  obj: KclValue | undefined,
   varName: string | null
 ): Sketch | Reason {
-  if (obj?.value?.type === 'Sketch') return obj.value
-  if (obj?.value?.type === 'Solid') return obj.value.sketch
   if (obj?.type === 'Sketch') return obj.value
   if (obj?.type === 'Solid') return obj.value.sketch
   if (!varName) {
     varName = 'a KCL value'
   }
-  const actualType = obj?.value?.type ?? obj?.type
-  if (actualType) {
-    return new Reason(
-      `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
-    )
-  } else {
-    return new Reason(`Expected ${varName} to be a sketch, but it wasn't.`)
-  }
+
+  const actualType = obj?.type ?? 'unknown'
+  return new Reason(
+    `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
+  )
 }
 
-// TODO: In the future, make the parameter be a KclValue.
 export function sketchFromKclValue(
-  obj: any,
+  obj: KclValue | undefined,
   varName: string | null
 ): Sketch | Error {
   const result = sketchFromKclValueOptional(obj, varName)
@@ -382,14 +362,29 @@ export function sketchFromKclValue(
 }
 
 export const errFromErrWithOutputs = (e: any): KCLError => {
-  const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
+  // `e` is any, so let's figure out something useful to do with it.
+  const parsed: KclErrorWithOutputs = (() => {
+    // No need to parse, it's already an object.
+    if (typeof e === 'object') {
+      return e
+    }
+    // It's a string, so parse it.
+    if (typeof e === 'string') {
+      return JSON.parse(e)
+    }
+    // It can be converted to a string, then parsed.
+    return JSON.parse(e.toString())
+  })()
+
   return new KCLError(
     parsed.error.kind,
-    parsed.error.msg,
-    firstSourceRange(parsed.error),
+    parsed.error.details.msg,
+    bestSourceRange(parsed.error),
+    parsed.error.details.backtrace,
+    parsed.nonFatal,
+    parsed.variables,
     parsed.operations,
-    parsed.artifactCommands,
-    rustArtifactGraphToMap(parsed.artifactGraph),
+    artifactGraphFromRust(parsed.artifactGraph),
     parsed.filenames,
     parsed.defaultPlanes
   )
@@ -397,10 +392,10 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
 
 export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
   try {
-    const discovered_findings: Array<Discovered> = await kcl_lint(
+    const discoveredFindings: Array<Discovered> = await kcl_lint(
       JSON.stringify(ast)
     )
-    return discovered_findings
+    return discoveredFindings
   } catch (e: any) {
     return Promise.reject(e)
   }
@@ -418,7 +413,7 @@ export async function rustImplPathToNode(
   return pathToNodeFromRustNodePath(nodePath)
 }
 
-async function nodePathFromRange(
+export async function nodePathFromRange(
   ast: Program,
   range: SourceRange
 ): Promise<NodePath | null> {
@@ -451,6 +446,23 @@ export function formatNumberLiteral(
   } catch (e) {
     return new Error(
       `Error formatting number literal: value=${value}, suffix=${suffix}`,
+      { cause: e }
+    )
+  }
+}
+
+/**
+ * Format a number from a KclValue such that it could be parsed as KCL.
+ */
+export function formatNumberValue(
+  value: number,
+  numericType: NumericType
+): string | Error {
+  try {
+    return format_number_value(value, JSON.stringify(numericType))
+  } catch (e) {
+    return new Error(
+      `Error formatting number value: value=${value}, numericType=${numericType}`,
       { cause: e }
     )
   }
@@ -546,7 +558,7 @@ export async function coreDump(
   }
 }
 
-function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
+export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
   const pathToNode: PathToNode = []
   for (const step of nodePath.steps) {
     switch (step.type) {
@@ -746,11 +758,10 @@ export function kclSettings(
  */
 export function changeDefaultUnits(
   kcl: string,
-  len: UnitLen | null,
-  angle: UnitAng | null
+  len: UnitLen | null
 ): string | Error {
   try {
-    return change_default_units(kcl, JSON.stringify(len), JSON.stringify(angle))
+    return change_default_units(kcl, JSON.stringify(len))
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })

@@ -50,7 +50,11 @@ export class ToolbarFixture {
   loadButton!: Locator
   /** User button for the user sidebar menu */
   userSidebarButton!: Locator
+  /** Project button for the project's settings */
+  projectSidebarToggle!: Locator
   signOutButton!: Locator
+  /** Selection indicator text in the status bar */
+  selectionStatus!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -76,7 +80,7 @@ export class ToolbarFixture {
     this.exitSketchBtn = page.getByTestId('sketch-exit')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
-    this.treeInputField = page.getByTestId('tree-input-field')
+    this.treeInputField = page.getByTestId('file-rename-field')
     this.loadButton = page.getByTestId('add-file-to-project-pane-button')
 
     this.filePane = page.locator('#files-pane')
@@ -91,7 +95,10 @@ export class ToolbarFixture {
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
 
     this.userSidebarButton = page.getByTestId('user-sidebar-toggle')
+    this.projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
     this.signOutButton = page.getByTestId('user-sidebar-sign-out')
+
+    this.selectionStatus = page.getByTestId('selection-status')
   }
 
   get logoLink() {
@@ -212,8 +219,8 @@ export class ToolbarFixture {
   }
   selectArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
-    await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
-    await this.page.getByTestId('dropdown-arc').click()
+    await expect(this.page.getByTestId('dropdown-tangential-arc')).toBeVisible()
+    await this.page.getByTestId('dropdown-tangential-arc').click()
   }
   selectThreePointArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
@@ -272,6 +279,13 @@ export class ToolbarFixture {
         name: operationName,
       })
       .nth(operationIndex)
+  }
+
+  getDefaultPlaneVisibilityButton(plane: 'XY' | 'XZ' | 'YZ' = 'XY') {
+    const index = plane === 'XZ' ? 0 : plane === 'XY' ? 1 : 2
+    return this.featureTreePane
+      .getByTestId('feature-tree-visibility-toggle')
+      .nth(index)
   }
 
   /**

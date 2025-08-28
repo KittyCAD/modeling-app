@@ -13,6 +13,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "sigmaAllow",
             "start": 0,
             "type": "Identifier"
@@ -20,6 +21,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "15000",
             "start": 0,
             "type": "Literal",
@@ -29,11 +31,13 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -46,6 +50,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "width",
             "start": 0,
             "type": "Identifier"
@@ -53,6 +58,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "11",
             "start": 0,
             "type": "Literal",
@@ -62,11 +68,13 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -79,6 +87,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "p",
             "start": 0,
             "type": "Identifier"
@@ -86,6 +95,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "150",
             "start": 0,
             "type": "Literal",
@@ -95,11 +105,13 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -112,6 +124,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "distance",
             "start": 0,
             "type": "Identifier"
@@ -119,6 +132,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "12",
             "start": 0,
             "type": "Literal",
@@ -128,11 +142,13 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -145,6 +161,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "FOS",
             "start": 0,
             "type": "Identifier"
@@ -152,6 +169,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "2",
             "start": 0,
             "type": "Literal",
@@ -161,11 +179,13 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -178,18 +198,22 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "thickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "sqrt",
                 "start": 0,
                 "type": "Identifier"
@@ -200,6 +224,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -219,9 +244,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "distance",
                         "start": 0,
                         "type": "Identifier"
@@ -231,14 +258,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "*",
                     "right": {
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "p",
                         "start": 0,
                         "type": "Identifier"
@@ -252,14 +282,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
+                  "moduleId": 0,
                   "operator": "*",
                   "right": {
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "FOS",
                       "start": 0,
                       "type": "Identifier"
@@ -273,10 +306,12 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
+                "moduleId": 0,
                 "operator": "*",
                 "right": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "6",
                   "start": 0,
                   "type": "Literal",
@@ -290,6 +325,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
+              "moduleId": 0,
               "operator": "/",
               "right": {
                 "commentStart": 0,
@@ -298,9 +334,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "sigmaAllow",
                     "start": 0,
                     "type": "Identifier"
@@ -310,14 +348,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "type": "Name",
                   "type": "Name"
                 },
+                "moduleId": 0,
                 "operator": "*",
                 "right": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "width",
                     "start": 0,
                     "type": "Identifier"
@@ -336,11 +377,13 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "type": "BinaryExpression"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -353,6 +396,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "filletR",
             "start": 0,
             "type": "Identifier"
@@ -364,9 +408,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "thickness",
                 "start": 0,
                 "type": "Identifier"
@@ -376,10 +422,12 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "type": "Name",
               "type": "Name"
             },
+            "moduleId": 0,
             "operator": "*",
             "right": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "2",
               "start": 0,
               "type": "Literal",
@@ -393,11 +441,13 @@ description: Result of parsing parametric_with_tan_arc.kcl
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -410,6 +460,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "shelfMountL",
             "start": 0,
             "type": "Identifier"
@@ -417,6 +468,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "9",
             "start": 0,
             "type": "Literal",
@@ -426,11 +478,13 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -443,6 +497,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "wallMountL",
             "start": 0,
             "type": "Identifier"
@@ -450,6 +505,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "raw": "8",
             "start": 0,
             "type": "Literal",
@@ -459,11 +515,13 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -476,6 +534,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "bracket",
             "start": 0,
             "type": "Identifier"
@@ -483,13 +542,16 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "init": {
             "body": [
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -500,6 +562,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -507,9 +570,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "XY",
                     "start": 0,
                     "type": "Identifier"
@@ -527,6 +592,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "at",
                       "start": 0,
                       "type": "Identifier"
@@ -537,6 +603,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -549,6 +616,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -560,6 +628,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -570,9 +639,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
@@ -583,6 +654,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -595,6 +667,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -605,6 +678,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -618,9 +692,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "wallMountL",
                             "start": 0,
                             "type": "Identifier"
@@ -632,6 +708,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -642,9 +719,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -655,6 +734,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -667,6 +747,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -675,9 +756,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "filletR",
                         "start": 0,
                         "type": "Identifier"
@@ -693,6 +776,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -700,13 +784,14 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "90",
+                      "moduleId": 0,
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   }
@@ -715,9 +800,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -728,6 +815,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -740,6 +828,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -752,9 +841,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "shelfMountL",
                               "start": 0,
                               "type": "Identifier"
@@ -766,6 +857,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -774,6 +866,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -785,6 +878,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -795,9 +889,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -808,6 +904,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -820,6 +917,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -830,6 +928,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -844,9 +943,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "thickness",
                               "start": 0,
                               "type": "Identifier"
@@ -858,6 +959,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -865,6 +967,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -875,9 +978,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -888,6 +993,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -900,6 +1006,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -911,9 +1018,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "shelfMountL",
                             "start": 0,
                             "type": "Identifier"
@@ -926,6 +1035,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -937,6 +1047,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -947,9 +1058,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -960,6 +1073,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -972,6 +1086,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -983,9 +1098,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "filletR",
                           "start": 0,
                           "type": "Identifier"
@@ -995,14 +1112,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "-",
                       "right": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "thickness",
                           "start": 0,
                           "type": "Identifier"
@@ -1022,6 +1142,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angle",
                       "start": 0,
                       "type": "Identifier"
@@ -1030,17 +1151,19 @@ description: Result of parsing parametric_with_tan_arc.kcl
                       "argument": {
                         "commentStart": 0,
                         "end": 0,
-                        "raw": "90",
+                        "moduleId": 0,
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
@@ -1052,9 +1175,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "tangentialArc",
                     "start": 0,
                     "type": "Identifier"
@@ -1065,6 +1190,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1077,6 +1203,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -1087,6 +1214,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -1101,9 +1229,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "wallMountL",
                               "start": 0,
                               "type": "Identifier"
@@ -1115,6 +1245,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -1122,6 +1253,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -1132,9 +1264,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -1145,19 +1279,23 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -1168,12 +1306,14 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -1186,6 +1326,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -1194,9 +1335,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "width",
                         "start": 0,
                         "type": "Identifier"
@@ -1212,9 +1355,11 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -1225,6 +1370,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1233,15 +1379,18 @@ description: Result of parsing parametric_with_tan_arc.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1249,12 +1398,14 @@ description: Result of parsing parametric_with_tan_arc.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1268,6 +1419,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1281,6 +1433,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1294,6 +1447,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -1307,6 +1461,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

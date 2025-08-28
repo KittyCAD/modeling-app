@@ -1,17 +1,25 @@
 /// Functions for mathematical operations and some useful constants.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 import Point2d from "std::types"
 
 /// The value of `pi`, Archimedes’ constant (π).
 ///
+/// `PI` is a number and is technically a ratio, so you might expect it to have type `number(_)`.
+/// However, `PI` is nearly always used for converting between different units - usually degrees to or
+/// from radians. Therefore, `PI` is treated a bit specially by KCL and always has unknown units. This
+/// means that if you use `PI`, you will need to give KCL some extra information about the units of numbers.
+/// Usually you should use type ascription on the result of calculations, e.g., `(2 * PI): rad`.
+/// It is better to use `units::toRadians` or `units::toDegrees` to convert between angles with
+/// different units where possible.
+///
 /// ```
 /// circumference = 70
 ///
 /// exampleSketch = startSketchOn(XZ)
-///  |> circle(center = [0, 0], radius = (circumference / (2 * PI)): number(mm))
+///  |> circle(center = [0, 0], radius = (circumference / (2 * PI)): mm)
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
@@ -23,7 +31,7 @@ export PI = 3.14159265358979323846264338327950288_?
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 30,
+///     angle = 30deg,
 ///     length = 2 * E ^ 2,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -39,7 +47,7 @@ export E = 2.71828182845904523536028747135266250_
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 50,
+///     angle = 50deg,
 ///     length = 10 * TAU,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -55,7 +63,7 @@ export TAU = 6.28318530717958647692528676655900577_
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 30,
+///     angle = 30deg,
 ///     length = 3 / cos(30deg),
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -64,7 +72,7 @@ export TAU = 6.28318530717958647692528676655900577_
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn cos(@num: number(Angle)): number(Count) {}
+export fn cos(@num: number(Angle)): number {}
 
 /// Compute the sine of a number.
 ///
@@ -72,7 +80,7 @@ export fn cos(@num: number(Angle)): number(Count) {}
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 50,
+///     angle = 50deg,
 ///     length = 15 / sin(135deg),
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -81,7 +89,7 @@ export fn cos(@num: number(Angle)): number(Count) {}
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn sin(@num: number(Angle)): number(Count) {}
+export fn sin(@num: number(Angle)): number {}
 
 /// Compute the tangent of a number.
 ///
@@ -89,8 +97,8 @@ export fn sin(@num: number(Angle)): number(Count) {}
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 50,
-///     length = 50 * tan((1/2): number(rad)),
+///     angle = 50deg,
+///     length = 50 * tan((1/2): rad),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -98,7 +106,7 @@ export fn sin(@num: number(Angle)): number(Count) {}
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn tan(@num: number(Angle)): number(Count) {}
+export fn tan(@num: number(Angle)): number {}
 
 /// Compute the arccosine of a number.
 ///
@@ -177,7 +185,7 @@ export fn atan2(y: number(Length), x: number(Length)): number(rad) {}
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> line(end = polar(angle = 30, length = 5), tag = $thing)
+///   |> line(end = polar(angle = 30deg, length = 5), tag = $thing)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [segEndX(thing), 0])
 ///   |> line(end = [-20, 10])
@@ -195,8 +203,6 @@ export fn polar(angle: number(rad), length: number(Length)): Point2d {
 /// If `num` is negative, the result will be too.
 ///
 /// ```
-/// import rem from "std::math"
-///
 /// assert(rem( 7,    divisor =   4), isEqualTo =   3, error = "remainder is 3")
 /// assert(rem(-7,    divisor =   4), isEqualTo =  -3, error = "remainder is -3")
 /// assert(rem( 7,    divisor =  -4), isEqualTo =   3, error = "remainder is 3")
@@ -218,7 +224,7 @@ export fn rem(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 50,
+///     angle = 50deg,
 ///     length = sqrt(2500),
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -232,7 +238,7 @@ export fn sqrt(@input: number): number {}
 /// Compute the absolute value of a number.
 ///
 /// ```
-/// myAngle = -120
+/// myAngle = -120deg
 ///
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
@@ -304,7 +310,7 @@ export fn ceil(@input: number): number {}
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 70,
+///     angle = 70deg,
 ///     length = min([15, 31, 4, 13, 22])
 ///   )
 ///   |> line(end = [20, 0])
@@ -324,7 +330,7 @@ export fn min(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 70,
+///     angle = 70deg,
 ///     length = max([15, 31, 4, 13, 22])
 ///   )
 ///   |> line(end = [20, 0])
@@ -344,7 +350,7 @@ export fn max(
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = 50,
+///     angle = 50deg,
 ///     length = pow(5, exp = 2),
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -428,3 +434,42 @@ export fn log10(@input: number): number {}
 /// ```
 @(impl = std_rust)
 export fn ln(@input: number): number {}
+
+/// Compute the length of the given leg.
+///
+/// ```kcl,no_run
+/// legLen(hypotenuse = 5, leg = 3)
+/// ```
+@(impl = std_rust)
+export fn legLen(
+  /// The length of the triangle's hypotenuse.
+  hypotenuse: number(Length),
+  /// The length of one of the triangle's legs (i.e. non-hypotenuse side).
+  leg: number(Length),
+): number(Length) {}
+
+/// Compute the angle of the given leg for x.
+///
+/// ```kcl,no_run
+/// legAngX(hypotenuse = 5, leg = 3)
+/// ```
+@(impl = std_rust)
+export fn legAngX(
+  /// The length of the triangle's hypotenuse.
+  hypotenuse: number(Length),
+  /// The length of one of the triangle's legs (i.e. non-hypotenuse side).
+  leg: number(Length),
+): number(deg) {}
+
+/// Compute the angle of the given leg for y.
+///
+/// ```kcl,no_run
+/// legAngY(hypotenuse = 5, leg = 3)
+/// ```
+@(impl = std_rust)
+export fn legAngY(
+  /// The length of the triangle's hypotenuse.
+  hypotenuse: number(Length),
+  /// The length of one of the triangle's legs (i.e. non-hypotenuse side).
+  leg: number(Length),
+): number(deg) {}

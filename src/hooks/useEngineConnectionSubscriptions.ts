@@ -2,8 +2,10 @@ import { useEffect, useRef } from 'react'
 
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import {
+  findAllChildrenAndOrderByPlaceInCode,
+  getNodeFromPath,
+} from '@src/lang/queryAst'
 import type { SegmentArtifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -13,15 +15,17 @@ import {
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
-import type { CallExpressionKw } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/wasm'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import { getEventForSelectWithPoint } from '@src/lib/selections'
+import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/sourceRange'
+import {
+  getEventForSelectWithPoint,
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
 import {
   editorManager,
   engineCommandManager,
   kclManager,
-  rustContext,
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
@@ -35,7 +39,6 @@ import type {
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
-import { findAllChildrenAndOrderByPlaceInCode } from '@src/lang/modifyAst/boolean'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -84,6 +87,7 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, engineStreamState, context?.sketchEnginePathId])
 
   useEffect(() => {
@@ -97,101 +101,20 @@ export function useEngineConnectionSubscriptions() {
             ;(async () => {
               let planeOrFaceId = data.entity_id
               if (!planeOrFaceId) return
+
+              const defaultSketchPlaneSelected =
+                selectDefaultSketchPlane(planeOrFaceId)
               if (
-                rustContext.defaultPlanes?.xy === planeOrFaceId ||
-                rustContext.defaultPlanes?.xz === planeOrFaceId ||
-                rustContext.defaultPlanes?.yz === planeOrFaceId ||
-                rustContext.defaultPlanes?.negXy === planeOrFaceId ||
-                rustContext.defaultPlanes?.negXz === planeOrFaceId ||
-                rustContext.defaultPlanes?.negYz === planeOrFaceId
+                !err(defaultSketchPlaneSelected) &&
+                defaultSketchPlaneSelected
               ) {
-                let planeId = planeOrFaceId
-                const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
-                  [rustContext.defaultPlanes.xy]: 'XY',
-                  [rustContext.defaultPlanes.xz]: 'XZ',
-                  [rustContext.defaultPlanes.yz]: 'YZ',
-                  [rustContext.defaultPlanes.negXy]: '-XY',
-                  [rustContext.defaultPlanes.negXz]: '-XZ',
-                  [rustContext.defaultPlanes.negYz]: '-YZ',
-                }
-                // TODO can we get this information from rust land when it creates the default planes?
-                // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
-                let zAxis: [number, number, number] = [0, 0, 1]
-                let yAxis: [number, number, number] = [0, 1, 0]
-
-                // get unit vector from camera position to target
-                const camVector = sceneInfra.camControls.camera.position
-                  .clone()
-                  .sub(sceneInfra.camControls.target)
-
-                if (rustContext.defaultPlanes?.xy === planeId) {
-                  zAxis = [0, 0, 1]
-                  yAxis = [0, 1, 0]
-                  if (camVector.z < 0) {
-                    zAxis = [0, 0, -1]
-                    planeId = rustContext.defaultPlanes?.negXy || ''
-                  }
-                } else if (rustContext.defaultPlanes?.yz === planeId) {
-                  zAxis = [1, 0, 0]
-                  yAxis = [0, 0, 1]
-                  if (camVector.x < 0) {
-                    zAxis = [-1, 0, 0]
-                    planeId = rustContext.defaultPlanes?.negYz || ''
-                  }
-                } else if (rustContext.defaultPlanes?.xz === planeId) {
-                  zAxis = [0, 1, 0]
-                  yAxis = [0, 0, 1]
-                  planeId = rustContext.defaultPlanes?.negXz || ''
-                  if (camVector.y < 0) {
-                    zAxis = [0, -1, 0]
-                    planeId = rustContext.defaultPlanes?.xz || ''
-                  }
-                }
-
-                sceneInfra.modelingSend({
-                  type: 'Select sketch plane',
-                  data: {
-                    type: 'defaultPlane',
-                    planeId: planeId,
-                    plane: defaultPlaneStrMap[planeId],
-                    zAxis,
-                    yAxis,
-                  },
-                })
                 return
               }
-              const artifact = kclManager.artifactGraph.get(planeOrFaceId)
 
-              if (artifact?.type === 'plane') {
-                const planeInfo =
-                  await sceneEntitiesManager.getFaceDetails(planeOrFaceId)
-                sceneInfra.modelingSend({
-                  type: 'Select sketch plane',
-                  data: {
-                    type: 'offsetPlane',
-                    zAxis: [
-                      planeInfo.z_axis.x,
-                      planeInfo.z_axis.y,
-                      planeInfo.z_axis.z,
-                    ],
-                    yAxis: [
-                      planeInfo.y_axis.x,
-                      planeInfo.y_axis.y,
-                      planeInfo.y_axis.z,
-                    ],
-                    position: [
-                      planeInfo.origin.x,
-                      planeInfo.origin.y,
-                      planeInfo.origin.z,
-                    ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
-                      number,
-                      number,
-                      number,
-                    ],
-                    planeId: planeOrFaceId,
-                    pathToNode: artifact.codeRef.pathToNode,
-                  },
-                })
+              const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+              const offsetPlaneSelected =
+                await selectOffsetSketchPlane(artifact)
+              if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
                 return
               }
 
@@ -247,10 +170,7 @@ export function useEngineConnectionSubscriptions() {
               if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
                 return
               const { z_axis, y_axis, origin } = faceInfo
-              const sketchPathToNode = getNodePathFromSourceRange(
-                kclManager.ast,
-                err(codeRef) ? defaultSourceRange() : codeRef.range
-              )
+              const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
 
               const getEdgeCutMeta = (): null | EdgeCutInfo => {
                 let chamferInfo: {
@@ -332,16 +252,13 @@ export function useEngineConnectionSubscriptions() {
                   { type: 'sweep', ...extrusion },
                   kclManager.artifactGraph
                 )[0] || null
-              const lastChildCodeRef =
+              const lastChildCodeRef: PathToNode | null =
                 lastChild?.type === 'compositeSolid'
-                  ? lastChild.codeRef.range
+                  ? lastChild.codeRef.pathToNode
                   : null
 
               const extrudePathToNode = !err(extrusion)
-                ? getNodePathFromSourceRange(
-                    kclManager.ast,
-                    lastChildCodeRef || extrusion.codeRef.range
-                  )
+                ? lastChildCodeRef || extrusion.codeRef.pathToNode
                 : []
 
               sceneInfra.modelingSend({
@@ -365,5 +282,6 @@ export function useEngineConnectionSubscriptions() {
         : () => {},
     })
     return unSub
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, engineStreamState, state])
 }

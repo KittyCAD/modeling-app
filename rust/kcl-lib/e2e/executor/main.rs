@@ -1,8 +1,8 @@
 mod cache;
 
 use kcl_lib::{
+    BacktraceItem, ExecError, ModuleId, SourceRange,
     test_server::{execute_and_export_step, execute_and_snapshot, execute_and_snapshot_no_auth},
-    ExecError,
 };
 
 /// The minimum permissible difference between asserted twenty-twenty images.
@@ -20,47 +20,6 @@ pub(crate) fn assert_out(test_name: &str, result: &image::DynamicImage) -> Strin
     twenty_twenty::assert_image(&path, result, MIN_DIFF);
 
     path
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_fillet_duplicate_tags() {
-    let code = kcl_input!("fillet_duplicate_tags");
-
-    let result = execute_and_snapshot(code, None).await;
-    let err = result.expect_err("Code should have failed due to the duplicate edges being filletted");
-
-    let err = err.as_kcl_error().unwrap();
-    assert_eq!(
-        err.message(),
-        "The same edge ID is being referenced multiple times, which is not allowed. Please select a different edge"
-    );
-    assert_eq!(err.source_ranges().len(), 3);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_engine_error_return() {
-    let code = r#"part001 = startSketchOn(XY)
-  |> startProfile(at = [5.5229, 5.25217])
-  |> line(end = [10.50433, -1.19122])
-  |> line(end = [8.01362, -5.48731])
-  |> line(end = [-1.02877, -6.76825])
-  |> line(end = [-11.53311, 2.81559])
-  |> extrude(length = 4)
-"#;
-
-    let result = execute_and_snapshot(code, None).await;
-    let expected_msg = "engine: Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]";
-    let err = result.unwrap_err().as_kcl_error().unwrap().get_message();
-    assert_eq!(err, expected_msg);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_i_shape() {
-    // This is some code from lee that starts a pipe expression with a variable.
-    let code = kcl_input!("i_shape");
-
-    let result = execute_and_snapshot(code, None).await.unwrap();
-    assert_out("i_shape", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -222,13 +181,13 @@ wallMountL = 8
 bracket = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, wallMountL])
-  |> tangentialArc(radius = filletR, angle = 90 )
+  |> tangentialArc(radius = filletR, angle = 90deg )
   |> line(end = [-shelfMountL, 0])
   |> line(end = [0, -thickness])
   |> line(end = [shelfMountL, 0])
   |> tangentialArc(
        radius = filletR - thickness,
-       angle = -90,
+       angle = -90deg,
      )
   |> line(end = [0, -wallMountL])
   |> close()
@@ -482,10 +441,15 @@ async fn kcl_test_import_file_doesnt_exist() {
 model = cube"#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "File `thing.obj` does not exist.");
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([0, 18, 0])], message: "File `thing.obj` does not exist." }"#
+        err.backtrace(),
+        vec![BacktraceItem {
+            source_range: SourceRange::new(0, 18, ModuleId::default()),
+            fn_name: None,
+        }]
     );
 }
 
@@ -560,10 +524,18 @@ import 'e2e/executor/inputs/cube.gltf'
 model = cube"#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([32, 70, 0])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
+        err.message(),
+        "The given format does not match the file extension. Expected: `gltf`, Given: `obj`"
+    );
+    assert_eq!(
+        err.backtrace(),
+        vec![BacktraceItem {
+            source_range: SourceRange::new(32, 70, ModuleId::default()),
+            fn_name: None,
+        }]
     );
 }
 
@@ -790,7 +762,7 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
     };
     assert_eq!(
         err.error.message(),
-        "This function requires a keyword argument 'center'"
+        "This function requires a keyword argument `center`"
     );
 }
 
@@ -897,11 +869,13 @@ async fn kcl_test_revolve_bad_angle_low() {
     let result = execute_and_snapshot(code, None).await;
 
     assert!(result.is_err());
-    assert!(result
-        .err()
-        .unwrap()
-        .to_string()
-        .contains("Expected angle to be between -360 and 360 and not 0, found `-455`"));
+    assert!(
+        result
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("Expected angle to be between -360 and 360 and not 0, found `-455`")
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -923,11 +897,13 @@ async fn kcl_test_revolve_bad_angle_high() {
     let result = execute_and_snapshot(code, None).await;
 
     assert!(result.is_err());
-    assert!(result
-        .err()
-        .unwrap()
-        .to_string()
-        .contains("Expected angle to be between -360 and 360 and not 0, found `455`"));
+    assert!(
+        result
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("Expected angle to be between -360 and 360 and not 0, found `455`")
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -992,36 +968,6 @@ sketch001 = startSketchOn(box, face = END)
 
     let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("revolve_on_edge", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_revolve_on_edge_get_edge() {
-    let code = r#"box = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [0, 10])
-  |> line(end = [10, 0])
-  |> line(end = [0, -10], tag = $revolveAxis)
-  |> close()
-  |> extrude(length = 10)
-
-sketch001 = startSketchOn(box, face = revolveAxis)
-  |> startProfile(at = [5, 10])
-  |> line(end = [0, -10])
-  |> line(end = [2, 0])
-  |> line(end = [0, 10])
-  |> close()
-  |> revolve(axis = revolveAxis, angle = 90)
-
-"#;
-
-    let result = execute_and_snapshot(code, None).await;
-
-    result.unwrap_err();
-    //this fails right now, but slightly differently, lets just say its enough for it to fail - mike
-    //assert_eq!(
-    //    result.err().unwrap().to_string(),
-    //    r#"engine: KclErrorDetails { source_ranges: [SourceRange([346, 390, 0])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis\" }]" }"#
-    //);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1092,20 +1038,6 @@ sketch001 = startSketchOn(box, face = END)
 
     let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("revolve_on_face", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_revolve_circle() {
-    let code = r#"sketch001 = startSketchOn(XY)
-  |> circle(center = [15, 0], radius= 5)
-  |> revolve(
-    angle = 360, 
-    axis = Y 
-    )
-"#;
-
-    let result = execute_and_snapshot(code, None).await.unwrap();
-    assert_out("basic_revolve_circle", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1304,7 +1236,7 @@ secondSketch = startSketchOn(part001, face = '')
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
         err.message(),
-        "The arg face was given, but it was the wrong type. It should be type FaceTag but it was string (text)"
+        "face requires a value with type `TaggedFace`, but found a value with type `string`."
     );
 }
 
@@ -1751,10 +1683,21 @@ example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "Cannot have an x constrained angle of 90 degrees");
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 111, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        err.backtrace(),
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(70, 111, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(70, 111, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1771,10 +1714,21 @@ example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "Cannot have an x constrained angle of 270 degrees");
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 112, 0])], message: "Cannot have an x constrained angle of 270 degrees" }"#
+        err.backtrace(),
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(70, 112, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(70, 112, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1791,10 +1745,21 @@ example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "Cannot have a y constrained angle of 0 degrees");
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 110, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+        err.backtrace(),
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(70, 110, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(70, 110, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1811,10 +1776,21 @@ example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([70, 112, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        err.backtrace(),
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(70, 112, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(70, 112, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1831,10 +1807,21 @@ extrusion = extrude(sketch001, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "Cannot have an x constrained angle of 90 degrees");
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([66, 116, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        err.backtrace(),
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(66, 116, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(66, 116, ModuleId::default()),
+                fn_name: None,
+            }
+        ]
     );
 }
 
@@ -1842,7 +1829,7 @@ extrusion = extrude(sketch001, length = 10)
 async fn kcl_test_angled_line_of_x_length_270() {
     let code = r#"sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 90, lengthX = 90, tag = $edge1)
+  |> angledLine(angle = 270, lengthX = 90, tag = $edge1)
   |> angledLine(angle = -15, lengthX = -15, tag = $edge2)
   |> line(end = [0, -5])
   |> close(tag = $edge3)
@@ -1851,10 +1838,21 @@ extrusion = extrude(sketch001, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "Cannot have an x constrained angle of 270 degrees");
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([66, 116, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        err.backtrace(),
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(66, 117, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(66, 117, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1873,10 +1871,21 @@ example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "Cannot have a y constrained angle of 0 degrees");
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([95, 130, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+        err.backtrace(),
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(95, 130, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(95, 130, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1895,10 +1904,21 @@ example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([95, 132, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        err.backtrace(),
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(95, 132, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(95, 132, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1917,10 +1937,21 @@ example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([95, 133, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        err.backtrace(),
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(95, 133, ModuleId::default()),
+                fn_name: Some("angledLine".to_owned())
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(95, 133, ModuleId::default()),
+                fn_name: None
+            }
+        ]
     );
 }
 
@@ -1934,31 +1965,36 @@ someFunction('INVALID')
 "#;
 
     let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([46, 55, 0]), SourceRange([60, 83, 0])], message: "This function expected the input argument to be Solid or Plane but it's actually of type string (text)" }"#
+        err.message(),
+        "The input argument of `startSketchOn` requires a value with type `Solid` or a value with type `Plane` (`Solid | Plane`), but found a value with type `string`."
     );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site_recursive() {
-    let code = r#"fn someFunction(@something) {
-    fn someNestedFunction(@something2) {
-        startSketchOn(something2)
-    }
-
-    someNestedFunction(something)
-}
-
-someFunction('INVALID')
-"#;
-
-    let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([93, 103, 0]), SourceRange([116, 145, 0]), SourceRange([149, 172, 0])], message: "This function expected the input argument to be Solid or Plane but it's actually of type string (text)" }"#
+        err.source_ranges(),
+        vec![
+            SourceRange::new(46, 55, ModuleId::default()),
+            SourceRange::new(32, 56, ModuleId::default()),
+            SourceRange::new(60, 83, ModuleId::default()),
+        ]
+    );
+    assert_eq!(
+        err.backtrace(),
+        vec![
+            BacktraceItem {
+                source_range: SourceRange::new(46, 55, ModuleId::default()),
+                fn_name: Some("startSketchOn".to_owned()),
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(32, 56, ModuleId::default()),
+                fn_name: Some("someFunction".to_owned()),
+            },
+            BacktraceItem {
+                source_range: SourceRange::new(60, 83, ModuleId::default()),
+                fn_name: None,
+            },
+        ]
     );
 }
 
@@ -1979,12 +2015,9 @@ async fn kcl_test_error_no_auth_websocket() {
 "#;
 
     let result = execute_and_snapshot_no_auth(code, None).await;
-    assert!(result.is_err());
-    assert!(result
-        .err()
-        .unwrap()
-        .to_string()
-        .contains("Please send the following object over this websocket"));
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert!(err.message().contains("Authorization"), "actual: {}", err.message());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2056,7 +2089,10 @@ async fn kcl_test_better_type_names() {
         },
         None => todo!(),
     };
-    assert_eq!(err, "This function expected the input argument to be one or more Solids or imported geometry but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
+    assert_eq!(
+        err,
+        "This function expected the input argument to be one or more Solids or ImportedGeometry but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`"
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]

@@ -88,6 +88,8 @@ test.describe('Prompt-to-edit tests', () => {
 
         await test.step('fire off edit prompt', async () => {
           await cmdBar.openCmdBar('promptToEdit')
+          await page.waitForTimeout(100)
+          await cmdBar.progressCmdBar()
           // being specific about the color with a hex means asserting pixel color is more stable
           await page
             .getByTestId('cmd-bar-arg-value')
@@ -165,6 +167,8 @@ test.describe('Prompt-to-edit tests', () => {
 
     await test.step('fire of bad prompt', async () => {
       await cmdBar.openCmdBar('promptToEdit')
+      await page.waitForTimeout(100)
+      await cmdBar.progressCmdBar()
       await page
         .getByTestId('cmd-bar-arg-value')
         .fill('ansheusha asnthuatshoeuhtaoetuhthaeu laughs in dvorak')

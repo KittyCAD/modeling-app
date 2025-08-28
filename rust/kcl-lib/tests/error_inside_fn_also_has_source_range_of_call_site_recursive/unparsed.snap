@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing error_inside_fn_also_has_source_range_of_call_site_recursive.kcl
+---
+fn someFunction(@something) {
+  fn someNestedFunction(@something2) {
+    startSketchOn(something2)
+  }
+
+  someNestedFunction(something)
+}
+
+someFunction('INVALID')

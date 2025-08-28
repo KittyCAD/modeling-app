@@ -1,56 +1,68 @@
 ```mermaid
 flowchart LR
-  subgraph path3 [Path]
-    3["Path<br>[259, 317, 0]"]
-    5["Segment<br>[259, 317, 0]"]
-    8[Solid2d]
+  subgraph path2 [Path]
+    2["Path<br>[259, 314, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    3["Segment<br>[259, 314, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    4[Solid2d]
   end
-  subgraph path4 [Path]
-    4["Path<br>[453, 508, 0]"]
-    6["Segment<br>[453, 508, 0]"]
-    7[Solid2d]
+  subgraph path11 [Path]
+    11["Path<br>[447, 502, 0]"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    12["Segment<br>[447, 502, 0]"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    13[Solid2d]
   end
   1["Plane<br>[236, 253, 0]"]
-  2["StartSketchOnFace<br>[412, 447, 0]"]
-  9["Sweep Extrusion<br>[323, 354, 0]"]
-  10["Sweep Extrusion<br>[514, 546, 0]"]
-  11[Wall]
-  12[Wall]
-  13["Cap Start"]
-  14["Cap End"]
-  15["SweepEdge Opposite"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  5["Sweep Extrusion<br>[320, 348, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+  6[Wall]
+    %% face_code_ref=Missing NodePath
+  7["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  8["Cap End"]
+    %% face_code_ref=[ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  9["SweepEdge Opposite"]
+  10["SweepEdge Adjacent"]
+  14["Sweep Extrusion<br>[508, 537, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+  15[Wall]
+    %% face_code_ref=Missing NodePath
   16["SweepEdge Opposite"]
   17["SweepEdge Adjacent"]
-  18["SweepEdge Adjacent"]
-  1 --- 3
-  14 x--> 2
-  3 --- 5
-  3 --- 8
-  3 ---- 9
-  4 --- 6
-  4 --- 7
-  4 ---- 10
-  14 --- 4
-  5 --- 11
-  5 x--> 13
-  5 --- 15
-  5 --- 17
-  6 --- 12
-  6 x--> 14
-  6 --- 16
-  6 --- 18
-  9 --- 11
-  9 --- 13
-  9 --- 14
-  9 --- 15
-  9 --- 17
-  10 --- 12
-  10 --- 16
-  10 --- 18
-  15 <--x 11
-  17 <--x 11
-  16 <--x 12
-  18 <--x 12
-  16 <--x 13
-  15 <--x 14
+  18["StartSketchOnFace<br>[406, 441, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  1 --- 2
+  2 --- 3
+  2 --- 4
+  2 ---- 5
+  3 --- 6
+  3 x--> 7
+  3 --- 9
+  3 --- 10
+  5 --- 6
+  5 --- 7
+  5 --- 8
+  5 --- 9
+  5 --- 10
+  6 --- 9
+  6 --- 10
+  16 <--x 7
+  9 <--x 8
+  8 --- 11
+  12 <--x 8
+  8 <--x 18
+  11 --- 12
+  11 --- 13
+  11 ---- 14
+  12 --- 15
+  12 --- 16
+  12 --- 17
+  14 --- 15
+  14 --- 16
+  14 --- 17
+  15 --- 16
+  15 --- 17
 ```

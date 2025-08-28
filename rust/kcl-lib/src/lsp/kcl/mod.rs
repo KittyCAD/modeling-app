@@ -15,6 +15,7 @@ use dashmap::DashMap;
 use sha2::Digest;
 use tokio::sync::RwLock;
 use tower_lsp::{
+    Client, LanguageServer,
     jsonrpc::Result as RpcResult,
     lsp_types::{
         CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams,
@@ -37,10 +38,10 @@ use tower_lsp::{
         TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions,
         WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
-    Client, LanguageServer,
 };
 
 use crate::{
+    ModuleId, Program, SourceRange,
     docs::kcl_doc::ModData,
     errors::LspSuggestion,
     exec::KclValue,
@@ -51,11 +52,10 @@ use crate::{
         util::IntoDiagnostic,
     },
     parsing::{
+        PIPE_OPERATOR,
         ast::types::{Expr, VariableKind},
         token::TokenStream,
-        PIPE_OPERATOR,
     },
-    ModuleId, Program, SourceRange,
 };
 
 pub mod custom_notifications;
@@ -175,11 +175,10 @@ impl Backend {
         zoo_client: kittycad::Client,
         can_send_telemetry: bool,
     ) -> Result<Self, String> {
-        let stdlib = crate::std::StdLib::new();
         let kcl_std = crate::docs::kcl_doc::walk_prelude();
-        let stdlib_completions = get_completions_from_stdlib(&stdlib, &kcl_std).map_err(|e| e.to_string())?;
-        let stdlib_signatures = get_signatures_from_stdlib(&stdlib, &kcl_std);
-        let stdlib_args = get_arg_maps_from_stdlib(&stdlib, &kcl_std);
+        let stdlib_completions = get_completions_from_stdlib(&kcl_std).map_err(|e| e.to_string())?;
+        let stdlib_signatures = get_signatures_from_stdlib(&kcl_std);
+        let stdlib_args = get_arg_maps_from_stdlib(&kcl_std);
 
         Ok(Self {
             client,
@@ -291,10 +290,9 @@ impl crate::lsp::backend::Backend for Backend {
         };
 
         // Get the previous tokens.
-        let tokens_changed = if let Some(previous_tokens) = self.token_map.get(&filename) {
-            *previous_tokens != tokens
-        } else {
-            true
+        let tokens_changed = match self.token_map.get(&filename) {
+            Some(previous_tokens) => *previous_tokens != tokens,
+            _ => true,
         };
 
         let had_diagnostics = self.has_diagnostics(params.uri.as_ref()).await;
@@ -425,7 +423,7 @@ impl Backend {
                     self.client
                         .log_message(
                             MessageType::ERROR,
-                            format!("token type `{:?}` not accounted for", token_type),
+                            format!("token type `{token_type:?}` not accounted for"),
                         )
                         .await;
                     continue;
@@ -437,141 +435,143 @@ impl Backend {
 
             // Calculate the token modifiers.
             // Get the value at the current position.
-            let token_modifiers_bitset = if let Some(ast) = self.ast_map.get(params.uri.as_str()) {
-                let token_index = Arc::new(Mutex::new(token_type_index));
-                let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
-                crate::walk::walk(&ast.ast, |node: crate::walk::Node| {
-                    let Ok(node_range): Result<SourceRange, _> = (&node).try_into() else {
-                        return Ok(true);
-                    };
-
-                    if !node_range.contains(source_range.start()) {
-                        return Ok(true);
-                    }
-
-                    let get_modifier = |modifier: Vec<SemanticTokenModifier>| -> Result<bool> {
-                        let mut mods = modifier_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                        let Some(token_modifier_index) = self.get_semantic_token_modifier_index(modifier) else {
+            let token_modifiers_bitset = match self.ast_map.get(params.uri.as_str()) {
+                Some(ast) => {
+                    let token_index = Arc::new(Mutex::new(token_type_index));
+                    let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
+                    crate::walk::walk(&ast.ast, |node: crate::walk::Node| {
+                        let Ok(node_range): Result<SourceRange, _> = (&node).try_into() else {
                             return Ok(true);
                         };
-                        if *mods == 0 {
-                            *mods = token_modifier_index;
-                        } else {
-                            *mods |= token_modifier_index;
-                        }
-                        Ok(false)
-                    };
 
-                    match node {
-                        crate::walk::Node::TagDeclarator(_) => {
-                            return get_modifier(vec![
-                                SemanticTokenModifier::DEFINITION,
-                                SemanticTokenModifier::STATIC,
-                            ]);
+                        if !node_range.contains(source_range.start()) {
+                            return Ok(true);
                         }
-                        crate::walk::Node::VariableDeclarator(variable) => {
-                            let sr: SourceRange = (&variable.id).into();
-                            if sr.contains(source_range.start()) {
-                                if let Expr::FunctionExpression(_) = &variable.init {
+
+                        let get_modifier = |modifier: Vec<SemanticTokenModifier>| -> Result<bool> {
+                            let mut mods = modifier_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                            let Some(token_modifier_index) = self.get_semantic_token_modifier_index(modifier) else {
+                                return Ok(true);
+                            };
+                            if *mods == 0 {
+                                *mods = token_modifier_index;
+                            } else {
+                                *mods |= token_modifier_index;
+                            }
+                            Ok(false)
+                        };
+
+                        match node {
+                            crate::walk::Node::TagDeclarator(_) => {
+                                return get_modifier(vec![
+                                    SemanticTokenModifier::DEFINITION,
+                                    SemanticTokenModifier::STATIC,
+                                ]);
+                            }
+                            crate::walk::Node::VariableDeclarator(variable) => {
+                                let sr: SourceRange = (&variable.id).into();
+                                if sr.contains(source_range.start()) {
+                                    if let Expr::FunctionExpression(_) = &variable.init {
+                                        let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                        *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
+                                            Some(index) => index,
+                                            None => token_type_index,
+                                        };
+                                    }
+
+                                    return get_modifier(vec![
+                                        SemanticTokenModifier::DECLARATION,
+                                        SemanticTokenModifier::READONLY,
+                                    ]);
+                                }
+                            }
+                            crate::walk::Node::Parameter(_) => {
+                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PARAMETER) {
+                                    Some(index) => index,
+                                    None => token_type_index,
+                                };
+                                return Ok(false);
+                            }
+                            crate::walk::Node::MemberExpression(member_expression) => {
+                                let sr: SourceRange = (&member_expression.property).into();
+                                if sr.contains(source_range.start()) {
+                                    let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                    *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PROPERTY) {
+                                        Some(index) => index,
+                                        None => token_type_index,
+                                    };
+                                    return Ok(false);
+                                }
+                            }
+                            crate::walk::Node::ObjectProperty(object_property) => {
+                                let sr: SourceRange = (&object_property.key).into();
+                                if sr.contains(source_range.start()) {
+                                    let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                    *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PROPERTY) {
+                                        Some(index) => index,
+                                        None => token_type_index,
+                                    };
+                                }
+                                return get_modifier(vec![SemanticTokenModifier::DECLARATION]);
+                            }
+                            crate::walk::Node::CallExpressionKw(call_expr) => {
+                                let sr: SourceRange = (&call_expr.callee).into();
+                                if sr.contains(source_range.start()) {
                                     let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
                                     *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
                                         Some(index) => index,
                                         None => token_type_index,
                                     };
+
+                                    if self.stdlib_completions.contains_key(&call_expr.callee.name.name) {
+                                        // This is a stdlib function.
+                                        return get_modifier(vec![SemanticTokenModifier::DEFAULT_LIBRARY]);
+                                    }
+
+                                    return Ok(false);
                                 }
+                            }
+                            _ => {}
+                        }
+                        Ok(true)
+                    })
+                    .unwrap_or_default();
 
-                                return get_modifier(vec![
-                                    SemanticTokenModifier::DECLARATION,
-                                    SemanticTokenModifier::READONLY,
-                                ]);
-                            }
-                        }
-                        crate::walk::Node::Parameter(_) => {
-                            let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                            *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PARAMETER) {
-                                Some(index) => index,
-                                None => token_type_index,
-                            };
-                            return Ok(false);
-                        }
-                        crate::walk::Node::MemberExpression(member_expression) => {
-                            let sr: SourceRange = (&member_expression.property).into();
-                            if sr.contains(source_range.start()) {
-                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PROPERTY) {
-                                    Some(index) => index,
-                                    None => token_type_index,
-                                };
-                                return Ok(false);
-                            }
-                        }
-                        crate::walk::Node::ObjectProperty(object_property) => {
-                            let sr: SourceRange = (&object_property.key).into();
-                            if sr.contains(source_range.start()) {
-                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PROPERTY) {
-                                    Some(index) => index,
-                                    None => token_type_index,
-                                };
-                            }
-                            return get_modifier(vec![SemanticTokenModifier::DECLARATION]);
-                        }
-                        crate::walk::Node::CallExpressionKw(call_expr) => {
-                            let sr: SourceRange = (&call_expr.callee).into();
-                            if sr.contains(source_range.start()) {
-                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
-                                    Some(index) => index,
-                                    None => token_type_index,
-                                };
+                    let t = match token_index.lock() {
+                        Ok(guard) => *guard,
+                        _ => 0,
+                    };
+                    token_type_index = t;
 
-                                if self.stdlib_completions.contains_key(&call_expr.callee.name.name) {
-                                    // This is a stdlib function.
-                                    return get_modifier(vec![SemanticTokenModifier::DEFAULT_LIBRARY]);
-                                }
-
-                                return Ok(false);
-                            }
-                        }
-                        _ => {}
+                    match modifier_index.lock() {
+                        Ok(guard) => *guard,
+                        _ => 0,
                     }
-                    Ok(true)
-                })
-                .unwrap_or_default();
-
-                let t = if let Ok(guard) = token_index.lock() { *guard } else { 0 };
-                token_type_index = t;
-
-                let m = if let Ok(guard) = modifier_index.lock() {
-                    *guard
-                } else {
-                    0
-                };
-                m
-            } else {
-                0
+                }
+                _ => 0,
             };
 
             // We need to check if we are on the last token of the line.
             // If we are starting from the end of the last line just add 1 to the line.
             // Check if we are on the last token of the line.
-            if let Some(line) = params.text.lines().nth(position.line as usize) {
-                if line.len() == position.character as usize {
-                    // We are on the last token of the line.
-                    // We need to add a new line.
-                    let semantic_token = SemanticToken {
-                        delta_line: position.line - last_position.line + 1,
-                        delta_start: 0,
-                        length: (token.end - token.start) as u32,
-                        token_type: token_type_index,
-                        token_modifiers_bitset,
-                    };
+            if let Some(line) = params.text.lines().nth(position.line as usize)
+                && line.len() == position.character as usize
+            {
+                // We are on the last token of the line.
+                // We need to add a new line.
+                let semantic_token = SemanticToken {
+                    delta_line: position.line - last_position.line + 1,
+                    delta_start: 0,
+                    length: (token.end - token.start) as u32,
+                    token_type: token_type_index,
+                    token_modifiers_bitset,
+                };
 
-                    semantic_tokens.push(semantic_token);
+                semantic_tokens.push(semantic_token);
 
-                    last_position = Position::new(position.line + 1, 0);
-                    continue;
-                }
+                last_position = Position::new(position.line + 1, 0);
+                continue;
             }
 
             let semantic_token = SemanticToken {
@@ -653,11 +653,14 @@ impl Backend {
                 .await;
         }
 
-        let mut items = if let Some(items) = self.diagnostics_map.get(params.uri.as_str()) {
-            // TODO: Would be awesome to fix the clone here.
-            items.clone()
-        } else {
-            vec![]
+        let mut items = match self.diagnostics_map.get(params.uri.as_str()) {
+            Some(items) => {
+                // TODO: Would be awesome to fix the clone here.
+                items.clone()
+            }
+            _ => {
+                vec![]
+            }
         };
 
         for diagnostic in diagnostics {
@@ -769,7 +772,7 @@ impl Backend {
         // Read hash digest and consume hasher
         let result = hasher.finalize();
         // Get the hash as a string.
-        let user_id_hash = format!("{:x}", result);
+        let user_id_hash = format!("{result:x}");
 
         // Get the workspace folders.
         // The key of the workspace folder is the project name.
@@ -857,7 +860,7 @@ impl Backend {
         // Now let's perform the rename on the ast.
         ast.rename_symbol(new_name, pos);
         // Now recast it.
-        let recast = ast.recast(&Default::default(), 0);
+        let recast = ast.recast_top(&Default::default(), 0);
 
         Ok(Some((current_code.to_string(), recast)))
     }
@@ -867,7 +870,7 @@ impl Backend {
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> RpcResult<InitializeResult> {
         self.client
-            .log_message(MessageType::INFO, format!("initialize: {:?}", params))
+            .log_message(MessageType::INFO, format!("initialize: {params:?}"))
             .await;
 
         Ok(InitializeResult {
@@ -1007,7 +1010,7 @@ impl LanguageServer for Backend {
         #[cfg(not(target_arch = "wasm32"))]
         if let Err(err) = self.send_telemetry().await {
             self.client
-                .log_message(MessageType::WARNING, format!("failed to send telemetry: {}", err))
+                .log_message(MessageType::WARNING, format!("failed to send telemetry: {err}"))
                 .await;
         }
     }
@@ -1091,7 +1094,7 @@ impl LanguageServer for Backend {
                 Ok(Some(LspHover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
-                        value: format!("```\n{}{}\n```\n\n{}", name, sig, docs),
+                        value: format!("```\n{name}{sig}\n```\n\n{docs}"),
                     }),
                     range: Some(range),
                 }))
@@ -1119,7 +1122,7 @@ impl LanguageServer for Backend {
                 Ok(Some(LspHover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
-                        value: format!("```\n{}\n```\n\n{}", name, docs),
+                        value: format!("```\n{name}\n```\n\n{docs}"),
                     }),
                     range: Some(range),
                 }))
@@ -1154,17 +1157,17 @@ impl LanguageServer for Backend {
             } => Ok(Some(LspHover {
                 contents: HoverContents::Markup(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: format!("```\n{}: {}\n```", name, ty),
+                    value: format!("```\n{name}: {ty}\n```"),
                 }),
                 range: Some(range),
             })),
             Hover::Variable { name, ty: None, range } => Ok(with_cached_var(&name, |value| {
-                let mut text: String = format!("```\n{}", name);
+                let mut text: String = format!("```\n{name}");
                 if let Some(ty) = value.principal_type() {
                     text.push_str(&format!(": {}", ty.human_friendly_type()));
                 }
                 if let Some(v) = value.value_str() {
-                    text.push_str(&format!(" = {}", v));
+                    text.push_str(&format!(" = {v}"));
                 }
                 text.push_str("\n```");
 
@@ -1372,15 +1375,15 @@ impl LanguageServer for Backend {
         }
 
         // Check if we have context.
-        if let Some(context) = params.context {
-            if let Some(character) = context.trigger_character {
-                for character in character.chars() {
-                    // Check if we are on a ( or a ,.
-                    if character == '(' || character == ',' {
-                        if let Some(signature) = check_char(character) {
-                            return Ok(Some(signature.clone()));
-                        }
-                    }
+        if let Some(context) = params.context
+            && let Some(character) = context.trigger_character
+        {
+            for character in character.chars() {
+                // Check if we are on a ( or a ,.
+                if (character == '(' || character == ',')
+                    && let Some(signature) = check_char(character)
+                {
+                    return Ok(Some(signature.clone()));
                 }
             }
         }
@@ -1477,7 +1480,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
         // Now recast it.
-        let recast = ast.recast(
+        let recast = ast.recast_top(
             &crate::parsing::ast::types::FormatOptions {
                 tab_size: params.options.tab_size as usize,
                 insert_final_newline: params.options.insert_final_newline.unwrap_or(false),
@@ -1634,16 +1637,8 @@ impl LanguageServer for Backend {
 }
 
 /// Get completions from our stdlib.
-pub fn get_completions_from_stdlib(
-    stdlib: &crate::std::StdLib,
-    kcl_std: &ModData,
-) -> Result<HashMap<String, CompletionItem>> {
+pub fn get_completions_from_stdlib(kcl_std: &ModData) -> Result<HashMap<String, CompletionItem>> {
     let mut completions = HashMap::new();
-    let combined = stdlib.combined();
-
-    for internal_fn in combined.values() {
-        completions.insert(internal_fn.name(), internal_fn.to_completion_item()?);
-    }
 
     for d in kcl_std.all_docs() {
         if let Some(ci) = d.to_completion_item() {
@@ -1660,13 +1655,8 @@ pub fn get_completions_from_stdlib(
 }
 
 /// Get signatures from our stdlib.
-pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &ModData) -> HashMap<String, SignatureHelp> {
+pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, SignatureHelp> {
     let mut signatures = HashMap::new();
-    let combined = stdlib.combined();
-
-    for internal_fn in combined.values() {
-        signatures.insert(internal_fn.name(), internal_fn.to_signature_help());
-    }
 
     for d in kcl_std.all_docs() {
         if let Some(sig) = d.to_signature_help() {
@@ -1678,44 +1668,30 @@ pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &ModData
 }
 
 /// Get signatures from our stdlib.
-pub fn get_arg_maps_from_stdlib(
-    stdlib: &crate::std::StdLib,
-    kcl_std: &ModData,
-) -> HashMap<String, HashMap<String, String>> {
+pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<String, String>> {
     let mut result = HashMap::new();
-    let combined = stdlib.combined();
 
-    for internal_fn in combined.values() {
-        if internal_fn.keyword_arguments() {
-            let arg_map: HashMap<String, String> = internal_fn
-                .args(false)
-                .into_iter()
-                .map(|data| {
-                    let mut tip = "```\n".to_owned();
-                    tip.push_str(&data.name.clone());
-                    if !data.required {
-                        tip.push('?');
-                    }
-                    if !data.type_.is_empty() {
-                        tip.push_str(": ");
-                        tip.push_str(&data.type_);
-                    }
-                    tip.push_str("\n```");
-                    if !data.description.is_empty() {
-                        tip.push_str("\n\n");
-                        tip.push_str(&data.description);
-                    }
-                    (data.name, tip)
-                })
-                .collect();
-            if !arg_map.is_empty() {
-                result.insert(internal_fn.name(), arg_map);
-            }
+    for d in kcl_std.all_docs() {
+        let crate::docs::kcl_doc::DocData::Fn(f) = d else {
+            continue;
+        };
+        let arg_map: HashMap<String, String> = f
+            .args
+            .iter()
+            .map(|data| {
+                let mut tip = "```\n".to_owned();
+                tip.push_str(&data.to_string());
+                tip.push_str("\n```");
+                if let Some(docs) = &data.docs {
+                    tip.push_str("\n\n");
+                    tip.push_str(docs);
+                }
+                (data.name.clone(), tip)
+            })
+            .collect();
+        if !arg_map.is_empty() {
+            result.insert(f.name.clone(), arg_map);
         }
-    }
-
-    for _d in kcl_std.all_docs() {
-        // TODO add KCL std fns
     }
 
     result

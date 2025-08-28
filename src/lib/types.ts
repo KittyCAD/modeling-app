@@ -151,3 +151,11 @@ export type FileMeta =
       relPath: string
       data: Blob
     }
+
+/** A union type for form submissions that fire on submit or blur */
+export type MaybePressOrBlur =
+  | React.FocusEvent<HTMLElement>
+  | React.KeyboardEvent<HTMLElement>
+  | null
+/** A form submission handler function that is triggered by submission or blurring focus */
+export type SubmitByPressOrBlur = (e: MaybePressOrBlur) => void

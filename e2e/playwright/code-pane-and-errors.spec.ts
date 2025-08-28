@@ -12,6 +12,7 @@ test.describe('Code pane and errors', () => {
     homePage,
     scene,
     cmdBar,
+    editor,
   }) => {
     const u = await getUtils(page)
 
@@ -41,7 +42,7 @@ extrude001 = extrude(sketch001, length = 5)`
 
     // Delete a character to break the KCL
     await u.openKclCodePanel()
-    await page.getByText('extrude(').click()
+    await editor.codeContent.getByText('sketch001').last().click()
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
@@ -78,11 +79,10 @@ extrude001 = extrude(sketch001, length = 5)`
 
     // Delete a character to break the KCL
     await editor.openPane()
-    await editor.scrollToText('bracketLeg1Sketch, length = thickness)')
-    await page
-      .getByText('extrude(bracketLeg1Sketch, length = thickness)')
-      .click()
-    await page.keyboard.press('Backspace')
+    await editor.scrollToText('extrude(%, length = width)')
+    await page.getByText('extrude(%, length = width)').click()
+
+    await page.keyboard.press(')')
 
     // Ensure that a badge appears on the button
     await expect(codePaneButtonHolder).toContainText('notification')
@@ -99,16 +99,11 @@ extrude001 = extrude(sketch001, length = 5)`
 
     await page.waitForTimeout(500)
 
-    // Ensure that a badge appears on the button
-    await expect(codePaneButtonHolder).toContainText('notification')
-    // Ensure we have no errors in the gutter.
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
     // Open the code pane
     await editor.openPane()
 
-    // Go to our problematic code again (missing closing paren!)
-    await editor.scrollToText('extrude(bracketLeg1Sketch, length = thickness')
+    // Go to our problematic code again
+    await editor.scrollToText('extrude(%, length = w')
 
     // Ensure that a badge appears on the button
     await expect(codePaneButtonHolder).toContainText('notification')
@@ -134,8 +129,6 @@ extrude001 = extrude(sketch001, length = 5)`
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
-    await page.waitForTimeout(1000)
-
     // Ensure badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
     await expect(codePaneButtonHolder).toContainText('notification', {
@@ -158,10 +151,14 @@ extrude001 = extrude(sketch001, length = 5)`
     await expect(
       page
         .getByText(
-          'Modeling command failed: [ApiError { error_code: InternalEngine, message: "Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis" }]'
+          'Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis'
         )
         .first()
     ).toBeVisible()
+
+    // Make sure ApiError is not on the page.
+    // This ensures we didn't nest the json
+    await expect(page.getByText('ApiError')).not.toBeVisible()
   })
 
   test('When error is not in view WITH LINTS you can click the badge to scroll to it', async ({
@@ -179,7 +176,7 @@ extrude001 = extrude(sketch001, length = 5)`
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
-    await scene.settled(cmdBar)
+    // await scene.settled(cmdBar)
 
     // Ensure badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
@@ -233,11 +230,56 @@ extrude001 = extrude(sketch001, length = 5)`
         .first()
     ).toBeVisible()
   })
+
+  test('KCL errors with functions show hints for the entire backtrace', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    const code = `fn check(@x) {
+  return assert(x, isGreaterThan = 0)
+}
+
+fn middle(@x) {
+  return check(x)
+}
+
+middle(1)
+middle(0)
+`
+    await test.step('Set the code with a KCL error', async () => {
+      await toolbar.openPane('code')
+      await editor.replaceCode('', code)
+    })
+    // This shows all the diagnostics in a way that doesn't require the mouse
+    // pointer hovering over a coordinate, which would be brittle.
+    await test.step('Open CodeMirror diagnostics list', async () => {
+      // Ensure keyboard focus is in the editor.
+      await page.getByText('fn check(').click()
+      await page.keyboard.press('ControlOrMeta+Shift+M')
+    })
+    await expect(
+      page.getByText(`assert failed: Expected 0 to be greater than 0 but it wasn't
+
+Backtrace:
+assert()
+check()
+middle()`)
+    ).toBeVisible()
+    // There should be one hint inside middle() and one at the top level.
+    await expect(page.getByText('Part of the error backtrace')).toHaveCount(2)
+  })
 })
 
 test(
   'Opening multiple panes persists when switching projects',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     // Setup multiple projects.
     await context.folderSetupFn(async (dir) => {
@@ -308,7 +350,7 @@ test(
 
 test(
   'external change of file contents are reflected in editor',
-  { tag: '@electron' },
+  { tag: '@desktop' },
   async ({ context, page }, testInfo) => {
     const PROJECT_DIR_NAME = 'lee-was-here'
     const { dir: projectsDir } = await context.folderSetupFn(async (dir) => {

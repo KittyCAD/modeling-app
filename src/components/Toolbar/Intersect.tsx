@@ -1,5 +1,4 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-
 import { removeDoubleNegatives } from '@src/components/AvailableVarsHelpers'
 import {
   GetInfoModal,
@@ -167,11 +166,12 @@ export async function applyConstraintIntersect({
     isSegNameEditable: !tagInfo?.isTagExisting,
     value: valueUsedInTransform,
     initialVariableName: 'offset',
+    selectionRanges,
   })
   if (
     !variableName &&
     segName === tagInfo?.tag &&
-    Number(value) === valueUsedInTransform
+    value === valueUsedInTransform
   ) {
     return {
       modifiedAst,

@@ -30,6 +30,7 @@ description: Variables in memory after executing bracket.kcl
           "tag": {
             "commentStart": 2165,
             "end": 2171,
+            "moduleId": 0,
             "start": 2165,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -43,6 +44,7 @@ description: Variables in memory after executing bracket.kcl
           "tag": {
             "commentStart": 2210,
             "end": 2216,
+            "moduleId": 0,
             "start": 2210,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -56,6 +58,7 @@ description: Variables in memory after executing bracket.kcl
           "tag": {
             "commentStart": 2263,
             "end": 2269,
+            "moduleId": 0,
             "start": 2263,
             "type": "TagDeclarator",
             "value": "seg03"
@@ -69,6 +72,7 @@ description: Variables in memory after executing bracket.kcl
           "tag": {
             "commentStart": 2315,
             "end": 2321,
+            "moduleId": 0,
             "start": 2315,
             "type": "TagDeclarator",
             "value": "seg04"
@@ -82,6 +86,7 @@ description: Variables in memory after executing bracket.kcl
           "tag": {
             "commentStart": 2360,
             "end": 2366,
+            "moduleId": 0,
             "start": 2360,
             "type": "TagDeclarator",
             "value": "seg05"
@@ -95,6 +100,7 @@ description: Variables in memory after executing bracket.kcl
           "tag": {
             "commentStart": 2436,
             "end": 2442,
+            "moduleId": 0,
             "start": 2436,
             "type": "TagDeclarator",
             "value": "seg06"
@@ -118,12 +124,13 @@ description: Variables in memory after executing bracket.kcl
             "tag": {
               "commentStart": 2165,
               "end": 2171,
+              "moduleId": 0,
               "start": 2165,
               "type": "TagDeclarator",
               "value": "seg01"
             },
             "to": [
-              4.6151,
+              4.615143811646109,
               0.0
             ],
             "type": "ToPoint",
@@ -137,19 +144,20 @@ description: Variables in memory after executing bracket.kcl
               "sourceRange": []
             },
             "from": [
-              4.6151,
+              4.615143811646109,
               0.0
             ],
             "tag": {
               "commentStart": 2210,
               "end": 2216,
+              "moduleId": 0,
               "start": 2210,
               "type": "TagDeclarator",
               "value": "seg02"
             },
             "to": [
-              4.6151,
-              0.3849
+              4.615143811646109,
+              0.3848561883538911
             ],
             "type": "ToPoint",
             "units": {
@@ -162,19 +170,20 @@ description: Variables in memory after executing bracket.kcl
               "sourceRange": []
             },
             "from": [
-              4.6151,
-              0.3849
+              4.615143811646109,
+              0.3848561883538911
             ],
             "tag": {
               "commentStart": 2263,
               "end": 2269,
+              "moduleId": 0,
               "start": 2263,
               "type": "TagDeclarator",
               "value": "seg03"
             },
             "to": [
-              -0.3849,
-              0.3849
+              -0.3848561883538908,
+              0.3848561883538911
             ],
             "type": "ToPoint",
             "units": {
@@ -187,19 +196,20 @@ description: Variables in memory after executing bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -0.3849,
-              0.3849
+              -0.3848561883538908,
+              0.3848561883538911
             ],
             "tag": {
               "commentStart": 2315,
               "end": 2321,
+              "moduleId": 0,
               "start": 2315,
               "type": "TagDeclarator",
               "value": "seg04"
             },
             "to": [
-              -0.3849,
-              -1.8651
+              -0.3848561883538908,
+              -1.8651438116461088
             ],
             "type": "ToPoint",
             "units": {
@@ -212,19 +222,20 @@ description: Variables in memory after executing bracket.kcl
               "sourceRange": []
             },
             "from": [
-              -0.3849,
-              -1.8651
+              -0.3848561883538908,
+              -1.8651438116461088
             ],
             "tag": {
               "commentStart": 2360,
               "end": 2366,
+              "moduleId": 0,
               "start": 2360,
               "type": "TagDeclarator",
               "value": "seg05"
             },
             "to": [
-              0.0,
-              -1.8651
+              0.00000000000000033306690738754696,
+              -1.8651438116461088
             ],
             "type": "ToPoint",
             "units": {
@@ -237,12 +248,13 @@ description: Variables in memory after executing bracket.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
-              -1.8651
+              0.00000000000000033306690738754696,
+              -1.8651438116461088
             ],
             "tag": {
               "commentStart": 2436,
               "end": 2442,
+              "moduleId": 0,
               "start": 2436,
               "type": "TagDeclarator",
               "value": "seg06"
@@ -301,6 +313,14 @@ description: Variables in memory after executing bracket.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -367,7 +387,7 @@ description: Variables in memory after executing bracket.kcl
   },
   "extBendRadius": {
     "type": "Number",
-    "value": 0.6349,
+    "value": 0.6348561883538911,
     "ty": {
       "type": "Default",
       "len": {
@@ -593,6 +613,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2165,
                       "end": 2171,
+                      "moduleId": 0,
                       "start": 2165,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -606,6 +627,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2210,
                       "end": 2216,
+                      "moduleId": 0,
                       "start": 2210,
                       "type": "TagDeclarator",
                       "value": "seg02"
@@ -619,6 +641,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2263,
                       "end": 2269,
+                      "moduleId": 0,
                       "start": 2263,
                       "type": "TagDeclarator",
                       "value": "seg03"
@@ -632,6 +655,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2315,
                       "end": 2321,
+                      "moduleId": 0,
                       "start": 2315,
                       "type": "TagDeclarator",
                       "value": "seg04"
@@ -645,6 +669,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2360,
                       "end": 2366,
+                      "moduleId": 0,
                       "start": 2360,
                       "type": "TagDeclarator",
                       "value": "seg05"
@@ -658,6 +683,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2436,
                       "end": 2442,
+                      "moduleId": 0,
                       "start": 2436,
                       "type": "TagDeclarator",
                       "value": "seg06"
@@ -681,12 +707,13 @@ description: Variables in memory after executing bracket.kcl
                       "tag": {
                         "commentStart": 2165,
                         "end": 2171,
+                        "moduleId": 0,
                         "start": 2165,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
                       "to": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "type": "ToPoint",
@@ -700,19 +727,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "tag": {
                         "commentStart": 2210,
                         "end": 2216,
+                        "moduleId": 0,
                         "start": 2210,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
                       "to": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -725,19 +753,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2263,
                         "end": 2269,
+                        "moduleId": 0,
                         "start": 2263,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
                       "to": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -750,19 +779,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2315,
                         "end": 2321,
+                        "moduleId": 0,
                         "start": 2315,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
                       "to": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -775,19 +805,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2360,
                         "end": 2366,
+                        "moduleId": 0,
                         "start": 2360,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
                       "to": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -800,12 +831,13 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2436,
                         "end": 2442,
+                        "moduleId": 0,
                         "start": 2436,
                         "type": "TagDeclarator",
                         "value": "seg06"
@@ -864,6 +896,14 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": -1.0,
+                      "z": 0.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -1042,6 +1082,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2165,
                       "end": 2171,
+                      "moduleId": 0,
                       "start": 2165,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -1055,6 +1096,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2210,
                       "end": 2216,
+                      "moduleId": 0,
                       "start": 2210,
                       "type": "TagDeclarator",
                       "value": "seg02"
@@ -1068,6 +1110,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2263,
                       "end": 2269,
+                      "moduleId": 0,
                       "start": 2263,
                       "type": "TagDeclarator",
                       "value": "seg03"
@@ -1081,6 +1124,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2315,
                       "end": 2321,
+                      "moduleId": 0,
                       "start": 2315,
                       "type": "TagDeclarator",
                       "value": "seg04"
@@ -1094,6 +1138,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2360,
                       "end": 2366,
+                      "moduleId": 0,
                       "start": 2360,
                       "type": "TagDeclarator",
                       "value": "seg05"
@@ -1107,6 +1152,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2436,
                       "end": 2442,
+                      "moduleId": 0,
                       "start": 2436,
                       "type": "TagDeclarator",
                       "value": "seg06"
@@ -1130,12 +1176,13 @@ description: Variables in memory after executing bracket.kcl
                       "tag": {
                         "commentStart": 2165,
                         "end": 2171,
+                        "moduleId": 0,
                         "start": 2165,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
                       "to": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "type": "ToPoint",
@@ -1149,19 +1196,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "tag": {
                         "commentStart": 2210,
                         "end": 2216,
+                        "moduleId": 0,
                         "start": 2210,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
                       "to": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1174,19 +1222,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2263,
                         "end": 2269,
+                        "moduleId": 0,
                         "start": 2263,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
                       "to": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1199,19 +1248,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2315,
                         "end": 2321,
+                        "moduleId": 0,
                         "start": 2315,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
                       "to": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1224,19 +1274,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2360,
                         "end": 2366,
+                        "moduleId": 0,
                         "start": 2360,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
                       "to": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1249,12 +1300,13 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2436,
                         "end": 2442,
+                        "moduleId": 0,
                         "start": 2436,
                         "type": "TagDeclarator",
                         "value": "seg06"
@@ -1313,6 +1365,14 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": -1.0,
+                      "z": 0.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -1491,6 +1551,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2165,
                       "end": 2171,
+                      "moduleId": 0,
                       "start": 2165,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -1504,6 +1565,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2210,
                       "end": 2216,
+                      "moduleId": 0,
                       "start": 2210,
                       "type": "TagDeclarator",
                       "value": "seg02"
@@ -1517,6 +1579,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2263,
                       "end": 2269,
+                      "moduleId": 0,
                       "start": 2263,
                       "type": "TagDeclarator",
                       "value": "seg03"
@@ -1530,6 +1593,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2315,
                       "end": 2321,
+                      "moduleId": 0,
                       "start": 2315,
                       "type": "TagDeclarator",
                       "value": "seg04"
@@ -1543,6 +1607,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2360,
                       "end": 2366,
+                      "moduleId": 0,
                       "start": 2360,
                       "type": "TagDeclarator",
                       "value": "seg05"
@@ -1556,6 +1621,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2436,
                       "end": 2442,
+                      "moduleId": 0,
                       "start": 2436,
                       "type": "TagDeclarator",
                       "value": "seg06"
@@ -1579,12 +1645,13 @@ description: Variables in memory after executing bracket.kcl
                       "tag": {
                         "commentStart": 2165,
                         "end": 2171,
+                        "moduleId": 0,
                         "start": 2165,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
                       "to": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "type": "ToPoint",
@@ -1598,19 +1665,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "tag": {
                         "commentStart": 2210,
                         "end": 2216,
+                        "moduleId": 0,
                         "start": 2210,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
                       "to": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1623,19 +1691,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2263,
                         "end": 2269,
+                        "moduleId": 0,
                         "start": 2263,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
                       "to": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1648,19 +1717,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2315,
                         "end": 2321,
+                        "moduleId": 0,
                         "start": 2315,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
                       "to": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1673,19 +1743,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2360,
                         "end": 2366,
+                        "moduleId": 0,
                         "start": 2360,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
                       "to": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1698,12 +1769,13 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2436,
                         "end": 2442,
+                        "moduleId": 0,
                         "start": 2436,
                         "type": "TagDeclarator",
                         "value": "seg06"
@@ -1762,6 +1834,14 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": -1.0,
+                      "z": 0.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -1940,6 +2020,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2165,
                       "end": 2171,
+                      "moduleId": 0,
                       "start": 2165,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -1953,6 +2034,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2210,
                       "end": 2216,
+                      "moduleId": 0,
                       "start": 2210,
                       "type": "TagDeclarator",
                       "value": "seg02"
@@ -1966,6 +2048,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2263,
                       "end": 2269,
+                      "moduleId": 0,
                       "start": 2263,
                       "type": "TagDeclarator",
                       "value": "seg03"
@@ -1979,6 +2062,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2315,
                       "end": 2321,
+                      "moduleId": 0,
                       "start": 2315,
                       "type": "TagDeclarator",
                       "value": "seg04"
@@ -1992,6 +2076,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2360,
                       "end": 2366,
+                      "moduleId": 0,
                       "start": 2360,
                       "type": "TagDeclarator",
                       "value": "seg05"
@@ -2005,6 +2090,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2436,
                       "end": 2442,
+                      "moduleId": 0,
                       "start": 2436,
                       "type": "TagDeclarator",
                       "value": "seg06"
@@ -2028,12 +2114,13 @@ description: Variables in memory after executing bracket.kcl
                       "tag": {
                         "commentStart": 2165,
                         "end": 2171,
+                        "moduleId": 0,
                         "start": 2165,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
                       "to": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "type": "ToPoint",
@@ -2047,19 +2134,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "tag": {
                         "commentStart": 2210,
                         "end": 2216,
+                        "moduleId": 0,
                         "start": 2210,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
                       "to": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2072,19 +2160,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2263,
                         "end": 2269,
+                        "moduleId": 0,
                         "start": 2263,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
                       "to": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2097,19 +2186,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2315,
                         "end": 2321,
+                        "moduleId": 0,
                         "start": 2315,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
                       "to": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2122,19 +2212,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2360,
                         "end": 2366,
+                        "moduleId": 0,
                         "start": 2360,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
                       "to": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2147,12 +2238,13 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2436,
                         "end": 2442,
+                        "moduleId": 0,
                         "start": 2436,
                         "type": "TagDeclarator",
                         "value": "seg06"
@@ -2211,6 +2303,14 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": -1.0,
+                      "z": 0.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -2328,7 +2428,7 @@ description: Variables in memory after executing bracket.kcl
   },
   "thickness": {
     "type": "Number",
-    "value": 0.3849,
+    "value": 0.3848561883538911,
     "ty": {
       "type": "Default",
       "len": {
@@ -2459,6 +2559,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2165,
                       "end": 2171,
+                      "moduleId": 0,
                       "start": 2165,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -2472,6 +2573,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2210,
                       "end": 2216,
+                      "moduleId": 0,
                       "start": 2210,
                       "type": "TagDeclarator",
                       "value": "seg02"
@@ -2485,6 +2587,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2263,
                       "end": 2269,
+                      "moduleId": 0,
                       "start": 2263,
                       "type": "TagDeclarator",
                       "value": "seg03"
@@ -2498,6 +2601,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2315,
                       "end": 2321,
+                      "moduleId": 0,
                       "start": 2315,
                       "type": "TagDeclarator",
                       "value": "seg04"
@@ -2511,6 +2615,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2360,
                       "end": 2366,
+                      "moduleId": 0,
                       "start": 2360,
                       "type": "TagDeclarator",
                       "value": "seg05"
@@ -2524,6 +2629,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2436,
                       "end": 2442,
+                      "moduleId": 0,
                       "start": 2436,
                       "type": "TagDeclarator",
                       "value": "seg06"
@@ -2547,12 +2653,13 @@ description: Variables in memory after executing bracket.kcl
                       "tag": {
                         "commentStart": 2165,
                         "end": 2171,
+                        "moduleId": 0,
                         "start": 2165,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
                       "to": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "type": "ToPoint",
@@ -2566,19 +2673,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "tag": {
                         "commentStart": 2210,
                         "end": 2216,
+                        "moduleId": 0,
                         "start": 2210,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
                       "to": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2591,19 +2699,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2263,
                         "end": 2269,
+                        "moduleId": 0,
                         "start": 2263,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
                       "to": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2616,19 +2725,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2315,
                         "end": 2321,
+                        "moduleId": 0,
                         "start": 2315,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
                       "to": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2641,19 +2751,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2360,
                         "end": 2366,
+                        "moduleId": 0,
                         "start": 2360,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
                       "to": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2666,12 +2777,13 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2436,
                         "end": 2442,
+                        "moduleId": 0,
                         "start": 2436,
                         "type": "TagDeclarator",
                         "value": "seg06"
@@ -2730,6 +2842,14 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": -1.0,
+                      "z": 0.0,
                       "units": {
                         "type": "Unknown"
                       }
@@ -2908,6 +3028,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2165,
                       "end": 2171,
+                      "moduleId": 0,
                       "start": 2165,
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -2921,6 +3042,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2210,
                       "end": 2216,
+                      "moduleId": 0,
                       "start": 2210,
                       "type": "TagDeclarator",
                       "value": "seg02"
@@ -2934,6 +3056,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2263,
                       "end": 2269,
+                      "moduleId": 0,
                       "start": 2263,
                       "type": "TagDeclarator",
                       "value": "seg03"
@@ -2947,6 +3070,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2315,
                       "end": 2321,
+                      "moduleId": 0,
                       "start": 2315,
                       "type": "TagDeclarator",
                       "value": "seg04"
@@ -2960,6 +3084,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2360,
                       "end": 2366,
+                      "moduleId": 0,
                       "start": 2360,
                       "type": "TagDeclarator",
                       "value": "seg05"
@@ -2973,6 +3098,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": {
                       "commentStart": 2436,
                       "end": 2442,
+                      "moduleId": 0,
                       "start": 2436,
                       "type": "TagDeclarator",
                       "value": "seg06"
@@ -2996,12 +3122,13 @@ description: Variables in memory after executing bracket.kcl
                       "tag": {
                         "commentStart": 2165,
                         "end": 2171,
+                        "moduleId": 0,
                         "start": 2165,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
                       "to": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "type": "ToPoint",
@@ -3015,19 +3142,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
+                        4.615143811646109,
                         0.0
                       ],
                       "tag": {
                         "commentStart": 2210,
                         "end": 2216,
+                        "moduleId": 0,
                         "start": 2210,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
                       "to": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3040,19 +3168,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        4.6151,
-                        0.3849
+                        4.615143811646109,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2263,
                         "end": 2269,
+                        "moduleId": 0,
                         "start": 2263,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
                       "to": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3065,19 +3194,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        0.3849
+                        -0.3848561883538908,
+                        0.3848561883538911
                       ],
                       "tag": {
                         "commentStart": 2315,
                         "end": 2321,
+                        "moduleId": 0,
                         "start": 2315,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
                       "to": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3090,19 +3220,20 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        -0.3849,
-                        -1.8651
+                        -0.3848561883538908,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2360,
                         "end": 2366,
+                        "moduleId": 0,
                         "start": 2360,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
                       "to": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3115,12 +3246,13 @@ description: Variables in memory after executing bracket.kcl
                         "sourceRange": []
                       },
                       "from": [
-                        0.0,
-                        -1.8651
+                        0.00000000000000033306690738754696,
+                        -1.8651438116461088
                       ],
                       "tag": {
                         "commentStart": 2436,
                         "end": 2442,
+                        "moduleId": 0,
                         "start": 2436,
                         "type": "TagDeclarator",
                         "value": "seg06"
@@ -3179,6 +3311,14 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
+                    },
+                    "zAxis": {
+                      "x": 0.0,
+                      "y": -1.0,
+                      "z": 0.0,
                       "units": {
                         "type": "Unknown"
                       }

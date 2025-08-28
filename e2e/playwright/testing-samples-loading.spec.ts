@@ -21,7 +21,7 @@ test.describe('Testing loading external models', () => {
   // We have no more web tests
   test.fail(
     'Web: should overwrite current code, cannot create new file',
-    async ({ editor, context, page, homePage }) => {
+    async ({ editor, context, page, homePage, cmdBar }) => {
       const u = await getUtils(page)
       await test.step(`Test setup`, async () => {
         await context.addInitScript((code) => {
@@ -33,8 +33,8 @@ test.describe('Testing loading external models', () => {
 
       // Locators and constants
       const newSample = {
-        file: 'parametric-bearing-pillow-block' + FILE_EXT,
-        title: 'Parametric Bearing Pillow Block',
+        file: 'pillow-block-bearing' + FILE_EXT,
+        title: 'Pillow Block Bearing',
       }
       const commandBarButton = page.getByRole('button', { name: 'Commands' })
       const samplesCommandOption = page.getByRole('option', {
@@ -52,9 +52,6 @@ test.describe('Testing loading external models', () => {
           name,
         })
       const warningText = page.getByText('Overwrite current file with sample?')
-      const confirmButton = page.getByRole('button', {
-        name: 'Submit command',
-      })
 
       await test.step(`Precondition: check the initial code`, async () => {
         await u.openKclCodePanel()
@@ -70,7 +67,7 @@ test.describe('Testing loading external models', () => {
         await expect(commandMethodOption('Create new file')).not.toBeVisible()
         await commandMethodOption('Overwrite').click()
         await expect(warningText).toBeVisible()
-        await confirmButton.click()
+        await cmdBar.submit()
 
         await editor.expectEditor.toContain('// ' + newSample.title)
       })
@@ -84,7 +81,7 @@ test.describe('Testing loading external models', () => {
    */
   test(
     'Desktop: should create new file by default, creates a second file with automatic unique name',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ editor, context, page, scene, cmdBar, toolbar }) => {
       if (runningOnWindows()) {
       }
@@ -100,9 +97,11 @@ test.describe('Testing loading external models', () => {
 
       // Locators and constants
       const sampleOne = {
-        file: 'parametric-bearing-pillow-block' + FILE_EXT,
-        title: 'Parametric Bearing Pillow Block',
-        file1: 'parametric-bearing-pillow-block-1' + FILE_EXT,
+        file: 'ball-bearing' + FILE_EXT,
+        title: 'Ball Bearing',
+        file1: 'ball-bearing-1' + FILE_EXT,
+        folderName: 'ball-bearing',
+        folderName1: 'ball-bearing-1',
       }
       const projectCard = page.getByRole('link', { name: 'bracket' })
       const overwriteWarning = page.getByText(
@@ -154,8 +153,10 @@ test.describe('Testing loading external models', () => {
 
       await test.step(`Ensure we made and opened a new file`, async () => {
         await editor.expectEditor.toContain('// ' + sampleOne.title)
-        await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
-        await expect(projectMenuButton).toContainText(sampleOne.file)
+        await expect(
+          page.getByTestId('file-tree-item').getByText(sampleOne.folderName)
+        ).toBeVisible()
+        await expect(projectMenuButton).toContainText('main.kcl')
       })
 
       await test.step(`Load a KCL sample with the command palette`, async () => {
@@ -169,8 +170,10 @@ test.describe('Testing loading external models', () => {
 
       await test.step(`Ensure we made and opened a new file with a unique name`, async () => {
         await editor.expectEditor.toContain('// ' + sampleOne.title)
-        await expect(newlyCreatedFile(sampleOne.file1)).toBeVisible()
-        await expect(projectMenuButton).toContainText(sampleOne.file1)
+        await expect(
+          page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
+        ).toBeVisible()
+        await expect(projectMenuButton).toContainText('main.kcl')
       })
     }
   )
@@ -190,7 +193,7 @@ test.describe('Testing loading external models', () => {
   externalModelCases.map(({ modelName, deconflictedModelName, modelPath }) => {
     test(
       `Load external models from local drive - ${modelName}`,
-      { tag: ['@electron'] },
+      { tag: ['@desktop'] },
       async ({ page, homePage, scene, toolbar, cmdBar, tronApp }) => {
         if (!tronApp) {
           fail()

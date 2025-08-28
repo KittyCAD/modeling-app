@@ -23,6 +23,7 @@ import type {
   SourceRange,
   VariableMap,
 } from '@src/lang/wasm'
+import type { Coords2d } from '@src/lang/std/sketch'
 
 export interface ModifyAstBase {
   node: Node<Program>
@@ -46,6 +47,7 @@ interface StraightSegmentInput {
   from: [number, number]
   to: [number, number]
   snap?: boolean
+  previousEndTangent?: Coords2d
 }
 
 /** Inputs for arcs, excluding tangentialArc for reasons explain in the
@@ -248,7 +250,7 @@ export type SimplifiedArgDetails =
  */
 export interface CreatedSketchExprResult {
   callExp: Expr
-  valueUsedInTransform?: number
+  valueUsedInTransform?: string
 }
 
 export type CreateStdLibSketchCallExpr = (args: {
@@ -286,7 +288,7 @@ export interface SketchLineHelperKw {
     | {
         modifiedAst: Node<Program>
         pathToNode: PathToNode
-        valueUsedInTransform?: number
+        valueUsedInTransform?: string
       }
     | Error
   updateArgs: (a: updateArgs) =>

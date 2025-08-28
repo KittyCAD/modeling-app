@@ -12,6 +12,7 @@ import { reportRejection } from '@src/lib/trap'
 import { commandBarActor, settingsActor } from '@src/lib/singletons'
 
 import styles from './KclEditorMenu.module.css'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
@@ -67,7 +68,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <a
               className={styles.button}
-              href="https://zoo.dev/docs/kcl"
+              href={withSiteBaseURL('/docs/kcl-lang')}
               target="_blank"
               rel="noopener noreferrer"
               onClick={openExternalBrowserIfDesktop()}
@@ -108,7 +109,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <a
               className={styles.button}
-              href="https://zoo.dev/docs/kcl-samples"
+              href={withSiteBaseURL('/docs/kcl-samples')}
               target="_blank"
               rel="noopener noreferrer"
               onClick={openExternalBrowserIfDesktop()}

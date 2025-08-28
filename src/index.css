@@ -33,7 +33,7 @@ h3,
 h4,
 h5,
 h6 {
-  @apply font-display;
+  @apply font-sans;
 }
 
 .body-bg {
@@ -131,13 +131,18 @@ input {
 }
 
 .mono {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+code,
+#code-mirror-override .cm-content {
+  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+#code-mirror-override {
+  @apply text-xs;
 }
 
 /*
@@ -212,6 +217,12 @@ code {
   z-index: 99999999999 !important;
 }
 
+.cm-rename-popup input {
+  /* use black text on white background in both light and dark mode */
+  color: black !important;
+  background: white !important;
+}
+
 @keyframes blink {
   0%,
   100% {
@@ -235,7 +246,7 @@ code {
 }
 
 .dark #code-mirror-override .cm-tooltip,
-.cm-tooltip {
+.dark .cm-tooltip {
   @apply bg-chalkboard-110 text-chalkboard-40;
   @apply border-chalkboard-70/20 border-l-liquid-70;
 }
@@ -278,6 +289,37 @@ code {
 .cm-ghostText,
 .cm-ghostText * {
   color: rgb(120, 120, 120, 0.8) !important;
+}
+
+.extra-segment-handle {
+  position: absolute;
+  pointer-events: auto;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  opacity: 0;
+  color: red;
+  background: #ffff00 url("/clientSideSceneAssets/extra-segment-texture.svg")
+    center / 10px 10px no-repeat;
+  border-radius: 100%;
+  background-size: 10px 10px;
+}
+
+.extra-segment-handle.hoveringLine {
+  opacity: 0.7;
+}
+
+.extra-segment-handle.selected:not(.hoveringLine) {
+  opacity: 0.7;
+  background-color: #0000ff;
+  background-image: url("/clientSideSceneAssets/extra-segment-texture-selected.svg");
+}
+
+.extra-segment-handle:hover {
+  opacity: 1;
 }
 
 .segment-length-label-text {

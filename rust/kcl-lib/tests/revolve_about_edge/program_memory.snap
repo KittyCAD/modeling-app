@@ -26,6 +26,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
           "tag": {
             "commentStart": 95,
             "end": 116,
+            "moduleId": 0,
             "start": 95,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
@@ -68,6 +69,14 @@ description: Variables in memory after executing revolve_about_edge.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -98,7 +107,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "sketch002": {
@@ -171,6 +181,14 @@ description: Variables in memory after executing revolve_about_edge.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }

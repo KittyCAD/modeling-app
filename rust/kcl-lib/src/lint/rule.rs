@@ -4,11 +4,11 @@ use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
+    SourceRange,
     errors::Suggestion,
     lsp::IntoDiagnostic,
     parsing::ast::types::{Node as AstNode, Program},
     walk::Node,
-    SourceRange,
 };
 
 /// Check the provided AST for any found rule violations.
@@ -32,7 +32,7 @@ where
 /// Specific discovered lint rule Violation of a particular Finding.
 #[derive(Clone, Debug, ts_rs::TS, Serialize, JsonSchema)]
 #[ts(export)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass, pyo3_stub_gen::derive::gen_stub_pyclass)]
 #[serde(rename_all = "camelCase")]
 pub struct Discovered {
     /// Zoo Lint Finding information.
@@ -65,6 +65,7 @@ impl Discovered {
 }
 
 #[cfg(feature = "pyo3")]
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pyo3::pymethods]
 impl Discovered {
     #[getter]
@@ -126,7 +127,7 @@ impl IntoDiagnostic for &Discovered {
 /// Abstract lint problem type.
 #[derive(Clone, Debug, PartialEq, ts_rs::TS, Serialize, JsonSchema)]
 #[ts(export)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass, pyo3_stub_gen::derive::gen_stub_pyclass)]
 #[serde(rename_all = "camelCase")]
 pub struct Finding {
     /// Unique identifier for this particular issue.
@@ -156,6 +157,7 @@ impl Finding {
 }
 
 #[cfg(feature = "pyo3")]
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pyo3::pymethods]
 impl Finding {
     #[getter]
@@ -180,7 +182,7 @@ impl Finding {
 }
 
 macro_rules! def_finding {
-    ( $code:ident, $title:expr, $description:expr ) => {
+    ( $code:ident, $title:expr_2021, $description:expr_2021 ) => {
         /// Generated Finding
         pub const $code: Finding = $crate::lint::rule::finding!($code, $title, $description);
     };
@@ -188,7 +190,7 @@ macro_rules! def_finding {
 pub(crate) use def_finding;
 
 macro_rules! finding {
-    ( $code:ident, $title:expr, $description:expr ) => {
+    ( $code:ident, $title:expr_2021, $description:expr_2021 ) => {
         $crate::lint::rule::Finding {
             code: stringify!($code),
             title: $title,
@@ -205,7 +207,7 @@ pub(crate) use test::{assert_finding, assert_no_finding, test_finding, test_no_f
 mod test {
 
     macro_rules! assert_no_finding {
-        ( $check:expr, $finding:expr, $kcl:expr ) => {
+        ( $check:expr_2021, $finding:expr_2021, $kcl:expr_2021 ) => {
             let prog = $crate::Program::parse_no_errs($kcl).unwrap();
 
             // Ensure the code still works.
@@ -220,7 +222,7 @@ mod test {
     }
 
     macro_rules! assert_finding {
-        ( $check:expr, $finding:expr, $kcl:expr, $output:expr, $suggestion:expr ) => {
+        ( $check:expr_2021, $finding:expr_2021, $kcl:expr_2021, $output:expr_2021, $suggestion:expr_2021 ) => {
             let prog = $crate::Program::parse_no_errs($kcl).unwrap();
 
             // Ensure the code still works.
@@ -250,7 +252,7 @@ mod test {
     }
 
     macro_rules! test_finding {
-        ( $name:ident, $check:expr, $finding:expr, $kcl:expr, $output:expr, $suggestion:expr ) => {
+        ( $name:ident, $check:expr_2021, $finding:expr_2021, $kcl:expr_2021, $output:expr_2021, $suggestion:expr_2021 ) => {
             #[tokio::test]
             async fn $name() {
                 $crate::lint::rule::assert_finding!($check, $finding, $kcl, $output, $suggestion);
@@ -259,7 +261,7 @@ mod test {
     }
 
     macro_rules! test_no_finding {
-        ( $name:ident, $check:expr, $finding:expr, $kcl:expr ) => {
+        ( $name:ident, $check:expr_2021, $finding:expr_2021, $kcl:expr_2021 ) => {
             #[tokio::test]
             async fn $name() {
                 $crate::lint::rule::assert_no_finding!($check, $finding, $kcl);

@@ -1,4 +1,3 @@
-import { DEV } from '@src/env'
 import type {
   Actor,
   AnyStateMachine,
@@ -16,7 +15,7 @@ import type {
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
@@ -29,6 +28,7 @@ interface CreateMachineCommandProps<
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
   onCancel?: () => void
+  forceDisable?: boolean
 }
 
 // Creates a command with subcommands, ready for use in the CommandBar component,
@@ -44,6 +44,7 @@ export function createMachineCommand<
   actor,
   commandBarConfig,
   onCancel,
+  forceDisable = false,
 }: CreateMachineCommandProps<T, S>):
   | Command<T, typeof type, S[typeof type]>
   | Command<T, typeof type, S[typeof type]>[]
@@ -71,6 +72,7 @@ export function createMachineCommand<
           actor,
           commandBarConfig: recursiveCommandBarConfig,
           onCancel,
+          forceDisable,
         })
       })
       .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
@@ -86,7 +88,7 @@ export function createMachineCommand<
   } else if ('status' in commandConfig) {
     const { status } = commandConfig
     if (status === 'inactive') return null
-    if (status === 'development' && !(DEV || IS_NIGHTLY_OR_DEBUG)) return null
+    if (status === 'development' && !IS_STAGING_OR_DEBUG) return null
   }
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined
@@ -105,6 +107,7 @@ export function createMachineCommand<
         send({ type })
       }
     },
+    disabled: forceDisable,
   }
 
   if (commandConfig.args) {
@@ -171,7 +174,6 @@ export function buildCommandArgument<
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
-    warningMessage: arg.warningMessage ?? '',
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {

@@ -8,6 +8,7 @@ description: Result of parsing pipe-flange-assembly.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "parameters.kcl"
@@ -18,6 +19,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "selector": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "Glob"
         },
@@ -28,6 +30,7 @@ description: Result of parsing pipe-flange-assembly.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "9472k188-gasket.kcl"
@@ -42,6 +45,7 @@ description: Result of parsing pipe-flange-assembly.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "gasket",
             "start": 0,
             "type": "Identifier"
@@ -54,6 +58,7 @@ description: Result of parsing pipe-flange-assembly.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "68095k348-flange.kcl"
@@ -65,9 +70,11 @@ description: Result of parsing pipe-flange-assembly.kcl
               "alias": null,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "flange",
                 "start": 0,
                 "type": "Identifier"
@@ -84,6 +91,7 @@ description: Result of parsing pipe-flange-assembly.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "98017a257-washer.kcl"
@@ -95,9 +103,11 @@ description: Result of parsing pipe-flange-assembly.kcl
               "alias": null,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "washer",
                 "start": 0,
                 "type": "Identifier"
@@ -114,6 +124,7 @@ description: Result of parsing pipe-flange-assembly.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "91251a404-bolt.kcl"
@@ -125,9 +136,11 @@ description: Result of parsing pipe-flange-assembly.kcl
               "alias": null,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "bolt",
                 "start": 0,
                 "type": "Identifier"
@@ -144,6 +157,7 @@ description: Result of parsing pipe-flange-assembly.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "95479a127-hex-nut.kcl"
@@ -155,9 +169,11 @@ description: Result of parsing pipe-flange-assembly.kcl
               "alias": null,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "hexNut",
                 "start": 0,
                 "type": "Identifier"
@@ -174,6 +190,7 @@ description: Result of parsing pipe-flange-assembly.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "1120t74-pipe.kcl"
@@ -185,9 +202,11 @@ description: Result of parsing pipe-flange-assembly.kcl
               "alias": null,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "pipe",
                 "start": 0,
                 "type": "Identifier"
@@ -205,13 +224,16 @@ description: Result of parsing pipe-flange-assembly.kcl
         "commentStart": 0,
         "end": 0,
         "expression": {
+          "arguments": [],
           "callee": {
             "abs_path": false,
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "flange",
               "start": 0,
               "type": "Identifier"
@@ -222,11 +244,13 @@ description: Result of parsing pipe-flange-assembly.kcl
           },
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": null
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -242,13 +266,16 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "flange",
                   "start": 0,
                   "type": "Identifier"
@@ -259,6 +286,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -271,6 +299,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
@@ -281,6 +310,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -293,6 +323,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 0,
                         "type": "Literal",
@@ -305,6 +336,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -316,6 +348,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -326,6 +359,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "angle",
                     "start": 0,
                     "type": "Identifier"
@@ -333,6 +367,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "180",
                     "start": 0,
                     "type": "Literal",
@@ -348,9 +383,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rotate",
                   "start": 0,
                   "type": "Identifier"
@@ -361,6 +398,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -373,6 +411,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -380,6 +419,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -395,6 +435,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -402,6 +443,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -417,6 +459,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
@@ -431,9 +474,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "flangeBackHeight",
                           "start": 0,
                           "type": "Identifier"
@@ -443,10 +488,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "*",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "2",
                         "start": 0,
                         "type": "Literal",
@@ -460,14 +507,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "operator": "+",
                     "right": {
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "gasketThickness",
                         "start": 0,
                         "type": "Identifier"
@@ -487,9 +537,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -500,6 +552,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -508,12 +561,14 @@ description: Result of parsing pipe-flange-assembly.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "2": [
                 {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "NonCodeNode",
                   "value": {
@@ -530,6 +585,7 @@ description: Result of parsing pipe-flange-assembly.kcl
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -543,9 +599,11 @@ description: Result of parsing pipe-flange-assembly.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "gasket",
                 "start": 0,
                 "type": "Identifier"
@@ -562,6 +620,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -569,6 +628,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -584,6 +644,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -591,6 +652,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -606,6 +668,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
@@ -618,9 +681,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "flangeBackHeight",
                           "start": 0,
                           "type": "Identifier"
@@ -632,19 +697,23 @@ description: Result of parsing pipe-flange-assembly.kcl
                       },
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     },
+                    "moduleId": 0,
                     "operator": "-",
                     "right": {
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "gasketThickness",
                         "start": 0,
                         "type": "Identifier"
@@ -664,9 +733,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -677,6 +748,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -685,12 +757,14 @@ description: Result of parsing pipe-flange-assembly.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "1": [
                 {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "NonCodeNode",
                   "value": {
@@ -707,6 +781,7 @@ description: Result of parsing pipe-flange-assembly.kcl
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -717,13 +792,16 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "washer",
                   "start": 0,
                   "type": "Identifier"
@@ -734,6 +812,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -746,6 +825,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -757,9 +837,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "mountingHolePlacementDiameter",
                         "start": 0,
                         "type": "Identifier"
@@ -769,10 +851,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -792,6 +876,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -799,6 +884,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -814,6 +900,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
@@ -822,9 +909,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                     "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "flangeBaseThickness",
                       "start": 0,
                       "type": "Identifier"
@@ -840,9 +929,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -853,6 +944,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -865,6 +957,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "instances",
                     "start": 0,
                     "type": "Identifier"
@@ -872,6 +965,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "4",
                     "start": 0,
                     "type": "Literal",
@@ -887,6 +981,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
@@ -897,6 +992,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -909,6 +1005,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -921,6 +1018,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 0,
                         "type": "Literal",
@@ -932,6 +1030,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -942,6 +1041,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "center",
                     "start": 0,
                     "type": "Identifier"
@@ -952,6 +1052,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -964,6 +1065,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -976,6 +1078,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -987,6 +1090,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -997,6 +1101,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arcDegrees",
                     "start": 0,
                     "type": "Identifier"
@@ -1004,6 +1109,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "360",
                     "start": 0,
                     "type": "Literal",
@@ -1019,6 +1125,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "rotateDuplicates",
                     "start": 0,
                     "type": "Identifier"
@@ -1026,6 +1133,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "false",
                     "start": 0,
                     "type": "Literal",
@@ -1038,9 +1146,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "patternCircular3d",
                   "start": 0,
                   "type": "Identifier"
@@ -1051,16 +1161,11 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "PipeSubstitution",
-                "type": "PipeSubstitution"
-              }
+              "unlabeled": null
             },
             {
               "arguments": [
@@ -1069,6 +1174,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "instances",
                     "start": 0,
                     "type": "Identifier"
@@ -1076,6 +1182,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "2",
                     "start": 0,
                     "type": "Literal",
@@ -1091,6 +1198,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "distance",
                     "start": 0,
                     "type": "Identifier"
@@ -1112,9 +1220,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "flangeBaseThickness",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1124,10 +1234,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                               "type": "Name",
                               "type": "Name"
                             },
+                            "moduleId": 0,
                             "operator": "*",
                             "right": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "2",
                               "start": 0,
                               "type": "Literal",
@@ -1141,6 +1253,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "commentStart": 0,
@@ -1149,9 +1262,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "flangeBackHeight",
                                 "start": 0,
                                 "type": "Identifier"
@@ -1161,10 +1276,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                               "type": "Name",
                               "type": "Name"
                             },
+                            "moduleId": 0,
                             "operator": "*",
                             "right": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "raw": "2",
                               "start": 0,
                               "type": "Literal",
@@ -1182,14 +1299,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
+                        "moduleId": 0,
                         "operator": "+",
                         "right": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "gasketThickness",
                             "start": 0,
                             "type": "Identifier"
@@ -1203,14 +1323,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "+",
                       "right": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "washerThickness",
                           "start": 0,
                           "type": "Identifier"
@@ -1226,6 +1349,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                     },
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "operator": "-",
                     "start": 0,
                     "type": "UnaryExpression",
@@ -1237,6 +1361,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
@@ -1247,6 +1372,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1259,6 +1385,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1271,6 +1398,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 0,
                         "type": "Literal",
@@ -1282,6 +1410,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -1292,9 +1421,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "patternLinear3d",
                   "start": 0,
                   "type": "Identifier"
@@ -1305,26 +1436,23 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "PipeSubstitution",
-                "type": "PipeSubstitution"
-              }
+              "unlabeled": null
             }
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "3": [
                 {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "NonCodeNode",
                   "value": {
@@ -1341,6 +1469,7 @@ description: Result of parsing pipe-flange-assembly.kcl
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -1351,13 +1480,16 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "bolt",
                   "start": 0,
                   "type": "Identifier"
@@ -1368,6 +1500,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -1380,6 +1513,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -1391,9 +1525,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "mountingHolePlacementDiameter",
                         "start": 0,
                         "type": "Identifier"
@@ -1403,10 +1539,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -1426,6 +1564,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -1433,6 +1572,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -1448,6 +1588,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
@@ -1459,9 +1600,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "flangeBaseThickness",
                         "start": 0,
                         "type": "Identifier"
@@ -1471,14 +1614,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "+",
                     "right": {
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "washerThickness",
                         "start": 0,
                         "type": "Identifier"
@@ -1498,9 +1644,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -1511,6 +1659,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -1523,6 +1672,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "roll",
                     "start": 0,
                     "type": "Identifier"
@@ -1530,6 +1680,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "90",
                     "start": 0,
                     "type": "Literal",
@@ -1545,6 +1696,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "pitch",
                     "start": 0,
                     "type": "Identifier"
@@ -1552,6 +1704,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -1567,6 +1720,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yaw",
                     "start": 0,
                     "type": "Identifier"
@@ -1574,6 +1728,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -1589,9 +1744,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rotate",
                   "start": 0,
                   "type": "Identifier"
@@ -1602,6 +1759,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -1614,6 +1772,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "instances",
                     "start": 0,
                     "type": "Identifier"
@@ -1621,6 +1780,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "4",
                     "start": 0,
                     "type": "Literal",
@@ -1636,6 +1796,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
@@ -1646,6 +1807,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1658,6 +1820,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1670,6 +1833,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 0,
                         "type": "Literal",
@@ -1681,6 +1845,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -1691,6 +1856,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "center",
                     "start": 0,
                     "type": "Identifier"
@@ -1701,6 +1867,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1713,6 +1880,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1725,6 +1893,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -1736,6 +1905,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -1746,6 +1916,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arcDegrees",
                     "start": 0,
                     "type": "Identifier"
@@ -1753,6 +1924,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "360",
                     "start": 0,
                     "type": "Literal",
@@ -1768,6 +1940,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "rotateDuplicates",
                     "start": 0,
                     "type": "Identifier"
@@ -1775,6 +1948,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "false",
                     "start": 0,
                     "type": "Literal",
@@ -1787,9 +1961,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "patternCircular3d",
                   "start": 0,
                   "type": "Identifier"
@@ -1800,26 +1976,23 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "PipeSubstitution",
-                "type": "PipeSubstitution"
-              }
+              "unlabeled": null
             }
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "3": [
                 {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "NonCodeNode",
                   "value": {
@@ -1836,6 +2009,7 @@ description: Result of parsing pipe-flange-assembly.kcl
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -1846,13 +2020,16 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "hexNut",
                   "start": 0,
                   "type": "Identifier"
@@ -1863,6 +2040,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -1875,6 +2053,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -1886,9 +2065,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": "mountingHolePlacementDiameter",
                         "start": 0,
                         "type": "Identifier"
@@ -1898,10 +2079,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "type": "Name",
                       "type": "Name"
                     },
+                    "moduleId": 0,
                     "operator": "/",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 0,
                       "type": "Literal",
@@ -1921,6 +2104,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -1928,6 +2112,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -1943,6 +2128,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
@@ -1967,9 +2153,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "flangeBackHeight",
                                   "start": 0,
                                   "type": "Identifier"
@@ -1979,10 +2167,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
+                              "moduleId": 0,
                               "operator": "*",
                               "right": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "2",
                                 "start": 0,
                                 "type": "Literal",
@@ -1996,14 +2186,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
+                            "moduleId": 0,
                             "operator": "+",
                             "right": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "gasketThickness",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2017,14 +2210,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "flangeBaseThickness",
                               "start": 0,
                               "type": "Identifier"
@@ -2038,14 +2234,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
+                        "moduleId": 0,
                         "operator": "+",
                         "right": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "washerThickness",
                             "start": 0,
                             "type": "Identifier"
@@ -2059,14 +2258,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "+",
                       "right": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "hexNutThickness",
                           "start": 0,
                           "type": "Identifier"
@@ -2082,6 +2284,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                     },
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "operator": "-",
                     "start": 0,
                     "type": "UnaryExpression",
@@ -2093,9 +2296,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -2106,6 +2311,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -2118,6 +2324,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "instances",
                     "start": 0,
                     "type": "Identifier"
@@ -2125,6 +2332,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "4",
                     "start": 0,
                     "type": "Literal",
@@ -2140,6 +2348,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "axis",
                     "start": 0,
                     "type": "Identifier"
@@ -2150,6 +2359,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -2162,6 +2372,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -2174,6 +2385,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 0,
                         "type": "Literal",
@@ -2185,6 +2397,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -2195,6 +2408,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "center",
                     "start": 0,
                     "type": "Identifier"
@@ -2205,6 +2419,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -2217,6 +2432,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -2229,6 +2445,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 0,
                         "type": "Literal",
@@ -2240,6 +2457,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                       }
                     ],
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -2250,6 +2468,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "arcDegrees",
                     "start": 0,
                     "type": "Identifier"
@@ -2257,6 +2476,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "360",
                     "start": 0,
                     "type": "Literal",
@@ -2272,6 +2492,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "rotateDuplicates",
                     "start": 0,
                     "type": "Identifier"
@@ -2279,6 +2500,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "false",
                     "start": 0,
                     "type": "Literal",
@@ -2291,9 +2513,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "patternCircular3d",
                   "start": 0,
                   "type": "Identifier"
@@ -2304,26 +2528,23 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "PipeSubstitution",
-                "type": "PipeSubstitution"
-              }
+              "unlabeled": null
             }
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "2": [
                 {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "NonCodeNode",
                   "value": {
@@ -2340,6 +2561,7 @@ description: Result of parsing pipe-flange-assembly.kcl
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -2350,13 +2572,16 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "pipe",
                   "start": 0,
                   "type": "Identifier"
@@ -2367,6 +2592,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -2379,6 +2605,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "roll",
                     "start": 0,
                     "type": "Identifier"
@@ -2387,6 +2614,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                     "argument": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "90",
                       "start": 0,
                       "type": "Literal",
@@ -2398,6 +2626,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                     },
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "operator": "-",
                     "start": 0,
                     "type": "UnaryExpression",
@@ -2409,6 +2638,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "pitch",
                     "start": 0,
                     "type": "Identifier"
@@ -2416,6 +2646,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -2431,6 +2662,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yaw",
                     "start": 0,
                     "type": "Identifier"
@@ -2438,6 +2670,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -2453,9 +2686,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rotate",
                   "start": 0,
                   "type": "Identifier"
@@ -2466,16 +2701,11 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "PipeSubstitution",
-                "type": "PipeSubstitution"
-              }
+              "unlabeled": null
             },
             {
               "arguments": [
@@ -2484,6 +2714,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -2491,6 +2722,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -2506,6 +2738,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -2513,6 +2746,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -2528,6 +2762,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
@@ -2542,9 +2777,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "flangeBaseThickness",
                           "start": 0,
                           "type": "Identifier"
@@ -2554,14 +2791,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "type": "Name",
                         "type": "Name"
                       },
+                      "moduleId": 0,
                       "operator": "+",
                       "right": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "name": {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": "flangeFrontHeight",
                           "start": 0,
                           "type": "Identifier"
@@ -2575,10 +2815,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
+                    "moduleId": 0,
                     "operator": "-",
                     "right": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0.5",
                       "start": 0,
                       "type": "Literal",
@@ -2598,6 +2840,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "global",
                     "start": 0,
                     "type": "Identifier"
@@ -2605,6 +2848,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "true",
                     "start": 0,
                     "type": "Literal",
@@ -2617,9 +2861,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -2630,24 +2876,21 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "PipeSubstitution",
-                "type": "PipeSubstitution"
-              }
+              "unlabeled": null
             }
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -2658,13 +2901,16 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "pipe",
                   "start": 0,
                   "type": "Identifier"
@@ -2675,6 +2921,7 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
@@ -2687,6 +2934,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "roll",
                     "start": 0,
                     "type": "Identifier"
@@ -2694,6 +2942,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "90",
                     "start": 0,
                     "type": "Literal",
@@ -2709,6 +2958,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "pitch",
                     "start": 0,
                     "type": "Identifier"
@@ -2716,6 +2966,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -2731,6 +2982,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yaw",
                     "start": 0,
                     "type": "Identifier"
@@ -2738,6 +2990,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -2753,9 +3006,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rotate",
                   "start": 0,
                   "type": "Identifier"
@@ -2766,16 +3021,11 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "PipeSubstitution",
-                "type": "PipeSubstitution"
-              }
+              "unlabeled": null
             },
             {
               "arguments": [
@@ -2784,6 +3034,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -2791,6 +3042,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -2806,6 +3058,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -2813,6 +3066,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 0,
                     "type": "Literal",
@@ -2828,6 +3082,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
@@ -2852,9 +3107,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": {
                                   "commentStart": 0,
                                   "end": 0,
+                                  "moduleId": 0,
                                   "name": "flangeBackHeight",
                                   "start": 0,
                                   "type": "Identifier"
@@ -2864,10 +3121,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 "type": "Name",
                                 "type": "Name"
                               },
+                              "moduleId": 0,
                               "operator": "*",
                               "right": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "raw": "2",
                                 "start": 0,
                                 "type": "Literal",
@@ -2881,14 +3140,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
+                            "moduleId": 0,
                             "operator": "+",
                             "right": {
                               "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": {
                                 "commentStart": 0,
                                 "end": 0,
+                                "moduleId": 0,
                                 "name": "gasketThickness",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2902,14 +3164,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
+                          "moduleId": 0,
                           "operator": "+",
                           "right": {
                             "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "flangeBaseThickness",
                               "start": 0,
                               "type": "Identifier"
@@ -2923,14 +3188,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
+                        "moduleId": 0,
                         "operator": "+",
                         "right": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "flangeFrontHeight",
                             "start": 0,
                             "type": "Identifier"
@@ -2944,10 +3212,12 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "moduleId": 0,
                       "operator": "-",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "raw": "0.5",
                         "start": 0,
                         "type": "Literal",
@@ -2963,6 +3233,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                     },
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "operator": "-",
                     "start": 0,
                     "type": "UnaryExpression",
@@ -2974,6 +3245,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "global",
                     "start": 0,
                     "type": "Identifier"
@@ -2981,6 +3253,7 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "true",
                     "start": 0,
                     "type": "Literal",
@@ -2993,9 +3266,11 @@ description: Result of parsing pipe-flange-assembly.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -3006,24 +3281,21 @@ description: Result of parsing pipe-flange-assembly.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "PipeSubstitution",
-                "type": "PipeSubstitution"
-              }
+              "unlabeled": null
             }
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -3035,9 +3307,11 @@ description: Result of parsing pipe-flange-assembly.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -3056,19 +3330,23 @@ description: Result of parsing pipe-flange-assembly.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "in",
                 "start": 0,
                 "type": "Identifier"
@@ -3085,15 +3363,18 @@ description: Result of parsing pipe-flange-assembly.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "kclVersion",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1.0",
               "start": 0,
               "type": "Literal",
@@ -3109,12 +3390,14 @@ description: Result of parsing pipe-flange-assembly.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "13": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -3127,6 +3410,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

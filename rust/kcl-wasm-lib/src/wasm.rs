@@ -28,7 +28,7 @@ pub async fn node_path_from_range(program_ast_json: &str, range_json: &str) -> R
 
     let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
     let range: SourceRange = serde_json::from_str(range_json).map_err(|e| e.to_string())?;
-    let node_path = program.node_path_from_range(range);
+    let node_path = program.node_path_from_range(0, range);
 
     JsValue::from_serde(&node_path).map_err(|e| e.to_string())
 }
@@ -59,6 +59,37 @@ pub fn format_number_literal(value: f64, suffix_json: &str) -> Result<String, Js
 
     let suffix: NumericSuffix = serde_json::from_str(suffix_json).map_err(JsError::from)?;
     kcl_lib::pretty::format_number_literal(value, suffix).map_err(JsError::from)
+}
+
+#[wasm_bindgen]
+pub fn format_number_value(value: f64, numeric_type_json: &str) -> Result<String, String> {
+    console_error_panic_hook::set_once();
+
+    // ts-rs can't handle tuple types, so it mashes all of these types together.
+    if let Ok(ty) = serde_json::from_str::<NumericType>(numeric_type_json) {
+        if let Ok(formatted) = kcl_lib::pretty::format_number_value(value, ty) {
+            return Ok(formatted);
+        }
+    }
+    if let Ok(unit_type) = serde_json::from_str::<UnitType>(numeric_type_json) {
+        let ty = NumericType::Known(unit_type);
+        if let Ok(formatted) = kcl_lib::pretty::format_number_value(value, ty) {
+            return Ok(formatted);
+        }
+    }
+    if let Ok(unit_len) = serde_json::from_str::<UnitLen>(numeric_type_json) {
+        let ty = NumericType::Known(UnitType::Length(unit_len));
+        if let Ok(formatted) = kcl_lib::pretty::format_number_value(value, ty) {
+            return Ok(formatted);
+        }
+    }
+    if let Ok(unit_angle) = serde_json::from_str::<UnitAngle>(numeric_type_json) {
+        let ty = NumericType::Known(UnitType::Angle(unit_angle));
+        if let Ok(formatted) = kcl_lib::pretty::format_number_value(value, ty) {
+            return Ok(formatted);
+        }
+    }
+    Err(format!("Invalid type: {numeric_type_json}"))
 }
 
 #[wasm_bindgen]
@@ -289,14 +320,13 @@ pub fn kcl_settings(program_json: &str) -> Result<JsValue, String> {
 
 /// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
 #[wasm_bindgen]
-pub fn change_default_units(code: &str, len_str: &str, angle_str: &str) -> Result<String, String> {
+pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
     let len: Option<kcl_lib::UnitLen> = serde_json::from_str(len_str).map_err(|e| e.to_string())?;
-    let angle: Option<kcl_lib::UnitAngle> = serde_json::from_str(angle_str).map_err(|e| e.to_string())?;
     let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
-    let new_program = program.change_default_units(len, angle).map_err(|e| e.to_string())?;
+    let new_program = program.change_default_units(len).map_err(|e| e.to_string())?;
 
     let formatted = new_program.recast();
 

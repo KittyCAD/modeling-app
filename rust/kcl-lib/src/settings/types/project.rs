@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
-    is_default, AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, UnitLength,
+    AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, UnitLength, is_default,
 };
 
 /// Project specific settings for the app.
@@ -41,6 +41,13 @@ impl ProjectConfiguration {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct PerProjectSettings {
+    /// Information about the project itself.
+    /// Choices about how settings are merged have prevent me (lee) from easily
+    /// moving this out of the settings structure.
+    #[serde(default)]
+    #[validate(nested)]
+    pub meta: ProjectMetaSettings,
+
     /// The settings for the Design Studio.
     #[serde(default)]
     #[validate(nested)]
@@ -57,6 +64,15 @@ pub struct PerProjectSettings {
     #[serde(default)]
     #[validate(nested)]
     pub command_bar: CommandBarSettings,
+}
+
+/// Information about the project.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectMetaSettings {
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub id: uuid::Uuid,
 }
 
 /// Project specific application settings.
@@ -167,7 +183,7 @@ mod tests {
 
     use super::{
         CommandBarSettings, NamedView, PerProjectSettings, ProjectAppSettings, ProjectAppearanceSettings,
-        ProjectConfiguration, ProjectModelingSettings, TextEditorSettings,
+        ProjectConfiguration, ProjectMetaSettings, ProjectModelingSettings, TextEditorSettings,
     };
     use crate::settings::types::UnitLength;
 
@@ -182,7 +198,9 @@ mod tests {
         let serialized = toml::to_string(&parsed).unwrap();
         assert_eq!(
             serialized,
-            r#"[settings.app]
+            r#"[settings.meta]
+
+[settings.app]
 
 [settings.modeling]
 
@@ -203,14 +221,16 @@ color = 1567.4"#;
 
         let result = ProjectConfiguration::parse_and_validate(settings_file);
         if let Ok(r) = result {
-            panic!("Expected an error, but got success: {:?}", r);
+            panic!("Expected an error, but got success: {r:?}");
         }
         assert!(result.is_err());
 
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("color: Validation error: color"));
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("color: Validation error: color")
+        );
     }
 
     #[test]
@@ -266,6 +286,7 @@ color = 1567.4"#;
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
+                meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
                 app: ProjectAppSettings {
                     appearance: ProjectAppearanceSettings { color: 138.0.into() },
                     onboarding_status: Default::default(),
@@ -321,7 +342,9 @@ color = 1567.4"#;
             },
         };
         let serialized = toml::to_string(&conf).unwrap();
-        let old_project_file = r#"[settings.app]
+        let old_project_file = r#"[settings.meta]
+
+[settings.app]
 show_debug_panel = true
 
 [settings.app.appearance]

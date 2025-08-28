@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from 'react'
 
-import { isDesktop } from '@src/lib/isDesktop'
 import type { components } from '@src/lib/machine-api'
 import { engineCommandManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -56,15 +55,16 @@ export const MachineManagerProvider = ({
   }
 
   useEffect(() => {
-    if (!isDesktop()) return
+    if (!window.electron) return
+    const electron = window.electron
 
     const update = async () => {
-      const _machineApiIp = await window.electron.getMachineApiIp()
+      const _machineApiIp = await electron.getMachineApiIp()
       if (_machineApiIp === null) return
 
       setMachineApiIp(_machineApiIp)
 
-      const _machines = await window.electron.listMachines(_machineApiIp)
+      const _machines = await electron.listMachines(_machineApiIp)
       setMachines(_machines)
     }
 
@@ -102,6 +102,7 @@ export const MachineManagerProvider = ({
       type: 'Set machine manager',
       data: machineManagerNext,
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [machines, machineApiIp, currentMachine])
 
   return (

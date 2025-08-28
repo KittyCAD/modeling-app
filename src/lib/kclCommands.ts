@@ -3,11 +3,7 @@ import toast from 'react-hot-toast'
 
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addModuleImport } from '@src/lang/modifyAst'
-import {
-  changeDefaultUnits,
-  unitAngleToUnitAng,
-  unitLengthToUnitLen,
-} from '@src/lang/wasm'
+import { changeDefaultUnits, unitLengthToUnitLen } from '@src/lang/wasm'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -32,6 +28,8 @@ interface KclCommandConfig {
   settings: {
     defaultUnit: UnitLength_type
   }
+  isRestrictedToOrg?: boolean
+  password?: string
 }
 
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
@@ -67,8 +65,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         if (typeof data === 'object' && 'unit' in data) {
           const newCode = changeDefaultUnits(
             codeManager.code,
-            unitLengthToUnitLen(data.unit),
-            unitAngleToUnitAng(undefined)
+            unitLengthToUnitLen(data.unit)
           )
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
@@ -126,7 +123,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             return getPathFilenameInVariableCase(path)
           },
           validation: async ({ data }) => {
-            const variableExists = kclManager.variables[data.localName]
+            const variableExists =
+              kclManager.variables['__mod_' + data.localName]
             if (variableExists) {
               return 'This variable name is already in use.'
             }
@@ -175,11 +173,13 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       groupId: 'code',
       needsReview: false,
       icon: 'link',
-      onSubmit: () => {
+      onSubmit: (input) => {
         copyFileShareLink({
           token: commandProps.authToken,
           code: codeManager.code,
           name: commandProps.projectData.project?.name || '',
+          isRestrictedToOrg: input?.event.data.isRestrictedToOrg ?? false,
+          password: input?.event.data.password,
         }).catch(reportRejection)
       },
     },

@@ -108,11 +108,12 @@ export async function applyConstraintAbsDistance({
   if (err(transform1)) return Promise.reject(transform1)
   const { valueUsedInTransform } = transform1
 
-  let forceVal = valueUsedInTransform || 0
+  let forceVal = valueUsedInTransform || ''
   const { valueNode, variableName, newVariableInsertIndex, sign } =
     await getModalInfo({
       value: forceVal,
       valueName: constraint === 'yAbs' ? 'yDis' : 'xDis',
+      selectionRanges,
     })
   if (!isExprBinaryPart(valueNode))
     return Promise.reject('Invalid valueNode, is not a BinaryPart')

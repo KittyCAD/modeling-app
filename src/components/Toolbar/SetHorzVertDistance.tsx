@@ -123,11 +123,12 @@ export async function applyConstraintHorzVertDistance({
     isSegNameEditable: !tagInfo?.isTagExisting,
     value: valueUsedInTransform,
     initialVariableName: constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
-  } as any)
+    selectionRanges,
+  })
   if (
     !variableName &&
     segName === tagInfo?.tag &&
-    Number(value) === valueUsedInTransform
+    value === valueUsedInTransform
   ) {
     return {
       modifiedAst,

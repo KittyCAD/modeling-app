@@ -15,6 +15,7 @@ Strings may be delimited using either single or double quotes.
 ```kcl
 "hello,"
 'world!'
+
 ```
 
 

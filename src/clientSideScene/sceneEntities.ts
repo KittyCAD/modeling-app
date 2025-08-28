@@ -17,7 +17,6 @@ import {
   OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
-  Points,
   Shape,
   Vector2,
   Vector3,
@@ -60,7 +59,6 @@ import {
   PROFILE_START,
   SEGMENT_BODIES,
   SEGMENT_BODIES_PLUS_PROFILE_START,
-  SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_DASH,
   TANGENTIAL_ARC_TO_SEGMENT,
@@ -68,6 +66,8 @@ import {
   THREE_POINT_ARC_HANDLE3,
   THREE_POINT_ARC_SEGMENT,
   getParentGroup,
+  SEGMENT_BLUE,
+  SEGMENT_YELLOW,
 } from '@src/clientSideScene/sceneConstants'
 import type {
   OnClickCallbackArgs,
@@ -90,6 +90,7 @@ import {
   getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { SegmentUtils } from '@src/clientSideScene/segments'
+import { createLineShape } from '@src/clientSideScene/segments'
 import {
   createProfileStartHandle,
   dashedStraight,
@@ -122,7 +123,10 @@ import {
   updateSketchNodePathsWithInsertIndex,
 } from '@src/lang/modifyAst'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import {
+  getNodeFromPath,
+  getPathNormalisedForTruncatedAst,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
@@ -141,14 +145,13 @@ import type { SegmentInputs } from '@src/lang/std/stdTypes'
 import { crossProduct, topLevelRange } from '@src/lang/util'
 import type { PathToNode, VariableMap } from '@src/lang/wasm'
 import {
-  defaultSourceRange,
   getTangentialArcToInfo,
   parse,
   recast,
   resultIsOk,
   sketchFromKclValue,
-  sourceRangeFromRust,
 } from '@src/lang/wasm'
+import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
 import { EXECUTION_TYPE_MOCK } from '@src/lib/constants'
 import {
   getRectangleCallExpressions,
@@ -156,13 +159,19 @@ import {
   updateRectangleSketch,
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
+import { updateExtraSegments } from '@src/lib/selections'
 import type { Selections } from '@src/lib/selections'
 import { getEventForSegmentSelection } from '@src/lib/selections'
 import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import { closestPointOnRay, deg2Rad } from '@src/lib/utils2d'
+import {
+  closestPointOnRay,
+  deg2Rad,
+  normalizeVec,
+  subVec,
+} from '@src/lib/utils2d'
 import type {
   SegmentOverlayPayload,
   SketchDetails,
@@ -795,7 +804,7 @@ export class SceneEntities {
         const callExpName = _node1.node?.callee?.name.name
 
         const initSegment =
-          segment.type === 'TangentialArcTo'
+          segment.type === 'TangentialArcTo' || segment.type === 'TangentialArc'
             ? segmentUtils.tangentialArc.init
             : segment.type === 'Circle'
               ? segmentUtils.circle.init
@@ -854,7 +863,6 @@ export class SceneEntities {
           pathToNode: segPathToNode,
           isDraftSegment,
           scale,
-          texture: this.sceneInfra.extraSegmentTexture,
           theme: this.sceneInfra._theme,
           isSelected,
           sceneInfra: this.sceneInfra,
@@ -1104,7 +1112,11 @@ export class SceneEntities {
             (lastSegment.type === 'TangentialArc' && segmentName !== 'line') ||
             segmentName === 'tangentialArc'
           ) {
-            resolvedFunctionName = 'tangentialArc'
+            if (snappedPoint[0] === 0 || snappedPoint[1] === 0) {
+              resolvedFunctionName = 'tangentialArcTo'
+            } else {
+              resolvedFunctionName = 'tangentialArc'
+            }
           } else if (snappedToTangent) {
             // Generate tag for previous arc segment and use it for the angle of angledLine:
             //   |> tangentialArc(endAbsolute = [5, -10], tag = $arc001)
@@ -1174,7 +1186,7 @@ export class SceneEntities {
           )
         }
       },
-      onMove: (args) => {
+      onMove: async (args) => {
         const expressionIndex = Number(sketchEntryNodePath[1][0])
         const activeSegmentsInCorrectExpression = Object.values(
           this.activeSegments
@@ -1185,7 +1197,7 @@ export class SceneEntities {
           activeSegmentsInCorrectExpression[
             activeSegmentsInCorrectExpression.length - 1
           ]
-        this.onDragSegment({
+        await this.onDragSegment({
           intersection2d: args.intersectionPoint.twoD,
           object,
           intersects: args.intersects,
@@ -1295,11 +1307,10 @@ export class SceneEntities {
         // Update the width and height of the draft rectangle
 
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
 
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
@@ -1502,11 +1513,10 @@ export class SceneEntities {
         // Update the width and height of the draft rectangle
 
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
 
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
@@ -1678,13 +1688,11 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(updatedSketchNodePaths[0][1][0])
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -1878,14 +1886,8 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          getPathNormalisedForTruncatedAst(mod.pathToNode, sketchNodePaths)
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -1954,14 +1956,6 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
         // If there is a valid camera interaction that matches, do that instead
         const interaction = this.sceneInfra.camControls.getInteractionType(
           args.mouseEvent
@@ -2109,14 +2103,8 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          getPathNormalisedForTruncatedAst(mod.pathToNode, sketchNodePaths)
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -2185,14 +2173,6 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
         // If there is a valid camera interaction that matches, do that instead
         const interaction = this.sceneInfra.camControls.getInteractionType(
           args.mouseEvent
@@ -2365,11 +2345,10 @@ export class SceneEntities {
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -2530,8 +2509,8 @@ export class SceneEntities {
             forward,
             position,
           })
-          await this.codeManager.writeToFile()
         }
+        await this.codeManager.writeToFile()
       },
       onDrag: async ({
         selected,
@@ -2562,14 +2541,14 @@ export class SceneEntities {
 
           const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
           if (addingNewSegmentStatus === 'nothing') {
-            const prevSegment = sketch.paths[pipeIndex - 2]
+            const prevSegment = sketch.paths[pipeIndex - 2] // Is undefined when dragging the first segment
             const mod = addNewSketchLn({
               node: this.kclManager.ast,
               variables: this.kclManager.variables,
               input: {
                 type: 'straight-segment',
                 to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-                from: prevSegment.from,
+                from: prevSegment?.from || [0, 0],
               },
               // TODO assuming it's always a straight segments being added
               // as this is easiest, and we'll need to add "tabbing" behavior
@@ -2598,7 +2577,7 @@ export class SceneEntities {
           } else if (addingNewSegmentStatus === 'added') {
             const pathToNodeForNewSegment = pathToNode.slice(0, pathToNodeIndex)
             pathToNodeForNewSegment.push([pipeIndex - 2, 'index'])
-            this.onDragSegment({
+            await this.onDragSegment({
               sketchNodePaths,
               sketchEntryNodePath: pathToNodeForNewSegment,
               object: selected,
@@ -2610,7 +2589,7 @@ export class SceneEntities {
           return
         }
 
-        this.onDragSegment({
+        await this.onDragSegment({
           object: selected,
           intersection2d: intersectionPoint.twoD,
           intersects,
@@ -2839,7 +2818,7 @@ export class SceneEntities {
     return intersection2d
   }
 
-  onDragSegment({
+  async onDragSegment({
     object,
     intersection2d: _intersection2d,
     sketchEntryNodePath,
@@ -2901,10 +2880,7 @@ export class SceneEntities {
       : { ...this.kclManager.ast }
 
     const nodePathWithCorrectedIndexForTruncatedAst =
-      structuredClone(pathToNode)
-    nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-      Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-      Number(sketchNodePaths[0][1][0])
+      getPathNormalisedForTruncatedAst(pathToNode, sketchNodePaths)
 
     const _node = getNodeFromPath<Node<CallExpressionKw>>(
       modifiedAst,
@@ -3052,11 +3028,20 @@ export class SceneEntities {
         return input
       }
 
-      // straight segment is the default
+      // straight segment is the default,
+      // this includes "tangential-arc-to-segment"
+
+      const segments: SafeArray<Group> = Object.values(this.activeSegments) // Using the order in the object feels wrong
+      const currentIndex = segments.indexOf(group)
+      const previousSegment = segments[currentIndex - 1]
+
       return {
         type: 'straight-segment',
         from,
         to: dragTo,
+        previousEndTangent: previousSegment
+          ? findTangentDirection(previousSegment)
+          : undefined,
       }
     }
 
@@ -3090,17 +3075,19 @@ export class SceneEntities {
       : this.prepareTruncatedAst(sketchNodePaths || [], modifiedAst)
     if (trap(info, { suppress: true })) return
     const { truncatedAst } = info
-    ;(async () => {
+    try {
       const code = recast(modifiedAst)
       if (trap(code)) return
       if (!draftInfo)
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
         this.codeManager.updateCodeEditor(code)
+
       const { execState } = await executeAstMock({
         ast: truncatedAst,
         rustContext: this.rustContext,
       })
+
       const variables = execState.variables
       const sketchesInfo = getSketchesInfo({
         sketchNodePaths,
@@ -3154,7 +3141,9 @@ export class SceneEntities {
         )
       }
       this.sceneInfra.overlayCallbacks(callbacks)
-    })().catch(reportRejection)
+    } catch (e) {
+      reportRejection(e)
+    }
   }
 
   /**
@@ -3332,7 +3321,7 @@ export class SceneEntities {
 
   mouseEnterLeaveCallbacks() {
     return {
-      onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
+      onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
@@ -3358,16 +3347,11 @@ export class SceneEntities {
           this.editorManager.setHighlightRange([
             topLevelRange(node.start, node.end),
           ])
-          const yellow = 0xffff00
-          colorSegment(selected, yellow)
-          const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
-          if (extraSegmentGroup) {
-            extraSegmentGroup.traverse((child) => {
-              if (child instanceof Points || child instanceof Mesh) {
-                child.material.opacity = dragSelected ? 0 : 1
-              }
-            })
-          }
+          colorSegment(selected, SEGMENT_YELLOW)
+          const isSelected = parent?.userData?.isSelected
+          const hoveringArrow = selected?.parent?.name === ARROWHEAD
+          updateExtraSegments(parent, 'hoveringLine', !hoveringArrow) // no hover effect for arrowheads, they don't color the segment
+          updateExtraSegments(parent, 'selected', isSelected)
           const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
           let input: SegmentInputs = {
@@ -3516,18 +3500,12 @@ export class SceneEntities {
         colorSegment(
           selected,
           isSelected
-            ? 0x0000ff
+            ? SEGMENT_BLUE
             : parent?.userData?.baseColor ||
                 getThemeColorForThreeJs(this.sceneInfra._theme)
         )
-        const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
-        if (extraSegmentGroup) {
-          extraSegmentGroup.traverse((child) => {
-            if (child instanceof Points || child instanceof Mesh) {
-              child.material.opacity = 0
-            }
-          })
-        }
+        updateExtraSegments(parent, 'hoveringLine', false)
+        updateExtraSegments(parent, 'selected', isSelected)
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
@@ -3617,7 +3595,8 @@ export class SceneEntities {
     })
 
     if (!resp) {
-      return Promise.reject('no response')
+      console.warn('No response')
+      return {} as Models['GetSketchModePlane_type']
     }
 
     if (isArray(resp)) {
@@ -3686,10 +3665,6 @@ export class SceneEntities {
           this.sceneInfra._baseUnitMultiplier
         const from = group.userData.from
 
-        const shape = new Shape()
-        shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
-        shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
-
         const straightSegmentBodyDashed = group.children.find(
           (child) => child.userData.type === STRAIGHT_SEGMENT_DASH
         ) as Mesh
@@ -3697,7 +3672,7 @@ export class SceneEntities {
           straightSegmentBodyDashed.geometry = dashedStraight(
             from,
             to,
-            shape,
+            createLineShape(scale),
             scale
           )
         }
@@ -3827,7 +3802,7 @@ function sketchFromPathToNode({
   return sg
 }
 
-function colorSegment(object: any, color: number) {
+function colorSegment(object: Object3D, color: number) {
   const segmentHead = getParentGroup(object, [ARROWHEAD, PROFILE_START])
   if (segmentHead) {
     segmentHead.traverse((child) => {
@@ -3961,7 +3936,7 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
   }
 }
 
-// Returns the 2D tangent direction vector at the end of the segmentGroup if it's an arc.
+// Returns the 2D tangent direction vector at the end of the segmentGroup
 function findTangentDirection(segmentGroup: Group) {
   let tangentDirection: Coords2d | undefined
   if (segmentGroup.userData.type === TANGENTIAL_ARC_TO_SEGMENT) {
@@ -3985,11 +3960,11 @@ function findTangentDirection(segmentGroup: Group) {
       ) +
       (Math.PI / 2) * (segmentGroup.userData.ccw ? 1 : -1)
     tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
-  } else {
-    console.warn(
-      'Unsupported segment type for tangent direction calculation: ',
-      segmentGroup.userData.type
-    )
+  } else if (segmentGroup.userData.type === STRAIGHT_SEGMENT) {
+    const to = segmentGroup.userData.to as Coords2d
+    const from = segmentGroup.userData.from as Coords2d
+    tangentDirection = subVec(to, from)
+    tangentDirection = normalizeVec(tangentDirection)
   }
   return tangentDirection
 }

@@ -11,8 +11,7 @@ use tower_lsp::lsp_types::{
     TextDocumentItem, WorkspaceFolder,
 };
 
-use crate::execution::typed_path::TypedPath;
-use crate::fs::FileSystem;
+use crate::{execution::typed_path::TypedPath, fs::FileSystem};
 
 /// A trait for the backend of the language server.
 #[async_trait::async_trait]
@@ -65,10 +64,11 @@ where
         // Check if the document is in the current code map and if it is the same as what we have
         // stored.
         let filename = params.uri.to_string();
-        if let Some(current_code) = self.code_map().get(&filename) {
-            if *current_code == params.text.as_bytes() && !self.has_diagnostics(&filename).await {
-                return;
-            }
+        if let Some(current_code) = self.code_map().get(&filename)
+            && *current_code == params.text.as_bytes()
+            && !self.has_diagnostics(&filename).await
+        {
+            return;
         }
 
         self.insert_code_map(params.uri.to_string(), params.text.as_bytes().to_vec())
@@ -91,7 +91,7 @@ where
 
     async fn do_initialized(&self, params: InitializedParams) {
         self.client()
-            .log_message(MessageType::INFO, format!("initialized: {:?}", params))
+            .log_message(MessageType::INFO, format!("initialized: {params:?}"))
             .await;
 
         self.set_is_initialized(true).await;
@@ -140,7 +140,7 @@ where
                 self.client()
                     .log_message(
                         MessageType::WARNING,
-                        format!("updating from disk `{}` failed: {:?}", project_dir, err),
+                        format!("updating from disk `{project_dir}` failed: {err:?}"),
                     )
                     .await;
             }
@@ -149,19 +149,19 @@ where
 
     async fn do_did_change_configuration(&self, params: DidChangeConfigurationParams) {
         self.client()
-            .log_message(MessageType::INFO, format!("configuration changed: {:?}", params))
+            .log_message(MessageType::INFO, format!("configuration changed: {params:?}"))
             .await;
     }
 
     async fn do_did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
         self.client()
-            .log_message(MessageType::INFO, format!("watched files changed: {:?}", params))
+            .log_message(MessageType::INFO, format!("watched files changed: {params:?}"))
             .await;
     }
 
     async fn do_did_create_files(&self, params: CreateFilesParams) {
         self.client()
-            .log_message(MessageType::INFO, format!("files created: {:?}", params))
+            .log_message(MessageType::INFO, format!("files created: {params:?}"))
             .await;
         // Create each file in the code map.
         for file in params.files {
@@ -171,7 +171,7 @@ where
 
     async fn do_did_rename_files(&self, params: RenameFilesParams) {
         self.client()
-            .log_message(MessageType::INFO, format!("files renamed: {:?}", params))
+            .log_message(MessageType::INFO, format!("files renamed: {params:?}"))
             .await;
         // Rename each file in the code map.
         for file in params.files {
@@ -187,7 +187,7 @@ where
 
     async fn do_did_delete_files(&self, params: DeleteFilesParams) {
         self.client()
-            .log_message(MessageType::INFO, format!("files deleted: {:?}", params))
+            .log_message(MessageType::INFO, format!("files deleted: {params:?}"))
             .await;
         // Delete each file in the map.
         for file in params.files {
@@ -229,7 +229,7 @@ where
 
     async fn do_did_close(&self, params: DidCloseTextDocumentParams) {
         self.client()
-            .log_message(MessageType::INFO, format!("document closed: {:?}", params))
+            .log_message(MessageType::INFO, format!("document closed: {params:?}"))
             .await;
     }
 }

@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing import_only_at_top_level.kcl
+---
+fn main() {
+  import "empty.kcl"
+  return 0
+}
+
+main()

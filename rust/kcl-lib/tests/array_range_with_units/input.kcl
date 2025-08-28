@@ -1,0 +1,4 @@
+a = [1cm..3cm]
+assert(a[0], isEqualTo = 1cm)
+assert(a[1], isEqualTo = 2cm)
+assert(a[2], isEqualTo = 3cm)

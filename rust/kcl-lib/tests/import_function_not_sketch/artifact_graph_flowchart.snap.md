@@ -15,13 +15,21 @@ flowchart LR
   1["Plane<br>[52, 69, 1]"]
   12["Sweep Revolve<br>[302, 319, 1]"]
   13[Wall]
+    %% face_code_ref=Missing NodePath
   14[Wall]
+    %% face_code_ref=Missing NodePath
   15[Wall]
+    %% face_code_ref=Missing NodePath
   16[Wall]
+    %% face_code_ref=Missing NodePath
   17[Wall]
+    %% face_code_ref=Missing NodePath
   18[Wall]
+    %% face_code_ref=Missing NodePath
   19[Wall]
+    %% face_code_ref=Missing NodePath
   20[Wall]
+    %% face_code_ref=Missing NodePath
   21["SweepEdge Adjacent"]
   22["SweepEdge Adjacent"]
   23["SweepEdge Adjacent"]
@@ -29,6 +37,7 @@ flowchart LR
   25["SweepEdge Adjacent"]
   26["SweepEdge Adjacent"]
   27["SweepEdge Adjacent"]
+  28["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -41,29 +50,29 @@ flowchart LR
   2 --- 11
   2 ---- 12
   12 <--x 3
-  3 --- 16
-  3 x--> 26
+  3 --- 13
+  3 --- 21
   12 <--x 4
-  4 --- 15
-  4 --- 26
+  4 --- 14
+  4 --- 22
   12 <--x 5
-  5 --- 13
-  5 --- 24
+  5 --- 15
+  5 --- 23
   12 <--x 6
-  6 --- 20
-  6 --- 25
+  6 --- 16
+  6 --- 24
   12 <--x 7
   7 --- 17
-  7 --- 22
+  7 --- 25
   12 <--x 8
-  8 --- 19
-  8 --- 21
+  8 --- 18
+  8 --- 26
   12 <--x 9
-  9 --- 14
+  9 --- 19
   9 --- 27
   12 <--x 10
-  10 --- 18
-  10 --- 23
+  10 --- 20
+  10 --- 28
   12 --- 13
   12 --- 14
   12 --- 15
@@ -79,18 +88,21 @@ flowchart LR
   12 --- 25
   12 --- 26
   12 --- 27
-  24 <--x 13
+  12 --- 28
+  13 --- 21
+  28 <--x 13
   21 <--x 14
-  27 <--x 14
-  26 <--x 15
+  14 --- 22
+  22 <--x 15
+  15 --- 23
   23 <--x 16
-  26 <--x 16
-  22 <--x 17
-  25 <--x 17
-  23 <--x 18
-  27 <--x 18
-  21 <--x 19
-  22 <--x 19
-  24 <--x 20
-  25 <--x 20
+  16 --- 24
+  24 <--x 17
+  17 --- 25
+  25 <--x 18
+  18 --- 26
+  26 <--x 19
+  19 --- 27
+  27 <--x 20
+  20 --- 28
 ```

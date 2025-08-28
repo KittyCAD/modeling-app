@@ -1,0 +1,6 @@
+fn declare() {
+  x = 0
+  return x
+}
+
+x = x + declare()

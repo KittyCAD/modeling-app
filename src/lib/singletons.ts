@@ -1,4 +1,4 @@
-import { VITE_KC_API_BASE_URL } from '@src/env'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclSingleton'
@@ -69,11 +69,13 @@ export const kclManager = new KclManager(engineCommandManager, {
 // method requires it for the current ast.
 // CYCLIC REF
 editorManager.kclManager = kclManager
+editorManager.codeManager = codeManager
 
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
 engineCommandManager.kclManager = kclManager
 engineCommandManager.codeManager = codeManager
+engineCommandManager.sceneInfra = sceneInfra
 engineCommandManager.rustContext = rustContext
 
 kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
@@ -169,7 +171,7 @@ const appMachine = setup({
       systemId: BILLING,
       input: {
         ...BILLING_CONTEXT_DEFAULTS,
-        urlUserService: VITE_KC_API_BASE_URL,
+        urlUserService: () => withAPIBaseURL(''),
       },
     }),
   ],
@@ -205,6 +207,11 @@ export const getSettings = () => {
   const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
   return settings
 }
+
+// These are all late binding because of their circular dependency.
+// TODO: proper dependency injection.
+sceneInfra.camControls.getSettings = getSettings
+
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {
     // We have to peel everything that isn't settings off

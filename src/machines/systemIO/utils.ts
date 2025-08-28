@@ -15,6 +15,15 @@ export enum SystemIOMachineActors {
   deleteKCLFile = 'delete kcl delete',
   bulkCreateKCLFiles = 'bulk create kcl files',
   bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
+  bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
+  renameFolder = 'renameFolder',
+  renameFile = 'renameFile',
+  deleteFileOrFolder = 'delete file or folder',
+  createBlankFile = 'create blank file',
+  createBlankFolder = 'create blank folder',
+  renameFileAndNavigateToFile = 'rename file and navigate to file',
+  renameFolderAndNavigateToFile = 'rename folder and navigate to file',
+  deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
 }
 
 export enum SystemIOMachineStates {
@@ -31,6 +40,15 @@ export enum SystemIOMachineStates {
   deletingKCLFile = 'deletingKCLFile',
   bulkCreatingKCLFiles = 'bulkCreatingKCLFiles',
   bulkCreatingKCLFilesAndNavigateToProject = 'bulkCreatingKCLFilesAndNavigateToProject',
+  bulkCreatingKCLFilesAndNavigateToFile = 'bulkCreatingKCLFilesAndNavigateToFile',
+  renamingFolder = 'renamingFolder',
+  renamingFile = 'renamingFile',
+  deletingFileOrFolder = 'deletingFileOrFolder',
+  creatingBlankFile = 'creatingBlankFile',
+  creatingBlankFolder = 'creatingBlankFolder',
+  renamingFileAndNavigateToFile = 'renamingFileAndNavigateToFile',
+  renamingFolderAndNavigateToFile = 'renamingFolderAndNavigateToFile',
+  deletingFileOrFolderAndNavigate = 'delete file or folder and navigate',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -56,6 +74,23 @@ export enum SystemIOMachineEvents {
   deleteKCLFile = 'delete kcl file',
   bulkCreateKCLFiles = 'bulk create kcl files',
   bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
+  bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
+  done_bulkCreateKCLFilesAndNavigateToFile = donePrefix +
+    'bulk create kcl files and navigate to file',
+  renameFolder = 'rename folder',
+  renameFile = 'rename file',
+  deleteFileOrFolder = 'delete file or folder',
+  createBlankFile = 'create blank file',
+  createBlankFolder = 'create blank folder',
+  renameFileAndNavigateToFile = 'rename file and navigate to file',
+  done_renameFileAndNavigateToFile = donePrefix +
+    'rename file and navigate to file',
+  renameFolderAndNavigateToFile = 'rename folder and navigate to file',
+  done_renameFolderAndNavigateToFile = donePrefix +
+    'rename folder and navigate to file',
+  deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
+  done_deleteFileOrFolderAndNavigate = donePrefix +
+    'delete file or folder and navigate',
 }
 
 export enum SystemIOMachineActions {
@@ -69,6 +104,11 @@ export enum SystemIOMachineActions {
   setReadWriteProjectDirectory = 'set read write project directory',
   setRequestedTextToCadGeneration = 'set requested text to cad generation',
   setLastProjectDeleteRequest = 'set last project delete request',
+  toastProjectNameTooLong = 'toast project name too long',
+}
+
+export enum SystemIOMachineGuards {
+  projectNameIsValidLength = 'project name is valid length',
 }
 
 export const NO_PROJECT_DIRECTORY = ''
@@ -84,6 +124,10 @@ export type SystemIOContext = {
   /** has the application gone through the initialization of systemIOMachine at least once.
    * this is required to prevent chokidar from spamming invalid events during initialization. */
   hasListedProjects: boolean
+  /**
+   * We watch objects because we want to be able to navigate to itself
+   * if we used a string the useEffect would not change
+   */
   requestedProjectName: { name: string; subRoute?: string }
   requestedFileName: { project: string; file: string; subRoute?: string }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }

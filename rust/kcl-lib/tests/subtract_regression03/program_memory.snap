@@ -76,6 +76,14 @@ description: Variables in memory after executing subtract_regression03.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.6687257877094245,
+            "y": -0.7435091262737867,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -155,7 +163,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             ],
             "tag": null,
             "to": [
-              0.129,
+              0.129019,
               0.06
             ],
             "type": "ToPoint",
@@ -169,7 +177,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               "sourceRange": []
             },
             "from": [
-              0.129,
+              0.129019,
               0.06
             ],
             "tag": null,
@@ -246,6 +254,14 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": 0.0,
             "y": 0.0,
             "z": -1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": -0.6687257877094245,
+            "y": -0.7435091262737867,
+            "z": -0.0,
             "units": {
               "type": "Unknown"
             }
@@ -357,6 +373,14 @@ description: Variables in memory after executing subtract_regression03.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.6687257877094245,
+            "y": -0.7435091262737867,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -455,7 +479,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             ],
             "tag": null,
             "to": [
-              -0.129,
+              -0.129019,
               0.06
             ],
             "type": "ToPoint",
@@ -469,7 +493,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               "sourceRange": []
             },
             "from": [
-              -0.129,
+              -0.129019,
               0.06
             ],
             "tag": null,
@@ -530,6 +554,14 @@ description: Variables in memory after executing subtract_regression03.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": -0.7980581665924197,
+            "y": 0.6025804201392091,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -569,11 +601,11 @@ description: Variables in memory after executing subtract_regression03.kcl
     "type": "Object",
     "value": {
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
-            "value": -0.5037,
+            "value": -0.503704,
             "ty": {
               "type": "Default",
               "len": {
@@ -586,7 +618,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           },
           {
             "type": "Number",
-            "value": -0.2649,
+            "value": -0.264924,
             "ty": {
               "type": "Default",
               "len": {
@@ -613,11 +645,11 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "xAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
-            "value": 0.1919,
+            "value": 0.191884,
             "ty": {
               "type": "Default",
               "len": {
@@ -630,7 +662,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           },
           {
             "type": "Number",
-            "value": 0.1726,
+            "value": 0.172584,
             "ty": {
               "type": "Default",
               "len": {
@@ -657,7 +689,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "yAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -701,11 +733,11 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "zAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
-            "value": -0.1919,
+            "value": -0.191884,
             "ty": {
               "type": "Default",
               "len": {
@@ -718,7 +750,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           },
           {
             "type": "Number",
-            "value": 0.1726,
+            "value": 0.172584,
             "ty": {
               "type": "Default",
               "len": {
@@ -750,11 +782,11 @@ description: Variables in memory after executing subtract_regression03.kcl
     "type": "Object",
     "value": {
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
-            "value": -0.5037,
+            "value": -0.503704,
             "ty": {
               "type": "Default",
               "len": {
@@ -794,11 +826,11 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "xAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
-            "value": -0.1919,
+            "value": -0.191884,
             "ty": {
               "type": "Default",
               "len": {
@@ -811,7 +843,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           },
           {
             "type": "Number",
-            "value": 0.1726,
+            "value": 0.172584,
             "ty": {
               "type": "Default",
               "len": {
@@ -838,7 +870,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "yAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -882,11 +914,11 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "zAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
-            "value": -0.1919,
+            "value": -0.191884,
             "ty": {
               "type": "Default",
               "len": {
@@ -899,7 +931,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           },
           {
             "type": "Number",
-            "value": 0.1726,
+            "value": 0.172584,
             "ty": {
               "type": "Default",
               "len": {
@@ -931,7 +963,7 @@ description: Variables in memory after executing subtract_regression03.kcl
     "type": "Object",
     "value": {
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -975,11 +1007,11 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "xAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
-            "value": -0.2003,
+            "value": -0.200323,
             "ty": {
               "type": "Default",
               "len": {
@@ -992,7 +1024,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           },
           {
             "type": "Number",
-            "value": -0.2653,
+            "value": -0.265308,
             "ty": {
               "type": "Default",
               "len": {
@@ -1019,7 +1051,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "yAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -1063,11 +1095,11 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "zAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
-            "value": 0.2003,
+            "value": 0.200323,
             "ty": {
               "type": "Default",
               "len": {
@@ -1080,7 +1112,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           },
           {
             "type": "Number",
-            "value": 0.2653,
+            "value": 0.265308,
             "ty": {
               "type": "Default",
               "len": {
@@ -1134,6 +1166,14 @@ description: Variables in memory after executing subtract_regression03.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.6687257877094245,
+        "y": -0.7435091262737867,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }
@@ -1200,6 +1240,14 @@ description: Variables in memory after executing subtract_regression03.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.6687257877094245,
+          "y": -0.7435091262737867,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1256,6 +1304,14 @@ description: Variables in memory after executing subtract_regression03.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -1271,13 +1327,13 @@ description: Variables in memory after executing subtract_regression03.kcl
             "sourceRange": []
           },
           "from": [
-            -0.5037,
-            -0.2649
+            -0.503704,
+            -0.264924
           ],
           "tag": null,
           "to": [
-            -0.6956,
-            -0.0923
+            -0.6955880000000001,
+            -0.09234
           ],
           "type": "ToPoint",
           "units": {
@@ -1291,18 +1347,18 @@ description: Variables in memory after executing subtract_regression03.kcl
           },
           "ccw": false,
           "center": [
-            -0.5857,
-            0.0298
+            -0.5857498501250635,
+            0.029781428635808932
           ],
           "from": [
-            -0.6956,
-            -0.0923
+            -0.6955880000000001,
+            -0.09234
           ],
           "radius": 0.16425,
           "tag": null,
           "to": [
-            -0.6283,
-            0.1884
+            -0.6282608782831526,
+            0.18843474560378842
           ],
           "type": "Arc",
           "units": {
@@ -1315,13 +1371,13 @@ description: Variables in memory after executing subtract_regression03.kcl
             "sourceRange": []
           },
           "from": [
-            -0.6283,
-            0.1884
+            -0.6282608782831526,
+            0.18843474560378842
           ],
           "tag": null,
           "to": [
-            -0.1634,
-            0.313
+            -0.1634438782831526,
+            0.31298174560378844
           ],
           "type": "ToPoint",
           "units": {
@@ -1335,18 +1391,18 @@ description: Variables in memory after executing subtract_regression03.kcl
           },
           "ccw": false,
           "center": [
-            0.0,
-            -0.297
+            0.0000003486990892975772,
+            -0.2970004136977582
           ],
           "from": [
-            -0.1634,
-            0.313
+            -0.1634438782831526,
+            0.31298174560378844
           ],
           "radius": 0.6315,
           "tag": null,
           "to": [
-            0.1634,
-            0.313
+            0.16344457568133114,
+            0.31298174560378844
           ],
           "type": "Arc",
           "units": {
@@ -1359,13 +1415,13 @@ description: Variables in memory after executing subtract_regression03.kcl
             "sourceRange": []
           },
           "from": [
-            0.1634,
-            0.313
+            0.16344457568133114,
+            0.31298174560378844
           ],
           "tag": null,
           "to": [
-            0.6283,
-            0.1884
+            0.6282615756813311,
+            0.18843474560378842
           ],
           "type": "ToPoint",
           "units": {
@@ -1379,18 +1435,18 @@ description: Variables in memory after executing subtract_regression03.kcl
           },
           "ccw": false,
           "center": [
-            0.5858,
-            0.0298
+            0.5857505475232421,
+            0.029781428635808932
           ],
           "from": [
-            0.6283,
-            0.1884
+            0.6282615756813311,
+            0.18843474560378842
           ],
           "radius": 0.16425,
           "tag": null,
           "to": [
-            0.7168,
-            -0.0692
+            0.7168314615157627,
+            -0.06919259061614122
           ],
           "type": "Arc",
           "units": {
@@ -1403,13 +1459,13 @@ description: Variables in memory after executing subtract_regression03.kcl
             "sourceRange": []
           },
           "from": [
-            0.7168,
-            -0.0692
+            0.7168314615157627,
+            -0.06919259061614122
           ],
           "tag": null,
           "to": [
-            0.5165,
-            -0.3345
+            0.5165084615157627,
+            -0.33450059061614124
           ],
           "type": "ToPoint",
           "units": {
@@ -1445,16 +1501,24 @@ description: Variables in memory after executing subtract_regression03.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
         "from": [
-          -0.5037,
-          -0.2649
+          -0.503704,
+          -0.264924
         ],
         "to": [
-          -0.5037,
-          -0.2649
+          -0.503704,
+          -0.264924
         ],
         "units": {
           "type": "Inches"
@@ -1469,7 +1533,8 @@ description: Variables in memory after executing subtract_regression03.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "isClosed": false
     }
   },
   "sketch003": {
@@ -1501,6 +1566,14 @@ description: Variables in memory after executing subtract_regression03.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": -0.6687257877094245,
+        "y": -0.7435091262737867,
+        "z": -0.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -1521,7 +1594,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           ],
           "tag": null,
           "to": [
-            0.129,
+            0.129019,
             0.06
           ],
           "type": "ToPoint",
@@ -1535,7 +1608,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             "sourceRange": []
           },
           "from": [
-            0.129,
+            0.129019,
             0.06
           ],
           "tag": null,
@@ -1615,6 +1688,14 @@ description: Variables in memory after executing subtract_regression03.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": -0.6687257877094245,
+          "y": -0.7435091262737867,
+          "z": -0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1671,6 +1752,14 @@ description: Variables in memory after executing subtract_regression03.kcl
         "units": {
           "type": "Unknown"
         }
+      },
+      "zAxis": {
+        "x": -0.7980581665924197,
+        "y": 0.6025804201392091,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -1710,7 +1799,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           ],
           "tag": null,
           "to": [
-            -0.129,
+            -0.129019,
             0.06
           ],
           "type": "ToPoint",
@@ -1724,7 +1813,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             "sourceRange": []
           },
           "from": [
-            -0.129,
+            -0.129019,
             0.06
           ],
           "tag": null,
@@ -1782,6 +1871,14 @@ description: Variables in memory after executing subtract_regression03.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": -0.7980581665924197,
+          "y": 0.6025804201392091,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }
@@ -1882,6 +1979,14 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.6687257877094245,
+            "y": -0.7435091262737867,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }

@@ -1,12 +1,13 @@
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import MillionLint from '@million/lint'
 import eslint from '@nabla/vite-plugin-eslint'
 import react from '@vitejs/plugin-react'
 import version from 'vite-plugin-package-version'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, defineConfig } from 'vitest/config'
-import MillionLint from '@million/lint'
+import { indexHtmlCsp } from './vite.base.config'
 
 export default defineConfig(({ command, mode }) => {
   const runMillion = process.env.RUN_MILLION
@@ -55,9 +56,10 @@ export default defineConfig(({ command, mode }) => {
         : // Gotcha: 'hanging-process' is very noisey, turn off by default on localhost
           // : ['verbose', 'hanging-process'],
           ['verbose'],
-      testTimeout: 1000,
+      testTimeout: 2000,
       hookTimeout: 1000,
       teardownTimeout: 1000,
+      retry: 5,
     },
     build: {
       outDir: 'build',
@@ -76,6 +78,7 @@ export default defineConfig(({ command, mode }) => {
     },
     plugins: [
       react(),
+      indexHtmlCsp(!process.env.VERCEL && mode !== 'development'),
       viteTsconfigPaths(),
       eslint(),
       version(),

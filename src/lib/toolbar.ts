@@ -11,6 +11,7 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
@@ -46,6 +47,7 @@ export type ToolbarItem = {
     | string
     | ((state: StateFrom<typeof modelingMachine>) => string | string[])
   description: string
+  extraNote?: string
   links: { label: string; url: string }[]
   isActive?: (state: StateFrom<typeof modelingMachine>) => boolean
   disabledReason?:
@@ -102,7 +104,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
         links: [
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/startSketchOn' },
+          {
+            label: 'KCL docs',
+            url: withSiteBaseURL(
+              '/docs/kcl-std/functions/std-sketch-startSketchOn'
+            ),
+          },
         ],
       },
       'break',
@@ -118,7 +125,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Extrude',
         hotkey: 'E',
         description: 'Pull a sketch into 3D along its normal or perpendicular.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/extrude' }],
+        links: [
+          {
+            label: 'KCL docs',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-extrude'),
+          },
+        ],
       },
       {
         id: 'sweep',
@@ -136,7 +148,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl/sweep',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-sweep'),
           },
         ],
       },
@@ -156,7 +168,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl/loft',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-loft'),
           },
         ],
       },
@@ -174,10 +186,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         description:
           'Create a 3D body by rotating a sketch region about an axis.',
         links: [
-          { label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/revolve' },
+          {
+            label: 'KCL docs',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-revolve'),
+          },
           {
             label: 'KCL example',
-            url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
+            url: withSiteBaseURL('/docs/kcl-samples/ball-bearing'),
           },
         ],
       },
@@ -194,7 +209,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Fillet',
         hotkey: 'F',
         description: 'Round the edges of a 3D solid.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/fillet' }],
+        links: [
+          {
+            label: 'KCL docs',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-fillet'),
+          },
+        ],
       },
       {
         id: 'chamfer3d',
@@ -208,7 +228,18 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Chamfer',
         hotkey: 'C',
         description: 'Bevel the edges of a 3D solid.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/chamfer' }],
+        extraNote:
+          'Chamfers cannot touch other chamfers yet. This is under development, see issue tracker.',
+        links: [
+          {
+            label: 'issue tracker',
+            url: 'https://github.com/KittyCAD/modeling-app/issues/6617',
+          },
+          {
+            label: 'KCL docs',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-chamfer'),
+          },
+        ],
       },
       {
         id: 'shell',
@@ -222,7 +253,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         title: 'Shell',
         description: 'Hollow out a 3D solid.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/shell' }],
+        links: [
+          {
+            label: 'KCL docs',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-shell'),
+          },
+        ],
       },
       'break',
       {
@@ -241,8 +277,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             description: 'Combine two or more solids into a single solid.',
             links: [
               {
-                label: 'GitHub discussion',
-                url: 'https://github.com/KittyCAD/modeling-app/discussions/509',
+                label: 'KCL docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-union'),
               },
             ],
           },
@@ -259,8 +295,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             description: 'Subtract one solid from another.',
             links: [
               {
-                label: 'GitHub discussion',
-                url: 'https://github.com/KittyCAD/modeling-app/discussions/510',
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-subtract'
+                ),
               },
             ],
           },
@@ -277,8 +315,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             description: 'Create a solid from the intersection of two solids.',
             links: [
               {
-                label: 'GitHub discussion',
-                url: 'https://github.com/KittyCAD/modeling-app/discussions/511',
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-intersect'
+                ),
               },
             ],
           },
@@ -304,7 +344,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'KCL docs',
-                url: 'https://zoo.dev/docs/kcl/offsetPlane',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-offsetPlane'),
               },
             ],
           },
@@ -332,7 +372,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         title: 'Helix',
         description: 'Create a helix or spiral in 3D about an axis.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/helix' }],
+        links: [
+          {
+            label: 'KCL docs',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-helix'),
+          },
+        ],
       },
       'break',
       {
@@ -351,7 +396,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'API docs',
-            url: 'https://zoo.dev/docs/kcl/import',
+            url: withSiteBaseURL('/docs/kcl-lang/modules'),
           },
         ],
       },
@@ -372,7 +417,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl/translate',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-transform-translate'
+                ),
               },
             ],
           },
@@ -390,7 +437,27 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl/rotate',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-transform-rotate'
+                ),
+              },
+            ],
+          },
+          {
+            id: 'scale',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Scale', groupId: 'modeling' },
+              }),
+            icon: 'scale',
+            status: 'available',
+            title: 'Scale',
+            description: 'Apply scaling to a solid or sketch.',
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl-std/functions/std-transform-scale',
               },
             ],
           },
@@ -408,7 +475,26 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'API docs',
-                url: 'https://zoo.dev/docs/kcl/clone',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-clone'),
+              },
+            ],
+          },
+          {
+            id: 'appearance',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Appearance', groupId: 'modeling' },
+              }),
+            status: 'available',
+            title: 'Appearance',
+            icon: 'text',
+            description:
+              'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+            links: [
+              {
+                label: 'API docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-appearance'),
               },
             ],
           },
@@ -444,7 +530,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [
               {
                 label: 'API docs',
-                url: 'https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text',
+                url: withSiteBaseURL(
+                  '/docs/api/ml/generate-a-cad-model-from-text'
+                ),
               },
             ],
           },
@@ -701,7 +789,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl/polygon',
+            url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-polygon'),
           },
         ],
       },
@@ -717,7 +805,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: 'https://zoo.dev/docs/kcl/std-sketch-mirror2d',
+            url: withSiteBaseURL(
+              '/docs/kcl-std/functions/std-transform-mirror2d'
+            ),
           },
         ],
       },

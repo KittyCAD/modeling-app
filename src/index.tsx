@@ -10,7 +10,6 @@ import '@src/index.css'
 import { initPromise } from '@src/lang/wasmUtils'
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
-import { isDesktop } from '@src/lib/isDesktop'
 import { markOnce } from '@src/lib/performance'
 import { reportRejection } from '@src/lib/trap'
 import { appActor, systemIOActor, commandBarActor } from '@src/lib/singletons'
@@ -19,14 +18,6 @@ import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicatio
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler()
-
-// uncomment for xstate inspector
-// import { DEV } from 'env'
-// import { inspect } from '@xstate/inspect'
-// if (DEV)
-//   inspect({
-//     iframe: false,
-//   })
 
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
@@ -80,22 +71,33 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals()
 
-if (isDesktop()) {
-  // Listen for update download progress to begin
-  // to show a loading toast.
+if (window.electron) {
+  window.electron.onUpdateChecking(() => {
+    const message = `Checking for updates...`
+    console.log(message)
+    toast.loading(message, { id: AUTO_UPDATER_TOAST_ID })
+  })
+
+  window.electron.onUpdateNotAvailable(() => {
+    const message = `You're already using the latest version of the app.`
+    console.log(message)
+    toast.success(message, { id: AUTO_UPDATER_TOAST_ID })
+  })
+
   window.electron.onUpdateDownloadStart(() => {
     const message = `Downloading app update...`
     console.log(message)
     toast.loading(message, { id: AUTO_UPDATER_TOAST_ID })
   })
-  // Listen for update download errors to show
-  // an error toast and clear the loading toast.
+
   window.electron.onUpdateError(({ error }) => {
     console.error(error)
     toast.error('An error occurred while downloading the update.', {
       id: AUTO_UPDATER_TOAST_ID,
     })
   })
+
+  const electron = window.electron
   window.electron.onUpdateDownloaded(({ version, releaseNotes }) => {
     const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
     console.log(message)
@@ -104,7 +106,7 @@ if (isDesktop()) {
         version,
         releaseNotes,
         onRestart: () => {
-          window.electron.appRestart()
+          electron.appRestart()
         },
         onDismiss: () => {},
       }),

@@ -1,6 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-
-import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useKclContext } from '@src/lang/KclProvider'
 import { findUniqueName } from '@src/lang/create'
 import type { PrevVariable } from '@src/lang/queryAst'
@@ -11,6 +9,8 @@ import { parse, resultIsOk } from '@src/lang/wasm'
 import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import { getInVariableCase } from '@src/lib/utils'
+import type { Selections } from '@src/lib/selections'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -24,10 +24,12 @@ export function useCalculateKclExpression({
   value,
   initialVariableName: valueName = '',
   sourceRange,
+  selectionRanges,
 }: {
   value: string
   initialVariableName?: string
   sourceRange?: SourceRange
+  selectionRanges: Selections
 }): {
   inputRef: React.RefObject<HTMLInputElement>
   valueNode: Expr | null
@@ -44,12 +46,10 @@ export function useCalculateKclExpression({
   // has completed
   const [isExecuting, setIsExecuting] = useState(false)
   const { variables, code } = useKclContext()
-  const { context } = useModelingContext()
   // If there is no selection, use the end of the code
   // so all variables are available
-  const selectionRange:
-    | (typeof context)['selectionRanges']['graphSelections'][number]['codeRef']['range']
-    | undefined = context.selectionRanges.graphSelections[0]?.codeRef?.range
+  const selectionRange: SourceRange | undefined =
+    selectionRanges.graphSelections[0]?.codeRef?.range
   // If there is no selection, use the end of the code
   // If we don't memoize this, we risk an infinite set/read state loop
   const endingSourceRange = useMemo(
@@ -78,10 +78,18 @@ export function useCalculateKclExpression({
     isValueParsable = false
   }
   const initialCalcResult: number | string =
-    Number.isNaN(Number(value)) || !isValueParsable ? 'NAN' : value
+    Number.isNaN(parseFloat(value)) || !isValueParsable ? 'NAN' : value
   const [calcResult, setCalcResult] = useState(initialCalcResult)
-  const [newVariableName, setNewVariableName] = useState('')
+  const [newVariableName, _setNewVariableName] = useState('')
   const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)
+
+  const setNewVariableName = useCallback(
+    (value: string) => {
+      const camelCaseValue = value ? getInVariableCase(value) : ''
+      _setNewVariableName(camelCaseValue || '')
+    },
+    [_setNewVariableName]
+  )
 
   useEffect(() => {
     setTimeout(() => {
@@ -90,6 +98,7 @@ export function useCalculateKclExpression({
         inputRef.current.setSelectionRange(0, String(value).length)
     }, 100)
     setNewVariableName(findUniqueName(kclManager.ast, valueName))
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   useEffect(() => {
@@ -112,6 +121,7 @@ export function useCalculateKclExpression({
       endingSourceRange
     )
     setAvailableVarInfo(varInfo)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.ast, kclManager.variables, endingSourceRange])
 
   useEffect(() => {
@@ -135,6 +145,7 @@ export function useCalculateKclExpression({
       setIsExecuting(false)
       setValueNode(null)
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [value, availableVarInfo, code, kclManager.variables])
 
   return {

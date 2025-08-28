@@ -3,8 +3,8 @@
 
 use super::CompilationError;
 use crate::{
-    parsing::ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
     SourceRange,
+    parsing::ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
 };
 
 /// Parses a list of tokens (in infix order, i.e. as the user typed them)
@@ -28,20 +28,17 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, C
                 let Some(left) = operand_stack.pop() else {
                     return Err(e);
                 };
-                let start = left.start();
-                let end = right.end();
-                let module_id = left.module_id();
 
                 BinaryPart::BinaryExpression(Node::boxed(
+                    left.start(),
+                    right.end(),
+                    left.module_id(),
                     BinaryExpression {
                         operator,
                         left,
                         right,
                         digest: None,
                     },
-                    start,
-                    end,
-                    module_id,
                 ))
             }
             BinaryExpressionToken::Operand(o) => o,
@@ -127,11 +124,11 @@ impl From<BinaryOperator> for BinaryExpressionToken {
 mod tests {
     use super::*;
     use crate::{
+        ModuleId,
         parsing::{
             ast::types::{Literal, LiteralValue},
             token::NumericSuffix,
         },
-        ModuleId,
     };
 
     #[test]
@@ -162,15 +159,15 @@ mod tests {
                 lit(2).into(),
                 BinaryOperator::Div.into(),
                 BinaryPart::BinaryExpression(Node::boxed(
+                    0,
+                    0,
+                    ModuleId::default(),
                     BinaryExpression {
                         operator: BinaryOperator::Sub,
                         left: lit(1),
                         right: lit(5),
                         digest: None,
                     },
-                    0,
-                    0,
-                    ModuleId::default(),
                 ))
                 .into(),
                 BinaryOperator::Pow.into(),

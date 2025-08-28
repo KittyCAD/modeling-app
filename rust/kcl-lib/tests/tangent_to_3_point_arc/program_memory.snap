@@ -52,6 +52,7 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
           "tag": {
             "commentStart": 221,
             "end": 227,
+            "moduleId": 0,
             "start": 221,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -76,8 +77,8 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
           ],
           "tag": null,
           "to": [
-            100.1962,
-            -106.2608
+            100.1961777805678,
+            -106.26075637538877
           ],
           "type": "ToPoint",
           "units": {
@@ -113,6 +114,14 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -143,7 +152,8 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "seg01": {
@@ -177,6 +187,14 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }

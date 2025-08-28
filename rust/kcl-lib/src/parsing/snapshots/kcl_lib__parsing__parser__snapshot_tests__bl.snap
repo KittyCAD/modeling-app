@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 1,
+          "moduleId": 0,
           "name": "x",
           "start": 0,
           "type": "Identifier"
@@ -20,6 +21,7 @@ expression: actual
           "argument": {
             "commentStart": 5,
             "end": 9,
+            "moduleId": 0,
             "raw": "true",
             "start": 5,
             "type": "Literal",
@@ -28,16 +30,19 @@ expression: actual
           },
           "commentStart": 4,
           "end": 9,
+          "moduleId": 0,
           "operator": "!",
           "start": 4,
           "type": "UnaryExpression",
           "type": "UnaryExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 9,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -45,5 +50,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 9,
+  "moduleId": 0,
   "start": 0
 }

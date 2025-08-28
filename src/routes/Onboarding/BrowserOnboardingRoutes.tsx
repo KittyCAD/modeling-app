@@ -18,18 +18,19 @@ import {
   BROWSER_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import type { Selections } from '@src/lib/selections'
 import { systemIOActor, commandBarActor } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useEffect, useState } from 'react'
-import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import {
   browserAxialFan,
   browserAxialFanAfterTextToCad,
 } from '@src/lib/exampleKcl'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type BrowserOnboaringRoute = RouteObject & {
   path: keyof typeof browserOnboardingPaths
@@ -149,7 +150,7 @@ function Toolbar() {
   useOnboardingPanes()
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-start justify-center p-16">
+    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-start justify-center p-24">
       <OnboardingCard>
         <h1 className="text-xl font-bold">This is the toolbar</h1>
         <p className="my-4">
@@ -170,7 +171,7 @@ function TextToCad() {
   useOnboardingPanes()
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-start justify-center p-16">
+    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-start justify-center p-24">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Text-to-CAD</h1>
         <p className="my-4">
@@ -325,7 +326,7 @@ function PromptToEdit() {
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus)
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-center justify-center p-16">
+    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-center justify-center p-24">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Modify with Zoo Text-to-CAD</h1>
         <p className="my-4">
@@ -460,18 +461,17 @@ function PromptToEditResult() {
 function OnboardingConclusion() {
   // Close the panes on mount, close on unmount
   useOnboardingPanes()
+  const downloadLink = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
 
   return (
-    <div className="cursor-not-allowed fixed inset-0 z-50 p-16 grid justify-center items-center">
+    <div className="cursor-not-allowed fixed inset-0 z-50 p-24 grid justify-center items-center">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Download the desktop app</h1>
         <p className="my-4">
           We highly encourage you to{' '}
           <a
-            onClick={openExternalBrowserIfDesktop(
-              `${VITE_KC_SITE_BASE_URL}/modeling-app/download/nightly`
-            )}
-            href="https://zoo.dev/modeling-app/download/nightly"
+            onClick={openExternalBrowserIfDesktop(downloadLink)}
+            href={downloadLink}
             target="_blank"
             rel="noopener noreferrer"
           >

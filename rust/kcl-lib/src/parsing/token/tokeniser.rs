@@ -1,19 +1,19 @@
 use fnv::FnvHashMap;
 use lazy_static::lazy_static;
 use winnow::{
+    LocatingSlice, Stateful,
     ascii::{digit1, multispace1},
     combinator::{alt, opt, peek, preceded, repeat},
     error::{ContextError, ParseError},
     prelude::*,
     stream::{Location, Stream},
-    token::{any, none_of, one_of, take_till, take_until},
-    LocatingSlice, Stateful,
+    token::{any, none_of, take_till, take_until, take_while},
 };
 
 use super::TokenStream;
 use crate::{
-    parsing::token::{Token, TokenType},
     ModuleId,
+    parsing::token::{Token, TokenType},
 };
 
 lazy_static! {
@@ -34,14 +34,12 @@ lazy_static! {
         set.insert("true", TokenType::Keyword);
         set.insert("false", TokenType::Keyword);
         set.insert("nil", TokenType::Keyword);
-        // This isn't a type because brackets are used for the type.
-        set.insert("array", TokenType::Keyword);
         set.insert("and", TokenType::Keyword);
         set.insert("or", TokenType::Keyword);
         set.insert("not", TokenType::Keyword);
         set.insert("var", TokenType::Keyword);
         set.insert("const", TokenType::Keyword);
-        // "import" is special because of import().
+        set.insert("import", TokenType::Keyword);
         set.insert("export", TokenType::Keyword);
         set.insert("type", TokenType::Keyword);
         set.insert("interface", TokenType::Keyword);
@@ -77,7 +75,7 @@ impl State {
     }
 }
 
-pub(super) fn token(i: &mut Input<'_>) -> PResult<Token> {
+pub(super) fn token(i: &mut Input<'_>) -> ModalResult<Token> {
     match winnow::combinator::dispatch! {peek(any);
         '"' | '\'' => string,
         '/' => alt((line_comment, block_comment, operator)),
@@ -89,7 +87,7 @@ pub(super) fn token(i: &mut Input<'_>) -> PResult<Token> {
         '0'..='9' => number,
         ';' => semi_colon,
         ':' => alt((double_colon, colon)),
-        '.' => alt((number, double_period, period)),
+        '.' => alt((number, double_period_less_than, double_period, period)),
         '#' => hash,
         '$' => dollar,
         '!' => alt((operator, bang)),
@@ -105,8 +103,9 @@ pub(super) fn token(i: &mut Input<'_>) -> PResult<Token> {
                 return Err(x);
             }
 
+            let start = i.current_token_start();
             Ok(Token::from_range(
-                i.location()..i.location() + 1,
+                start..start + 1,
                 i.state.module_id,
                 TokenType::Unknown,
                 i.next_slice(1).to_string(),
@@ -115,7 +114,7 @@ pub(super) fn token(i: &mut Input<'_>) -> PResult<Token> {
     }
 }
 
-fn block_comment(i: &mut Input<'_>) -> PResult<Token> {
+fn block_comment(i: &mut Input<'_>) -> ModalResult<Token> {
     let inner = ("/*", take_until(0.., "*/"), "*/").take();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(
@@ -126,7 +125,7 @@ fn block_comment(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn line_comment(i: &mut Input<'_>) -> PResult<Token> {
+fn line_comment(i: &mut Input<'_>) -> ModalResult<Token> {
     let inner = (r#"//"#, take_till(0.., ['\n', '\r'])).take();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(
@@ -137,7 +136,7 @@ fn line_comment(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn number(i: &mut Input<'_>) -> PResult<Token> {
+fn number(i: &mut Input<'_>) -> ModalResult<Token> {
     let number_parser = alt((
         // Digits before the decimal point.
         (digit1, opt(('.', digit1)), opt('_'), opt(alt(super::NUM_SUFFIXES))).map(|_| ()),
@@ -153,7 +152,7 @@ fn number(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn whitespace(i: &mut Input<'_>) -> PResult<Token> {
+fn whitespace(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = multispace1.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -163,13 +162,13 @@ fn whitespace(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn inner_word(i: &mut Input<'_>) -> PResult<()> {
-    one_of(('a'..='z', 'A'..='Z', '_')).parse_next(i)?;
-    repeat::<_, _, (), _, _>(0.., one_of(('a'..='z', 'A'..='Z', '0'..='9', '_'))).parse_next(i)?;
+fn inner_word(i: &mut Input<'_>) -> ModalResult<()> {
+    take_while(1.., |c: char| c.is_alphabetic() || c == '_').parse_next(i)?;
+    take_while(0.., |c: char| c.is_alphabetic() || c.is_ascii_digit() || c == '_').parse_next(i)?;
     Ok(())
 }
 
-fn word(i: &mut Input<'_>) -> PResult<Token> {
+fn word(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = inner_word.take().with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -179,9 +178,9 @@ fn word(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn operator(i: &mut Input<'_>) -> PResult<Token> {
+fn operator(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = alt((
-        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "^", "|", "&",
+        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "^", "||", "&&", "|", "&",
     ))
     .with_span()
     .parse_next(i)?;
@@ -193,7 +192,7 @@ fn operator(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn brace_start(i: &mut Input<'_>) -> PResult<Token> {
+fn brace_start(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = alt(('{', '(', '[')).with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -203,7 +202,7 @@ fn brace_start(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn brace_end(i: &mut Input<'_>) -> PResult<Token> {
+fn brace_end(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = alt(('}', ')', ']')).with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -213,7 +212,7 @@ fn brace_end(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn comma(i: &mut Input<'_>) -> PResult<Token> {
+fn comma(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = ','.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -223,7 +222,7 @@ fn comma(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn hash(i: &mut Input<'_>) -> PResult<Token> {
+fn hash(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '#'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -233,7 +232,7 @@ fn hash(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn bang(i: &mut Input<'_>) -> PResult<Token> {
+fn bang(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '!'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -243,7 +242,7 @@ fn bang(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn dollar(i: &mut Input<'_>) -> PResult<Token> {
+fn dollar(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '$'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -253,7 +252,7 @@ fn dollar(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn question_mark(i: &mut Input<'_>) -> PResult<Token> {
+fn question_mark(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '?'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -263,7 +262,7 @@ fn question_mark(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn at(i: &mut Input<'_>) -> PResult<Token> {
+fn at(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '@'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -273,7 +272,7 @@ fn at(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn colon(i: &mut Input<'_>) -> PResult<Token> {
+fn colon(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = ':'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -283,7 +282,7 @@ fn colon(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn semi_colon(i: &mut Input<'_>) -> PResult<Token> {
+fn semi_colon(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = ';'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -293,7 +292,7 @@ fn semi_colon(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn double_colon(i: &mut Input<'_>) -> PResult<Token> {
+fn double_colon(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = "::".with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -302,7 +301,7 @@ fn double_colon(i: &mut Input<'_>) -> PResult<Token> {
         value.to_string(),
     ))
 }
-fn period(i: &mut Input<'_>) -> PResult<Token> {
+fn period(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = '.'.with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -312,7 +311,7 @@ fn period(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn double_period(i: &mut Input<'_>) -> PResult<Token> {
+fn double_period(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = "..".with_span().parse_next(i)?;
     Ok(Token::from_range(
         range,
@@ -322,21 +321,31 @@ fn double_period(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
+fn double_period_less_than(i: &mut Input<'_>) -> ModalResult<Token> {
+    let (value, range) = "..<".with_span().parse_next(i)?;
+    Ok(Token::from_range(
+        range,
+        i.state.module_id,
+        TokenType::DoublePeriodLessThan,
+        value.to_string(),
+    ))
+}
+
 /// Zero or more of either:
 /// 1. Any character except " or \
 /// 2. Any character preceded by \
-fn inner_double_quote(i: &mut Input<'_>) -> PResult<()> {
+fn inner_double_quote(i: &mut Input<'_>) -> ModalResult<()> {
     repeat(0.., alt((none_of(('"', '\\')), preceded('\\', winnow::token::any)))).parse_next(i)
 }
 
 /// Zero or more of either:
 /// 1. Any character except ' or \
 /// 2. Any character preceded by \
-fn inner_single_quote(i: &mut Input<'_>) -> PResult<()> {
+fn inner_single_quote(i: &mut Input<'_>) -> ModalResult<()> {
     repeat(0.., alt((none_of(('\'', '\\')), preceded('\\', winnow::token::any)))).parse_next(i)
 }
 
-fn string(i: &mut Input<'_>) -> PResult<Token> {
+fn string(i: &mut Input<'_>) -> ModalResult<Token> {
     let single_quoted_string = ('\'', inner_single_quote.take(), '\'');
     let double_quoted_string = ('"', inner_double_quote.take(), '"');
     let either_quoted_string = alt((single_quoted_string.take(), double_quoted_string.take()));
@@ -349,7 +358,7 @@ fn string(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn import_keyword(i: &mut Input<'_>) -> PResult<Token> {
+fn import_keyword(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = "import".with_span().parse_next(i)?;
     let token_type = peek(alt((' '.map(|_| TokenType::Keyword), '('.map(|_| TokenType::Word)))).parse_next(i)?;
     Ok(Token::from_range(
@@ -360,7 +369,7 @@ fn import_keyword(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn unambiguous_keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
+fn unambiguous_keyword_type_or_word(i: &mut Input<'_>) -> ModalResult<Token> {
     let mut w = word.parse_next(i)?;
     if let Some(token_type) = RESERVED_WORDS.get(w.value.as_str()) {
         w.token_type = *token_type;
@@ -368,7 +377,7 @@ fn unambiguous_keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
     Ok(w)
 }
 
-fn keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
+fn keyword_type_or_word(i: &mut Input<'_>) -> ModalResult<Token> {
     alt((import_keyword, unambiguous_keyword_type_or_word)).parse_next(i)
 }
 
@@ -395,7 +404,7 @@ mod tests {
     // Returns the token and whether any more input is remaining to tokenize.
     fn assert_parse_ok<'i, P, O, E>(mut p: P, s: &'i str) -> (O, bool)
     where
-        E: std::fmt::Debug,
+        E: std::fmt::Debug + std::fmt::Display,
         O: std::fmt::Debug,
         P: Parser<Input<'i>, O, E>,
     {
@@ -777,6 +786,7 @@ const things = "things"
         };
         assert_eq!(actual.tokens[0], expected);
     }
+
     #[test]
     fn test_word_starting_with_keyword() {
         let module_id = ModuleId::default();
@@ -786,6 +796,20 @@ const things = "things"
             value: "truee".to_owned(),
             start: 0,
             end: 5,
+            module_id,
+        };
+        assert_eq!(actual.tokens[0], expected);
+    }
+
+    #[test]
+    fn non_english_identifiers() {
+        let module_id = ModuleId::default();
+        let actual = lex("亞當", module_id).unwrap();
+        let expected = Token {
+            token_type: TokenType::Word,
+            value: "亞當".to_owned(),
+            start: 0,
+            end: 6,
             module_id,
         };
         assert_eq!(actual.tokens[0], expected);

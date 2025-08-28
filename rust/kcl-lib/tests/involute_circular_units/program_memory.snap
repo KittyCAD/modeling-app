@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 187
 description: Variables in memory after executing involute_circular_units.kcl
 ---
 {
@@ -21,18 +20,14 @@ description: Variables in memory after executing involute_circular_units.kcl
     "type": "Number",
     "value": 6.0,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     }
   },
   "baseDiameter": {
     "type": "Number",
-    "value": 9.8668,
+    "value": 9.866772518252038,
     "ty": {
       "type": "Default",
       "len": {
@@ -139,9 +134,10 @@ description: Variables in memory after executing involute_circular_units.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 505,
-            "end": 511,
-            "start": 505,
+            "commentStart": 508,
+            "end": 514,
+            "moduleId": 0,
+            "start": 508,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -159,9 +155,10 @@ description: Variables in memory after executing involute_circular_units.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 708,
-            "end": 714,
-            "start": 708,
+            "commentStart": 714,
+            "end": 720,
+            "moduleId": 0,
+            "start": 714,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -187,6 +184,13 @@ description: Variables in memory after executing involute_circular_units.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -199,19 +203,20 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              4.9334,
+              4.933386259126019,
               0.0
             ],
             "tag": {
-              "commentStart": 505,
-              "end": 511,
-              "start": 505,
+              "commentStart": 508,
+              "end": 514,
+              "moduleId": 0,
+              "start": 508,
               "type": "TagDeclarator",
               "value": "seg01"
             },
             "to": [
-              5.7399,
-              0.3404
+              5.7399134909054,
+              0.3404307813964144
             ],
             "type": "ToPoint",
             "units": {
@@ -224,13 +229,13 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              5.7399,
-              0.3404
+              5.7399134909054,
+              0.3404307813964144
             ],
             "tag": null,
             "to": [
-              5.7399,
-              0.3404
+              5.7399134909054,
+              0.3404307813964144
             ],
             "type": "ToPoint",
             "units": {
@@ -244,24 +249,25 @@ description: Variables in memory after executing involute_circular_units.kcl
             },
             "ccw": true,
             "center": [
-              0.0,
-              -0.0006
+              0.00003551162888282278,
+              -0.0005982247255254536
             ],
             "from": [
-              5.7399,
-              0.3404
+              5.7399134909054,
+              0.3404307813964144
             ],
             "radius": 5.75,
             "tag": {
-              "commentStart": 708,
-              "end": 714,
-              "start": 708,
+              "commentStart": 714,
+              "end": 720,
+              "moduleId": 0,
+              "start": 714,
               "type": "TagDeclarator",
               "value": "seg02"
             },
             "to": [
-              5.6792,
-              0.8989
+              5.679243470050925,
+              0.8988999492558021
             ],
             "type": "Arc",
             "units": {
@@ -274,13 +280,13 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              5.6792,
-              0.8989
+              5.679243470050925,
+              0.8988999492558021
             ],
             "tag": null,
             "to": [
-              4.8196,
-              1.0642
+              4.819561253992905,
+              1.0642050608448215
             ],
             "type": "ToPoint",
             "units": {
@@ -293,13 +299,13 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              4.8196,
-              1.0642
+              4.819561253992905,
+              1.0642050608448215
             ],
             "tag": null,
             "to": [
-              4.8196,
-              1.0642
+              4.819561253992905,
+              1.0642050608448215
             ],
             "type": "ToPoint",
             "units": {
@@ -312,13 +318,13 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              4.8196,
-              1.0642
+              4.819561253992905,
+              1.0642050608448215
             ],
             "tag": null,
             "to": [
-              4.7142,
-              1.4541
+              4.714209749659843,
+              1.4541411272450477
             ],
             "type": "ToPoint",
             "units": {
@@ -331,15 +337,42 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              4.7142,
-              1.4541
+              4.714209749659843,
+              1.4541411272450477
             ],
             "tag": null,
             "to": [
-              4.9334,
+              4.933386259126019,
               0.0
             ],
             "type": "ToPoint",
+            "units": {
+              "type": "Cm"
+            }
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              1.0,
+              0.0
+            ],
+            "radius": 1.0,
+            "tag": null,
+            "to": [
+              1.0,
+              0.0
+            ],
+            "type": "Circle",
             "units": {
               "type": "Cm"
             }
@@ -373,15 +406,23 @@ description: Variables in memory after executing involute_circular_units.kcl
             "units": {
               "type": "Unknown"
             }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
           "from": [
-            4.9334,
+            4.933386259126019,
             0.0
           ],
           "to": [
-            4.9334,
+            4.933386259126019,
             0.0
           ],
           "units": {

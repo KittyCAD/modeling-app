@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 
-use schemars::{gen::SchemaGenerator, JsonSchema};
-use serde_json::{json, Value};
+use schemars::{JsonSchema, r#gen::SchemaGenerator};
+use serde_json::{Value, json};
 
-use crate::settings::types::{project::ProjectConfiguration, Configuration};
+use crate::settings::types::{Configuration, project::ProjectConfiguration};
 
 // Project settings example in TOML format
 const PROJECT_SETTINGS_EXAMPLE: &str = r#"[settings.app]
@@ -55,17 +55,17 @@ fn init_handlebars() -> handlebars::Handlebars<'static> {
              _: &mut handlebars::RenderContext,
              out: &mut dyn handlebars::Output|
              -> handlebars::HelperResult {
-                if let Some(enum_value) = h.param(0) {
-                    if let Some(array) = enum_value.value().as_array() {
-                        let pretty_options = array
-                            .iter()
-                            .filter_map(|v| v.as_str())
-                            .map(|s| format!("`{}`", s))
-                            .collect::<Vec<_>>()
-                            .join(", ");
-                        out.write(&pretty_options)?;
-                        return Ok(());
-                    }
+                if let Some(enum_value) = h.param(0)
+                    && let Some(array) = enum_value.value().as_array()
+                {
+                    let pretty_options = array
+                        .iter()
+                        .filter_map(|v| v.as_str())
+                        .map(|s| format!("`{s}`"))
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    out.write(&pretty_options)?;
+                    return Ok(());
                 }
                 out.write("No options available")?;
                 Ok(())
@@ -89,17 +89,17 @@ fn init_handlebars() -> handlebars::Handlebars<'static> {
                         Value::Null => out.write("None")?,
                         Value::Bool(b) => out.write(&b.to_string())?,
                         Value::Number(n) => out.write(&n.to_string())?,
-                        Value::String(s) => out.write(&format!("`{}`", s))?,
+                        Value::String(s) => out.write(&format!("`{s}`"))?,
                         Value::Array(arr) => {
                             let formatted = arr
                                 .iter()
                                 .map(|v| match v {
-                                    Value::String(s) => format!("`{}`", s),
-                                    _ => format!("{}", v),
+                                    Value::String(s) => format!("`{s}`"),
+                                    _ => format!("{v}"),
                                 })
                                 .collect::<Vec<_>>()
                                 .join(", ");
-                            out.write(&format!("[{}]", formatted))?;
+                            out.write(&format!("[{formatted}]"))?;
                         }
                         Value::Object(_) => out.write("(complex default)")?,
                     }
@@ -122,7 +122,7 @@ pub fn generate_settings_docs() {
     let hbs = init_handlebars();
 
     // Generate project settings documentation
-    let mut settings = schemars::gen::SchemaSettings::default();
+    let mut settings = schemars::r#gen::SchemaSettings::default();
     settings.inline_subschemas = true;
     settings.meta_schema = None; // We don't need the meta schema for docs
     settings.option_nullable = false; // Important - makes Option fields show properly

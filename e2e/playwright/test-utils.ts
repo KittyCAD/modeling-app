@@ -17,10 +17,15 @@ import dotenv from 'dotenv'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
-export const token = process.env.token || ''
+export const token = process.env.VITE_KITTYCAD_API_TOKEN || ''
+
+/** A string version of a RegExp to get a number that may include a decimal point */
+export const NUMBER_REGEXP = '((-)?\\d+(\\.\\d+)?)'
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
@@ -36,13 +41,15 @@ export const headerMasks = (page: Page) => [
 ]
 
 export const lowerRightMasks = (page: Page) => [
-  page.getByTestId('network-toggle'),
+  page.getByTestId(/network-toggle/),
   page.getByTestId('billing-remaining-bar'),
 ]
 
 export type TestColor = [number, number, number]
 export const TEST_COLORS: { [key: string]: TestColor } = {
   WHITE: [249, 249, 249],
+  OFFWHITE: [237, 237, 237],
+  GREY: [142, 142, 142],
   YELLOW: [255, 255, 0],
   BLUE: [0, 0, 255],
   DARK_MODE_BKGD: [27, 27, 27],
@@ -52,14 +59,6 @@ export const TEST_COLORS: { [key: string]: TestColor } = {
 export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
 
 export const deg = (Math.PI * 2) / 360
-
-export const commonPoints = {
-  startAt: '[7.19, -9.7]',
-  num1: 7.25,
-  num2: 14.44,
-  /** The Y-value of a common lineTo move we perform in tests */
-  num3: -2.44,
-} as const
 
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
@@ -76,20 +75,6 @@ export function runningOnWindows() {
   return process.platform === 'win32'
 }
 
-async function waitForPageLoadWithRetry(page: Page) {
-  await expect(async () => {
-    await page.goto('/')
-    const errorMessage = 'App failed to load - 🔃 Retrying ...'
-
-    await expect(
-      page.getByRole('button', { name: 'sketch Start Sketch' }),
-      errorMessage
-    ).toBeEnabled({
-      timeout: 20_000,
-    })
-  }).toPass({ timeout: 70_000, intervals: [1_000] })
-}
-
 // lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
@@ -98,7 +83,9 @@ async function waitForPageLoad(page: Page) {
 }
 
 async function removeCurrentCode(page: Page) {
-  await page.locator('.cm-content').click()
+  // First, hover the element in case the current mouse position is in the way
+  await page.mouse.move(0, 0)
+  await page.locator('.cm-content').click({ delay: 50 })
   await page.keyboard.down('ControlOrMeta')
   await page.keyboard.press('a')
   await page.keyboard.up('ControlOrMeta')
@@ -169,10 +156,10 @@ async function openKclCodePanel(page: Page) {
   await page.evaluate(() => {
     // editorManager is available on the window object.
     //@ts-ignore this is in an entirely different context that tsc can't see.
-    editorManager._editorView.dispatch({
+    editorManager.getEditorView().dispatch({
       selection: {
         //@ts-ignore this is in an entirely different context that tsc can't see.
-        anchor: editorManager._editorView.docView.length,
+        anchor: editorManager.getEditorView().docView.length,
       },
       scrollIntoView: true,
     })
@@ -236,6 +223,11 @@ async function waitForCmdReceive(page: Page, commandType: string) {
     .waitFor()
 }
 
+/**
+ * Moves the mouse in a sine wave along a vector,
+ * useful for emulating organic fluid mouse motion which is not available normally in Playwright.
+ * Ex. used to activate the segment overlays by hovering around the sketch segments.
+ */
 export const wiggleMove = async (
   page: any,
   x: number,
@@ -266,6 +258,11 @@ export const wiggleMove = async (
   }
 }
 
+/**
+ * Moves the mouse in a complete circle about a point.
+ * useful for emulating organic "hovering" around motions, which are not available normally in Playwright.
+ * Ex. used to activate the segment overlays by hovering around the sketch segments.
+ */
 export const circleMove = async (
   page: Page,
   x: number,
@@ -351,13 +348,8 @@ async function waitForAuthAndLsp(page: Page) {
     },
     timeout: 45_000,
   })
-  if (process.env.CI) {
-    await waitForPageLoadWithRetry(page)
-  } else {
-    await page.goto('/')
-    await waitForPageLoad(page)
-  }
-
+  await page.goto('/')
+  await waitForPageLoad(page)
   return waitForLspPromise
 }
 
@@ -373,6 +365,46 @@ export function normaliseKclNumbers(code: string, ignoreZero = true): string {
   return replaceNumbers(code)
 }
 
+/**
+ * We've written a lot of tests using hard-coded pixel coordinates.
+ * This function translates those to stream-relative ones,
+ * or can be used to get stream coordinates by ratio.
+ *
+ * This is a duplicate impl to the one in sceneFixture.ts, for use in util functions
+ * which predate the fixture-based test system.
+ */
+async function convertPagePositionToStream(
+  x: number,
+  y: number,
+  page: Page,
+  format: 'pixels' | 'ratio' | undefined = 'pixels'
+) {
+  const viewportSize = page.viewportSize()
+  const streamBoundingBox = await page.getByTestId('stream').boundingBox()
+  if (viewportSize === null) {
+    throw Error('No viewport')
+  }
+  if (streamBoundingBox === null) {
+    throw Error('No stream to click')
+  }
+
+  const resolvedX =
+    (x / (format === 'pixels' ? viewportSize.width : 1)) *
+      streamBoundingBox.width +
+    streamBoundingBox.x
+  const resolvedY =
+    (y / (format === 'pixels' ? viewportSize.height : 1)) *
+      streamBoundingBox.height +
+    streamBoundingBox.y
+
+  const resolvedPoint = {
+    x: Math.round(resolvedX),
+    y: Math.round(resolvedY),
+  }
+
+  return resolvedPoint
+}
+
 export async function getUtils(page: Page, test_?: typeof test) {
   if (!test) {
     console.warn(
@@ -380,15 +412,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
     )
   }
 
-  // Chrome devtools protocol session only works in Chromium
-  const browserType = page.context().browser()?.browserType().name()
-  const cdpSession =
-    browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
-
   const util = {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
-    waitForPageLoadWithRetry: () => waitForPageLoadWithRetry(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
@@ -441,7 +467,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       page
         .locator(locator)
         .boundingBox({ timeout: 5_000 })
-        .then((box: any) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
+        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
     crushKclCodeIntoOneLineAndThenMaybeSome: async () => {
       const code = await page.locator('.cm-content').innerText()
@@ -475,6 +501,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
       coords: { x: number; y: number },
       expected: [number, number, number]
     ): Promise<number> => {
+      const transformedCoords = await convertPagePositionToStream(
+        coords.x,
+        coords.y,
+        page
+      )
       const buffer = await page.screenshot({
         fullPage: true,
       })
@@ -483,8 +514,8 @@ export async function getUtils(page: Page, test_?: typeof test) {
         'window.devicePixelRatio'
       )
       const index =
-        (screenshot.width * coords.y * pixMultiplier +
-          coords.x * pixMultiplier) *
+        (screenshot.width * transformedCoords.y * pixMultiplier +
+          transformedCoords.x * pixMultiplier) *
         4 // rbga is 4 channels
       const maxDiff = Math.max(
         Math.abs(screenshot.data[index] - expected[0]),
@@ -501,20 +532,17 @@ export async function getUtils(page: Page, test_?: typeof test) {
       return maxDiff
     },
     getPixelRGBs: getPixelRGBs(page),
-    doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
-      doAndWaitForImageDiff(page, fn, diffCount),
+    doAndWaitForImageDiff: (
+      fn: () => Promise<unknown>,
+      diffCount = 200,
+      locator?: Locator
+    ) => doAndWaitForImageDiff(locator || page, fn, diffCount),
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
-      if (cdpSession === null) {
-        // Use a fail safe if we can't simulate disconnect (on Safari)
-        return page.evaluate('window.engineCommandManager.tearDown()')
-      }
-
-      return cdpSession?.send(
-        'Network.emulateNetworkConditions',
-        networkOptions
-      )
+      return networkOptions.offline
+        ? page.evaluate('window.engineCommandManager.offline()')
+        : page.evaluate('window.engineCommandManager.online()')
     },
 
     toNormalizedCode(text: string) {
@@ -548,13 +576,16 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     createNewFile: async (name: string) => {
       return test?.step(`Create a file named ${name}`, async () => {
-        // If the application is in the middle of connecting a stream
-        // then creating a new file won't work in the end.
-        await expect(
-          page.getByRole('button', { name: 'Start Sketch' })
-        ).not.toBeDisabled()
         await page.getByTestId('create-file-button').click()
-        await page.getByTestId('tree-input-field').fill(name)
+        await page.getByTestId('file-rename-field').fill(name)
+        await page.keyboard.press('Enter')
+      })
+    },
+
+    createNewFolder: async (name: string) => {
+      return test?.step(`Create a folder named ${name}`, async () => {
+        await page.getByTestId('create-folder-button').click()
+        await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
       })
     },
@@ -562,7 +593,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     cloneFile: async (name: string) => {
       return test?.step(`Cloning file '${name}'`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
           .click({ button: 'right' })
         await page.getByTestId('context-menu-clone').click()
@@ -572,7 +603,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     selectFile: async (name: string) => {
       return test?.step(`Select ${name}`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
           .click()
         await expect(page.getByTestId('project-sidebar-toggle')).toContainText(
@@ -588,7 +619,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
         const newFile = page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
 
         await expect(newFile).toBeVisible()
@@ -599,14 +630,14 @@ export async function getUtils(page: Page, test_?: typeof test) {
     renameFile: async (fromName: string, toName: string) => {
       return test?.step(`Rename ${fromName} to ${toName}`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: fromName })
           .click({ button: 'right' })
         await page.getByTestId('context-menu-rename').click()
         await page.getByTestId('file-rename-field').fill(toName)
         await page.keyboard.press('Enter')
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: toName })
           .click()
       })
@@ -615,12 +646,24 @@ export async function getUtils(page: Page, test_?: typeof test) {
     deleteFile: async (name: string) => {
       return test?.step(`Delete ${name}`, async () => {
         await page
-          .locator('[data-testid="file-pane-scroll-container"] button')
+          .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
           .filter({ hasText: name })
           .click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
         await page.getByTestId('delete-confirmation').click()
       })
+    },
+
+    locatorFile: (name: string) => {
+      return page
+        .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
+        .filter({ hasText: name })
+    },
+
+    locatorFolder: (name: string) => {
+      return page
+        .locator('[data-testid="file-pane-scroll-container"] [role=treeitem]')
+        .filter({ hasText: name })
     },
 
     /**
@@ -762,6 +805,7 @@ export const doExport = async (
   output: Models['OutputFormat3d_type'],
   rootDir: string,
   page: Page,
+  cmdBar: CmdBarFixture,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
   if (exportFrom === 'dropdown') {
@@ -805,12 +849,8 @@ export const doExport = async (
       .click()
     await page.locator('#arg-form').waitFor({ state: 'detached' })
   }
-  await expect(page.getByText('Confirm Export')).toBeVisible()
+  await cmdBar.submit()
 
-  await page.getByRole('button', { name: 'Submit command' }).click()
-
-  // This usually happens immediately after. If we're too slow we don't
-  // catch it.
   await expect(page.getByText('Exported successfully')).toBeVisible()
 
   if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
@@ -907,6 +947,10 @@ export async function setup(
             },
             ...TEST_SETTINGS.project,
             onboarding_status: 'dismissed',
+            // Tests were written before this setting existed.
+            // It's true by default because it's a good user experience, but
+            // these tests require it to be false.
+            fixed_size_grid: false,
           },
           project: {
             ...TEST_SETTINGS.project,
@@ -1031,19 +1075,19 @@ export function kclSamplesPath(fileName: string): string {
 }
 
 export async function doAndWaitForImageDiff(
-  page: Page,
+  pageOrLocator: Page | Locator,
   fn: () => Promise<unknown>,
   diffCount = 200
 ) {
   return new Promise<boolean>((resolve) => {
     ;(async () => {
-      await page.screenshot({
+      await pageOrLocator.screenshot({
         path: './e2e/playwright/temp1.png',
         fullPage: true,
       })
       await fn()
       const isImageDiff = async () => {
-        await page.screenshot({
+        await pageOrLocator.screenshot({
           path: './e2e/playwright/temp2.png',
           fullPage: true,
         })
@@ -1150,4 +1194,343 @@ export function perProjectSettingsToToml(
 ) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
+}
+
+export async function clickElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const clickWasTriggered = await tronApp.electron.evaluate(
+    async ({ app }, menuId) => {
+      if (!app || !app.applicationMenu) {
+        return false
+      }
+      const menu = app.applicationMenu.getMenuItemById(menuId)
+      if (!menu) return false
+      menu.click()
+      return true
+    },
+    menuId
+  )
+  expect(clickWasTriggered).toBe(true)
+}
+
+export async function findElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const found = await tronApp.electron.evaluate(async ({ app }, menuId) => {
+    if (!app || !app.applicationMenu) {
+      return false
+    }
+    const menu = app.applicationMenu.getMenuItemById(menuId)
+    if (!menu) return false
+    return true
+  }, menuId)
+  expect(found).toBe(true)
+}
+
+export async function openSettingsExpectText(page: Page, text: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the user tab
+  const actualText = settings.getByText(text)
+  await expect(actualText).toBeVisible()
+}
+
+export async function openSettingsExpectLocator(page: Page, selector: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the keybindings tab
+  const settingsLocator = settings.locator(selector)
+  await expect(settingsLocator).toBeVisible()
+}
+
+/**
+ * A developer helper function to make playwright send all the console logs to stdout
+ * Call this within your E2E test and pass in the page or the tronApp to get as many
+ * logs piped to stdout for debugging
+ */
+export async function enableConsoleLogEverything({
+  page,
+  tronApp,
+}: {
+  page?: Page
+  tronApp?: ElectronZoo
+}) {
+  page?.on('console', (msg) => {
+    console.log(`[Page-log]: ${msg.text()}`)
+  })
+
+  tronApp?.electron.on('window', async (electronPage) => {
+    electronPage.on('console', (msg) => {
+      console.log(`[Renderer] ${msg.type()}: ${msg.text()}`)
+    })
+  })
+
+  tronApp?.electron.on('console', (msg) => {
+    console.log(`[Main] ${msg.type()}: ${msg.text()}`)
+  })
+}
+
+/**
+ * Simulate a pan touch gesture from the center of an element.
+ *
+ * Adapted from Playwright docs: https://playwright.dev/docs/touch-events
+ */
+export async function panFromCenter(
+  locator: Locator,
+  deltaX = 0,
+  deltaY = 0,
+  steps = 5
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let j = 1; j <= steps; j++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
+}
+
+/**
+ * Simulate a 2-finger pan touch gesture from the center of an element.
+ * with {touchSpacing} pixels between.
+ *
+ * Adapted from Playwright docs: https://playwright.dev/docs/touch-events
+ */
+export async function panTwoFingerFromCenter(
+  locator: Locator,
+  deltaX = 0,
+  deltaY = 0,
+  steps = 5,
+  spacingX = 20
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX,
+      clientY: centerY,
+    },
+    {
+      identifier: 1,
+      clientX: centerX + spacingX,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let j = 1; j <= steps; j++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+      {
+        identifier: 1,
+        clientX: centerX + spacingX + (deltaX * j) / steps,
+        clientY: centerY + (deltaY * j) / steps,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
+}
+
+/**
+ * Simulate a pinch touch gesture from the center of an element.
+ * Touch points are set horizontally from each other, separated by {startDistance} pixels.
+ */
+export async function pinchFromCenter(
+  locator: Locator,
+  startDistance = 100,
+  delta = 0,
+  steps = 5
+) {
+  const { centerX, centerY } = await locator.evaluate((target: HTMLElement) => {
+    const bounds = target.getBoundingClientRect()
+    const centerX = bounds.left + bounds.width / 2
+    const centerY = bounds.top + bounds.height / 2
+    return { centerX, centerY }
+  })
+
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [
+    {
+      identifier: 0,
+      clientX: centerX - startDistance / 2,
+      clientY: centerY,
+    },
+    {
+      identifier: 1,
+      clientX: centerX + startDistance / 2,
+      clientY: centerY,
+    },
+  ]
+  await locator.dispatchEvent('touchstart', {
+    touches,
+    changedTouches: touches,
+    targetTouches: touches,
+  })
+
+  for (let i = 1; i <= steps; i++) {
+    const touches = [
+      {
+        identifier: 0,
+        clientX: centerX - startDistance / 2 + (delta * i) / steps,
+        clientY: centerY,
+      },
+      {
+        identifier: 1,
+        clientX: centerX + startDistance / 2 + (delta * i) / steps,
+        clientY: centerY,
+      },
+    ]
+    await locator.dispatchEvent('touchmove', {
+      touches,
+      changedTouches: touches,
+      targetTouches: touches,
+    })
+  }
+
+  await locator.dispatchEvent('touchend')
+}
+
+// Primarily machinery to click and drag a slider.
+// THIS ASSUMES THE SLIDER IS ALWAYS HORIZONTAL.
+export const inputRangeValueToCoordinate = async function (
+  locator: Locator,
+  valueTargetStr: string
+): Promise<{
+  startPoint: { x: number; y: number }
+  offsetFromStartPoint: { x: number; y: number }
+}> {
+  const bb = await locator.boundingBox()
+  if (bb === null)
+    throw new Error("Bounding box is null, can't do fucking shit")
+  const editable = await locator.isEditable()
+  if (!editable) throw new Error('Cannot slide range, element is not editable')
+  const visible = await locator.isVisible()
+  if (!visible) throw new Error('Cannot slide range, element is not visible')
+  await locator.scrollIntoViewIfNeeded()
+  const maybeMin = await locator.getAttribute('min')
+  const maybeMax = await locator.getAttribute('max')
+  const maybeStep = await locator.getAttribute('step')
+
+  let low = maybeMin ? Number(maybeMin) : 0
+  low = Number.isNaN(low) ? 0 : low
+
+  let upp = maybeMax ? Number(maybeMax) : 10
+  upp = Number.isNaN(upp) ? 10 : upp
+
+  let step = maybeMax ? Number(maybeStep) : 1
+  step = Number.isNaN(step) ? 1 : step
+
+  let value = Number(valueTargetStr)
+  if (Number.isNaN(value)) throw new Error('value must be a number')
+
+  // into step
+  value = value - (value % step)
+
+  // half step down
+  value -= Math.trunc(step / 2)
+
+  const scale = await locator.page().evaluate(() => window.devicePixelRatio)
+  // measured this value in gimp
+  const nub = { width: 14 * scale }
+
+  // 4 is the internal border + padding of the slider
+  let offsetX = (bb.width - 4 - nub.width / 2) * (value / (upp + low))
+
+  // map to coordinate
+  // relative to element
+  const offsetFromStartPoint = {
+    x: Math.trunc(offsetX + 0.5),
+    // need to land on the scroll nub
+    y: bb.height * 0.5,
+  }
+
+  const startPoint = {
+    x: bb.x + nub.width / 2,
+    y: bb.y,
+  }
+
+  return {
+    startPoint,
+    offsetFromStartPoint,
+  }
+}
+
+export const inputRangeSlideFromCurrentTo = async function (
+  locator: Locator,
+  valueNext: string
+) {
+  const valueCurrent = await locator.inputValue()
+  // Can't click it if the computer can't see it!
+  await locator.scrollIntoViewIfNeeded()
+  const from = await inputRangeValueToCoordinate(locator, valueCurrent)
+  const to = await inputRangeValueToCoordinate(locator, valueNext)
+  // I (lee) want to force the mouse to be up, but who knows who needs otherwise.
+  // await locator.page.mouse.up()
+  const page = locator.page()
+  await page.mouse.move(
+    from.startPoint.x + from.offsetFromStartPoint.x,
+    from.startPoint.y + from.offsetFromStartPoint.y,
+    { steps: 10 }
+  )
+  await page.mouse.down()
+  await page.mouse.move(
+    to.startPoint.x + to.offsetFromStartPoint.x,
+    to.startPoint.y + to.offsetFromStartPoint.y,
+    { steps: 10 }
+  )
+  await page.mouse.up()
 }

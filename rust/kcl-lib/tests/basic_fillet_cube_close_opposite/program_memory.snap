@@ -17,6 +17,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "tag": {
             "commentStart": 90,
             "end": 96,
+            "moduleId": 0,
             "start": 90,
             "type": "TagDeclarator",
             "value": "thing"
@@ -37,6 +38,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "tag": {
             "commentStart": 155,
             "end": 162,
+            "moduleId": 0,
             "start": 155,
             "type": "TagDeclarator",
             "value": "thing2"
@@ -50,6 +52,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "tag": {
             "commentStart": 181,
             "end": 188,
+            "moduleId": 0,
             "start": 181,
             "type": "TagDeclarator",
             "value": "thing3"
@@ -73,6 +76,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
             "tag": {
               "commentStart": 90,
               "end": 96,
+              "moduleId": 0,
               "start": 90,
               "type": "TagDeclarator",
               "value": "thing"
@@ -117,6 +121,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
             "tag": {
               "commentStart": 155,
               "end": 162,
+              "moduleId": 0,
               "start": 155,
               "type": "TagDeclarator",
               "value": "thing2"
@@ -142,6 +147,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
             "tag": {
               "commentStart": 181,
               "end": 188,
+              "moduleId": 0,
               "start": 181,
               "type": "TagDeclarator",
               "value": "thing3"
@@ -181,6 +187,14 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }

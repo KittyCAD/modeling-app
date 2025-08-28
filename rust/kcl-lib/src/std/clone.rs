@@ -3,12 +3,10 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use kcl_derive_docs::stdlib;
 use kcmc::{
-    each_cmd as mcmd,
-    ok_response::{output::EntityGetAllChildUuids, OkModelingCmdResponse},
+    ModelingCmd, each_cmd as mcmd,
+    ok_response::{OkModelingCmdResponse, output::EntityGetAllChildUuids},
     websocket::OkWebSocketResponseData,
-    ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc};
 
@@ -16,18 +14,18 @@ use super::extrude::do_post_extrude;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
+        ExecState, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
         types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, GeometryWithImportedGeometry, KclValue, Sketch, Solid,
     },
     parsing::ast::types::TagNode,
-    std::{extrude::NamedCapTags, Args},
+    std::{Args, extrude::NamedCapTags},
 };
 
 /// Clone a sketch or solid.
 ///
 /// This works essentially like a copy-paste operation.
 pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let geometry = args.get_unlabeled_kw_arg_typed(
+    let geometry = args.get_unlabeled_kw_arg(
         "geometry",
         &RuntimeType::Union(vec![
             RuntimeType::Primitive(PrimitiveType::Sketch),
@@ -41,240 +39,6 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     Ok(cloned.into())
 }
 
-/// Clone a sketch or solid.
-///
-/// This works essentially like a copy-paste operation. It creates a perfect replica
-/// at that point in time that you can manipulate individually afterwards.
-///
-/// This doesn't really have much utility unless you need the equivalent of a double
-/// instance pattern with zero transformations.
-///
-/// Really only use this function if YOU ARE SURE you need it. In most cases you
-/// do not need clone and using a pattern with `instance = 2` is more appropriate.
-///
-/// ```no_run
-/// // Clone a basic sketch and move it and extrude it.
-/// exampleSketch = startSketchOn(XY)
-///   |> startProfile(at = [0, 0])
-///   |> line(end = [10, 0])
-///   |> line(end = [0, 10])
-///   |> line(end = [-10, 0])
-///   |> close()
-///
-/// clonedSketch = clone(exampleSketch)
-///     |> scale(
-///     x = 1.0,
-///     y = 1.0,
-///     z = 2.5,
-///     )
-///     |> translate(
-///         x = 15.0,
-///         y = 0,
-///         z = 0,
-///     )
-///     |> extrude(length = 5)
-/// ```
-///
-/// ```no_run
-/// // Clone a basic solid and move it.
-///
-/// exampleSketch = startSketchOn(XY)
-///   |> startProfile(at = [0, 0])
-///   |> line(end = [10, 0])
-///   |> line(end = [0, 10])
-///   |> line(end = [-10, 0])
-///   |> close()
-///
-/// myPart = extrude(exampleSketch, length = 5)
-/// clonedPart = clone(myPart)
-///     |> translate(
-///         x = 25.0,
-///     )
-/// ```
-///
-/// ```no_run
-/// // Translate and rotate a cloned sketch to create a loft.
-///
-/// sketch001 = startSketchOn(XY)
-///         |> startProfile(at = [-10, 10])
-///         |> xLine(length = 20)
-///         |> yLine(length = -20)
-///         |> xLine(length = -20)
-///         |> close()
-///
-/// sketch002 = clone(sketch001)
-///     |> translate(x = 0, y = 0, z = 20)
-///     |> rotate(axis = [0, 0, 1.0], angle = 45)
-///
-/// loft([sketch001, sketch002])
-/// ```
-///
-/// ```no_run
-/// // Translate a cloned solid. Fillet only the clone.
-///
-/// sketch001 = startSketchOn(XY)
-///         |> startProfile(at = [-10, 10])
-///         |> xLine(length = 20)
-///         |> yLine(length = -20)
-///         |> xLine(length = -20, tag = $filletTag)
-///         |> close()
-///         |> extrude(length = 5)
-///
-///
-/// sketch002 = clone(sketch001)
-///     |> translate(x = 0, y = 0, z = 20)
-///     |> fillet(
-///     radius = 2,
-///     tags = [getNextAdjacentEdge(filletTag)],
-///     )
-/// ```
-///
-/// ```no_run
-/// // You can reuse the tags from the original geometry with the cloned geometry.
-///
-/// sketch001 = startSketchOn(XY)
-///   |> startProfile(at = [0, 0])
-///   |> line(end = [10, 0])
-///   |> line(end = [0, 10], tag = $sketchingFace)
-///   |> line(end = [-10, 0])
-///   |> close()
-///
-/// sketch002 = clone(sketch001)
-///     |> translate(x = 10, y = 20, z = 0)
-///     |> extrude(length = 5)
-///
-/// startSketchOn(sketch002, face = sketchingFace)
-///   |> startProfile(at = [1, 1])
-///   |> line(end = [8, 0])
-///   |> line(end = [0, 8])
-///   |> line(end = [-8, 0])
-///   |> close(tag = $sketchingFace002)
-///   |> extrude(length = 10)
-/// ```
-///
-/// ```no_run
-/// // You can also use the tags from the original geometry to fillet the cloned geometry.
-///
-/// width = 20
-/// length = 10
-/// thickness = 1
-/// filletRadius = 2
-///
-/// mountingPlateSketch = startSketchOn(XY)
-///   |> startProfile(at = [-width/2, -length/2])
-///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
-///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
-///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
-///   |> close(tag = $edge4)
-///
-/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
-///
-/// clonedMountingPlate = clone(mountingPlate)
-///   |> fillet(
-///     radius = filletRadius,
-///     tags = [
-///       getNextAdjacentEdge(edge1),
-///       getNextAdjacentEdge(edge2),
-///       getNextAdjacentEdge(edge3),
-///       getNextAdjacentEdge(edge4)
-///     ],
-///   )
-///   |> translate(x = 0, y = 50, z = 0)
-/// ```
-///
-/// ```no_run
-/// // Create a spring by sweeping around a helix path from a cloned sketch.
-///
-/// // Create a helix around the Z axis.
-/// helixPath = helix(
-///     angleStart = 0,
-///     ccw = true,
-///     revolutions = 4,
-///     length = 10,
-///     radius = 5,
-///     axis = Z,
-///  )
-///
-///
-/// springSketch = startSketchOn(YZ)
-///     |> circle( center = [0, 0], radius = 1)
-///
-/// // Create a spring by sweeping around the helix path.
-/// sweepedSpring = clone(springSketch)
-///     |> translate(x=100)
-///     |> sweep(path = helixPath)
-/// ```
-///
-/// ```
-/// // A donut shape from a cloned sketch.
-/// sketch001 = startSketchOn(XY)
-///     |> circle( center = [15, 0], radius = 5 )
-///
-/// sketch002 = clone(sketch001)
-///    |> translate( z = 30)
-///     |> revolve(
-///         angle = 360,
-///         axis = Y,
-///     )
-/// ```
-///
-/// ```no_run
-/// // Sketch on the end of a revolved face by tagging the end face.
-/// // This shows the cloned geometry will have the same tags as the original geometry.
-///
-/// exampleSketch = startSketchOn(XY)
-///   |> startProfile(at = [4, 12])
-///   |> line(end = [2, 0])
-///   |> line(end = [0, -6])
-///   |> line(end = [4, -6])
-///   |> line(end = [0, -6])
-///   |> line(end = [-3.75, -4.5])
-///   |> line(end = [0, -5.5])
-///   |> line(end = [-2, 0])
-///   |> close()
-///
-/// example001 = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
-///
-/// // example002 = clone(example001)
-/// // |> translate(x = 0, y = 20, z = 0)
-///
-/// // Sketch on the cloned face.
-/// // exampleSketch002 = startSketchOn(example002, face = end01)
-/// //  |> startProfile(at = [4.5, -5])
-/// //  |> line(end = [0, 5])
-/// //  |> line(end = [5, 0])
-/// //  |> line(end = [0, -5])
-/// //  |> close()
-///
-/// // example003 = extrude(exampleSketch002, length = 5)
-/// ```
-///
-/// ```no_run
-/// // Clone an imported model.
-///
-/// import "tests/inputs/cube.sldprt" as cube
-///
-/// myCube = cube
-///
-/// clonedCube = clone(myCube)
-///    |> translate(
-///    x = 1020,
-///    )
-///    |> appearance(
-///        color = "#ff0000",
-///        metalness = 50,
-///        roughness = 50
-///    )
-/// ```
-#[stdlib {
-    name = "clone",
-    feature_tree_operation = true,
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        geometry = { docs = "The sketch, solid, or imported geometry to be cloned" },
-    }
-}]
 async fn inner_clone(
     geometry: GeometryWithImportedGeometry,
     exec_state: &mut ExecState,
@@ -294,23 +58,19 @@ async fn inner_clone(
             let mut new_sketch = sketch.clone();
             new_sketch.id = new_id;
             new_sketch.original_id = new_id;
-            #[cfg(feature = "artifact-graph")]
-            {
-                new_sketch.artifact_id = new_id.into();
-            }
+            new_sketch.artifact_id = new_id.into();
             GeometryWithImportedGeometry::Sketch(new_sketch)
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             // We flush before the clone so all the shit exists.
-            args.flush_batch_for_solids(exec_state, &[solid.clone()]).await?;
+            exec_state
+                .flush_batch_for_solids((&args).into(), std::slice::from_ref(solid))
+                .await?;
 
             let mut new_solid = solid.clone();
             new_solid.id = new_id;
             new_solid.sketch.original_id = new_id;
-            #[cfg(feature = "artifact-graph")]
-            {
-                new_solid.artifact_id = new_id.into();
-            }
+            new_solid.artifact_id = new_id.into();
             GeometryWithImportedGeometry::Solid(new_solid)
         }
     };
@@ -319,16 +79,20 @@ async fn inner_clone(
         return Ok(new_geometry);
     }
 
-    args.batch_modeling_cmd(new_id, ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }))
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, new_id),
+            ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }),
+        )
         .await?;
 
     fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
         .await
         .map_err(|e| {
-            KclError::Internal(KclErrorDetails {
-                message: format!("failed to fix tags and references: {:?}", e),
-                source_ranges: vec![args.source_range],
-            })
+            KclError::new_internal(KclErrorDetails::new(
+                format!("failed to fix tags and references: {e:?}"),
+                vec![args.source_range],
+            ))
         })?;
 
     Ok(new_geometry)
@@ -353,10 +117,7 @@ async fn fix_tags_and_references(
             // Make the sketch id the new geometry id.
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
-            #[cfg(feature = "artifact-graph")]
-            {
-                solid.sketch.artifact_id = new_geometry_id.into();
-            }
+            solid.sketch.artifact_id = new_geometry_id.into();
 
             fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state).await?;
 
@@ -383,7 +144,6 @@ async fn fix_tags_and_references(
             // information.
             let new_solid = do_post_extrude(
                 &solid.sketch,
-                #[cfg(feature = "artifact-graph")]
                 new_geometry_id.into(),
                 crate::std::args::TyF64::new(
                     solid.height,
@@ -394,8 +154,10 @@ async fn fix_tags_and_references(
                     start: start_tag.as_ref(),
                     end: end_tag.as_ref(),
                 },
+                kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
                 exec_state,
                 args,
+                None,
             )
             .await?;
 
@@ -412,29 +174,10 @@ async fn get_old_new_child_map(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<HashMap<uuid::Uuid, uuid::Uuid>> {
-    // Get the new geometries entity ids.
-    let response = args
-        .send_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::EntityGetAllChildUuids {
-                entity_id: new_geometry_id,
-            }),
-        )
-        .await?;
-    let OkWebSocketResponseData::Modeling {
-        modeling_response:
-            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
-                entity_ids: new_entity_ids,
-            }),
-    } = response
-    else {
-        anyhow::bail!("Expected EntityGetAllChildUuids response, got: {:?}", response);
-    };
-
     // Get the old geometries entity ids.
-    let response = args
+    let response = exec_state
         .send_modeling_cmd(
-            exec_state.next_uuid(),
+            args.into(),
             ModelingCmd::from(mcmd::EntityGetAllChildUuids {
                 entity_id: old_geometry_id,
             }),
@@ -444,6 +187,25 @@ async fn get_old_new_child_map(
         modeling_response:
             OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
                 entity_ids: old_entity_ids,
+            }),
+    } = response
+    else {
+        anyhow::bail!("Expected EntityGetAllChildUuids response, got: {:?}", response);
+    };
+
+    // Get the new geometries entity ids.
+    let response = exec_state
+        .send_modeling_cmd(
+            args.into(),
+            ModelingCmd::from(mcmd::EntityGetAllChildUuids {
+                entity_id: new_geometry_id,
+            }),
+        )
+        .await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response:
+            OkModelingCmdResponse::EntityGetAllChildUuids(EntityGetAllChildUuids {
+                entity_ids: new_entity_ids,
             }),
     } = response
     else {
@@ -558,18 +320,16 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Sketch { value: cube } = cube else {
-            panic!("Expected a sketch, got: {:?}", cube);
+            panic!("Expected a sketch, got: {cube:?}");
         };
         let KclValue::Sketch { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a sketch, got: {:?}", cloned_cube);
+            panic!("Expected a sketch, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.original_id, cloned_cube.original_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
 
-        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
         assert_eq!(cloned_cube.original_id, cloned_cube.id);
 
@@ -609,21 +369,18 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Solid { value: cube } = cube else {
-            panic!("Expected a solid, got: {:?}", cube);
+            panic!("Expected a solid, got: {cube:?}");
         };
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a solid, got: {:?}", cloned_cube);
+            panic!("Expected a solid, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
-        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -670,10 +427,10 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Sketch { value: cube } = cube else {
-            panic!("Expected a sketch, got: {:?}", cube);
+            panic!("Expected a sketch, got: {cube:?}");
         };
         let KclValue::Sketch { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a sketch, got: {:?}", cloned_cube);
+            panic!("Expected a sketch, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);
@@ -726,21 +483,18 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Solid { value: cube } = cube else {
-            panic!("Expected a solid, got: {:?}", cube);
+            panic!("Expected a solid, got: {cube:?}");
         };
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a solid, got: {:?}", cloned_cube);
+            panic!("Expected a solid, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
-        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -801,21 +555,18 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Solid { value: cube } = cube else {
-            panic!("Expected a solid, got: {:?}", cube);
+            panic!("Expected a solid, got: {cube:?}");
         };
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a solid, got: {:?}", cloned_cube);
+            panic!("Expected a solid, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
-        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -853,6 +604,7 @@ clonedCube = clone(cube)
     // references.
     // WITH TAGS AND EDGE CUTS.
     #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // until https://github.com/KittyCAD/engine/pull/3380 lands
     async fn kcl_test_clone_solid_with_edge_cuts() {
         let code = r#"cube = startSketchOn(XY)
     |> startProfile(at = [0,0]) // tag this one
@@ -903,21 +655,18 @@ clonedCube = clone(cube)
         assert_ne!(cube, cloned_cube);
 
         let KclValue::Solid { value: cube } = cube else {
-            panic!("Expected a solid, got: {:?}", cube);
+            panic!("Expected a solid, got: {cube:?}");
         };
         let KclValue::Solid { value: cloned_cube } = cloned_cube else {
-            panic!("Expected a solid, got: {:?}", cloned_cube);
+            panic!("Expected a solid, got: {cloned_cube:?}");
         };
 
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
-        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
-        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (value, cloned_value) in cube.value.iter().zip(cloned_cube.value.iter()) {

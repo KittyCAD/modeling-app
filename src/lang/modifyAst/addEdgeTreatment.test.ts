@@ -1,4 +1,4 @@
-import { VITE_KC_DEV_TOKEN } from '@src/env'
+import env from '@src/env'
 
 import { createLiteral } from '@src/lang/create'
 import type {
@@ -40,10 +40,9 @@ import { isOverlap } from '@src/lib/utils'
 beforeAll(async () => {
   await initPromise
 
-  // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
   await new Promise((resolve) => {
     engineCommandManager.start({
-      token: VITE_KC_DEV_TOKEN,
+      token: env().VITE_KITTYCAD_API_TOKEN,
       width: 256,
       height: 256,
       setMediaStream: () => {},
@@ -513,6 +512,36 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
   |> line(end = [-20, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
+  |> extrude(length = -15, tagEnd = $capEnd001)
+  |> ${edgeTreatmentType}(
+       ${parameterName} = 3,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )`
+
+        await runModifyAstCloneWithEdgeTreatmentAndTag(
+          code,
+          segmentSnippets,
+          parameters,
+          expectedCode
+        )
+      }, 10_000)
+      it(`should add a ${edgeTreatmentType} to "close" if last segment is missing`, async () => {
+        const code = `sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-10, 10])
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> close()
+  |> extrude(length = -15)`
+        const segmentSnippets = ['close()']
+        const expectedCode = `sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-10, 10])
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> close(tag = $seg01)
   |> extrude(length = -15, tagEnd = $capEnd001)
   |> ${edgeTreatmentType}(
        ${parameterName} = 3,

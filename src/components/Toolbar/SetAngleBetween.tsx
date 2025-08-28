@@ -117,10 +117,11 @@ export async function applyConstraintAngleBetween({
     isSegNameEditable: !tagInfo?.isTagExisting,
     value: valueUsedInTransform,
     initialVariableName: 'angle',
-  } as any)
+    selectionRanges,
+  })
   if (
     segName === tagInfo?.tag &&
-    Number(value) === valueUsedInTransform &&
+    value === valueUsedInTransform &&
     !variableName
   ) {
     return {

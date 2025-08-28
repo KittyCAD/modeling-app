@@ -138,7 +138,7 @@ description: Variables in memory after executing subtract_regression02.kcl
             ],
             "tag": null,
             "to": [
-              -0.188,
+              -0.18799999999999994,
               -0.5
             ],
             "type": "ToPoint",
@@ -153,18 +153,18 @@ description: Variables in memory after executing subtract_regression02.kcl
             },
             "ccw": false,
             "center": [
-              -0.188,
+              -0.1879999999999999,
               -0.188
             ],
             "from": [
-              -0.188,
+              -0.18799999999999994,
               -0.5
             ],
             "radius": 0.312,
             "tag": null,
             "to": [
-              -0.5,
-              -0.188
+              -0.4999999999999999,
+              -0.18799999999999997
             ],
             "type": "Arc",
             "units": {
@@ -177,12 +177,12 @@ description: Variables in memory after executing subtract_regression02.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5,
-              -0.188
+              -0.4999999999999999,
+              -0.18799999999999997
             ],
             "tag": null,
             "to": [
-              -0.5,
+              -0.4999999999999999,
               0.5
             ],
             "type": "ToPoint",
@@ -197,17 +197,17 @@ description: Variables in memory after executing subtract_regression02.kcl
             },
             "ccw": true,
             "center": [
-              -0.75,
+              -0.7499999999999999,
               0.5
             ],
             "from": [
-              -0.5,
+              -0.4999999999999999,
               0.5
             ],
             "radius": 0.25,
             "tag": null,
             "to": [
-              -0.75,
+              -0.7499999999999999,
               0.75
             ],
             "type": "Arc",
@@ -221,7 +221,7 @@ description: Variables in memory after executing subtract_regression02.kcl
               "sourceRange": []
             },
             "from": [
-              -0.75,
+              -0.7499999999999999,
               0.75
             ],
             "tag": null,
@@ -260,6 +260,14 @@ description: Variables in memory after executing subtract_regression02.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -368,6 +376,14 @@ description: Variables in memory after executing subtract_regression02.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -541,7 +557,7 @@ description: Variables in memory after executing subtract_regression02.kcl
             ],
             "tag": null,
             "to": [
-              -0.188,
+              -0.18799999999999994,
               -0.5
             ],
             "type": "ToPoint",
@@ -556,18 +572,18 @@ description: Variables in memory after executing subtract_regression02.kcl
             },
             "ccw": false,
             "center": [
-              -0.188,
+              -0.1879999999999999,
               -0.188
             ],
             "from": [
-              -0.188,
+              -0.18799999999999994,
               -0.5
             ],
             "radius": 0.312,
             "tag": null,
             "to": [
-              -0.5,
-              -0.188
+              -0.4999999999999999,
+              -0.18799999999999997
             ],
             "type": "Arc",
             "units": {
@@ -580,12 +596,12 @@ description: Variables in memory after executing subtract_regression02.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5,
-              -0.188
+              -0.4999999999999999,
+              -0.18799999999999997
             ],
             "tag": null,
             "to": [
-              -0.5,
+              -0.4999999999999999,
               0.5
             ],
             "type": "ToPoint",
@@ -600,17 +616,17 @@ description: Variables in memory after executing subtract_regression02.kcl
             },
             "ccw": true,
             "center": [
-              -0.75,
+              -0.7499999999999999,
               0.5
             ],
             "from": [
-              -0.5,
+              -0.4999999999999999,
               0.5
             ],
             "radius": 0.25,
             "tag": null,
             "to": [
-              -0.75,
+              -0.7499999999999999,
               0.75
             ],
             "type": "Arc",
@@ -624,7 +640,7 @@ description: Variables in memory after executing subtract_regression02.kcl
               "sourceRange": []
             },
             "from": [
-              -0.75,
+              -0.7499999999999999,
               0.75
             ],
             "tag": null,
@@ -663,6 +679,14 @@ description: Variables in memory after executing subtract_regression02.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -771,6 +795,14 @@ description: Variables in memory after executing subtract_regression02.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": -1.0,
+            "y": 0.0,
+            "z": 0.0,
             "units": {
               "type": "Unknown"
             }
@@ -944,7 +976,7 @@ description: Variables in memory after executing subtract_regression02.kcl
             ],
             "tag": null,
             "to": [
-              -0.188,
+              -0.18799999999999994,
               -0.5
             ],
             "type": "ToPoint",
@@ -959,18 +991,18 @@ description: Variables in memory after executing subtract_regression02.kcl
             },
             "ccw": false,
             "center": [
-              -0.188,
+              -0.1879999999999999,
               -0.188
             ],
             "from": [
-              -0.188,
+              -0.18799999999999994,
               -0.5
             ],
             "radius": 0.312,
             "tag": null,
             "to": [
-              -0.5,
-              -0.188
+              -0.4999999999999999,
+              -0.18799999999999997
             ],
             "type": "Arc",
             "units": {
@@ -983,12 +1015,12 @@ description: Variables in memory after executing subtract_regression02.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5,
-              -0.188
+              -0.4999999999999999,
+              -0.18799999999999997
             ],
             "tag": null,
             "to": [
-              -0.5,
+              -0.4999999999999999,
               0.5
             ],
             "type": "ToPoint",
@@ -1003,17 +1035,17 @@ description: Variables in memory after executing subtract_regression02.kcl
             },
             "ccw": true,
             "center": [
-              -0.75,
+              -0.7499999999999999,
               0.5
             ],
             "from": [
-              -0.5,
+              -0.4999999999999999,
               0.5
             ],
             "radius": 0.25,
             "tag": null,
             "to": [
-              -0.75,
+              -0.7499999999999999,
               0.75
             ],
             "type": "Arc",
@@ -1027,7 +1059,7 @@ description: Variables in memory after executing subtract_regression02.kcl
               "sourceRange": []
             },
             "from": [
-              -0.75,
+              -0.7499999999999999,
               0.75
             ],
             "tag": null,
@@ -1066,6 +1098,14 @@ description: Variables in memory after executing subtract_regression02.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -1130,6 +1170,14 @@ description: Variables in memory after executing subtract_regression02.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
         "units": {
           "type": "Unknown"
         }
@@ -1216,7 +1264,7 @@ description: Variables in memory after executing subtract_regression02.kcl
           ],
           "tag": null,
           "to": [
-            -0.188,
+            -0.18799999999999994,
             -0.5
           ],
           "type": "ToPoint",
@@ -1231,18 +1279,18 @@ description: Variables in memory after executing subtract_regression02.kcl
           },
           "ccw": false,
           "center": [
-            -0.188,
+            -0.1879999999999999,
             -0.188
           ],
           "from": [
-            -0.188,
+            -0.18799999999999994,
             -0.5
           ],
           "radius": 0.312,
           "tag": null,
           "to": [
-            -0.5,
-            -0.188
+            -0.4999999999999999,
+            -0.18799999999999997
           ],
           "type": "Arc",
           "units": {
@@ -1255,12 +1303,12 @@ description: Variables in memory after executing subtract_regression02.kcl
             "sourceRange": []
           },
           "from": [
-            -0.5,
-            -0.188
+            -0.4999999999999999,
+            -0.18799999999999997
           ],
           "tag": null,
           "to": [
-            -0.5,
+            -0.4999999999999999,
             0.5
           ],
           "type": "ToPoint",
@@ -1275,17 +1323,17 @@ description: Variables in memory after executing subtract_regression02.kcl
           },
           "ccw": true,
           "center": [
-            -0.75,
+            -0.7499999999999999,
             0.5
           ],
           "from": [
-            -0.5,
+            -0.4999999999999999,
             0.5
           ],
           "radius": 0.25,
           "tag": null,
           "to": [
-            -0.75,
+            -0.7499999999999999,
             0.75
           ],
           "type": "Arc",
@@ -1299,7 +1347,7 @@ description: Variables in memory after executing subtract_regression02.kcl
             "sourceRange": []
           },
           "from": [
-            -0.75,
+            -0.7499999999999999,
             0.75
           ],
           "tag": null,
@@ -1338,6 +1386,14 @@ description: Variables in memory after executing subtract_regression02.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }
@@ -1394,6 +1450,14 @@ description: Variables in memory after executing subtract_regression02.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }
@@ -1460,6 +1524,14 @@ description: Variables in memory after executing subtract_regression02.kcl
           "units": {
             "type": "Unknown"
           }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1513,6 +1585,14 @@ description: Variables in memory after executing subtract_regression02.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0,
         "units": {
           "type": "Unknown"
         }
@@ -1576,6 +1656,14 @@ description: Variables in memory after executing subtract_regression02.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0,
           "units": {
             "type": "Unknown"
           }

@@ -1,12 +1,12 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection, Transaction } from '@codemirror/state'
 import type { Models } from '@kittycad/lib'
-import { VITE_KC_API_BASE_URL } from '@src/env'
 import { diffLines } from 'diff'
 import toast from 'react-hot-toast'
 import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
 import { getCookie, TOKEN_PERSIST_KEY } from '@src/machines/authMachine'
 import { COOKIE_NAME } from '@src/lib/constants'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { ActionButton } from '@src/components/ActionButton'
@@ -28,6 +28,8 @@ import { uuidv4 } from '@src/lib/utils'
 import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
 import type { FileMeta } from '@src/lib/types'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
+import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
+import { connectReasoningStream } from '@src/lib/reasoningWs'
 
 type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
@@ -77,7 +79,7 @@ async function submitTextToCadRequest(
   })
 
   const response = await fetch(
-    `${VITE_KC_API_BASE_URL}/ml/text-to-cad/multi-file/iteration`,
+    withAPIBaseURL('/ml/text-to-cad/multi-file/iteration'),
     {
       method: 'POST',
       headers: {
@@ -96,6 +98,8 @@ async function submitTextToCadRequest(
     const errorData = data as TextToCadErrorResponse
     return new Error(errorData.message || 'Unknown error')
   }
+
+  connectReasoningStream(token, data.id)
 
   return data as TextToCadMultiFileIteration_type
 }
@@ -304,7 +308,7 @@ export async function getPromptToEditResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
-  const url = VITE_KC_API_BASE_URL + '/async/operations/' + id
+  const url = withAPIBaseURL(`/async/operations/${id}`)
   const data: Models['TextToCadMultiFileIteration_type'] | Error =
     await crossPlatformFetch(
       url,
@@ -336,13 +340,6 @@ export async function doPromptEdit({
 
   let submitResult
 
-  // work around for @kittycad/lib not really being built for the browser
-  ;(window as any).process = {
-    env: {
-      ZOO_API_TOKEN: token,
-      ZOO_HOST: VITE_KC_API_BASE_URL,
-    },
-  }
   try {
     submitResult = await submitPromptToEditToQueue({
       prompt,
@@ -415,6 +412,7 @@ export async function promptToEditFlow({
   token,
   artifactGraph,
   projectName,
+  filePath,
 }: {
   prompt: string
   selections: Selections
@@ -422,6 +420,7 @@ export async function promptToEditFlow({
   token?: string
   artifactGraph: ArtifactGraph
   projectName: string
+  filePath: string | undefined
 }) {
   const result = await doPromptEdit({
     prompt,
@@ -436,6 +435,7 @@ export async function promptToEditFlow({
     return Promise.reject(result)
   }
   const oldCodeWebAppOnly = codeManager.code
+  const downloadLink = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
 
   if (!isDesktop() && Object.values(result.outputs).length > 1) {
     const toastId = uuidv4()
@@ -447,13 +447,11 @@ export async function promptToEditFlow({
           <div className="flex justify-between items-center mt-2">
             <>
               <a
-                href="https://zoo.dev/modeling-app/download"
+                href={downloadLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-400 hover:text-blue-300 underline flex align-middle"
-                onClick={openExternalBrowserIfDesktop(
-                  'https://zoo.dev/modeling-app/download'
-                )}
+                onClick={openExternalBrowserIfDesktop(downloadLink)}
               >
                 <CustomIcon
                   name="link"
@@ -499,6 +497,7 @@ export async function promptToEditFlow({
     await writeOverFilesAndExecute({
       requestedFiles,
       projectName,
+      filePath,
     })
   } else {
     const newCode = result.outputs['main.kcl']
@@ -507,7 +506,7 @@ export async function promptToEditFlow({
     const ranges: SelectionRange[] = diff.insertRanges.map((range) =>
       EditorSelection.range(range[0], range[1])
     )
-    editorManager?.editorView?.dispatch({
+    editorManager?.getEditorView()?.dispatch({
       selection: EditorSelection.create(
         ranges,
         selections.graphSelections.length - 1

@@ -1,4 +1,4 @@
-import { doExport, getUtils, makeTemplate } from '@e2e/playwright/test-utils'
+import { doExport, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test('Units menu', async ({ page, homePage }) => {
@@ -32,7 +32,7 @@ test('Units menu', async ({ page, homePage }) => {
 test(
   'Successful export shows a success toast',
   { tag: '@skipLocalEngine' },
-  async ({ page, homePage, tronApp }) => {
+  async ({ page, homePage, cmdBar, tronApp }) => {
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -94,7 +94,8 @@ part001 = startSketchOn(-XZ)
         presentation: 'pretty',
       },
       tronApp?.projectDirName,
-      page
+      page,
+      cmdBar
     )
   }
 )
@@ -254,6 +255,7 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
 test('Basic default modeling and sketch hotkeys work', async ({
   page,
   homePage,
+  cmdBar,
 }) => {
   const u = await getUtils(page)
   await test.step(`Set up test`, async () => {
@@ -397,11 +399,8 @@ test('Basic default modeling and sketch hotkeys work', async ({
     await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible({
       timeout: 20_000,
     })
-    await page.getByRole('button', { name: 'Continue' }).click()
-    await expect(
-      page.getByRole('button', { name: 'Submit command' })
-    ).toBeVisible()
-    await page.getByRole('button', { name: 'Submit command' }).click()
+    await cmdBar.continue()
+    await cmdBar.submit()
     await expect(page.locator('.cm-content')).toContainText('extrude(')
   })
 
@@ -444,150 +443,3 @@ test('Delete key does not navigate back', async ({ page, homePage }) => {
   await page.keyboard.press('Delete')
   await expect.poll(() => page.url()).not.toContain('/settings')
 })
-
-test('Sketch on face', async ({ page, homePage, scene, cmdBar, toolbar }) => {
-  test.setTimeout(90_000)
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn(XZ)
-|> startProfile(at = [3.29, 7.86])
-|> line(end = [2.48, 2.44])
-|> line(end = [2.66, 1.17])
-|> line(end = [3.75, 0.46])
-|> line(end = [4.99, -0.46])
-|> line(end = [3.3, -2.12])
-|> line(end = [2.16, -3.33])
-|> line(end = [0.85, -3.08])
-|> line(end = [-0.18, -3.36])
-|> line(end = [-3.86, -2.73])
-|> line(end = [-17.67, 0.85])
-|> close()
-extrude001 = extrude(sketch001, length = 5 + 7)`
-    )
-  })
-
-  await page.setBodyDimensions({ width: 1200, height: 500 })
-
-  await homePage.goToModelingScene()
-  await scene.connectionEstablished()
-  await scene.settled(cmdBar)
-
-  let previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await toolbar.startSketchThenCallbackThenWaitUntilReady(async () => {
-    await u.openAndClearDebugPanel()
-    await u.doAndWaitForCmd(
-      () => page.mouse.click(625, 165),
-      'default_camera_get_settings',
-      true
-    )
-    await page.waitForTimeout(150)
-    await u.closeDebugPanel()
-  })
-  await page.waitForTimeout(300)
-
-  const firstClickPosition = [612, 238]
-  const secondClickPosition = [661, 242]
-  const thirdClickPosition = [609, 267]
-
-  await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await page.waitForTimeout(100)
-  await page.mouse.click(secondClickPosition[0], secondClickPosition[1])
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await page.waitForTimeout(100)
-  await page.mouse.click(thirdClickPosition[0], thirdClickPosition[1])
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await page.waitForTimeout(100)
-  await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  await expect.poll(u.normalisedEditorCode).toContain(
-    u.normalisedCode(`sketch002 = startSketchOn(extrude001, face = seg01)
-profile001 = startProfile(sketch002, at = [-12.34, 12.34])
-  |> line(end = [12.34, -12.34])
-  |> line(end = [-12.34, -12.34])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-`)
-  )
-
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-
-  await u.updateCamPosition([1049, 239, 686])
-  await u.closeDebugPanel()
-
-  await page.getByText('startProfile(sketch002, at = [-12').click()
-  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-  await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(500)
-  await page.setViewportSize({ width: 1200, height: 1200 })
-  await u.openAndClearDebugPanel()
-  await u.updateCamPosition([452, -152, 1166])
-  await u.closeDebugPanel()
-  await page.waitForTimeout(200)
-
-  const pointToDragFirst = [787, 565]
-  await page.mouse.move(pointToDragFirst[0], pointToDragFirst[1])
-  await page.mouse.down()
-  await page.mouse.move(pointToDragFirst[0] - 20, pointToDragFirst[1], {
-    steps: 5,
-  })
-  await page.mouse.up()
-  await page.waitForTimeout(100)
-  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-  previousCodeContent = await page.locator('.cm-content').innerText()
-
-  const result = makeTemplate`sketch002 = startSketchOn(extrude001, face = seg01)
-|> startProfile(at = [-12.83, 6.7])
-|> line(end = [${[2.28, 2.35]}, -${0.07}])
-|> line(end = [-3.05, -1.47])
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-|> close()`
-
-  await expect(page.locator('.cm-content')).toHaveText(result.regExp)
-
-  // exit sketch
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-
-  await page.getByText('startProfile(sketch002, at = [-12').click()
-
-  await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
-  await page.waitForTimeout(100)
-  await page.getByRole('button', { name: 'Extrude' }).click()
-
-  await expect(page.getByTestId('command-bar')).toBeVisible()
-  await page.waitForTimeout(100)
-
-  await cmdBar.progressCmdBar()
-  await cmdBar.progressCmdBar()
-  await expect(page.getByText('Confirm Extrude')).toBeVisible()
-  await cmdBar.progressCmdBar()
-
-  const result2 = result.genNext`
-const sketch002 = extrude(sketch002, length = ${[5, 5]} + 7)`
-  await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
-})
-
-test.fixme(
-  `Opening a share link in the web isn't blocked by the web warning banner`,
-  async () => {
-    // This test is not able to be run right now since we don't have a web-only setup for Playwright.
-    // @franknoirot can implement it when that testing infra is set up. It should be a test to cover the fix from
-    // modeling-app issue #6172.
-  }
-)

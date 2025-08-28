@@ -13,8 +13,8 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, DiagnosticTag};
 pub use util::IntoDiagnostic;
 
 use crate::{
-    errors::{Severity, Tag},
     CompilationError,
+    errors::{Severity, Tag},
 };
 
 impl IntoDiagnostic for CompilationError {
@@ -47,7 +47,7 @@ impl Tag {
         match self {
             Tag::Deprecated => Some(vec![DiagnosticTag::DEPRECATED]),
             Tag::Unnecessary => Some(vec![DiagnosticTag::UNNECESSARY]),
-            Tag::None => None,
+            Tag::UnknownNumericUnits | Tag::None => None,
         }
     }
 }

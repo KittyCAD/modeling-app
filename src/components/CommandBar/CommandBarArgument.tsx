@@ -1,11 +1,12 @@
 import CommandArgOptionInput from '@src/components/CommandBar/CommandArgOptionInput'
 import CommandBarBasicInput from '@src/components/CommandBar/CommandBarBasicInput'
-import CommandBarHeader from '@src/components/CommandBar/CommandBarHeader'
+import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import CommandBarKclInput from '@src/components/CommandBar/CommandBarKclInput'
 import CommandBarPathInput from '@src/components/CommandBar/CommandBarPathInput'
 import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelectionInput'
 import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
 import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
+import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
@@ -26,15 +27,27 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
     })
   }
 
+  function clear() {
+    if (!currentArgument) return
+
+    commandBarActor.send({
+      type: 'Submit argument',
+      data: {
+        [currentArgument.name]: undefined,
+      },
+    })
+  }
+
   return (
     currentArgument && (
-      <CommandBarHeader>
+      <CommandBarHeaderFooter stepBack={stepBack} clear={clear}>
         <ArgumentInput
           arg={currentArgument}
           stepBack={stepBack}
           onSubmit={onSubmit}
         />
-      </CommandBarHeader>
+        <CommandBarDivider />
+      </CommandBarHeaderFooter>
     )
   )
 }

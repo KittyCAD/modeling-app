@@ -4,37 +4,38 @@ use std::sync::Arc;
 
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
-pub use artifact::{
-    Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane,
-};
-use cache::OldAstState;
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, CodeRef, StartSketchOnFace, StartSketchOnPlane};
+use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
-pub use cad_op::{Group, Operation};
+pub use cad_op::Group;
+pub use cad_op::Operation;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
-    each_cmd as mcmd,
-    ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
+    ImageFormat, ModelingCmd, each_cmd as mcmd,
+    ok_response::{OkModelingCmdResponse, output::TakeSnapshot},
     websocket::{ModelingSessionData, OkWebSocketResponseData},
-    ImageFormat, ModelingCmd,
 };
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
+pub(crate) use modeling::ModelingCmdMeta;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
+use uuid::Uuid;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::artifact::build_artifact_graph;
 use crate::{
-    engine::EngineManager,
+    CompilationError, ExecError, KclErrorWithOutputs,
+    engine::{EngineManager, GridScaleBehavior},
     errors::{KclError, KclErrorDetails},
     execution::{
         cache::{CacheInformation, CacheResult},
+        import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
         types::{UnitAngle, UnitLen},
     },
@@ -42,29 +43,33 @@ use crate::{
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
     source_range::SourceRange,
-    std::StdLib,
-    walk::{Universe, UniverseMap},
-    CompilationError, ExecError, KclErrorWithOutputs,
 };
 
 pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]
 mod artifact;
 pub(crate) mod cache;
-#[cfg(feature = "artifact-graph")]
 mod cad_op;
 mod exec_ast;
+pub mod fn_call;
 mod geometry;
 mod id_generator;
 mod import;
+mod import_graph;
 pub(crate) mod kcl_value;
 mod memory;
+mod modeling;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
+enum StatementKind<'a> {
+    Declaration { name: &'a str },
+    Expression,
+}
+
 /// Outcome of executing a program.  This is used in TS.
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
@@ -74,9 +79,6 @@ pub struct ExecOutcome {
     /// the Feature Tree.
     #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
-    /// Output commands to allow building the artifact graph by the caller.
-    #[cfg(feature = "artifact-graph")]
-    pub artifact_commands: Vec<ArtifactCommand>,
     /// Output artifact graph.
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
@@ -269,7 +271,6 @@ pub enum ContextType {
 pub struct ExecutorContext {
     pub engine: Arc<Box<dyn EngineManager>>,
     pub fs: Arc<FileManager>,
-    pub stdlib: Arc<StdLib>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
 }
@@ -293,6 +294,8 @@ pub struct ExecutorSettings {
     /// This is the path to the current file being executed.
     /// We use this for preventing cyclic imports.
     pub current_file: Option<TypedPath>,
+    /// Whether or not to automatically scale the grid when user zooms.
+    pub fixed_size_grid: bool,
 }
 
 impl Default for ExecutorSettings {
@@ -304,33 +307,34 @@ impl Default for ExecutorSettings {
             replay: None,
             project_directory: None,
             current_file: None,
+            fixed_size_grid: true,
         }
     }
 }
 
 impl From<crate::settings::types::Configuration> for ExecutorSettings {
     fn from(config: crate::settings::types::Configuration) -> Self {
+        Self::from(config.settings)
+    }
+}
+
+impl From<crate::settings::types::Settings> for ExecutorSettings {
+    fn from(settings: crate::settings::types::Settings) -> Self {
         Self {
-            highlight_edges: config.settings.modeling.highlight_edges.into(),
-            enable_ssao: config.settings.modeling.enable_ssao.into(),
-            show_grid: config.settings.modeling.show_scale_grid,
+            highlight_edges: settings.modeling.highlight_edges.into(),
+            enable_ssao: settings.modeling.enable_ssao.into(),
+            show_grid: settings.modeling.show_scale_grid,
             replay: None,
             project_directory: None,
             current_file: None,
+            fixed_size_grid: settings.app.fixed_size_grid,
         }
     }
 }
 
 impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSettings {
     fn from(config: crate::settings::types::project::ProjectConfiguration) -> Self {
-        Self {
-            highlight_edges: config.settings.modeling.highlight_edges.into(),
-            enable_ssao: config.settings.modeling.enable_ssao.into(),
-            show_grid: Default::default(),
-            replay: None,
-            project_directory: None,
-            current_file: None,
-        }
+        Self::from(config.settings.modeling)
     }
 }
 
@@ -343,6 +347,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             replay: None,
             project_directory: None,
             current_file: None,
+            fixed_size_grid: true,
         }
     }
 }
@@ -356,6 +361,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             replay: None,
             project_directory: None,
             current_file: None,
+            fixed_size_grid: true,
         }
     }
 }
@@ -382,11 +388,13 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        let pool = std::env::var("ZOO_ENGINE_POOL").ok();
         let (ws, _headers) = client
             .modeling()
             .commands_ws(
                 None,
                 None,
+                pool,
                 if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
@@ -407,7 +415,6 @@ impl ExecutorContext {
         Ok(Self {
             engine,
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Live,
         })
@@ -418,21 +425,19 @@ impl ExecutorContext {
         ExecutorContext {
             engine,
             fs,
-            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Live,
         }
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_mock() -> Self {
+    pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
             engine: Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
             )),
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(StdLib::new()),
-            settings: Default::default(),
+            settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
         }
     }
@@ -442,7 +447,6 @@ impl ExecutorContext {
         ExecutorContext {
             engine,
             fs,
-            stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Mock,
         }
@@ -453,7 +457,6 @@ impl ExecutorContext {
         ExecutorContext {
             engine,
             fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(StdLib::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
         }
@@ -499,6 +502,7 @@ impl ExecutorContext {
                 replay: None,
                 project_directory: None,
                 current_file: None,
+                fixed_size_grid: false,
             },
             None,
             engine_addr,
@@ -521,6 +525,12 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
+        // Ensure artifacts are cleared so that we don't accumulate them across
+        // runs.
+        exec_state.mod_local.artifacts.clear();
+        exec_state.global.root_module_artifacts.clear();
+        exec_state.global.artifacts.clear();
+
         self.engine
             .clear_scene(&mut exec_state.mod_local.id_generator, source_range)
             .await
@@ -548,10 +558,13 @@ impl ExecutorContext {
 
     pub async fn run_mock(
         &self,
-        program: crate::Program,
+        program: &crate::Program,
         use_prev_memory: bool,
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
-        assert!(self.is_mock());
+        assert!(
+            self.is_mock(),
+            "To use mock execution, instantiate via ExecutorContext::new_mock, not ::new"
+        );
 
         let mut exec_state = ExecState::new(self);
         if use_prev_memory {
@@ -570,7 +583,7 @@ impl ExecutorContext {
         // part of the scene).
         exec_state.mut_stack().push_new_env_for_scope();
 
-        let result = self.inner_run(&program, &mut exec_state, true).await?;
+        let result = self.inner_run(program, &mut exec_state, true).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
@@ -578,7 +591,7 @@ impl ExecutorContext {
 
         let mut mem = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
-        let outcome = exec_state.to_mock_exec_outcome(result.0).await;
+        let outcome = exec_state.into_exec_outcome(result.0, self).await;
 
         mem.squash_env(result.0);
         cache::write_old_memory((mem, module_infos)).await;
@@ -588,157 +601,192 @@ impl ExecutorContext {
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
-
-        let (program, mut exec_state, preserve_mem, imports_info) = if let Some(OldAstState {
-            ast: old_ast,
-            exec_state: mut old_state,
-            settings: old_settings,
-            result_env,
-        }) = cache::read_old_ast().await
-        {
-            let old = CacheInformation {
-                ast: &old_ast,
-                settings: &old_settings,
-            };
-            let new = CacheInformation {
-                ast: &program.ast,
-                settings: &self.settings,
-            };
-
-            // Get the program that actually changed from the old and new information.
-            let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
-                CacheResult::ReExecute {
-                    clear_scene,
-                    reapply_settings,
-                    program: changed_program,
-                } => {
-                    if reapply_settings
-                        && self
-                            .engine
-                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
-                            .await
-                            .is_err()
-                    {
-                        (true, program, None)
-                    } else {
-                        (
-                            clear_scene,
-                            crate::Program {
-                                ast: changed_program,
-                                original_file_contents: program.original_file_contents,
-                            },
-                            None,
-                        )
-                    }
-                }
-                CacheResult::CheckImportsOnly {
-                    reapply_settings,
-                    ast: changed_program,
-                } => {
-                    if reapply_settings
-                        && self
-                            .engine
-                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
-                            .await
-                            .is_err()
-                    {
-                        (true, program, None)
-                    } else {
-                        // We need to check our imports to see if they changed.
-                        let mut new_exec_state = ExecState::new(self);
-                        let (new_universe, new_universe_map) = self.get_universe(&program, &mut new_exec_state).await?;
-                        let mut clear_scene = false;
-
-                        let mut keys = new_universe.keys().clone().collect::<Vec<_>>();
-                        keys.sort();
-                        for key in keys {
-                            let (_, id, _, _) = &new_universe[key];
-                            let old_source = old_state.get_source(*id);
-                            let new_source = new_exec_state.get_source(*id);
-                            if old_source != new_source {
-                                clear_scene = true;
-                                break;
-                            }
-                        }
-
-                        (
-                            clear_scene,
-                            crate::Program {
-                                ast: changed_program,
-                                original_file_contents: program.original_file_contents,
-                            },
-                            // We only care about this if we are clearing the scene.
-                            if clear_scene {
-                                Some((new_universe, new_universe_map, new_exec_state))
-                            } else {
-                                None
-                            },
-                        )
-                    }
-                }
-                CacheResult::NoAction(true) => {
-                    if self
-                        .engine
-                        .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
-                        .await
-                        .is_ok()
-                    {
-                        // We need to update the old ast state with the new settings!!
-                        cache::write_old_ast(OldAstState {
-                            ast: old_ast,
-                            exec_state: old_state.clone(),
-                            settings: self.settings.clone(),
-                            result_env,
-                        })
-                        .await;
-
-                        let outcome = old_state.to_exec_outcome(result_env).await;
-                        return Ok(outcome);
-                    }
-                    (true, program, None)
-                }
-                CacheResult::NoAction(false) => {
-                    let outcome = old_state.to_exec_outcome(result_env).await;
-                    return Ok(outcome);
-                }
-            };
-
-            let (exec_state, preserve_mem, universe_info) =
-                if let Some((new_universe, new_universe_map, mut new_exec_state)) = import_check_info {
-                    // Clear the scene if the imports changed.
-                    self.send_clear_scene(&mut new_exec_state, Default::default())
-                        .await
-                        .map_err(KclErrorWithOutputs::no_outputs)?;
-
-                    (new_exec_state, false, Some((new_universe, new_universe_map)))
-                } else if clear_scene {
-                    // Pop the execution state, since we are starting fresh.
-                    let mut exec_state = old_state;
-                    exec_state.reset(self);
-
-                    self.send_clear_scene(&mut exec_state, Default::default())
-                        .await
-                        .map_err(KclErrorWithOutputs::no_outputs)?;
-
-                    (exec_state, false, None)
-                } else {
-                    old_state.mut_stack().restore_env(result_env);
-
-                    (old_state, true, None)
-                };
-
-            (program, exec_state, preserve_mem, universe_info)
+        let grid_scale = if self.settings.fixed_size_grid {
+            GridScaleBehavior::Fixed(
+                program
+                    .meta_settings()
+                    .ok()
+                    .flatten()
+                    .map(|s| s.default_length_units)
+                    .map(kcmc::units::UnitLength::from),
+            )
         } else {
-            let mut exec_state = ExecState::new(self);
-            self.send_clear_scene(&mut exec_state, Default::default())
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?;
-            (program, exec_state, false, None)
+            GridScaleBehavior::ScaleWithZoom
         };
 
-        let result = self
-            .run_concurrent(&program, &mut exec_state, imports_info, preserve_mem)
-            .await;
+        let (program, exec_state, result) = match cache::read_old_ast().await {
+            Some(mut cached_state) => {
+                let old = CacheInformation {
+                    ast: &cached_state.main.ast,
+                    settings: &cached_state.settings,
+                };
+                let new = CacheInformation {
+                    ast: &program.ast,
+                    settings: &self.settings,
+                };
+
+                // Get the program that actually changed from the old and new information.
+                let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
+                    CacheResult::ReExecute {
+                        clear_scene,
+                        reapply_settings,
+                        program: changed_program,
+                    } => {
+                        if reapply_settings
+                            && self
+                                .engine
+                                .reapply_settings(
+                                    &self.settings,
+                                    Default::default(),
+                                    &mut cached_state.main.exec_state.id_generator,
+                                    grid_scale,
+                                )
+                                .await
+                                .is_err()
+                        {
+                            (true, program, None)
+                        } else {
+                            (
+                                clear_scene,
+                                crate::Program {
+                                    ast: changed_program,
+                                    original_file_contents: program.original_file_contents,
+                                },
+                                None,
+                            )
+                        }
+                    }
+                    CacheResult::CheckImportsOnly {
+                        reapply_settings,
+                        ast: changed_program,
+                    } => {
+                        if reapply_settings
+                            && self
+                                .engine
+                                .reapply_settings(
+                                    &self.settings,
+                                    Default::default(),
+                                    &mut cached_state.main.exec_state.id_generator,
+                                    grid_scale,
+                                )
+                                .await
+                                .is_err()
+                        {
+                            (true, program, None)
+                        } else {
+                            // We need to check our imports to see if they changed.
+                            let mut new_exec_state = ExecState::new(self);
+                            let (new_universe, new_universe_map) =
+                                self.get_universe(&program, &mut new_exec_state).await?;
+
+                            let clear_scene = new_universe.values().any(|value| {
+                                let id = value.1;
+                                match (
+                                    cached_state.exec_state.get_source(id),
+                                    new_exec_state.global.get_source(id),
+                                ) {
+                                    (Some(s0), Some(s1)) => s0.source != s1.source,
+                                    _ => false,
+                                }
+                            });
+
+                            if !clear_scene {
+                                // Return early we don't need to clear the scene.
+                                return Ok(cached_state.into_exec_outcome(self).await);
+                            }
+
+                            (
+                                true,
+                                crate::Program {
+                                    ast: changed_program,
+                                    original_file_contents: program.original_file_contents,
+                                },
+                                Some((new_universe, new_universe_map, new_exec_state)),
+                            )
+                        }
+                    }
+                    CacheResult::NoAction(true) => {
+                        if self
+                            .engine
+                            .reapply_settings(
+                                &self.settings,
+                                Default::default(),
+                                &mut cached_state.main.exec_state.id_generator,
+                                grid_scale,
+                            )
+                            .await
+                            .is_ok()
+                        {
+                            // We need to update the old ast state with the new settings!!
+                            cache::write_old_ast(GlobalState::with_settings(
+                                cached_state.clone(),
+                                self.settings.clone(),
+                            ))
+                            .await;
+
+                            return Ok(cached_state.into_exec_outcome(self).await);
+                        }
+                        (true, program, None)
+                    }
+                    CacheResult::NoAction(false) => {
+                        return Ok(cached_state.into_exec_outcome(self).await);
+                    }
+                };
+
+                let (exec_state, result) = match import_check_info {
+                    Some((new_universe, new_universe_map, mut new_exec_state)) => {
+                        // Clear the scene if the imports changed.
+                        self.send_clear_scene(&mut new_exec_state, Default::default())
+                            .await
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+                        let result = self
+                            .run_concurrent(
+                                &program,
+                                &mut new_exec_state,
+                                Some((new_universe, new_universe_map)),
+                                false,
+                            )
+                            .await;
+
+                        (new_exec_state, result)
+                    }
+                    None if clear_scene => {
+                        // Pop the execution state, since we are starting fresh.
+                        let mut exec_state = cached_state.reconstitute_exec_state();
+                        exec_state.reset(self);
+
+                        self.send_clear_scene(&mut exec_state, Default::default())
+                            .await
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+                        let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+
+                        (exec_state, result)
+                    }
+                    None => {
+                        let mut exec_state = cached_state.reconstitute_exec_state();
+                        exec_state.mut_stack().restore_env(cached_state.main.result_env);
+
+                        let result = self.run_concurrent(&program, &mut exec_state, None, true).await;
+
+                        (exec_state, result)
+                    }
+                };
+
+                (program, exec_state, result)
+            }
+            None => {
+                let mut exec_state = ExecState::new(self);
+                self.send_clear_scene(&mut exec_state, Default::default())
+                    .await
+                    .map_err(KclErrorWithOutputs::no_outputs)?;
+
+                let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+
+                (program, exec_state, result)
+            }
+        };
 
         if result.is_err() {
             cache::bust_cache().await;
@@ -748,22 +796,19 @@ impl ExecutorContext {
         let result = result?;
 
         // Save this as the last successful execution to the cache.
-        cache::write_old_ast(OldAstState {
-            ast: program.ast,
-            exec_state: exec_state.clone(),
-            settings: self.settings.clone(),
-            result_env: result.0,
-        })
+        cache::write_old_ast(GlobalState::new(
+            exec_state.clone(),
+            self.settings.clone(),
+            program.ast,
+            result.0,
+        ))
         .await;
 
-        let outcome = exec_state.to_exec_outcome(result.0).await;
+        let outcome = exec_state.into_exec_outcome(result.0, self).await;
         Ok(outcome)
     }
 
     /// Perform the execution of a program.
-    ///
-    /// You can optionally pass in some initialization memory for partial
-    /// execution.
     ///
     /// To access non-fatal errors and warnings, extract them from the `ExecState`.
     pub async fn run(
@@ -775,10 +820,7 @@ impl ExecutorContext {
     }
 
     /// Perform the execution of a program using a concurrent
-    /// execution model. This has the same signature as [Self::run].
-    ///
-    /// You can optionally pass in some initialization memory for partial
-    /// execution.
+    /// execution model.
     ///
     /// To access non-fatal errors and warnings, extract them from the `ExecState`.
     pub async fn run_concurrent(
@@ -789,7 +831,7 @@ impl ExecutorContext {
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Reuse our cached universe if we have one.
-        #[allow(unused_variables)]
+
         let (universe, universe_map) = if let Some((universe, universe_map)) = universe_info {
             (universe, universe_map)
         } else {
@@ -803,28 +845,8 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        for modules in crate::walk::import_graph(&universe, self)
-            .map_err(|err| {
-                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                    .global
-                    .path_to_source_id
-                    .iter()
-                    .map(|(k, v)| ((*v), k.clone()))
-                    .collect();
-
-                KclErrorWithOutputs::new(
-                    err,
-                    #[cfg(feature = "artifact-graph")]
-                    exec_state.global.operations.clone(),
-                    #[cfg(feature = "artifact-graph")]
-                    exec_state.global.artifact_commands.clone(),
-                    #[cfg(feature = "artifact-graph")]
-                    exec_state.global.artifact_graph.clone(),
-                    module_id_to_module_path,
-                    exec_state.global.id_to_source.clone(),
-                    default_planes.clone(),
-                )
-            })?
+        for modules in import_graph::import_graph(&universe, self)
+            .map_err(|err| exec_state.error_with_outputs(err, None, default_planes.clone()))?
             .into_iter()
         {
             #[cfg(not(target_arch = "wasm32"))]
@@ -838,44 +860,26 @@ impl ExecutorContext {
 
             for module in modules {
                 let Some((import_stmt, module_id, module_path, repr)) = universe.get(&module) else {
-                    return Err(KclErrorWithOutputs::no_outputs(KclError::Internal(KclErrorDetails {
-                        message: format!("Module {module} not found in universe"),
-                        source_ranges: Default::default(),
-                    })));
+                    return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
+                        KclErrorDetails::new(format!("Module {module} not found in universe"), Default::default()),
+                    )));
                 };
                 let module_id = *module_id;
                 let module_path = module_path.clone();
                 let source_range = SourceRange::from(import_stmt);
+                // Clone before mutating.
+                let module_exec_state = exec_state.clone();
 
-                #[cfg(feature = "artifact-graph")]
-                match &module_path {
-                    ModulePath::Main => {
-                        // This should never happen.
-                    }
-                    ModulePath::Local { value, .. } => {
-                        // We only want to display the top-level module imports in
-                        // the Feature Tree, not transitive imports.
-                        if universe_map.contains_key(value) {
-                            exec_state.global.operations.push(Operation::GroupBegin {
-                                group: Group::ModuleInstance {
-                                    name: value.file_name().unwrap_or_default(),
-                                    module_id,
-                                },
-                                source_range,
-                            });
-                            // Due to concurrent execution, we cannot easily
-                            // group operations by module. So we leave the
-                            // group empty and close it immediately.
-                            exec_state.global.operations.push(Operation::GroupEnd);
-                        }
-                    }
-                    ModulePath::Std { .. } => {
-                        // We don't want to display stdlib in the Feature Tree.
-                    }
-                }
+                self.add_import_module_ops(
+                    exec_state,
+                    program,
+                    module_id,
+                    &module_path,
+                    source_range,
+                    &universe_map,
+                );
 
                 let repr = repr.clone();
-                let exec_state = exec_state.clone();
                 let exec_ctxt = self.clone();
                 let results_tx = results_tx.clone();
 
@@ -895,24 +899,25 @@ impl ExecutorContext {
                             result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
                         }
                         ModuleRepr::Foreign(geom, _) => {
-                            let result = crate::execution::import::send_to_engine(geom.clone(), exec_ctxt)
+                            let result = crate::execution::import::send_to_engine(geom.clone(), exec_state, exec_ctxt)
                                 .await
                                 .map(|geom| Some(KclValue::ImportedGeometry(geom)));
 
-                            result.map(|val| ModuleRepr::Foreign(geom.clone(), val))
+                            result.map(|val| {
+                                ModuleRepr::Foreign(geom.clone(), Some((val, exec_state.mod_local.artifacts.clone())))
+                            })
                         }
-                        ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::Internal(KclErrorDetails {
-                            message: format!("Module {module_path} not found in universe"),
-                            source_ranges: vec![source_range],
-                        })),
+                        ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
+                            format!("Module {module_path} not found in universe"),
+                            vec![source_range],
+                        ))),
                     }
                 };
 
                 #[cfg(target_arch = "wasm32")]
                 {
                     wasm_bindgen_futures::spawn_local(async move {
-                        //set.spawn(async move {
-                        let mut exec_state = exec_state;
+                        let mut exec_state = module_exec_state;
                         let exec_ctxt = exec_ctxt;
 
                         let result = exec_module(
@@ -934,7 +939,7 @@ impl ExecutorContext {
                 #[cfg(not(target_arch = "wasm32"))]
                 {
                     set.spawn(async move {
-                        let mut exec_state = exec_state;
+                        let mut exec_state = module_exec_state;
                         let exec_ctxt = exec_ctxt;
 
                         let result = exec_module(
@@ -981,29 +986,19 @@ impl ExecutorContext {
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
                     Err(e) => {
-                        let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                            .global
-                            .path_to_source_id
-                            .iter()
-                            .map(|(k, v)| ((*v), k.clone()))
-                            .collect();
-
-                        return Err(KclErrorWithOutputs::new(
-                            e,
-                            #[cfg(feature = "artifact-graph")]
-                            exec_state.global.operations.clone(),
-                            #[cfg(feature = "artifact-graph")]
-                            exec_state.global.artifact_commands.clone(),
-                            #[cfg(feature = "artifact-graph")]
-                            exec_state.global.artifact_graph.clone(),
-                            module_id_to_module_path,
-                            exec_state.global.id_to_source.clone(),
-                            default_planes,
-                        ));
+                        return Err(exec_state.error_with_outputs(e, None, default_planes));
                     }
                 }
             }
         }
+
+        // Since we haven't technically started executing the root module yet,
+        // the operations corresponding to the imports will be missing unless we
+        // track them here.
+        exec_state
+            .global
+            .root_module_artifacts
+            .extend(std::mem::take(&mut exec_state.mod_local.artifacts));
 
         self.inner_run(program, exec_state, preserve_mem).await
     }
@@ -1021,37 +1016,78 @@ impl ExecutorContext {
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
 
-        let root_imports = crate::walk::import_universe(
+        let root_imports = import_graph::import_universe(
             self,
+            &ModulePath::Main,
             &ModuleRepr::Kcl(program.ast.clone(), None),
             &mut universe,
             exec_state,
         )
         .await
-        .map_err(|err| {
-            println!("Error: {err:?}");
-            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                .global
-                .path_to_source_id
-                .iter()
-                .map(|(k, v)| ((*v), k.clone()))
-                .collect();
-
-            KclErrorWithOutputs::new(
-                err,
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.operations.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_commands.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_graph.clone(),
-                module_id_to_module_path,
-                exec_state.global.id_to_source.clone(),
-                default_planes,
-            )
-        })?;
+        .map_err(|err| exec_state.error_with_outputs(err, None, default_planes))?;
 
         Ok((universe, root_imports))
+    }
+
+    #[cfg(not(feature = "artifact-graph"))]
+    fn add_import_module_ops(
+        &self,
+        _exec_state: &mut ExecState,
+        _program: &crate::Program,
+        _module_id: ModuleId,
+        _module_path: &ModulePath,
+        _source_range: SourceRange,
+        _universe_map: &UniverseMap,
+    ) {
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    fn add_import_module_ops(
+        &self,
+        exec_state: &mut ExecState,
+        program: &crate::Program,
+        module_id: ModuleId,
+        module_path: &ModulePath,
+        source_range: SourceRange,
+        universe_map: &UniverseMap,
+    ) {
+        match module_path {
+            ModulePath::Main => {
+                // This should never happen.
+            }
+            ModulePath::Local { value, .. } => {
+                // We only want to display the top-level module imports in
+                // the Feature Tree, not transitive imports.
+                if universe_map.contains_key(value) {
+                    use crate::NodePath;
+
+                    let node_path = if source_range.is_top_level_module() {
+                        let cached_body_items = exec_state.global.artifacts.cached_body_items();
+                        NodePath::from_range(&program.ast, cached_body_items, source_range).unwrap_or_default()
+                    } else {
+                        // The frontend doesn't care about paths in
+                        // files other than the top-level module.
+                        NodePath::placeholder()
+                    };
+
+                    exec_state.push_op(Operation::GroupBegin {
+                        group: Group::ModuleInstance {
+                            name: value.file_name().unwrap_or_default(),
+                            module_id,
+                        },
+                        node_path,
+                        source_range,
+                    });
+                    // Due to concurrent execution, we cannot easily
+                    // group operations by module. So we leave the
+                    // group empty and close it immediately.
+                    exec_state.push_op(Operation::GroupEnd);
+                }
+            }
+            ModulePath::Std { .. } => {
+                // We don't want to display stdlib in the Feature Tree.
+            }
+        }
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
@@ -1065,8 +1101,25 @@ impl ExecutorContext {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Re-apply the settings, in case the cache was busted.
+        let grid_scale = if self.settings.fixed_size_grid {
+            GridScaleBehavior::Fixed(
+                program
+                    .meta_settings()
+                    .ok()
+                    .flatten()
+                    .map(|s| s.default_length_units)
+                    .map(kcmc::units::UnitLength::from),
+            )
+        } else {
+            GridScaleBehavior::ScaleWithZoom
+        };
         self.engine
-            .reapply_settings(&self.settings, Default::default(), exec_state.id_generator())
+            .reapply_settings(
+                &self.settings,
+                Default::default(),
+                exec_state.id_generator(),
+                grid_scale,
+            )
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1081,27 +1134,7 @@ impl ExecutorContext {
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
-        let env_ref = result.map_err(|e| {
-            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                .global
-                .path_to_source_id
-                .iter()
-                .map(|(k, v)| ((*v), k.clone()))
-                .collect();
-
-            KclErrorWithOutputs::new(
-                e,
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.operations.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_commands.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_graph.clone(),
-                module_id_to_module_path,
-                exec_state.global.id_to_source.clone(),
-                default_planes.clone(),
-            )
-        })?;
+        let env_ref = result.map_err(|(err, env_ref)| exec_state.error_with_outputs(err, env_ref, default_planes))?;
 
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
@@ -1120,12 +1153,18 @@ impl ExecutorContext {
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
         preserve_mem: bool,
-    ) -> Result<EnvironmentRef, KclError> {
+    ) -> Result<EnvironmentRef, (KclError, Option<EnvironmentRef>)> {
         // Don't early return!  We need to build other outputs regardless of
         // whether execution failed.
 
+        // Because of execution caching, we may start with operations from a
+        // previous run.
+        #[cfg(feature = "artifact-graph")]
+        let start_op = exec_state.global.root_module_artifacts.operations.len();
+
         self.eval_prelude(exec_state, SourceRange::from(program).start_as_range())
-            .await?;
+            .await
+            .map_err(|e| (e, None))?;
 
         let exec_result = self
             .exec_module_body(
@@ -1135,47 +1174,60 @@ impl ExecutorContext {
                 ModuleId::default(),
                 &ModulePath::Main,
             )
-            .await;
+            .await
+            .map(|(_, env_ref, _, module_artifacts)| {
+                // We need to extend because it may already have operations from
+                // imports.
+                exec_state.global.root_module_artifacts.extend(module_artifacts);
+                env_ref
+            })
+            .map_err(|(err, env_ref, module_artifacts)| {
+                if let Some(module_artifacts) = module_artifacts {
+                    // We need to extend because it may already have operations
+                    // from imports.
+                    exec_state.global.root_module_artifacts.extend(module_artifacts);
+                }
+                (err, env_ref)
+            });
+
+        #[cfg(feature = "artifact-graph")]
+        {
+            // Fill in NodePath for operations.
+            let cached_body_items = exec_state.global.artifacts.cached_body_items();
+            for op in exec_state
+                .global
+                .root_module_artifacts
+                .operations
+                .iter_mut()
+                .skip(start_op)
+            {
+                op.fill_node_paths(program, cached_body_items);
+            }
+            for module in exec_state.global.module_infos.values_mut() {
+                if let ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) = &mut module.repr {
+                    for op in &mut module_artifacts.operations {
+                        op.fill_node_paths(program, cached_body_items);
+                    }
+                }
+            }
+        }
 
         // Ensure all the async commands completed.
-        self.engine.ensure_async_commands_completed().await?;
+        self.engine.ensure_async_commands_completed().await.map_err(|e| {
+            match &exec_result {
+                Ok(env_ref) => (e, Some(*env_ref)),
+                // Prefer the execution error.
+                Err((exec_err, env_ref)) => (exec_err.clone(), *env_ref),
+            }
+        })?;
 
         // If we errored out and early-returned, there might be commands which haven't been executed
         // and should be dropped.
         self.engine.clear_queues().await;
 
-        #[cfg(feature = "artifact-graph")]
-        {
-            // Move the artifact commands and responses to simplify cache management
-            // and error creation.
-            exec_state
-                .global
-                .artifact_commands
-                .extend(self.engine.take_artifact_commands().await);
-            exec_state
-                .global
-                .artifact_responses
-                .extend(self.engine.take_responses().await);
-            // Build the artifact graph.
-            match build_artifact_graph(
-                &exec_state.global.artifact_commands,
-                &exec_state.global.artifact_responses,
-                program,
-                &exec_state.global.artifacts,
-            ) {
-                Ok(artifact_graph) => {
-                    exec_state.global.artifact_graph = artifact_graph;
-                    exec_result.map(|(_, env_ref, _)| env_ref)
-                }
-                Err(err) => {
-                    // Prefer the exec error.
-                    exec_result.and(Err(err))
-                }
-            }
-        }
-        #[cfg(not(feature = "artifact-graph"))]
-        {
-            exec_result.map(|(_, env_ref, _)| env_ref)
+        match exec_state.build_artifact_graph(&self.engine, program).await {
+            Ok(_) => exec_result,
+            Err(err) => exec_result.and_then(|env_ref| Err((err, Some(env_ref)))),
         }
     }
 
@@ -1184,19 +1236,25 @@ impl ExecutorContext {
     /// SAFETY: the current thread must have sole access to the memory referenced in exec_state.
     async fn eval_prelude(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Result<(), KclError> {
         if exec_state.stack().memory.requires_std() {
+            #[cfg(feature = "artifact-graph")]
+            let initial_ops = exec_state.mod_local.artifacts.operations.len();
+
+            let path = vec!["std".to_owned(), "prelude".to_owned()];
+            let resolved_path = ModulePath::from_std_import_path(&path)?;
             let id = self
-                .open_module(
-                    &ImportPath::Std {
-                        path: vec!["std".to_owned(), "prelude".to_owned()],
-                    },
-                    &[],
-                    exec_state,
-                    source_range,
-                )
+                .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
                 .await?;
             let (module_memory, _) = self.exec_module_for_items(id, exec_state, source_range).await?;
 
             exec_state.mut_stack().memory.set_std(module_memory);
+
+            // Operations generated by the prelude are not useful, so clear them
+            // out.
+            //
+            // TODO: Should we also clear them out of each module so that they
+            // don't appear in test output?
+            #[cfg(feature = "artifact-graph")]
+            exec_state.mod_local.artifacts.operations.truncate(initial_ops);
         }
 
         Ok(())
@@ -1260,10 +1318,10 @@ impl ExecutorContext {
             .await?;
 
         let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
-            return Err(KclError::Internal(crate::errors::KclErrorDetails {
-                message: format!("Expected Export response, got {resp:?}",),
-                source_ranges: vec![SourceRange::default()],
-            }));
+            return Err(KclError::new_internal(crate::errors::KclErrorDetails::new(
+                format!("Expected Export response, got {resp:?}",),
+                vec![SourceRange::default()],
+            )));
         };
 
         Ok(files)
@@ -1280,10 +1338,10 @@ impl ExecutorContext {
                     coords: *kittycad_modeling_cmds::coord::KITTYCAD,
                     created: if deterministic_time {
                         Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
-                            KclError::Internal(crate::errors::KclErrorDetails {
-                                message: format!("Failed to parse date: {}", e),
-                                source_ranges: vec![SourceRange::default()],
-                            })
+                            KclError::new_internal(crate::errors::KclErrorDetails::new(
+                                format!("Failed to parse date: {e}"),
+                                vec![SourceRange::default()],
+                            ))
                         })?)
                     } else {
                         None
@@ -1297,6 +1355,51 @@ impl ExecutorContext {
 
     pub async fn close(&self) {
         self.engine.close().await;
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS, JsonSchema)]
+pub struct ArtifactId(Uuid);
+
+impl ArtifactId {
+    pub fn new(uuid: Uuid) -> Self {
+        Self(uuid)
+    }
+}
+
+impl From<Uuid> for ArtifactId {
+    fn from(uuid: Uuid) -> Self {
+        Self::new(uuid)
+    }
+}
+
+impl From<&Uuid> for ArtifactId {
+    fn from(uuid: &Uuid) -> Self {
+        Self::new(*uuid)
+    }
+}
+
+impl From<ArtifactId> for Uuid {
+    fn from(id: ArtifactId) -> Self {
+        id.0
+    }
+}
+
+impl From<&ArtifactId> for Uuid {
+    fn from(id: &ArtifactId) -> Self {
+        id.0
+    }
+}
+
+impl From<ModelingCmdId> for ArtifactId {
+    fn from(id: ModelingCmdId) -> Self {
+        Self::new(*id.as_ref())
+    }
+}
+
+impl From<&ModelingCmdId> for ArtifactId {
+    fn from(id: &ModelingCmdId) -> Self {
+        Self::new(*id.as_ref())
     }
 }
 
@@ -1315,14 +1418,13 @@ pub(crate) async fn parse_execute_with_project_dir(
     let exec_ctxt = ExecutorContext {
         engine: Arc::new(Box::new(
             crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
-                KclError::Internal(crate::errors::KclErrorDetails {
-                    message: format!("Failed to create mock engine connection: {}", err),
-                    source_ranges: vec![SourceRange::default()],
-                })
+                KclError::new_internal(crate::errors::KclErrorDetails::new(
+                    format!("Failed to create mock engine connection: {err}"),
+                    vec![SourceRange::default()],
+                ))
             })?,
         )),
         fs: Arc::new(crate::fs::FileManager::new()),
-        stdlib: Arc::new(crate::std::StdLib::new()),
         settings: ExecutorSettings {
             project_directory,
             ..Default::default()
@@ -1354,7 +1456,12 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{errors::KclErrorDetails, execution::memory::Stack, ModuleId};
+    use crate::{
+        ModuleId,
+        errors::{KclErrorDetails, Severity},
+        exec::NumericType,
+        execution::{memory::Stack, types::RuntimeType},
+    };
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -1702,7 +1809,8 @@ answer = returnX()"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn type_aliases() {
-        let text = r#"type MyTy = [number; 2]
+        let text = r#"@settings(experimentalFeatures = allow)
+type MyTy = [number; 2]
 fn foo(@x: MyTy) {
     return x[0]
 }
@@ -1731,10 +1839,10 @@ foo
         let err = result.unwrap_err();
         assert_eq!(
             err,
-            KclError::Syntax(KclErrorDetails {
-                message: "Unexpected token: #".to_owned(),
-                source_ranges: vec![SourceRange::new(14, 15, ModuleId::default())],
-            }),
+            KclError::new_syntax(KclErrorDetails::new(
+                "Unexpected token: #".to_owned(),
+                vec![SourceRange::new(14, 15, ModuleId::default())],
+            )),
         );
     }
 
@@ -1830,6 +1938,56 @@ shape = layer() |> patternTransform(instances = 10, transform = transform)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn pass_std_to_std() {
+        let ast = r#"sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 2)
+extrude001 = extrude(profile001, length = 5)
+extrudes = patternLinear3d(
+  extrude001,
+  instances = 3,
+  distance = 5,
+  axis = [1, 1, 0],
+)
+clone001 = map(extrudes, f = clone)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_array_reduce_nested_array() {
+        let code = r#"
+fn id(@el, accum)  { return accum }
+
+answer = reduce([], initial=[[[0,0]]], f=id)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "answer"),
+            KclValue::HomArray {
+                value: vec![KclValue::HomArray {
+                    value: vec![KclValue::HomArray {
+                        value: vec![
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::default(),
+                                meta: vec![SourceRange::new(69, 70, Default::default()).into()],
+                            },
+                            KclValue::Number {
+                                value: 0.0,
+                                ty: NumericType::default(),
+                                meta: vec![SourceRange::new(71, 72, Default::default()).into()],
+                            }
+                        ],
+                        ty: RuntimeType::any(),
+                    }],
+                    ty: RuntimeType::any(),
+                }],
+                ty: RuntimeType::any(),
+            }
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_zero_param_fn() {
         let ast = r#"sigmaAllow = 35000 // psi
 leg1 = 5 // inches
@@ -1901,13 +2059,13 @@ notNull = !myNull
 "#;
         assert_eq!(
             parse_execute(code1).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: number",
+            "Cannot apply unary operator ! to non-boolean value: a number",
         );
 
         let code2 = "notZero = !0";
         assert_eq!(
             parse_execute(code2).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: number",
+            "Cannot apply unary operator ! to non-boolean value: a number",
         );
 
         let code3 = r#"
@@ -1915,7 +2073,7 @@ notEmptyString = !""
 "#;
         assert_eq!(
             parse_execute(code3).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: string (text)",
+            "Cannot apply unary operator ! to non-boolean value: a string",
         );
 
         let code4 = r#"
@@ -1924,7 +2082,7 @@ notMember = !obj.a
 "#;
         assert_eq!(
             parse_execute(code4).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: number",
+            "Cannot apply unary operator ! to non-boolean value: a number",
         );
 
         let code5 = "
@@ -1932,7 +2090,7 @@ a = []
 notArray = !a";
         assert_eq!(
             parse_execute(code5).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: mixed array (list)",
+            "Cannot apply unary operator ! to non-boolean value: an empty array",
         );
 
         let code6 = "
@@ -1940,7 +2098,7 @@ x = {}
 notObject = !x";
         assert_eq!(
             parse_execute(code6).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: object",
+            "Cannot apply unary operator ! to non-boolean value: an object",
         );
 
         let code7 = "
@@ -1953,8 +2111,7 @@ notFunction = !x";
             fn_err
                 .message()
                 .starts_with("Cannot apply unary operator ! to non-boolean value: "),
-            "Actual error: {:?}",
-            fn_err
+            "Actual error: {fn_err:?}"
         );
 
         let code8 = "
@@ -1966,9 +2123,8 @@ notTagDeclarator = !myTagDeclarator";
         assert!(
             tag_declarator_err
                 .message()
-                .starts_with("Cannot apply unary operator ! to non-boolean value: TagDeclarator"),
-            "Actual error: {:?}",
-            tag_declarator_err
+                .starts_with("Cannot apply unary operator ! to non-boolean value: a tag declarator"),
+            "Actual error: {tag_declarator_err:?}"
         );
 
         let code9 = "
@@ -1980,9 +2136,8 @@ notTagIdentifier = !myTag";
         assert!(
             tag_identifier_err
                 .message()
-                .starts_with("Cannot apply unary operator ! to non-boolean value: TagIdentifier"),
-            "Actual error: {:?}",
-            tag_identifier_err
+                .starts_with("Cannot apply unary operator ! to non-boolean value: a tag identifier"),
+            "Actual error: {tag_identifier_err:?}"
         );
 
         let code10 = "notPipe = !(1 |> 2)";
@@ -1990,10 +2145,10 @@ notTagIdentifier = !myTag";
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
             parse_execute(code10).await.unwrap_err(),
-            KclError::Syntax(KclErrorDetails {
-                message: "Unexpected token: !".to_owned(),
-                source_ranges: vec![SourceRange::new(10, 11, ModuleId::default())],
-            })
+            KclError::new_syntax(KclErrorDetails::new(
+                "Unexpected token: !".to_owned(),
+                vec![SourceRange::new(10, 11, ModuleId::default())],
+            ))
         );
 
         let code11 = "
@@ -2003,15 +2158,58 @@ notPipeSub = 1 |> identity(!%))";
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
             parse_execute(code11).await.unwrap_err(),
-            KclError::Syntax(KclErrorDetails {
-                message: "Unexpected token: |>".to_owned(),
-                source_ranges: vec![SourceRange::new(44, 46, ModuleId::default())],
-            })
+            KclError::new_syntax(KclErrorDetails::new(
+                "There was an unexpected `!`. Try removing it.".to_owned(),
+                vec![SourceRange::new(56, 57, ModuleId::default())],
+            ))
         );
 
         // TODO: Add these tests when we support these types.
         // let notNan = !NaN
         // let notInfinity = !Infinity
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_start_sketch_on_invalid_kwargs() {
+        let current_dir = std::env::current_dir().unwrap();
+        let mut path = current_dir.join("tests/inputs/startSketchOn_0.kcl");
+        let mut code = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(
+            parse_execute(&code).await.unwrap_err().message(),
+            "You cannot give both `face` and `normalToFace` params, you have to choose one or the other.".to_owned(),
+        );
+
+        path = current_dir.join("tests/inputs/startSketchOn_1.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
+
+        assert_eq!(
+            parse_execute(&code).await.unwrap_err().message(),
+            "`alignAxis` is required if `normalToFace` is specified.".to_owned(),
+        );
+
+        path = current_dir.join("tests/inputs/startSketchOn_2.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
+
+        assert_eq!(
+            parse_execute(&code).await.unwrap_err().message(),
+            "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
+        );
+
+        path = current_dir.join("tests/inputs/startSketchOn_3.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
+
+        assert_eq!(
+            parse_execute(&code).await.unwrap_err().message(),
+            "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
+        );
+
+        path = current_dir.join("tests/inputs/startSketchOn_4.kcl");
+        code = std::fs::read_to_string(&path).unwrap();
+
+        assert_eq!(
+            parse_execute(&code).await.unwrap_err().message(),
+            "`normalToFace` is required if `normalOffset` is specified.".to_owned(),
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2049,7 +2247,7 @@ test([0, 0])
 "#;
         let result = parse_execute(ast).await;
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("undefined"),);
+        assert!(result.unwrap_err().to_string().contains("undefined"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2134,11 +2332,11 @@ w = f() + f()
         if let Err(err) = ctx.run_with_caching(old_program).await {
             let report = err.into_miette_report_with_outputs(code).unwrap();
             let report = miette::Report::new(report);
-            panic!("Error executing program: {:?}", report);
+            panic!("Error executing program: {report:?}");
         }
 
         // Get the id_generator from the first execution.
-        let id_generator = cache::read_old_ast().await.unwrap().exec_state.mod_local.id_generator;
+        let id_generator = cache::read_old_ast().await.unwrap().main.exec_state.id_generator;
 
         let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfile(at = [62.74, 206.13])
@@ -2159,7 +2357,7 @@ w = f() + f()
         // Execute the program.
         ctx.run_with_caching(program).await.unwrap();
 
-        let new_id_generator = cache::read_old_ast().await.unwrap().exec_state.mod_local.id_generator;
+        let new_id_generator = cache::read_old_ast().await.unwrap().main.exec_state.id_generator;
 
         assert_eq!(id_generator, new_id_generator);
     }
@@ -2223,13 +2421,65 @@ w = f() + f()
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
 
-        let ctx2 = ExecutorContext::new_mock().await;
+        let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
-        let result = ctx2.run_mock(program2, true).await.unwrap();
+        let result = ctx2.run_mock(&program2, true).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
 
         ctx.close().await;
         ctx2.close().await;
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_has_stable_ids() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let code = "sk = startSketchOn(XY)
+        |> startProfile(at = [0, 0])";
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, false).await.unwrap();
+        let ids = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
+        assert!(!ids.is_empty(), "IDs should not be empty");
+
+        let ctx2 = ExecutorContext::new_mock(None).await;
+        let program2 = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx2.run_mock(&program2, false).await.unwrap();
+        let ids2 = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
+
+        assert_eq!(ids, ids2, "Generated IDs should match");
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sim_sketch_mode_real_mock_real() {
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let code = r#"sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> line(end = [0, -10])
+  |> close()
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(result.operations.len(), 1);
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let mock_program = crate::Program::parse_no_errs(code).unwrap();
+        let mock_result = mock_ctx.run_mock(&mock_program, true).await.unwrap();
+        assert_eq!(mock_result.operations.len(), 1);
+
+        let code2 = code.to_owned()
+            + r#"
+extrude001 = extrude(profile001, length = 10)
+"#;
+        let program2 = crate::Program::parse_no_errs(&code2).unwrap();
+        let result = ctx.run_with_caching(program2).await.unwrap();
+        assert_eq!(result.operations.len(), 2);
+
+        ctx.close().await;
+        mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2244,7 +2494,7 @@ w = f() + f()
     |> line(end = [0, 0])
     |> close()
 }
-  
+
 sketch = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, 10])
@@ -2267,5 +2517,60 @@ sketch2 = startSketchOn(solid, face = tag0)
 foo() |> extrude(length = 1)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn experimental() {
+        let code = r#"
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Error);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        let code = r#"@settings(experimentalFeatures = allow)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert!(errors.is_empty());
+
+        let code = r#"@settings(experimentalFeatures = warn)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Warning);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        let code = r#"@settings(experimentalFeatures = deny)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Error);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        let code = r#"@settings(experimentalFeatures = foo)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        parse_execute(code).await.unwrap_err();
     }
 }

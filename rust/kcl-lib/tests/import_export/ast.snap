@@ -8,6 +8,7 @@ description: Result of parsing import_export.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "export_1.kcl"
@@ -19,9 +20,11 @@ description: Result of parsing import_export.kcl
               "alias": null,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "three",
                 "start": 0,
                 "type": "Identifier"
@@ -38,6 +41,7 @@ description: Result of parsing import_export.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

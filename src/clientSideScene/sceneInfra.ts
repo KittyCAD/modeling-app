@@ -5,7 +5,6 @@ import type {
   MeshBasicMaterial,
   Object3D,
   Object3DEventMap,
-  Texture,
 } from 'three'
 import {
   AmbientLight,
@@ -16,7 +15,6 @@ import {
   OrthographicCamera,
   Raycaster,
   Scene,
-  TextureLoader,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -53,7 +51,6 @@ type SendType = ReturnType<typeof useModelingContext>['send']
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
-  dragSelected?: Object3D<Object3DEventMap>
   mouseEvent: MouseEvent
   /** The intersection of the mouse with the THREEjs raycast plane */
   intersectionPoint?: {
@@ -105,7 +102,6 @@ export class SceneInfra {
   isFovAnimationInProgress = false
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
-  readonly extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -236,8 +232,8 @@ export class SceneInfra {
         _angle = typeof angle === 'number' ? angle : getAngle(from, to)
       }
 
-      const x = (vector.x * 0.5 + 0.5) * window.innerWidth
-      const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
+      const x = (vector.x * 0.5 + 0.5) * this.renderer.domElement.clientWidth
+      const y = (-vector.y * 0.5 + 0.5) * this.renderer.domElement.clientHeight
       const pathToNodeString = JSON.stringify(group.userData.pathToNode)
       return {
         type: 'set-one',
@@ -278,22 +274,23 @@ export class SceneInfra {
 
     // RENDERER
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
 
     // LABEL RENDERER
     this.labelRenderer = new CSS2DRenderer()
-    this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
     this.labelRenderer.domElement.style.position = 'absolute'
     this.labelRenderer.domElement.style.top = '0px'
     this.labelRenderer.domElement.style.pointerEvents = 'none'
+    this.renderer.domElement.style.width = '100%'
+    this.renderer.domElement.style.height = '100%'
     this.labelRenderer.domElement.className = 'z-sketchSegmentIndicators'
+
     window.addEventListener('resize', this.onWindowResize)
 
     this.camControls = new CameraControls(
-      false,
       this.renderer.domElement,
-      engineCommandManager
+      engineCommandManager,
+      false
     )
     this.camControls.subscribeToCamChange(() => this.onCameraChange())
     this.camControls.camera.layers.enable(SKETCH_LAYER)
@@ -322,13 +319,6 @@ export class SceneInfra {
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
-    const textureLoader = new TextureLoader()
-    this.extraSegmentTexture = textureLoader.load(
-      './clientSideSceneAssets/extra-segment-texture.png'
-    )
-    this.extraSegmentTexture.anisotropy =
-      this.renderer?.capabilities?.getMaxAnisotropy?.()
-
     SceneInfra.instance = this
   }
 
@@ -343,9 +333,22 @@ export class SceneInfra {
     axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
   }
 
+  // Called after canvas is attached to the DOM and on each resize.
+  // Note: would be better to use ResizeObserver instead of window.onresize
+  // See:
+  // https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
   onWindowResize = () => {
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
-    this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
+    const cssSize = [
+      this.renderer.domElement.clientWidth,
+      this.renderer.domElement.clientHeight,
+    ]
+    // Note: could cap the resolution on mobile devices if needed.
+    const canvasResolution = [
+      Math.round(cssSize[0] * window.devicePixelRatio),
+      Math.round(cssSize[1] * window.devicePixelRatio),
+    ]
+    this.renderer.setSize(canvasResolution[0], canvasResolution[1], false)
+    this.labelRenderer.setSize(cssSize[0], cssSize[1])
   }
 
   animate = () => {
@@ -435,10 +438,41 @@ export class SceneInfra {
       intersection: planeIntersects[0],
     }
   }
+
+  public mouseMoveThrottling = true // Can be turned off for debugging
+  private _processingMouseMove = false
+  private _lastUnprocessedMouseEvent: MouseEvent | undefined
+
+  private updateCurrentMouseVector(event: MouseEvent, target: HTMLElement) {
+    const rect = target.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) {
+      return
+    }
+    const localX = event.clientX - rect.left
+    const localY = event.clientY - rect.top
+    this.currentMouseVector.x = (localX / rect.width) * 2 - 1
+    this.currentMouseVector.y = -(localY / rect.height) * 2 + 1
+  }
+
   onMouseMove = async (mouseEvent: MouseEvent) => {
-    this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
-    this.currentMouseVector.y =
-      -(mouseEvent.clientY / window.innerHeight) * 2 + 1
+    if (!(mouseEvent.currentTarget instanceof HTMLElement)) {
+      console.error('unexpected targetless event')
+      return
+    }
+
+    if (this.mouseMoveThrottling) {
+      // Throttle mouse move events to help with performance.
+      // Without this a new call to executeAstMock() is made by SceneEntities/onDragSegment() while the
+      // previous one is still running, causing multiple wasm calls to be running at the same time.
+      // Here we simply ignore the mouse move event if we are already processing one, until the processing is done.
+      if (this._processingMouseMove) {
+        this._lastUnprocessedMouseEvent = mouseEvent
+        return
+      }
+      this._processingMouseMove = true
+    }
+
+    this.updateCurrentMouseVector(mouseEvent, mouseEvent.currentTarget)
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
@@ -459,6 +493,7 @@ export class SceneInfra {
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
       ) {
+        const selected = this.selected
         await this.onDragCallback({
           mouseEvent,
           intersectionPoint: {
@@ -466,11 +501,11 @@ export class SceneInfra {
             threeD: planeIntersectPoint.threeD,
           },
           intersects,
-          selected: this.selected.object,
+          selected: selected.object,
         })
         this.updateMouseState({
           type: 'isDragging',
-          on: this.selected.object,
+          on: selected.object,
         })
       }
     } else if (
@@ -488,47 +523,57 @@ export class SceneInfra {
       })
     }
 
-    if (intersects[0]) {
-      const firstIntersectObject = intersects[0].object
-      const planeIntersectPoint = this.getPlaneIntersectPoint()
-      const intersectionPoint = {
-        twoD: planeIntersectPoint?.twoD,
-        threeD: planeIntersectPoint?.threeD,
-      }
+    if (!this.selected) {
+      if (intersects[0]) {
+        const firstIntersectObject = intersects[0].object
+        const planeIntersectPoint = this.getPlaneIntersectPoint()
+        const intersectionPoint = {
+          twoD: planeIntersectPoint?.twoD,
+          threeD: planeIntersectPoint?.threeD,
+        }
 
-      if (this.hoveredObject !== firstIntersectObject) {
-        const hoveredObj = this.hoveredObject
-        this.hoveredObject = null
-        if (hoveredObj) {
-          await this.onMouseLeave({
-            selected: hoveredObj,
+        if (this.hoveredObject !== firstIntersectObject) {
+          const hoveredObj = this.hoveredObject
+          this.hoveredObject = null
+          if (hoveredObj) {
+            await this.onMouseLeave({
+              selected: hoveredObj,
+              mouseEvent: mouseEvent,
+              intersectionPoint,
+            })
+          }
+          this.hoveredObject = firstIntersectObject
+          await this.onMouseEnter({
+            selected: this.hoveredObject,
             mouseEvent: mouseEvent,
             intersectionPoint,
           })
-        }
-        this.hoveredObject = firstIntersectObject
-        await this.onMouseEnter({
-          selected: this.hoveredObject,
-          dragSelected: this.selected?.object,
-          mouseEvent: mouseEvent,
-          intersectionPoint,
-        })
-        if (!this.selected)
           this.updateMouseState({
             type: 'isHovering',
             on: this.hoveredObject,
           })
+        }
+      } else {
+        if (this.hoveredObject) {
+          const hoveredObj = this.hoveredObject
+          this.hoveredObject = null
+          await this.onMouseLeave({
+            selected: hoveredObj,
+            mouseEvent: mouseEvent,
+          })
+          if (!this.selected) this.updateMouseState({ type: 'idle' })
+        }
       }
-    } else {
-      if (this.hoveredObject) {
-        const hoveredObj = this.hoveredObject
-        this.hoveredObject = null
-        await this.onMouseLeave({
-          selected: hoveredObj,
-          dragSelected: this.selected?.object,
-          mouseEvent: mouseEvent,
-        })
-        if (!this.selected) this.updateMouseState({ type: 'idle' })
+    }
+
+    if (this.mouseMoveThrottling) {
+      this._processingMouseMove = false
+      const lastUnprocessedMouseEvent = this._lastUnprocessedMouseEvent
+      if (lastUnprocessedMouseEvent) {
+        // Another mousemove happened during the time this callback was processing
+        // -> process that event now
+        this._lastUnprocessedMouseEvent = undefined
+        void this.onMouseMove(lastUnprocessedMouseEvent)
       }
     }
   }
@@ -568,8 +613,14 @@ export class SceneInfra {
     // Check the ring points
     for (let i = 0; i < rayRingCount; i++) {
       const angle = (i / rayRingCount) * Math.PI * 2
-      const offsetX = ((pixelRadius * Math.cos(angle)) / window.innerWidth) * 2
-      const offsetY = ((pixelRadius * Math.sin(angle)) / window.innerHeight) * 2
+      const offsetX =
+        ((pixelRadius * Math.cos(angle)) /
+          this.renderer.domElement.clientWidth) *
+        2
+      const offsetY =
+        ((pixelRadius * Math.sin(angle)) /
+          this.renderer.domElement.clientHeight) *
+        2
       const ringVector = new Vector2(
         mouseDownVector.x + offsetX,
         mouseDownVector.y - offsetY
@@ -593,8 +644,11 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
-    this.currentMouseVector.x = (event.clientX / window.innerWidth) * 2 - 1
-    this.currentMouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1
+    if (!(event.currentTarget instanceof HTMLElement)) {
+      console.error('unexpected targetless event')
+      return
+    }
+    this.updateCurrentMouseVector(event, event.currentTarget)
 
     const mouseDownVector = this.currentMouseVector.clone()
     const intersect = this.raycastRing()[0]
@@ -612,9 +666,11 @@ export class SceneInfra {
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
-    this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
-    this.currentMouseVector.y =
-      -(mouseEvent.clientY / window.innerHeight) * 2 + 1
+    if (!(mouseEvent.currentTarget instanceof HTMLElement)) {
+      console.error('unexpected targetless event')
+      return
+    }
+    this.updateCurrentMouseVector(mouseEvent, mouseEvent.currentTarget)
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 

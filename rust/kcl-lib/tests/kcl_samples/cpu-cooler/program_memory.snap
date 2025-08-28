@@ -1,0 +1,125 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing cpu-cooler.kcl
+---
+{
+  "__mod_fan": {
+    "type": "Module",
+    "value": 4
+  },
+  "__mod_fanHousing": {
+    "type": "Module",
+    "value": 2
+  },
+  "__mod_heatSink": {
+    "type": "Module",
+    "value": 5
+  },
+  "__mod_motor": {
+    "type": "Module",
+    "value": 3
+  },
+  "__mod_mountingWire": {
+    "type": "Module",
+    "value": 6
+  },
+  "__mod_removableSticker": {
+    "type": "Module",
+    "value": 7
+  },
+  "bendRadius": {
+    "type": "Number",
+    "value": 15.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "fanHeight": {
+    "type": "Number",
+    "value": 25.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "fanSize": {
+    "type": "Number",
+    "value": 120.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "heatSinkDepth": {
+    "type": "Number",
+    "value": 55.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "mountingHoleSize": {
+    "type": "Number",
+    "value": 4.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "mountingHoleSpacing": {
+    "type": "Number",
+    "value": 105.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "sheetThickness": {
+    "type": "Number",
+    "value": 2.125,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "translatePart": {
+    "type": "Function",
+    "value": null
+  }
+}

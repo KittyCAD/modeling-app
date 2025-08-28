@@ -8,6 +8,7 @@ description: Result of parsing axial-fan.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "fan-housing.kcl"
@@ -20,6 +21,7 @@ description: Result of parsing axial-fan.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "fanHousing",
             "start": 0,
             "type": "Identifier"
@@ -32,6 +34,7 @@ description: Result of parsing axial-fan.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "motor.kcl"
@@ -41,6 +44,7 @@ description: Result of parsing axial-fan.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "motor",
             "start": 0,
             "type": "Identifier"
@@ -53,6 +57,7 @@ description: Result of parsing axial-fan.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "fan.kcl"
@@ -62,6 +67,7 @@ description: Result of parsing axial-fan.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "fan",
             "start": 0,
             "type": "Identifier"
@@ -78,9 +84,11 @@ description: Result of parsing axial-fan.kcl
           "abs_path": false,
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "fanHousing",
             "start": 0,
             "type": "Identifier"
@@ -90,6 +98,7 @@ description: Result of parsing axial-fan.kcl
           "type": "Name",
           "type": "Name"
         },
+        "moduleId": 0,
         "preComments": [
           "",
           "",
@@ -106,9 +115,11 @@ description: Result of parsing axial-fan.kcl
           "abs_path": false,
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "motor",
             "start": 0,
             "type": "Identifier"
@@ -118,6 +129,7 @@ description: Result of parsing axial-fan.kcl
           "type": "Name",
           "type": "Name"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -129,9 +141,11 @@ description: Result of parsing axial-fan.kcl
           "abs_path": false,
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "fan",
             "start": 0,
             "type": "Identifier"
@@ -141,6 +155,7 @@ description: Result of parsing axial-fan.kcl
           "type": "Name",
           "type": "Name"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -152,9 +167,11 @@ description: Result of parsing axial-fan.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "name": {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
@@ -173,19 +190,23 @@ description: Result of parsing axial-fan.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "defaultLengthUnit",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "mm",
                 "start": 0,
                 "type": "Identifier"
@@ -202,15 +223,18 @@ description: Result of parsing axial-fan.kcl
             "key": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": "kclVersion",
               "start": 0,
               "type": "Identifier"
             },
+            "moduleId": 0,
             "start": 0,
             "type": "ObjectProperty",
             "value": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "1.0",
               "start": 0,
               "type": "Literal",
@@ -226,12 +250,14 @@ description: Result of parsing axial-fan.kcl
         "type": "Annotation"
       }
     ],
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {},
       "startNodes": [
         {
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {

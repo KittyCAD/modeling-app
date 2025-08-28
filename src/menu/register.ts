@@ -1,26 +1,22 @@
 import { AxisNames } from '@src/lib/constants'
-import { copyFileShareLink } from '@src/lib/links'
 import { PATHS } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import {
-  codeManager,
-  engineCommandManager,
-  sceneInfra,
-} from '@src/lib/singletons'
+import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
-import { authActor, settingsActor } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
+import {
+  authActor,
+  commandBarActor,
+  editorManager,
+  settingsActor,
+} from '@src/lib/singletons'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 
 export function modelingMenuCallbackMostActions(
   settings: SettingsType,
   navigate: NavigateFunction,
-  filePath: string,
-  project: Project | undefined,
-  token: string | undefined
+  filePath: string
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -84,12 +80,6 @@ export function modelingMenuCallbackMostActions(
       })
     } else if (data.menuLabel === 'File.Preferences.Theme color') {
       navigate(filePath + PATHS.SETTINGS_USER + '#themeColor')
-    } else if (data.menuLabel === 'File.Share part via Zoo link') {
-      copyFileShareLink({
-        token: token ?? '',
-        code: codeManager.code,
-        name: project?.name || '',
-      }).catch(reportRejection)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'File.Add file to project') {
@@ -130,6 +120,20 @@ export function modelingMenuCallbackMostActions(
         type: 'Find and select command',
         data: { name: 'format-code', groupId: 'code' },
       })
+    } else if (data.menuLabel === 'Edit.Undo') {
+      if (activeFocusIsInput()) {
+        document.execCommand('undo')
+        // Cleaner, but can't import 'electron' to this file:
+        // webContents.getFocusedWebContents()?.undo()
+      } else {
+        editorManager.undo()
+      }
+    } else if (data.menuLabel === 'Edit.Redo') {
+      if (activeFocusIsInput()) {
+        document.execCommand('redo')
+      } else {
+        editorManager.redo()
+      }
     } else if (data.menuLabel === 'View.Orthographic view') {
       settingsActor.send({
         type: 'set.modeling.cameraProjection',

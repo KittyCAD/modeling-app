@@ -15,48 +15,41 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { copyFileShareLink } from '@src/lib/links'
 import { PATHS } from '@src/lib/paths'
-import {
-  codeManager,
-  engineCommandManager,
-  kclManager,
-} from '@src/lib/singletons'
-import { type IndexLoaderData } from '@src/lib/types'
-import { useToken } from '@src/lib/singletons'
+import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import type { IndexLoaderData } from '@src/lib/types'
 import { commandBarActor } from '@src/lib/singletons'
+
+interface ProjectSidebarMenuProps extends React.PropsWithChildren {
+  enableMenu?: boolean
+  project?: IndexLoaderData['project']
+  file?: IndexLoaderData['file']
+}
 
 const ProjectSidebarMenu = ({
   project,
   file,
   enableMenu = false,
-}: {
-  enableMenu?: boolean
-  project?: IndexLoaderData['project']
-  file?: IndexLoaderData['file']
-}) => {
+  children,
+}: ProjectSidebarMenuProps) => {
   // Make room for traffic lights on desktop left side.
   // TODO: make sure this doesn't look like shit on Linux or Windows
   const trafficLightsOffset =
-    isDesktop() && window.electron.os.isMac ? 'ml-20' : ''
+    window.electron && window.electron.os.isMac ? 'ml-20' : ''
   return (
-    <div
-      className={
-        '!no-underline h-full mr-auto max-h-min min-h-12 min-w-max flex items-center gap-2 ' +
-        trafficLightsOffset
-      }
-    >
+    <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
       <AppLogoLink project={project} file={file} />
       {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />
       ) : (
         <span
-          className="hidden select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+          className="hidden self-center px-2 select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
           data-testid="project-name"
         >
           {project?.name ? project.name : APP_NAME}
         </span>
       )}
+      {children}
     </div>
   )
 }
@@ -70,7 +63,7 @@ function AppLogoLink({
 }) {
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
-    "relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary before:rounded-b-sm"
+    "relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
   return isDesktop() ? (
@@ -108,7 +101,6 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
-  const token = useToken()
   const machineManager = useContext(MachineManagerContext)
   const commands = useSelector(commandBarActor, commandsSelector)
 
@@ -116,7 +108,6 @@ function ProjectMenuPopover({
   const insertCommandInfo = { name: 'Insert', groupId: 'code' }
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
-  const shareCommandInfo = { name: 'share-file-link', groupId: 'code' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
       commands.find((c) => c.name === obj.name && c.groupId === obj.groupId)
@@ -132,7 +123,9 @@ function ProjectMenuPopover({
           Element: 'button',
           children: (
             <>
-              <span className="flex-1">Project settings</span>
+              <span className="flex-1" data-testid="project-settings">
+                Project settings
+              </span>
               <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
                 isDesktop() ? '' : '⬆'
               },`}</kbd>
@@ -217,19 +210,6 @@ function ProjectMenuPopover({
             })
           },
         },
-        {
-          id: 'share-link',
-          Element: 'button',
-          children: 'Share part via Zoo link',
-          disabled: !findCommand(shareCommandInfo),
-          onClick: async () => {
-            await copyFileShareLink({
-              token: token ?? '',
-              code: codeManager.code,
-              name: project?.name || '',
-            })
-          },
-        },
         'break',
         {
           id: 'go-home',
@@ -246,6 +226,7 @@ function ProjectMenuPopover({
           props === 'break' ||
           (typeof props !== 'string' && !props.className?.includes('hidden'))
       ) as (ActionButtonProps | 'break')[],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
       platform,
       findCommand,
@@ -256,31 +237,44 @@ function ProjectMenuPopover({
     ]
   )
 
+  // Breadcrumb for project and file
+  const breadCrumb = {
+    projectName: project?.name || '',
+    sep: '/',
+    filename:
+      window.electron && file?.name
+        ? file.name.slice(file.name.lastIndexOf(window.electron.path.sep) + 1)
+        : APP_NAME,
+  }
+  const breadCrumbTooltip = `${breadCrumb.projectName}${breadCrumb.sep}${breadCrumb.filename}`
+
   return (
     <Popover className="relative">
       <Popover.Button
-        className="gap-1 rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center  focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
+        className="gap-1 rounded-sm mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center  focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
-        <div className="flex flex-col items-start py-0.5">
+        <div
+          className="flex items-baseline py-0.5 text-sm gap-1"
+          title={breadCrumbTooltip}
+        >
+          {isDesktop() && project?.name && (
+            <>
+              <span
+                className="hidden whitespace-nowrap md:block max-w-80 truncate"
+                data-testid="app-header-project-name"
+              >
+                {breadCrumb.projectName}
+              </span>
+              <span className="hidden md:block">{breadCrumb.sep}</span>
+            </>
+          )}
           <span
-            className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+            className="text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap"
             data-testid="app-header-file-name"
           >
-            {isDesktop() && file?.name
-              ? file.name.slice(
-                  file.name.lastIndexOf(window.electron.path.sep) + 1
-                )
-              : APP_NAME}
+            {breadCrumb.filename}
           </span>
-          {isDesktop() && project?.name && (
-            <span
-              className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block"
-              data-testid="app-header-project-name"
-            >
-              {project.name}
-            </span>
-          )}
         </div>
         <CustomIcon
           name="caretDown"

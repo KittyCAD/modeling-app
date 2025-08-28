@@ -9,6 +9,10 @@ layout: manual
 **WARNING:** This constant is deprecated.
 
 {{/if}}
+{{#if experimental}}
+**WARNING:** This constant is experimental and may change or be removed.
+
+{{/if}}
 {{{summary}}}
 
 ```kcl
@@ -17,6 +21,12 @@ layout: manual
 
 {{{description}}}
 
+{{#if type_}}
+### Type
+
+`{{type_}}`{{#if type_desc}} - {{{firstLine type_desc}}}{{/if}}
+
+{{/if}}
 {{#if examples}}
 ### Examples
 

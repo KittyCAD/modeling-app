@@ -24,6 +24,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "tag": {
             "commentStart": 122,
             "end": 128,
+            "moduleId": 0,
             "start": 122,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -37,6 +38,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "tag": {
             "commentStart": 162,
             "end": 168,
+            "moduleId": 0,
             "start": 162,
             "type": "TagDeclarator",
             "value": "seg02"
@@ -86,12 +88,13 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "tag": {
               "commentStart": 122,
               "end": 128,
+              "moduleId": 0,
               "start": 122,
               "type": "TagDeclarator",
               "value": "seg01"
             },
             "to": [
-              5.55,
+              5.550000000000001,
               5.0
             ],
             "type": "ToPoint",
@@ -105,18 +108,19 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "sourceRange": []
             },
             "from": [
-              5.55,
+              5.550000000000001,
               5.0
             ],
             "tag": {
               "commentStart": 162,
               "end": 168,
+              "moduleId": 0,
               "start": 162,
               "type": "TagDeclarator",
               "value": "seg02"
             },
             "to": [
-              5.55,
+              5.550000000000001,
               -5.0
             ],
             "type": "ToPoint",
@@ -130,7 +134,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "sourceRange": []
             },
             "from": [
-              5.55,
+              5.550000000000001,
               -5.0
             ],
             "tag": null,
@@ -188,6 +192,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -406,6 +418,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "tag": {
                   "commentStart": 122,
                   "end": 128,
+                  "moduleId": 0,
                   "start": 122,
                   "type": "TagDeclarator",
                   "value": "seg01"
@@ -419,6 +432,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "tag": {
                   "commentStart": 162,
                   "end": 168,
+                  "moduleId": 0,
                   "start": 162,
                   "type": "TagDeclarator",
                   "value": "seg02"
@@ -468,12 +482,13 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "tag": {
                     "commentStart": 122,
                     "end": 128,
+                    "moduleId": 0,
                     "start": 122,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
                   "to": [
-                    5.55,
+                    5.550000000000001,
                     5.0
                   ],
                   "type": "ToPoint",
@@ -487,18 +502,19 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     "sourceRange": []
                   },
                   "from": [
-                    5.55,
+                    5.550000000000001,
                     5.0
                   ],
                   "tag": {
                     "commentStart": 162,
                     "end": 168,
+                    "moduleId": 0,
                     "start": 162,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
                   "to": [
-                    5.55,
+                    5.550000000000001,
                     -5.0
                   ],
                   "type": "ToPoint",
@@ -512,7 +528,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     "sourceRange": []
                   },
                   "from": [
-                    5.55,
+                    5.550000000000001,
                     -5.0
                   ],
                   "tag": null,
@@ -570,6 +586,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
                   "units": {
                     "type": "Unknown"
                   }
@@ -721,12 +745,13 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "tag": {
             "commentStart": 122,
             "end": 128,
+            "moduleId": 0,
             "start": 122,
             "type": "TagDeclarator",
             "value": "seg01"
           },
           "to": [
-            5.55,
+            5.550000000000001,
             5.0
           ],
           "type": "ToPoint",
@@ -740,18 +765,19 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "sourceRange": []
           },
           "from": [
-            5.55,
+            5.550000000000001,
             5.0
           ],
           "tag": {
             "commentStart": 162,
             "end": 168,
+            "moduleId": 0,
             "start": 162,
             "type": "TagDeclarator",
             "value": "seg02"
           },
           "to": [
-            5.55,
+            5.550000000000001,
             -5.0
           ],
           "type": "ToPoint",
@@ -765,7 +791,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "sourceRange": []
           },
           "from": [
-            5.55,
+            5.550000000000001,
             -5.0
           ],
           "tag": null,
@@ -823,6 +849,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
           "units": {
             "type": "Unknown"
           }
@@ -986,6 +1020,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "tag": {
                 "commentStart": 122,
                 "end": 128,
+                "moduleId": 0,
                 "start": 122,
                 "type": "TagDeclarator",
                 "value": "seg01"
@@ -999,6 +1034,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "tag": {
                 "commentStart": 162,
                 "end": 168,
+                "moduleId": 0,
                 "start": 162,
                 "type": "TagDeclarator",
                 "value": "seg02"
@@ -1048,12 +1084,13 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "tag": {
                   "commentStart": 122,
                   "end": 128,
+                  "moduleId": 0,
                   "start": 122,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
                 "to": [
-                  5.55,
+                  5.550000000000001,
                   5.0
                 ],
                 "type": "ToPoint",
@@ -1067,18 +1104,19 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "sourceRange": []
                 },
                 "from": [
-                  5.55,
+                  5.550000000000001,
                   5.0
                 ],
                 "tag": {
                   "commentStart": 162,
                   "end": 168,
+                  "moduleId": 0,
                   "start": 162,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
                 "to": [
-                  5.55,
+                  5.550000000000001,
                   -5.0
                 ],
                 "type": "ToPoint",
@@ -1092,7 +1130,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "sourceRange": []
                 },
                 "from": [
-                  5.55,
+                  5.550000000000001,
                   -5.0
                 ],
                 "tag": null,
@@ -1150,6 +1188,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
                 "units": {
                   "type": "Unknown"
                 }

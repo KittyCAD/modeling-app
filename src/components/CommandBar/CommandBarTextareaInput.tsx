@@ -63,7 +63,7 @@ function CommandBarTextareaInput({
               | undefined) || (arg.defaultValue as string)
           }
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.shiftKey) {
+            if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             } else if (
               event.key === 'Enter' &&
@@ -86,16 +86,13 @@ function CommandBarTextareaInput({
               formRef.current?.dispatchEvent(
                 new Event('submit', { bubbles: true })
               )
+            } else if (event.key === 'Escape') {
+              commandBarActor.send({ type: 'Close' })
             }
           }}
           autoFocus
         />
       </label>
-      {arg.warningMessage && (
-        <p className="text-warn-80 bg-warn-10 px-2 py-1 rounded-sm mt-3 mr-2 -mb-2 w-full text-sm cursor-default">
-          {arg.warningMessage}
-        </p>
-      )}
     </form>
   )
 }
@@ -114,12 +111,16 @@ const useTextareaAutoGrow = (ref: RefObject<HTMLTextAreaElement>) => {
     }
 
     if (ref.current === null) return
+    // Run initially to set all this stuff at the start
+    listener()
     ref.current.addEventListener('input', listener)
 
     return () => {
       if (ref.current === null) return
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       ref.current.removeEventListener('input', listener)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [ref.current])
 }
 

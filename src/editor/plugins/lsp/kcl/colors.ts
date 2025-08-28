@@ -111,7 +111,7 @@ function discoverColorsInKCL(
 }
 
 export function parseColorLiteral(colorLiteral: string): ColorData | null {
-  const literal = colorLiteral.replace(/"/g, '')
+  const literal = colorLiteral.replace(/"/g, '').replace(/'/g, '')
   const match = hexRegex.exec(literal)
   if (!match) {
     return null

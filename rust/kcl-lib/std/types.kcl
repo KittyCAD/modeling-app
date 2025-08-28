@@ -5,7 +5,7 @@
 /// does.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 /// The `any` type is the type of all possible values in KCL. I.e., if a function accepts an argument
 /// with type `any`, then it can accept any value.
@@ -65,7 +65,7 @@ export type string
 ///
 /// ### Tag Declaration
 ///
-/// The syntax for declaring a tag is `$myTag` you would use it in the following
+/// The syntax for declaring a tag is `$myTag`. You would use it in the following
 /// way:
 ///
 /// ```norun,inline
@@ -73,7 +73,7 @@ export type string
 ///   |> startProfile(at = origin)
 ///   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
 ///   |> angledLine(
-///        angle = segAng(rectangleSegmentA001) - 90,
+///        angle = segAng(rectangleSegmentA001) - 90deg,
 ///        length = 196.99,
 ///        tag = $rectangleSegmentB001,
 ///      )
@@ -85,14 +85,6 @@ export type string
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///   |> close()
 /// ```
-///
-/// ### Tag Identifier
-///
-/// As per the example above you can use the tag identifier to get a reference to the 
-/// tagged object. The syntax for this is `myTag`.
-/// 
-/// In the example above we use the tag identifier to get the angle of the segment
-/// `segAng(rectangleSegmentA001)`.
 ///
 /// ### Tag Scope
 ///
@@ -109,7 +101,8 @@ export type string
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001) - 90,
 ///          length = 196.99,
-///          tag = $rectangleSegmentB001)
+///          tag = $rectangleSegmentB001
+///        )
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001),
 ///          length = -segLen(rectangleSegmentA001),
@@ -136,13 +129,13 @@ export type string
 ///     |> startProfile(at = origin)
 ///     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
 ///     |> angledLine(
-///          angle = segAng(rectangleSegmentA001) - 90,
-///          length = 196.99
+///          angle = segAng(rectangleSegmentA001) - 90deg,
+///          length = 196.99,
 ///          tag = $rectangleSegmentB001,
 ///        )
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001),
-///          length = -segLen(rectangleSegmentA001)
+///          length = -segLen(rectangleSegmentA001),
 ///          tag = $rectangleSegmentC001,
 ///        )
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -161,12 +154,64 @@ export type string
 /// the `rect` function. This is because the `rect` function is returning the
 /// sketch group that contains the tags.
 @(impl = primitive)
-export type tag
+export type TagDecl
+
+/// A tag which references a line, arc, or other edge in a sketch or an edge of a solid.
+///
+/// Created by using a tag declarator (see the docs for `TagDecl`). Can be used where an `Edge` is
+/// required.
+///
+/// If a line in a sketch is tagged and then the sketch is extruded, the tag is a `TaggedEdge` before
+/// extrusion and a `TaggedFace` after extrusion.
+@(impl = std_rust)
+export type TaggedEdge
+
+/// A tag which references a face of a solid, including the distinguished tags `START` and `END`.
+///
+/// Created by using a tag declarator (see the docs for `TagDecl`).
+///
+/// If a line in a sketch is tagged and then the sketch is extruded, the tag is a `TaggedEdge` before
+/// extrusion and a `TaggedFace` after extrusion.
+@(impl = std_rust)
+export type TaggedFace
+
+/// Reference a previously created tag. Used much like a variable.
+///
+/// Prefer to use `TaggedEdge` or `TaggedFace`. For more details on tags, see the docs for `TagDecl`.
+@(deprecated = true)
+export type tag = TaggedEdge
+
+/// Represents geometry which is defined using some other CAD system and imported into KCL.
+@(impl = primitive)
+export type ImportedGeometry
+
+/// The type of any function in KCL.
+@(impl = primitive)
+export type fn
 
 /// An abstract plane.
 ///
-/// A plane has a position and orientation in space defined by its origin and axes. A plane can be used
-/// to sketch on.
+/// A plane has a position and orientation in space defined by its origin and axes. A plane is abstract
+/// in the sense that it is not part of the objects being drawn. A plane can be used to sketch on.
+///
+/// A plane can be created in several ways:
+/// - you can use one of the default planes, e.g., `XY`.
+/// - you can use `offsetPlane` to create a new plane offset from an existing one, e.g., `offsetPlane(XY, offset = 150)`.
+/// - you can use negation to create a plane from an existing one which is identical but has an opposite normal
+/// e.g., `-XY`.
+/// - you can define an entirely custom plane, e.g.,
+///
+/// ```kcl,inline,norun
+/// myXY = {
+///   origin = { x = 0, y = 0, z = 0 },
+///   xAxis = { x = 1, y = 0, z = 0 },
+///   yAxis = { x = 0, y = 1, z = 0 },
+/// }
+/// ```
+///
+/// Any object with appropriate `origin`, `xAxis`, and `yAxis` fields can be used as a plane.
+/// The plane's Z axis (i.e. which way is "up") will be the cross product X x Y. In other words,
+/// KCL planes follow the right-hand rule.
 @(impl = std_rust)
 export type Plane
 
@@ -291,3 +336,12 @@ export type Axis2d
 /// An abstract and infinite line in 3d space.
 @(impl = std_rust)
 export type Axis3d
+
+export type mm = number(mm)
+export type cm = number(cm)
+export type m = number(m)
+export type in = number(in)
+export type ft = number(ft)
+export type yd = number(yd)
+export type rad = number(rad)
+export type deg = number(deg)
