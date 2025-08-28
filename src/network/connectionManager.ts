@@ -200,26 +200,13 @@ export class ConnectionManager extends EventTarget {
       token,
     })
     // TODO: this should be correct.
-    this.connection.connect()
-    // TODO: inline instead of use-network-status-ready and EngineCommandManagerEvents.ngineAvailable
-    // this.connection.createWebSocketConnection()
+    await this.connection.connect()
     console.warn('connect')
 
-    // Move this to trigger the connection workflow?
-    this.dispatchEvent(
-      new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
-        detail: this.connection,
-      })
-    )
-
-    if (!this.connection.deferredPeerConnection?.promise) {
-      throw new Error('this.connection.deferredPeerConnection is undefined')
-    }
-
-    await this.connection.deferredPeerConnection?.promise
+    // await this.connection.deferredPeerConnection?.promise
+    // await this.deferredMediaStreamAndWebrtcStatsCollector.promise
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
-    console.warn('connectionPromise')
 
     // TODO: This is gonna break instantly.
     if (!this.connection.peerConnection) {
@@ -243,19 +230,6 @@ export class ConnectionManager extends EventTarget {
       dispatchEvent: this.dispatchEvent.bind(this),
     })
 
-    const onEngineConnectionOpened = createOnEngineConnectionOpened({
-      rustContext: this.rustContext,
-      settings: this.settings,
-      jsAppSettings: await jsAppSettings(),
-      path: this.codeManager?.currentFilePath || '',
-      sendSceneCommand: this.sendSceneCommand.bind(this),
-      setTheme: this.setTheme.bind(this),
-      listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
-      // Don't think this needs the bind because it is an external set function for the callback
-      camControlsCameraChange: this._camControlsCameraChange,
-      sceneInfra: this.sceneInfra,
-      connection: this.connection,
-    })
     const onEngineConnectionClosed = createOnEngineConnectionClosed()
     const onEngineConnectionStarted = createOnEngineConnectionStarted({
       peerConnection: this.connection.peerConnection,
@@ -292,16 +266,6 @@ export class ConnectionManager extends EventTarget {
       onEngineOffline
     )
 
-    this.trackListener(EngineConnectionEvents.Opened, {
-      event: EngineConnectionEvents.Opened,
-      callback: onEngineConnectionOpened,
-      type: 'connection',
-    })
-    this.connection.addEventListener(
-      EngineConnectionEvents.Opened,
-      onEngineConnectionOpened
-    )
-
     this.trackListener(EngineConnectionEvents.Closed, {
       event: EngineConnectionEvents.Closed,
       callback: onEngineConnectionClosed,
@@ -327,6 +291,24 @@ export class ConnectionManager extends EventTarget {
         // detail: this,
       })
     )
+
+    const onEngineConnectionOpened = createOnEngineConnectionOpened({
+      rustContext: this.rustContext,
+      settings: this.settings,
+      jsAppSettings: await jsAppSettings(),
+      path: this.codeManager?.currentFilePath || '',
+      sendSceneCommand: this.sendSceneCommand.bind(this),
+      setTheme: this.setTheme.bind(this),
+      listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
+      // Don't think this needs the bind because it is an external set function for the callback
+      camControlsCameraChange: this._camControlsCameraChange,
+      sceneInfra: this.sceneInfra,
+      connection: this.connection,
+    })
+
+    // Engine is ready to start sending events!
+    // Gotcha: The other listenerse above need to be initialized otherwise this will halt forver.
+    await onEngineConnectionOpened()
   }
 
   generateWebsocketURL() {

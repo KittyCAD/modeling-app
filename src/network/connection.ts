@@ -54,6 +54,7 @@ export class Connection extends EventTarget {
   // initialization across Websocket -> peerConnection and their event handler
   deferredConnection: IDeferredPromise | null
   deferredPeerConnection: IDeferredPromise | null
+  deferredMediaStreamAndWebrtcStatsCollector: IDeferredPromise | null
 
   iceCandidatePromises: Promise<unknown>[]
 
@@ -92,6 +93,7 @@ export class Connection extends EventTarget {
 
     this.deferredConnection = null
     this.deferredPeerConnection = null
+    this.deferredMediaStreamAndWebrtcStatsCollector = null
 
     this.iceCandidatePromises = []
     this.allEventListeners = new Map()
@@ -154,7 +156,7 @@ export class Connection extends EventTarget {
   }
 
   // TODO: Pass reconnect here? or call a function for reconnect
-  connect(): Promise<unknown> {
+  async connect(): Promise<unknown> {
     EngineDebugger.addLog({
       label: 'connection',
       message: 'connect',
@@ -165,10 +167,14 @@ export class Connection extends EventTarget {
       Promise.reject('currently connecting, try again later.')
     }
 
+    // TODO: Make sure each resolve and each reject is called.
     this.deferredConnection = promiseFactory<any>()
     this.deferredPeerConnection = promiseFactory<any>()
+    this.deferredMediaStreamAndWebrtcStatsCollector = promiseFactory<any>()
 
     this.createWebSocketConnection()
+    await this.deferredPeerConnection.promise
+    await this.deferredMediaStreamAndWebrtcStatsCollector.promise
     return this.deferredConnection.promise
   }
 
@@ -237,11 +243,17 @@ export class Connection extends EventTarget {
 
   createPeerConnection() {
     if (!this.deferredPeerConnection?.resolve) {
-      throw new Error('peerConnectionPromiseResolve is undefined')
+      throw new Error('deferredPeerConnection resolve is undefined')
     }
 
     if (!this.deferredConnection?.resolve) {
-      throw new Error('connectionPromiseResolve is undefined')
+      throw new Error('deferredConnection resolve is undefined')
+    }
+
+    if (!this.deferredMediaStreamAndWebrtcStatsCollector?.resolve) {
+      throw new Error(
+        'deferredMediaStreamAndWebrtcStatsCollector resolve is undefined'
+      )
     }
 
     this.peerConnection = new RTCPeerConnection({
@@ -283,6 +295,8 @@ export class Connection extends EventTarget {
       setMediaStream: this.setMediaStream.bind(this),
       setWebrtcStatsCollector: this.setWebrtcStatsCollector.bind(this),
       peerConnection: this.peerConnection,
+      deferredMediaStreamAndWebrtcStatsCollectorResolve:
+        this.deferredMediaStreamAndWebrtcStatsCollector.resolve,
     })
 
     // Has a callback workflow that will create a unreliabledatachannel

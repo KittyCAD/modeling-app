@@ -190,12 +190,14 @@ export function createOnTrack({
   setMediaStream,
   setWebrtcStatsCollector,
   peerConnection,
+  deferredMediaStreamAndWebrtcStatsCollectorResolve,
 }: {
   setMediaStream: (mediaStream: MediaStream) => void
   setWebrtcStatsCollector: (
     webrtcStatsCollector: () => Promise<ClientMetrics>
   ) => void
   peerConnection: RTCPeerConnection
+  deferredMediaStreamAndWebrtcStatsCollectorResolve: (value: unknown) => void
 }) {
   const onTrack = (event: RTCTrackEvent) => {
     EngineDebugger.addLog({
@@ -210,6 +212,7 @@ export function createOnTrack({
       peerConnection,
     })
     setWebrtcStatsCollector(webrtcStatusCollector)
+    deferredMediaStreamAndWebrtcStatsCollectorResolve(true)
   }
   return onTrack
 }
@@ -358,6 +361,7 @@ export const createOnDataChannelOpen = ({
   connectionPromiseResolve: (value: unknown) => void
 }) => {
   const onDataChannelOpen = (event: Event) => {
+    console.warn('onDataChannelOpen')
     // Start firing off engine commands at this point.
     // They could be fired at an earlier time, onWebSocketOpen,
     // but DataChannel can offer some benefits like speed,
@@ -370,11 +374,6 @@ export const createOnDataChannelOpen = ({
       metadata: { event },
     })
 
-    dispatchEvent(
-      new CustomEvent(EngineConnectionEvents.Opened, {
-        detail: this,
-      })
-    )
     startPingPong()
     markOnce('code/endInitialEngineConnect')
     connectionPromiseResolve(true)
