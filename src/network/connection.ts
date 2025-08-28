@@ -183,6 +183,7 @@ export class Connection extends EventTarget {
     await this.deferredMediaStreamAndWebrtcStatsCollector.promise
     await this.deferredSdpAnswer.promise
 
+    // Gotcha: tricky to await initiateConnectionExclusive, there are multiple locations for firing?
     return this.deferredConnection.promise
   }
 
@@ -576,7 +577,6 @@ export class Connection extends EventTarget {
 
   disconnectUnreliableDataChannel() {
     if (!this.unreliableDataChannel) {
-      // throw new Error('unreliableDataChannel is undefined')
       EngineDebugger.addLog({
         label: 'connection',
         message:
@@ -672,10 +672,6 @@ export class Connection extends EventTarget {
   }
 
   addIceCandidate(candidate: RTCIceCandidateInit) {
-    // Do we need this awaited before we can say it is completed?
-    // Probably...
-    // I think I should make a default one that is pending until called?
-
     if (!this.peerConnection) {
       throw new Error('do not do this, crashing!')
     }
