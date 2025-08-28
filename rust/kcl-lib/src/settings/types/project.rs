@@ -134,49 +134,20 @@ pub struct ProjectModelingSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
     /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub fixed_size_grid: DefaultTrue,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fixed_size_grid: Option<bool>,
     /// Whether or not to snap to the scale grid in sketching mode.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub snap_to_grid: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snap_to_grid: Option<bool>,
     /// The space between major grid lines, specified in the current unit
-    #[serde(
-        default = "default_major_grid_spacing",
-        skip_serializing_if = "is_default_major_grid_spacing"
-    )]
-    pub major_grid_spacing: f64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_grid_spacing: Option<f64>,
     /// Specifies how many minor grid lines to have per major grid line.
-    #[serde(
-        default = "default_minor_grids_per_major",
-        skip_serializing_if = "is_default_minor_grids_per_major"
-    )]
-    pub minor_grids_per_major: f64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_grids_per_major: Option<f64>,
     /// The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
-    #[serde(
-        default = "default_snaps_per_minor",
-        skip_serializing_if = "is_default_snaps_per_minor"
-    )]
-    pub snaps_per_minor: f64,
-}
-
-fn default_major_grid_spacing() -> f64 {
-    1.0
-}
-fn default_minor_grids_per_major() -> f64 {
-    4.0
-}
-fn default_snaps_per_minor() -> f64 {
-    1.0
-}
-
-fn is_default_major_grid_spacing(value: &f64) -> bool {
-    *value == 1.0
-}
-fn is_default_minor_grids_per_major(value: &f64) -> bool {
-    *value == 4.0
-}
-fn is_default_snaps_per_minor(value: &f64) -> bool {
-    *value == 1.0
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snaps_per_minor: Option<f64>,
 }
 
 impl Default for ProjectModelingSettings {
@@ -187,9 +158,9 @@ impl Default for ProjectModelingSettings {
             enable_ssao: Default::default(),
             fixed_size_grid: Default::default(),
             snap_to_grid: Default::default(),
-            major_grid_spacing: default_major_grid_spacing(),
-            minor_grids_per_major: default_minor_grids_per_major(),
-            snaps_per_minor: default_snaps_per_minor(),
+            major_grid_spacing: Default::default(),
+            minor_grids_per_major: Default::default(),
+            snaps_per_minor: Default::default(),
         }
     }
 }
@@ -390,11 +361,11 @@ color = 1567.4"#;
                     base_unit: UnitLength::Yd,
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
-                    snap_to_grid: false,
-                    major_grid_spacing: 1.0,
-                    minor_grids_per_major: 4.0,
-                    snaps_per_minor: 1.0,
-                    fixed_size_grid: true.into(),
+                    snap_to_grid: None,
+                    major_grid_spacing: None,
+                    minor_grids_per_major: None,
+                    snaps_per_minor: None,
+                    fixed_size_grid: None,
                 },
                 text_editor: TextEditorSettings {
                     text_wrapping: false.into(),

@@ -212,12 +212,21 @@ export function projectConfigurationToSettingsPayload(
       defaultUnit: configuration?.settings?.modeling?.base_unit,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
-      fixedSizeGrid: configuration?.settings?.modeling?.fixed_size_grid,
-      snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
-      majorGridSpacing: configuration?.settings?.modeling?.major_grid_spacing,
-      minorGridsPerMajor:
-        configuration?.settings?.modeling?.minor_grids_per_major,
-      snapsPerMinor: configuration?.settings?.modeling?.snaps_per_minor,
+      fixedSizeGrid: toUndefinedIfNull(
+        configuration?.settings?.modeling?.fixed_size_grid
+      ),
+      snapToGrid: toUndefinedIfNull(
+        configuration?.settings?.modeling?.snap_to_grid
+      ),
+      majorGridSpacing: toUndefinedIfNull(
+        configuration?.settings?.modeling?.major_grid_spacing
+      ),
+      minorGridsPerMajor: toUndefinedIfNull(
+        configuration?.settings?.modeling?.minor_grids_per_major
+      ),
+      snapsPerMinor: toUndefinedIfNull(
+        configuration?.settings?.modeling?.snaps_per_minor
+      ),
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,
