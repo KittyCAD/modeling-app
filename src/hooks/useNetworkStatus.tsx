@@ -160,8 +160,8 @@ export function useNetworkStatus() {
   useEffect(() => {
     setHasIssues(
       issues[ConnectingTypeGroup.WebSocket] ||
-      issues[ConnectingTypeGroup.ICE] ||
-      issues[ConnectingTypeGroup.WebRTC]
+        issues[ConnectingTypeGroup.ICE] ||
+        issues[ConnectingTypeGroup.WebRTC]
     )
   }, [issues])
 
