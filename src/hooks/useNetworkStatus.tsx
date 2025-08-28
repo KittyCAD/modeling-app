@@ -135,8 +135,6 @@ export function useNetworkStatus() {
   }, [])
 
   useEffect(() => {
-    console.log('steps')
-    console.log(steps)
     const issues = {
       [ConnectingTypeGroup.WebSocket]: steps[
         ConnectingTypeGroup.WebSocket
@@ -162,8 +160,8 @@ export function useNetworkStatus() {
   useEffect(() => {
     setHasIssues(
       issues[ConnectingTypeGroup.WebSocket] ||
-        issues[ConnectingTypeGroup.ICE] ||
-        issues[ConnectingTypeGroup.WebRTC]
+      issues[ConnectingTypeGroup.ICE] ||
+      issues[ConnectingTypeGroup.WebRTC]
     )
   }, [issues])
 
