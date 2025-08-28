@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use schemars::JsonSchema;
 use serde::Serialize;
 
 use crate::{
@@ -22,7 +21,7 @@ use crate::{
 pub type KclObjectFields = HashMap<String, KclValue>;
 
 /// Any KCL value.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum KclValue {
@@ -134,17 +133,6 @@ pub enum FunctionSource {
         settings: MetaSettings,
         memory: EnvironmentRef,
     },
-}
-
-impl JsonSchema for FunctionSource {
-    fn schema_name() -> String {
-        "FunctionSource".to_owned()
-    }
-
-    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-        // TODO: Actually generate a reasonable schema.
-        r#gen.subschema_for::<()>()
-    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

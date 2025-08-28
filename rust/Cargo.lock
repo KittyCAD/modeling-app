@@ -2527,6 +2527,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-api"
+version = "0.1.0"
+dependencies = [
+ "indexmap 2.11.0",
+ "kcl-error",
+ "serde",
+ "ts-rs",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "kcl-bumper"
 version = "0.1.93"
 dependencies = [
@@ -2554,6 +2565,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.106",
+]
+
+[[package]]
+name = "kcl-error"
+version = "0.1.0"
+dependencies = [
+ "miette",
+ "serde",
+ "serde_json",
+ "ts-rs",
 ]
 
 [[package]]
@@ -2642,8 +2663,10 @@ dependencies = [
  "insta",
  "itertools 0.14.0",
  "js-sys",
+ "kcl-api",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
+ "kcl-error",
  "kittycad",
  "kittycad-modeling-cmds",
  "lazy_static",
@@ -2744,6 +2767,7 @@ dependencies = [
  "getrandom 0.3.1",
  "gloo-utils",
  "js-sys",
+ "kcl-api",
  "kcl-lib",
  "kittycad",
  "kittycad-modeling-cmds",
