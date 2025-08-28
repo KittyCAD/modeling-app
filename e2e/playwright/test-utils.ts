@@ -1055,7 +1055,7 @@ export async function createProject({
 
 async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
-  await expect(page.getByRole('tab', { name: 'Projects' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {
@@ -1168,10 +1168,7 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
     .toBe(lines)
 }
 
-// TODO: fix type to allow for meta.id in configuration
-export function settingsToToml(
-  settings: DeepPartial<Configuration | { settings: { meta: { id: string } } }>
-) {
+export function settingsToToml(settings: DeepPartial<Configuration>) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
 }
