@@ -3272,6 +3272,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
         } = fn_call
     {
         // We have a `sketch() {}`. Change the AST node type.
+        ParseContext::experimental("sketch blocks", SourceRange::new(start, end, module_id));
         return Ok(Expr::SketchBlock(Box::new(Node {
             start,
             end,
@@ -3505,6 +3506,13 @@ mod tests {
         parsing::ast::types::{BodyItem, Expr, VariableKind},
     };
 
+    fn in_ctx<R, F: FnOnce() -> R>(f: F) -> R {
+        ParseContext::init();
+        let result = f();
+        ParseContext::take();
+        result
+    }
+
     fn assert_reserved(word: &str) {
         // Try to use it as a variable name.
         let code = format!(r#"{word} = 0"#);
@@ -3601,21 +3609,27 @@ mod tests {
     fn parse_sketch_block_no_args() {
         let tokens = crate::parsing::token::lex("sketch() {}", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
+        in_ctx(|| {
+            matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
+        });
     }
 
     #[test]
     fn parse_sketch_block_unlabeled_arg() {
         let tokens = crate::parsing::token::lex("sketch(XY) {}", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
+        in_ctx(|| {
+            matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
+        });
     }
 
     #[test]
     fn parse_sketch_block_kw_args() {
         let tokens = crate::parsing::token::lex("sketch(on = XY) {}", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
+        in_ctx(|| {
+            matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
+        });
     }
 
     #[test]
