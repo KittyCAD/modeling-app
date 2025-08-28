@@ -141,15 +141,11 @@ export class ConnectionManager extends EventTarget {
     width,
     height,
     token,
-    thisNeedsToBeDeletedSetMediaStream,
-    thisNeedsToBeDeletedSetIsStreamReady,
   }: {
     settings?: SettingsViaQueryString
     width: number
     height: number
     token: string
-    thisNeedsToBeDeletedSetMediaStream: (stream: MediaStream) => void
-    thisNeedsToBeDeletedSetIsStreamReady: (isStreamReady: boolean) => void
   }) {
     console.warn('connectionManager start')
     EngineDebugger.addLog({
@@ -203,7 +199,6 @@ export class ConnectionManager extends EventTarget {
       connectionManager: this,
       url,
       token,
-      thisNeedsToBeDeletedSetMediaStream,
     })
     // TODO: this should be correct.
     this.connection.connect()
@@ -219,8 +214,6 @@ export class ConnectionManager extends EventTarget {
     )
 
     await this.connection.peerConnectionPromise
-
-    thisNeedsToBeDeletedSetIsStreamReady(true)
     console.warn('connectionPromise')
 
     // TODO: This is gonna break instantly.
@@ -272,7 +265,6 @@ export class ConnectionManager extends EventTarget {
       handleMessage: this.handleMessage.bind(this),
       connection: this.connection,
       trackListener: this.trackListener.bind(this),
-      thisNeedsToBeDeletedSetMediaStream,
     })
 
     this.trackListener(EngineConnectionEvents.RestartRequest, {

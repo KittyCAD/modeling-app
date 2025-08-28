@@ -190,14 +190,12 @@ export function createOnTrack({
   setMediaStream,
   setWebrtcStatsCollector,
   peerConnection,
-  thisNeedsToBeDeletedSetMediaStream,
 }: {
   setMediaStream: (mediaStream: MediaStream) => void
   setWebrtcStatsCollector: (
     webrtcStatsCollector: () => Promise<ClientMetrics>
   ) => void
   peerConnection: RTCPeerConnection
-  thisNeedsToBeDeletedSetMediaStream: (stream: MediaStream) => void
 }) {
   const onTrack = (event: RTCTrackEvent) => {
     EngineDebugger.addLog({
@@ -212,7 +210,6 @@ export function createOnTrack({
       peerConnection,
     })
     setWebrtcStatsCollector(webrtcStatusCollector)
-    thisNeedsToBeDeletedSetMediaStream(mediaStream)
   }
   return onTrack
 }

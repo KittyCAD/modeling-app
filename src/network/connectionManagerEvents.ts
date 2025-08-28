@@ -188,7 +188,6 @@ export const createOnEngineConnectionStarted = ({
   handleMessage,
   connection,
   trackListener,
-  thisNeedsToBeDeletedSetMediaStream,
 }: {
   peerConnection: RTCPeerConnection
   getUnreliableSubscriptions: () => {
@@ -205,7 +204,6 @@ export const createOnEngineConnectionStarted = ({
     name: string,
     eventListenerTracked: IEventListenerTracked
   ) => void
-  thisNeedsToBeDeletedSetMediaStream: (stream: MediaStream) => void
 }) => {
   console.warn('THIS RUNS')
   // TODO: connection.ts may not send the detail: connection back within this event handler.
@@ -298,7 +296,6 @@ export const createOnEngineConnectionStarted = ({
       if (!mediaStream) {
         throw new Error('no media stream found, this is bad.')
       }
-      thisNeedsToBeDeletedSetMediaStream(mediaStream)
     }
 
     trackListener(EngineConnectionEvents.NewTrack, {

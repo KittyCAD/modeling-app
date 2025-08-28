@@ -310,12 +310,6 @@ window.start = () => {
     width: 500,
     height: 500,
     token: env().VITE_KITTYCAD_API_TOKEN,
-    thisNeedsToBeDeletedSetIsStreamReady: () => {
-      console.warn('thisNeedsToBeDeletedSetIsStreamReady')
-    },
-    thisNeedsToBeDeletedSetMediaStream: () => {
-      console.warn('thisNeedsToBeDeletedSetMediaStream')
-    },
   })
 }
 

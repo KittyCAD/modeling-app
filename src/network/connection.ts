@@ -76,22 +76,17 @@ export class Connection extends EventTarget {
 
   // TODO: offer promise wrapped to track
   // TODo: event listeners to add and clean up
-
-  thisNeedsToBeDeletedSetMediaStream: (stream: MediaStream) => void
   constructor({
     connectionManager,
     url,
     token,
-    thisNeedsToBeDeletedSetMediaStream,
   }: {
     connectionManager: ConnectionManager
     url: string
     token: string
-    thisNeedsToBeDeletedSetMediaStream: (stream: MediaStream) => void
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
-    this.thisNeedsToBeDeletedSetMediaStream = thisNeedsToBeDeletedSetMediaStream
     this.id = uuidv4()
     EngineDebugger.addLog({
       label: 'connection',
@@ -330,8 +325,6 @@ export class Connection extends EventTarget {
       setMediaStream: this.setMediaStream.bind(this),
       setWebrtcStatsCollector: this.setWebrtcStatsCollector.bind(this),
       peerConnection: this.peerConnection,
-      thisNeedsToBeDeletedSetMediaStream:
-        this.thisNeedsToBeDeletedSetMediaStream,
     })
 
     // Has a callback workflow that will create a unreliabledatachannel
