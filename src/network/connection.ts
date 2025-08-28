@@ -221,7 +221,7 @@ export class Connection extends EventTarget {
    * This function will be called many times from different sources depending on when those sources are fired.
    * The original sources can be fired in different orders depending on browsers.
    * We only want to get into the business logic once so we have an exclusiveConnection boolean.
-   * 
+   *
    * A peerConnection and sdpAnswer are required
    */
   async initiateConnectionExclusive() {

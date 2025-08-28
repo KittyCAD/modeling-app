@@ -24,7 +24,7 @@ export function createOnIceCandidate({
     // This is null when the ICE gathering state is done.
     // Windows ONLY uses this to signal it's done!
     if (event.candidate === null) {
-      initiateConnectionExclusive()``
+      initiateConnectionExclusive()
       return
     }
 
