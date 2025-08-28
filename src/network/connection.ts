@@ -1,5 +1,4 @@
 import { markOnce } from '@src/lib/performance'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ClientMetrics, IEventListenerTracked } from './utils'
 import { DATACHANNEL_NAME_UMC, pingIntervalMs } from './utils'
 import {
@@ -29,8 +28,6 @@ export interface INewTrackArgs {
 }
 
 export class Connection extends EventTarget {
-  // connection manager?
-  connectionManager: ConnectionManager
   // connection url for the new Websocket()
   readonly url: string
   // Authorization bearer token for headers on websocket
@@ -77,11 +74,9 @@ export class Connection extends EventTarget {
   // TODO: offer promise wrapped to track
   // TODo: event listeners to add and clean up
   constructor({
-    connectionManager,
     url,
     token,
   }: {
-    connectionManager: ConnectionManager
     url: string
     token: string
   }) {
@@ -93,7 +88,6 @@ export class Connection extends EventTarget {
       message: 'constructor start',
       metadata: { id: this.id },
     })
-    this.connectionManager = connectionManager
     this.url = url
     this._token = token
     this._pingPongSpan = { ping: undefined, pong: undefined }
@@ -333,7 +327,6 @@ export class Connection extends EventTarget {
       dispatchEvent: this.dispatchEvent.bind(this),
       trackListener: this.trackListener.bind(this),
       startPingPong: this.startPingPong.bind(this),
-      connectionManager: this.connectionManager,
       connectionPromiseResolve: this.connectionPromiseResolve,
     })
 
@@ -440,7 +433,6 @@ export class Connection extends EventTarget {
     })
     const onWebSocketError = createOnWebSocketError()
     const onWebSocketMessage = createOnWebSocketMessage({
-      connectionManager: this.connectionManager,
       disconnectAll: this.disconnectAll.bind(this),
       setPong: this.setPong.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),

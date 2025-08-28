@@ -354,12 +354,10 @@ export const createOnDataChannel = ({
 export const createOnDataChannelOpen = ({
   dispatchEvent,
   startPingPong,
-  connectionManager,
   connectionPromiseResolve,
 }: {
   dispatchEvent: (event: Event) => boolean
   startPingPong: () => void
-  connectionManager: ConnectionManager
   connectionPromiseResolve: (value: unknown) => void
 }) => {
   const onDataChannelOpen = (event: Event) => {
@@ -374,10 +372,6 @@ export const createOnDataChannelOpen = ({
       message: 'ondatachannelopen',
       metadata: { event },
     })
-
-    // Lets get that bread
-    // TODO: connectionManager.inSequence = 1
-    connectionManager.inSequence = 1
 
     dispatchEvent(
       new CustomEvent(EngineConnectionEvents.Opened, {

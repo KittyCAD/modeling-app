@@ -214,6 +214,8 @@ export class ConnectionManager extends EventTarget {
     )
 
     await this.connection.peerConnectionPromise
+    // Moved from ondatachannelopen in RTCPeerConnection.
+    this.inSequence = 1
     console.warn('connectionPromise')
 
     // TODO: This is gonna break instantly.
