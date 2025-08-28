@@ -233,6 +233,23 @@ pub struct Program {
     pub digest: Option<Digest>,
 }
 
+impl From<Node<Block>> for Node<Program> {
+    fn from(block: Node<Block>) -> Self {
+        Node::new(
+            Program {
+                body: block.inner.items,
+                non_code_meta: block.inner.non_code_meta,
+                shebang: None,
+                inner_attrs: block.inner.inner_attrs,
+                digest: None,
+            },
+            block.start,
+            block.end,
+            block.module_id,
+        )
+    }
+}
+
 impl Node<Program> {
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self, position: usize) -> Result<Vec<CompletionItem>> {
@@ -1270,6 +1287,8 @@ pub struct SketchBlock {
 }
 
 impl SketchBlock {
+    pub(crate) const CALLEE_NAME: &str = "sketch";
+
     /// Iterate over all arguments.
     pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
         self.unlabeled
@@ -1303,7 +1322,7 @@ impl SketchBlock {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Block {
@@ -1316,6 +1335,17 @@ pub struct Block {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
+}
+
+impl From<Program> for Block {
+    fn from(program: Program) -> Self {
+        Block {
+            items: program.body,
+            non_code_meta: program.non_code_meta,
+            inner_attrs: program.inner_attrs,
+            digest: None,
+        }
+    }
 }
 
 impl Block {
@@ -1941,6 +1971,9 @@ pub struct CallExpressionKw {
     pub callee: Node<Name>,
     pub unlabeled: Option<Expr>,
     pub arguments: Vec<LabeledArg>,
+    // A block of code. Currently only used to parse sketch blocks.
+    #[serde(skip)]
+    pub block: Option<BoxNode<Block>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -1989,6 +2022,7 @@ impl CallExpressionKw {
             callee: Name::new(name),
             unlabeled,
             arguments,
+            block: None,
             digest: None,
             non_code_meta: Default::default(),
         }))

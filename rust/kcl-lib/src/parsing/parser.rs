@@ -25,13 +25,13 @@ use crate::{
     parsing::{
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
         ast::types::{
-            Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-            BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
+            Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, Block,
+            BodyItem, BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
             FunctionExpression, FunctionType, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement,
             ItemVisibility, LabeledArg, Literal, LiteralValue, MemberExpression, Name, Node, NodeList, NonCodeMeta,
             NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution,
-            PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type, TypeDeclaration, UnaryExpression,
-            UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+            PrimitiveType, Program, ReturnStatement, Shebang, SketchBlock, TagDeclarator, Type, TypeDeclaration,
+            UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -267,7 +267,7 @@ fn expected(what: &'static str) -> StrContext {
 
 fn program(i: &mut TokenSlice) -> ModalResult<Node<Program>> {
     let shebang = opt(shebang).parse_next(i)?;
-    let mut out: Node<Program> = function_body.parse_next(i)?;
+    let mut out: Node<Program> = function_body.parse_next(i)?.into();
     out.shebang = shebang;
 
     // Match original parser behaviour, for now.
@@ -1387,19 +1387,12 @@ fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
     // Optional return type.
     let return_type = opt(return_type).parse_next(i)?;
     ignore_whitespace(i);
-    let brace = open_brace(i)?;
-    let close: Option<(Vec<Vec<Token>>, Token)> = opt((repeat(0.., whitespace), close_brace)).parse_next(i)?;
-    let (body, end) = match close {
-        Some((_, end)) => (
-            Node::new(Program::default(), brace.end, brace.end, brace.module_id),
-            end.end,
-        ),
-        None => (function_body(i)?, close_brace(i)?.end),
-    };
+    let (_, body, close) = parse_block(i)?;
+    let end = close.end;
     let result = Node::new(
         FunctionExpression {
             params,
-            body,
+            body: body.into(),
             return_type,
             digest: None,
         },
@@ -1409,6 +1402,20 @@ fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
     );
 
     Ok(result)
+}
+
+/// Parse a block of code enclosed in braces `{ ... }`.
+fn parse_block(i: &mut TokenSlice) -> ModalResult<(Token, Node<Block>, Token)> {
+    let brace = open_brace(i)?;
+    let close: Option<(Vec<Vec<Token>>, Token)> = opt((repeat(0.., whitespace), close_brace)).parse_next(i)?;
+    let (body, close) = match close {
+        Some((_, close)) => (
+            Node::new(Block::default(), brace.end, brace.end, brace.module_id),
+            close,
+        ),
+        None => (function_body(i)?, close_brace(i)?),
+    };
+    Ok((brace, body, close))
 }
 
 /// E.g. `person.name`
@@ -1600,7 +1607,7 @@ fn body_items_within_function(i: &mut TokenSlice) -> ModalResult<WithinFunction>
 }
 
 /// Parse the body of a user-defined function.
-fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Program>> {
+fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
     let leading_whitespace_start = alt((
         peek(non_code_node).map(|_| None),
         // Subtract 1 from `t.start` to match behaviour of the old parser.
@@ -1818,11 +1825,10 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Program>> {
     }
     end += 1;
     Ok(Node::new(
-        Program {
-            body,
+        Block {
+            items: body,
             non_code_meta,
             inner_attrs,
-            shebang: None,
             digest: None,
         },
         start.0,
@@ -2189,7 +2195,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
         bool_value.map(Box::new).map(Expr::Literal),
         tag.map(Box::new).map(Expr::TagDeclarator),
         literal.map(Expr::Literal),
-        fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
+        fn_call_or_sketch_block,
         name.map(Box::new).map(Expr::Name),
         array,
         object.map(Box::new).map(Expr::ObjectExpression),
@@ -2214,7 +2220,7 @@ fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         bool_value.map(Box::new).map(Expr::Literal),
         literal.map(Expr::Literal),
-        fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
+        fn_call_or_sketch_block,
         name.map(Box::new).map(Expr::Name),
         array,
         object.map(Box::new).map(Expr::ObjectExpression),
@@ -3233,13 +3239,63 @@ fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
 }
 
 fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
-    let expr = fn_call_kw.map(Box::new).map(Expr::CallExpressionKw).parse_next(i)?;
+    let expr = fn_call_or_sketch_block.parse_next(i)?;
 
     let label = opt(label).parse_next(i)?;
     match label {
         Some(label) => Ok(Expr::LabelledExpression(Box::new(LabelledExpression::new(expr, label)))),
         None => Ok(expr),
     }
+}
+
+fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
+    let fn_call = fn_call_kw.parse_next(i)?;
+    if fn_call.callee.name.name == SketchBlock::CALLEE_NAME
+        && !fn_call.callee.abs_path
+        && fn_call.callee.path.is_empty()
+        && let Node {
+            start,
+            end,
+            module_id,
+            outer_attrs,
+            pre_comments,
+            comment_start,
+            inner:
+                CallExpressionKw {
+                    callee: _,
+                    unlabeled,
+                    arguments,
+                    block: Some(block),
+                    non_code_meta,
+                    digest: _,
+                },
+        } = fn_call
+    {
+        // We have a `sketch() {}`. Change the AST node type.
+        return Ok(Expr::SketchBlock(Box::new(Node {
+            start,
+            end,
+            module_id,
+            outer_attrs,
+            pre_comments,
+            comment_start,
+            inner: SketchBlock {
+                unlabeled,
+                arguments,
+                body: *block,
+                digest: None,
+            },
+        })));
+    } else if fn_call.block.is_some() {
+        let msg = format!(
+            "The function `{}` is not a sketch block, so it cannot have a block of code attached to it. Try removing the block of code.",
+            fn_call.callee
+        );
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(fn_call.as_source_range(), msg).into(),
+        ));
+    }
+    Ok(Expr::CallExpressionKw(Box::new(fn_call)))
 }
 
 fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
@@ -3262,6 +3318,13 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         if early_close.is_ok() {
             ignore_whitespace(i);
             let end = close_paren.parse_next(i)?.end;
+            let (block, end) = if peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
+                ignore_whitespace(i);
+                let (_, body, close) = parse_block(i)?;
+                (Some(Box::new(body)), close.end)
+            } else {
+                (None, end)
+            };
             let result = Node::new_node(
                 fn_name.start,
                 end,
@@ -3270,6 +3333,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                     callee: fn_name,
                     unlabeled: initial_unlabeled_arg,
                     arguments: Default::default(),
+                    block,
                     digest: None,
                     non_code_meta: Default::default(),
                 },
@@ -3386,7 +3450,13 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
             msg,
         ));
     }
-
+    let (block, end) = if peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
+        ignore_whitespace(i);
+        let (_, body, close) = parse_block(i)?;
+        (Some(Box::new(body)), close.end)
+    } else {
+        (None, end)
+    };
     let non_code_meta = NonCodeMeta {
         non_code_nodes,
         ..Default::default()
@@ -3399,6 +3469,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
             callee: fn_name,
             unlabeled: initial_unlabeled_arg,
             arguments: args,
+            block,
             digest: None,
             non_code_meta,
         },
@@ -3524,6 +3595,27 @@ mod tests {
         let tokens = crate::parsing::token::lex("f([0] + 1)", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         fn_call_kw.parse(tokens).unwrap();
+    }
+
+    #[test]
+    fn parse_sketch_block_no_args() {
+        let tokens = crate::parsing::token::lex("sketch() {}", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
+    }
+
+    #[test]
+    fn parse_sketch_block_unlabeled_arg() {
+        let tokens = crate::parsing::token::lex("sketch(XY) {}", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
+    }
+
+    #[test]
+    fn parse_sketch_block_kw_args() {
+        let tokens = crate::parsing::token::lex("sketch(on = XY) {}", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
     }
 
     #[test]
@@ -3713,10 +3805,10 @@ mySk1 = startSketchOn(XY)
 
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
-        let Program {
-            body, non_code_meta, ..
+        let Block {
+            items, non_code_meta, ..
         } = function_body.parse(tokens.as_slice()).unwrap().inner;
-        assert_eq!(body[0].get_comments(), vec!["// this is a comment".to_owned()],);
+        assert_eq!(items[0].get_comments(), vec!["// this is a comment".to_owned()],);
 
         assert_eq!(
             Some(&vec![
@@ -3745,7 +3837,7 @@ mySk1 = startSketchOn(XY)
             non_code_meta.non_code_nodes.get(&0),
         );
 
-        assert_eq!(body[2].get_comments(), vec!["// this is also a comment".to_owned()],);
+        assert_eq!(items[2].get_comments(), vec!["// this is also a comment".to_owned()],);
     }
 
     #[test]

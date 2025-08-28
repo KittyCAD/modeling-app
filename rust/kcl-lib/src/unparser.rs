@@ -1267,6 +1267,39 @@ export import a, b as bbb from "a.kcl"
     }
 
     #[test]
+    fn test_recast_sketch_block_with_no_args() {
+        let input = r#"sketch() {
+  return 0
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_sketch_block_with_unlabeled_arg() {
+        let input = r#"sketch(XY) {
+  return 0
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_sketch_block_with_labeled_args() {
+        let input = r#"sketch(on = XY) {
+  return 0
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
     fn test_recast_bug_fn_in_fn() {
         let some_program_string = r#"// Start point (top left)
 zoo_x = -20
