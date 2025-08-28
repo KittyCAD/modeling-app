@@ -4,7 +4,6 @@ import type { Models } from '@kittycad/lib'
 import type { Connection, IEventListenerTracked } from './connection'
 import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
-import type { ConnectionManager } from './connectionManager'
 
 export function createOnIceCandidate({
   initiateConnectionExclusive,
@@ -25,7 +24,7 @@ export function createOnIceCandidate({
     // This is null when the ICE gathering state is done.
     // Windows ONLY uses this to signal it's done!
     if (event.candidate === null) {
-      initiateConnectionExclusive()
+      initiateConnectionExclusive()``
       return
     }
 
@@ -278,7 +277,6 @@ export const createOnDataChannel = ({
   dispatchEvent,
   trackListener,
   startPingPong,
-  connectionManager,
   connectionPromiseResolve,
 }: {
   setUnreliableDataChannel: (channel: RTCDataChannel) => void
@@ -288,7 +286,6 @@ export const createOnDataChannel = ({
     eventListenerTracked: IEventListenerTracked
   ) => void
   startPingPong: () => void
-  connectionManager: ConnectionManager
   connectionPromiseResolve: (value: unknown) => void
 }) => {
   const onDataChannel = (event: RTCDataChannelEvent) => {
@@ -296,7 +293,6 @@ export const createOnDataChannel = ({
     const onDataChannelOpen = createOnDataChannelOpen({
       dispatchEvent,
       startPingPong,
-      connectionManager,
       connectionPromiseResolve,
     })
     const onDataChannelError = createOnDataChannelError()

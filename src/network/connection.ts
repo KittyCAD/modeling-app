@@ -27,8 +27,6 @@ export class Connection extends EventTarget {
   readonly url: string
   // Authorization bearer token for headers on websocket
   private readonly _token: string | undefined
-
-  // ping pong result
   private _pingPongSpan: {
     ping: number | undefined
     pong: number | undefined
@@ -54,6 +52,7 @@ export class Connection extends EventTarget {
   iceCandidatePromises: Promise<unknown>[]
   onNetworkStatusReady: (() => void) | undefined
 
+  // Initialized from peerConnection onTrack event
   public webrtcStatsCollector: (() => Promise<ClientMetrics>) | undefined
 
   // Any event listener into this map to be cleaned up later
@@ -64,10 +63,9 @@ export class Connection extends EventTarget {
   // future calls will be rejected.
   exclusiveConnection: boolean
 
+  // Used for EngineDebugger to know what instance of the class is tracked
   id: string
 
-  // TODO: offer promise wrapped to track
-  // TODo: event listeners to add and clean up
   constructor({
     url,
     token,
@@ -220,8 +218,11 @@ export class Connection extends EventTarget {
   }
 
   /**
-   * This function is being spammed.
-   * You can call this before sdpAnswer is ready.
+   * This function will be called many times from different sources depending on when those sources are fired.
+   * The original sources can be fired in different orders depending on browsers.
+   * We only want to get into the business logic once so we have an exclusiveConnection boolean.
+   * 
+   * A peerConnection and sdpAnswer are required
    */
   async initiateConnectionExclusive() {
     if (!this.peerConnection) {
