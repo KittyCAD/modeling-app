@@ -71,6 +71,7 @@ import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { Toolbar } from '@src/Toolbar'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import env from '@src/env'
+import { ConnectionStream } from '@src/components/ConnectionStream'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -280,7 +281,7 @@ export function App() {
           <ModelingSidebarLeft />
           <div className="relative z-0 flex flex-col flex-1 items-center overflow-hidden">
             <Toolbar />
-            <EngineStream pool={pool} authToken={authToken} />
+            <ConnectionStream pool={pool} authToken={authToken} />
             <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
               <UnitsMenu />
               <Gizmo />

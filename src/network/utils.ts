@@ -299,3 +299,15 @@ export function promiseFactory<T>() {
   })
   return { promise, resolve, reject }
 }
+
+export function getDimensions(streamWidth: number, streamHeight: number) {
+  const factorOf = 4
+  const maxResolution = 2160
+  const ratio = Math.min(
+    Math.min(maxResolution / streamWidth, maxResolution / streamHeight),
+    1.0
+  )
+  const quadWidth = Math.round((streamWidth * ratio) / factorOf) * factorOf
+  const quadHeight = Math.round((streamHeight * ratio) / factorOf) * factorOf
+  return { width: quadWidth, height: quadHeight }
+}

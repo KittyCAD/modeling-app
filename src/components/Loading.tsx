@@ -130,59 +130,6 @@ const Loading = ({
   }, [countdown])
 
   useEffect(() => {
-    const onConnectionStateChange = ({ detail: state }: CustomEvent) => {
-      if (
-        (state.type !== EngineConnectionStateType.Disconnected ||
-          state.type !== EngineConnectionStateType.Disconnecting) &&
-        state.value?.type !== DisconnectingType.Error
-      )
-        return
-      setError(state.value.value)
-    }
-
-    const onEngineAvailable = ({ detail: engineConnection }: CustomEvent) => {
-      engineConnection.addEventListener(
-        EngineConnectionEvents.ConnectionStateChanged,
-        onConnectionStateChange as EventListener
-      )
-    }
-
-    if (engineCommandManager.connection) {
-      // Do an initial state check in case there is an immediate issue
-      onConnectionStateChange(
-        new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
-          detail: engineCommandManager.connection.state,
-        })
-      )
-      // Set up a listener on the state for future updates
-      onEngineAvailable(
-        new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
-          detail: engineCommandManager.connection,
-        })
-      )
-    } else {
-      // If there is no engine connection yet, listen for it to be there *then*
-      // attach the listener
-      engineCommandManager.addEventListener(
-        EngineCommandManagerEvents.EngineAvailable,
-        onEngineAvailable as EventListener
-      )
-    }
-
-    return () => {
-      engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.EngineAvailable,
-        onEngineAvailable as EventListener
-      )
-      engineCommandManager.connection?.removeEventListener(
-        EngineConnectionEvents.ConnectionStateChanged,
-        onConnectionStateChange as EventListener
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, engineCommandManager.connection])
-
-  useEffect(() => {
     // Don't set long loading time if there's a more severe error
     if (isUnrecoverableError) return
 

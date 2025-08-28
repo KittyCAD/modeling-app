@@ -653,6 +653,21 @@ export const EngineStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
+      {![
+        EngineStreamState.Playing,
+        EngineStreamState.Pausing,
+        EngineStreamState.Paused,
+        EngineStreamState.Resuming,
+      ].some((s) => s === engineStreamState.value) && (
+        <Loading
+          isRetrying={timeoutId !== undefined && !firstRun}
+          retryAttemptCountdown={attemptTimes[1]}
+          dataTestId="loading-engine"
+          className="absolute inset-0 h-screen"
+        >
+          Connecting and setting up scene...
+        </Loading>
+      )}
     </div>
   )
 }
