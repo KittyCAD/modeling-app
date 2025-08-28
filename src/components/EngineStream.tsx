@@ -239,7 +239,6 @@ export const EngineStream = (props: {
     // We do a back-off restart, using a fibonacci sequence, since it
     // has a nice retry time curve (somewhat quick then exponential)
     const attemptRestartIfNecessary = () => {
-      console.warn('why?')
       EngineDebugger.addLog({
         label: 'EngineStream.tsx',
         message: 'attemptRestartIfNecessary',

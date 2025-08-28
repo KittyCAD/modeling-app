@@ -39,7 +39,6 @@ export const createOnWebSocketOpen = ({
           Authorization: `Bearer ${token}`,
         },
       })
-      logger('headers sent off, error should stop soon', {})
 
       // TODO: Why? Why would this need to send a ping?
       // Why not start the pingPong Interval
@@ -51,7 +50,6 @@ export const createOnWebSocketOpen = ({
 
 export const createOnWebSocketError = () => {
   const onWebSocketError = (event: Event) => {
-    logger('onwebsocketerror', event)
     EngineDebugger.addLog({
       label: 'onWebSocketError',
       message: 'onwebsocketerror',
@@ -162,7 +160,7 @@ export const createOnWebSocketMessage = ({
         break
       case 'modeling_session_data':
         const apiCallId = resp.data.session.api_call_id
-        logger(`API Call ID: ${apiCallId}`, {})
+        console.log(`API Call ID: ${apiCallId}`)
         EngineDebugger.addLog({
           label: 'onWebSocketMessage',
           message: 'modeling_session_data',
@@ -267,10 +265,6 @@ export const createOnWebSocketMessage = ({
         try {
           const collector = webrtcStatsCollector()
           if (!collector) {
-            logger(
-              'dropping metrics_request, webrtcStatsCollector is undefined',
-              {}
-            )
             EngineDebugger.addLog({
               label: 'onWebSocketMessage',
               message:
@@ -314,11 +308,9 @@ export const createOnWebSocketClose = ({
   dispatchEvent: (event: Event) => boolean
 }) => {
   const onDataChannelClose = () => {
-    logger('onwebsocketclose', {})
     websocket.removeEventListener('open', onWebSocketOpen)
     websocket.removeEventListener('error', onWebSocketError)
     websocket.removeEventListener('message', onWebSocketMessage)
-    // TODO: remove listener use-network-status-ready
     dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
     disconnectAll()
   }

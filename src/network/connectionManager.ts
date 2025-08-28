@@ -147,7 +147,6 @@ export class ConnectionManager extends EventTarget {
     height: number
     token: string
   }) {
-    console.warn('connectionManager start')
     EngineDebugger.addLog({
       label: 'connectionManager',
       message: 'start',
@@ -199,14 +198,11 @@ export class ConnectionManager extends EventTarget {
       url,
       token,
     })
-    // TODO: this should be correct.
     await this.connection.connect()
-    console.warn('connect')
 
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
 
-    // TODO: This is gonna break instantly.
     if (!this.connection.peerConnection) {
       throw new Error('this.connection.peerConnection is undefined')
     }
@@ -710,9 +706,6 @@ export class ConnectionManager extends EventTarget {
 
   tearDown(opts?: { idleMode: boolean }) {
     if (!this.started) {
-      console.warn(
-        'you called tearDown without ever calling start(), this is okay.'
-      )
       EngineDebugger.addLog({
         label: 'connectionManager',
         message:
@@ -772,7 +765,7 @@ export class ConnectionManager extends EventTarget {
     )
     EngineDebugger.addLog({
       label: 'connectionManager',
-      message: 'online - EngineCommandManagerEvents.EngineRestartRequest',
+      message: 'online - EngineRestartRequest',
     })
   }
 

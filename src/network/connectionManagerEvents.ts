@@ -78,9 +78,7 @@ export const createOnEngineConnectionOpened = ({
         label: 'onEngineConnectionOpened',
         message: 'clearing scene and busting cache',
       })
-      console.warn('KEVIN1')
       await rustContext.clearSceneAndBustCache(jsAppSettings, path)
-      console.warn('KEVIN2')
     } catch (e) {
       console.warn('unknown error in onEngineConnectionOpened:', e)
       EngineDebugger.addLog({
@@ -150,7 +148,6 @@ export const createOnEngineConnectionOpened = ({
       message: 'Dispatching SceneReady',
     })
 
-    console.warn('SCENE IS READY!')
     dispatchEvent(
       new CustomEvent(EngineCommandManagerEvents.SceneReady, {
         detail: connection,
@@ -205,7 +202,6 @@ export const createOnEngineConnectionStarted = ({
     eventListenerTracked: IEventListenerTracked
   ) => void
 }) => {
-  console.warn('THIS RUNS')
   // TODO: connection.ts may not send the detail: connection back within this event handler.
   // Do not use the detail: connection yet, use the one from the connectionManager
   // This is the second datachannel initialized on the peerConnection. One is already

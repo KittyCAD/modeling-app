@@ -1,7 +1,7 @@
 import type { ClientMetrics, UnreliableResponses } from './utils'
-import { logger, EngineConnectionEvents } from './utils'
+import { EngineConnectionEvents } from './utils'
 import type { Models } from '@kittycad/lib'
-import type { Connection, IEventListenerTracked } from './connection'
+import type { Connection } from './connection'
 import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
 
@@ -15,7 +15,6 @@ export function createOnIceCandidate({
   setTimeoutToForceConnectId: (id: ReturnType<typeof setTimeout>) => void
 }) {
   const onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
-    logger('icecandidate', event.candidate)
     EngineDebugger.addLog({
       label: 'onIceCandidate',
       message: 'icecandidate',
@@ -67,7 +66,6 @@ export function createOnIceGatheringStateChange({
   initiateConnectionExclusive: () => void
 }) {
   const onIceGatheringStateChange = (event: Event) => {
-    logger('icegatheringstatechange', event)
     EngineDebugger.addLog({
       label: 'onIceGatheringStateChange',
       message: 'icegatheringstatechange',
@@ -83,7 +81,6 @@ export function createOnIceGatheringStateChange({
 
 export function createOnIceConnectionStateChange() {
   const onIceConnectionStateChange = (event: Event) => {
-    logger('iceconnectionstatechange', event)
     EngineDebugger.addLog({
       label: 'onIceConnectionStateChange',
       message: 'iceconnectionstatechange',
@@ -95,7 +92,6 @@ export function createOnIceConnectionStateChange() {
 
 export function createOnNegotiationNeeded() {
   const onNegotiationNeeded = (event: Event) => {
-    logger('negotiationneeded', event)
     EngineDebugger.addLog({
       label: 'onNegotiationNeeded',
       message: 'negotiationneeded',
@@ -107,7 +103,6 @@ export function createOnNegotiationNeeded() {
 
 export function createOnSignalingStateChange() {
   const onSignalingStateChange = (event: Event) => {
-    logger('signalingstatechange', event)
     EngineDebugger.addLog({
       label: 'onSignalingStateChange',
       message: 'signalingstatechange',
@@ -145,7 +140,6 @@ export function createOnConnectionStateChange({
   // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
   // Event type: generic Event type...
   const onConnectionStateChange = (event: any) => {
-    logger(`connectionstatechange: ${event.target?.connectionState}`, event)
     EngineDebugger.addLog({
       label: 'onConnectionStateChange',
       message: 'connectionstatechange',
@@ -361,7 +355,6 @@ export const createOnDataChannelOpen = ({
   connectionPromiseResolve: (value: unknown) => void
 }) => {
   const onDataChannelOpen = (event: Event) => {
-    console.warn('onDataChannelOpen')
     // Start firing off engine commands at this point.
     // They could be fired at an earlier time, onWebSocketOpen,
     // but DataChannel can offer some benefits like speed,
@@ -383,7 +376,6 @@ export const createOnDataChannelOpen = ({
 
 export const createOnDataChannelError = () => {
   const onDataChannelError = (event: Event) => {
-    logger('ondatachannelerror', event)
     EngineDebugger.addLog({
       label: 'onDataChannelError',
       message: 'ondatachannelerror',
@@ -395,12 +387,6 @@ export const createOnDataChannelError = () => {
 
 export const createOnDataChannelMessage = () => {
   const onDataChannelMessage = (event: MessageEvent<any>) => {
-    logger('ondatachannelmessage', event)
-    EngineDebugger.addLog({
-      label: 'onDataChannelMessage',
-      message: 'ondatachannelmessage',
-      metadata: { event },
-    })
     const result: UnreliableResponses = JSON.parse(event.data)
     // TODO: callback? enginecommmand manager in sequence?
   }
@@ -420,7 +406,6 @@ export const createOnDataChannelClose = ({
   onDataChannelMessage: (event: MessageEvent<any>) => void
 }) => {
   const onDataChannelClose = () => {
-    logger('ondatachannelclose', {})
     unreliableDataChannel.removeEventListener('open', onDataChannelOpen)
     unreliableDataChannel.removeEventListener('error', onDataChannelError)
     unreliableDataChannel.removeEventListener('message', onDataChannelMessage)

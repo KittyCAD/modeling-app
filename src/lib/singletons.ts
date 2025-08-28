@@ -261,19 +261,6 @@ export const engineStreamActor = appActor.system.get(
   ENGINE_STREAM
 ) as ActorRefFrom<(typeof appMachineActors)[typeof ENGINE_STREAM]>
 
-engineStreamActor.subscribe((snapshot) => {
-  EngineDebugger.addLog({
-    message: ``,
-    label: 'engineStreamActor.subscribe',
-    metadata: {
-      snapshot: {
-        value: snapshot.value,
-        status: snapshot.status,
-      },
-    },
-  })
-})
-
 export const mlEphantManagerActor = appActor.system.get(
   MLEPHANT_MANAGER
 ) as ActorRefFrom<(typeof appMachineActors)[typeof MLEPHANT_MANAGER]>
