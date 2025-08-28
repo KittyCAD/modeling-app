@@ -73,12 +73,16 @@ export class Connection extends EventTarget {
   // Used for EngineDebugger to know what instance of the class is tracked
   id: string
 
+  handleOnDataChannelMessage: (event: MessageEvent<any>) => void
+
   constructor({
     url,
     token,
+    handleOnDataChannelMessage,
   }: {
     url: string
     token: string
+    handleOnDataChannelMessage: (event: MessageEvent<any>) => void
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -90,6 +94,7 @@ export class Connection extends EventTarget {
     })
     this.url = url
     this._token = token
+    this.handleOnDataChannelMessage = handleOnDataChannelMessage
     this._pingPongSpan = { ping: undefined, pong: undefined }
 
     this.deferredConnection = null
@@ -321,6 +326,8 @@ export class Connection extends EventTarget {
       trackListener: this.trackListener.bind(this),
       startPingPong: this.startPingPong.bind(this),
       connectionPromiseResolve: this.deferredConnection.resolve,
+      // don't bind this, it was passed into the class
+      handleOnDataChannelMessage: this.handleOnDataChannelMessage,
     })
 
     // Watch out human! The names of the next couple events are really similar!

@@ -197,6 +197,7 @@ export class ConnectionManager extends EventTarget {
     this.connection = new Connection({
       url,
       token,
+      handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
     })
     await this.connection.connect()
 
@@ -303,6 +304,31 @@ export class ConnectionManager extends EventTarget {
     // Engine is ready to start sending events!
     // Gotcha: The other listenerse above need to be initialized otherwise this will halt forver.
     await onEngineConnectionOpened()
+  }
+
+  /**
+   * Pass a callback function down to a connection instance for the peerConnection 'message' event
+   */
+  handleOnDataChannelMessage(event: MessageEvent<any>) {
+    const result: UnreliableResponses = JSON.parse(event.data)
+    Object.values(this.unreliableSubscriptions[result.type] || {}).forEach(
+      // TODO: There is only one response that uses the unreliable channel atm,
+      // highlight_set_entity, if there are more it's likely they will all have the same
+      // sequence logic, but I'm not sure if we use a single global sequence or a sequence
+      // per unreliable subscription.
+      (callback) => {
+        if (
+          result.type === 'highlight_set_entity' &&
+          result?.data?.sequence &&
+          result?.data.sequence > this.inSequence
+        ) {
+          this.inSequence = result.data.sequence
+          callback(result)
+        } else if (result.type !== 'highlight_set_entity') {
+          callback(result)
+        }
+      }
+    )
   }
 
   generateWebsocketURL() {
@@ -527,10 +553,8 @@ export class ConnectionManager extends EventTarget {
     if (message.request_id === undefined || message.request_id === null) {
       // We only care about messages that have a request id, so we can
       // ignore the rest.
-      EngineDebugger.addLog({
-        label: 'handleMessage',
-        message: 'message.request_id is missing',
-      })
+
+      // Most likely ping/pong requests here
       return
     }
 

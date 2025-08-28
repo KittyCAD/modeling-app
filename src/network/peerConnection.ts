@@ -1,4 +1,8 @@
-import type { ClientMetrics, UnreliableResponses } from './utils'
+import type {
+  ClientMetrics,
+  IEventListenerTracked,
+  UnreliableResponses,
+} from './utils'
 import { EngineConnectionEvents } from './utils'
 import type { Models } from '@kittycad/lib'
 import type { Connection } from './connection'
@@ -276,6 +280,7 @@ export const createOnDataChannel = ({
   trackListener,
   startPingPong,
   connectionPromiseResolve,
+  handleOnDataChannelMessage,
 }: {
   setUnreliableDataChannel: (channel: RTCDataChannel) => void
   dispatchEvent: (event: Event) => boolean
@@ -285,6 +290,7 @@ export const createOnDataChannel = ({
   ) => void
   startPingPong: () => void
   connectionPromiseResolve: (value: unknown) => void
+  handleOnDataChannelMessage: (event: MessageEvent<any>) => void
 }) => {
   const onDataChannel = (event: RTCDataChannelEvent) => {
     // Initialize the event.channel with 4 event listeners
@@ -294,7 +300,9 @@ export const createOnDataChannel = ({
       connectionPromiseResolve,
     })
     const onDataChannelError = createOnDataChannelError()
-    const onDataChannelMessage = createOnDataChannelMessage()
+    const onDataChannelMessage = createOnDataChannelMessage({
+      handleOnDataChannelMessage,
+    })
     const onDataChannelClose = createOnDataChannelClose({
       unreliableDataChannel: event.channel,
       onDataChannelOpen,
@@ -385,10 +393,14 @@ export const createOnDataChannelError = () => {
   return onDataChannelError
 }
 
-export const createOnDataChannelMessage = () => {
+export const createOnDataChannelMessage = ({
+  handleOnDataChannelMessage,
+}: {
+  handleOnDataChannelMessage: (event: MessageEvent<any>) => void
+}) => {
   const onDataChannelMessage = (event: MessageEvent<any>) => {
-    const result: UnreliableResponses = JSON.parse(event.data)
-    // TODO: callback? enginecommmand manager in sequence?
+    // handle this in a parent function
+    handleOnDataChannelMessage(event)
   }
   return onDataChannelMessage
 }
