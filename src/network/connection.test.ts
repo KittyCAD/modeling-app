@@ -1,19 +1,17 @@
-import type { IEventListenerTracked } from '@src/network/connection'
 import { Connection } from '@src/network/connection'
-import { ConnectionManager } from '@src/network/connectionManager'
-import type { ClientMetrics } from './utils'
+import type { ClientMetrics, IEventListenerTracked } from './utils'
 
 const TEST_URL = 'nicenicenice'
 const TEST_TOKEN = 'mycooltoken'
+const HANDLE_NO_OP = () => {}
 
 describe('connection.ts', () => {
   describe('initialize', () => {
     it('should make a default object', () => {
-      const connectionManager = new ConnectionManager()
       const connection = new Connection({
-        connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
+        handleOnDataChannelMessage: HANDLE_NO_OP,
       })
       expect(connection.url).toBe(TEST_URL)
       expect(connection.token).toBe(TEST_TOKEN)
@@ -21,20 +19,20 @@ describe('connection.ts', () => {
         ping: undefined,
         pong: undefined,
       })
-      expect(connection.connectionPromise).toBe(null)
-      expect(connection.connectionPromiseResolve).toBe(null)
-      expect(connection.connectionPromiseReject).toBe(null)
+      expect(connection.deferredConnection).toBe(null)
+      expect(connection.deferredPeerConnection).toBe(null)
+      expect(connection.deferredMediaStreamAndWebrtcStatsCollector).toBe(null)
+      expect(connection.deferredSdpAnswer).toBe(null)
       expect(connection.allEventListeners).toStrictEqual(new Map())
       expect(connection.exclusiveConnection).toBe(false)
     })
   })
   describe('stopPingPong', () => {
     it('should check that pingIntervalId is undefined if you stopPingPong immediately', () => {
-      const connectionManager = new ConnectionManager()
       const connection = new Connection({
-        connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
+        handleOnDataChannelMessage: HANDLE_NO_OP,
       })
       expect(connection.pingIntervalId).toBe(undefined)
       connection.stopPingPong()
@@ -46,11 +44,10 @@ describe('connection.ts', () => {
       const expected = new Map<string, IEventListenerTracked>()
       const fn = () => {}
       expected.set('open', { event: 'open', callback: fn, type: 'window' })
-      const connectionManager = new ConnectionManager()
       const connection = new Connection({
-        connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
+        handleOnDataChannelMessage: HANDLE_NO_OP,
       })
       connection.trackListener('open', {
         event: 'open',
@@ -65,11 +62,10 @@ describe('connection.ts', () => {
       const fn2 = () => {}
       expected.set('open', { event: 'open', callback: fn, type: 'window' })
       expected.set('close', { event: 'close', callback: fn2, type: 'window' })
-      const connectionManager = new ConnectionManager()
       const connection = new Connection({
-        connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
+        handleOnDataChannelMessage: HANDLE_NO_OP,
       })
       connection.trackListener('open', {
         event: 'open',
@@ -87,11 +83,10 @@ describe('connection.ts', () => {
       const expected = new Map<string, IEventListenerTracked>()
       const fn = () => {}
       expected.set('open', { event: 'open', callback: fn, type: 'window' })
-      const connectionManager = new ConnectionManager()
       const connection = new Connection({
-        connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
+        handleOnDataChannelMessage: HANDLE_NO_OP,
       })
       connection.trackListener('open', {
         event: 'open',
@@ -111,11 +106,10 @@ describe('connection.ts', () => {
   })
   describe('setMediaStream', () => {
     it('should set a mediaStream', () => {
-      const connectionManager = new ConnectionManager()
       const connection = new Connection({
-        connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
+        handleOnDataChannelMessage: HANDLE_NO_OP,
       })
       const mediaStream = new MediaStream()
       connection.setMediaStream(mediaStream)
@@ -124,11 +118,10 @@ describe('connection.ts', () => {
   })
   describe('setWebrtcStatsCollector', () => {
     it('should set webrtcStatsCollector', () => {
-      const connectionManager = new ConnectionManager()
       const connection = new Connection({
-        connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
+        handleOnDataChannelMessage: HANDLE_NO_OP,
       })
       const expected = async () => {
         let metrics: ClientMetrics = {}
@@ -140,11 +133,10 @@ describe('connection.ts', () => {
   })
   describe('setUnreliableDataChannel', () => {
     it('should set unreliableDataChannel', () => {
-      const connectionManager = new ConnectionManager()
       const connection = new Connection({
-        connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
+        handleOnDataChannelMessage: HANDLE_NO_OP,
       })
       const peerConenction = new RTCPeerConnection()
       const dataChannel = peerConenction.createDataChannel('my channel')
@@ -154,11 +146,10 @@ describe('connection.ts', () => {
   })
   describe('setPong', () => {
     it('should set pong', () => {
-      const connectionManager = new ConnectionManager()
       const connection = new Connection({
-        connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
+        handleOnDataChannelMessage: HANDLE_NO_OP,
       })
       connection.setPong(42)
       expect(connection.pingPongSpan.pong).toBe(42)
@@ -166,11 +157,10 @@ describe('connection.ts', () => {
   })
   describe('setPing', () => {
     it('should set ping', () => {
-      const connectionManager = new ConnectionManager()
       const connection = new Connection({
-        connectionManager: connectionManager,
         url: TEST_URL,
         token: TEST_TOKEN,
+        handleOnDataChannelMessage: HANDLE_NO_OP,
       })
       connection.setPing(10)
       expect(connection.pingPongSpan.ping).toBe(10)
