@@ -1,5 +1,5 @@
 import type { Models } from '@kittycad/lib'
-import type { Connection } from './connection'
+import type { Connection } from '@src/network/connection'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 

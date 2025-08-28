@@ -11,7 +11,7 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { billingMachine } from '@src/machines/billingMachine'
-import { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export type IndexLoaderData = {
   code: string | null

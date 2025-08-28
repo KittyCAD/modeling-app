@@ -36,7 +36,7 @@ import type {
 } from '@src/machines/modelingMachine'
 import { historyCompartment } from '@src/editor/compartments'
 import type CodeManager from '@src/lang/codeManager'
-import { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 declare global {
   interface Window {

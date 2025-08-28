@@ -1,4 +1,5 @@
-import { MouseEventHandler, useEffect, useRef, useState } from 'react'
+import type { MouseEventHandler } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import {
   engineCommandManager,

@@ -46,7 +46,7 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
 import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
-import { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 

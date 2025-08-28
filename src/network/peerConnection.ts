@@ -1,13 +1,13 @@
 import type {
   ClientMetrics,
   IEventListenerTracked,
-  UnreliableResponses,
-} from './utils'
-import { EngineConnectionEvents } from './utils'
+} from '@src/network/utils'
+import { EngineConnectionEvents } from '@src/network/utils'
 import type { Models } from '@kittycad/lib'
-import type { Connection } from './connection'
+import type { Connection } from '@src/network/connection'
 import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
+import { reportRejection } from '@src/lib/trap'
 
 export function createOnIceCandidate({
   initiateConnectionExclusive,
@@ -223,51 +223,52 @@ export function createWebrtcStatsCollector({
   peerConnection: RTCPeerConnection
 }) {
   const webrtcStatsCollector = (): Promise<ClientMetrics> => {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       if (mediaStream.getVideoTracks().length !== 1) {
         reject(new Error('too many video tracks to report'))
         return
       }
 
       const inboundVideoTrack = mediaStream.getVideoTracks()[0]
-      const stats = await peerConnection.getStats()
-      const metrics: ClientMetrics = {}
+      peerConnection.getStats().then((stats) => {
+        const metrics: ClientMetrics = {}
 
-      stats.forEach((report, id) => {
-        if (report.type === 'candidate-pair') {
-          if (report.state == 'succeeded') {
-            const rtt = report.currentRoundTripTime
-            metrics.rtc_stun_rtt_sec = rtt
+        stats.forEach((report, id) => {
+          if (report.type === 'candidate-pair') {
+            if (report.state == 'succeeded') {
+              const rtt = report.currentRoundTripTime
+              metrics.rtc_stun_rtt_sec = rtt
+            }
+          } else if (report.type === 'inbound-rtp') {
+            // TODO(paultag): Since we can technically have multiple WebRTC
+            // video tracks (even if the Server doesn't at the moment), we
+            // ought to send stats for every video track(?), and add the stream
+            // ID into it.  This raises the cardinality of collected metrics
+            // when/if we do.
+            // For now we just take one of the video tracks.
+            if (report.trackIdentifier !== inboundVideoTrack.id) {
+              return
+            }
+
+            metrics.rtc_frames_decoded = report.framesDecoded
+            metrics.rtc_frames_dropped = report.framesDropped
+            metrics.rtc_frames_received = report.framesReceived
+            metrics.rtc_frames_per_second = report.framesPerSecond
+            metrics.rtc_freeze_count = report.freezeCount
+            metrics.rtc_jitter_sec = report.jitter
+            metrics.rtc_keyframes_decoded = report.keyFramesDecoded
+            metrics.rtc_total_freezes_duration_sec = report.totalFreezesDuration
+            metrics.rtc_frame_height = report.frameHeight
+            metrics.rtc_frame_width = report.frameWidth
+            metrics.rtc_packets_lost = report.packetsLost
+            metrics.rtc_pli_count = report.pliCount
           }
-        } else if (report.type === 'inbound-rtp') {
-          // TODO(paultag): Since we can technically have multiple WebRTC
-          // video tracks (even if the Server doesn't at the moment), we
-          // ought to send stats for every video track(?), and add the stream
-          // ID into it.  This raises the cardinality of collected metrics
-          // when/if we do.
-          // For now we just take one of the video tracks.
-          if (report.trackIdentifier !== inboundVideoTrack.id) {
-            return
-          }
+          // The following report types exist, but are unused:
+          // data-channel, transport, certificate, peer-connection, local-candidate, remote-candidate, codec
+        })
 
-          metrics.rtc_frames_decoded = report.framesDecoded
-          metrics.rtc_frames_dropped = report.framesDropped
-          metrics.rtc_frames_received = report.framesReceived
-          metrics.rtc_frames_per_second = report.framesPerSecond
-          metrics.rtc_freeze_count = report.freezeCount
-          metrics.rtc_jitter_sec = report.jitter
-          metrics.rtc_keyframes_decoded = report.keyFramesDecoded
-          metrics.rtc_total_freezes_duration_sec = report.totalFreezesDuration
-          metrics.rtc_frame_height = report.frameHeight
-          metrics.rtc_frame_width = report.frameWidth
-          metrics.rtc_packets_lost = report.packetsLost
-          metrics.rtc_pli_count = report.pliCount
-        }
-        // The following report types exist, but are unused:
-        // data-channel, transport, certificate, peer-connection, local-candidate, remote-candidate, codec
-      })
-
-      resolve(metrics)
+        resolve(metrics)
+      }).catch(reportRejection)
     })
   }
 

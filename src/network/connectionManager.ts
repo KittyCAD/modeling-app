@@ -43,7 +43,7 @@ import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SourceRange } from '@src/lang/wasm'
 import type { KclManager } from '@src/lang/KclSingleton'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
-import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
 
 export class ConnectionManager extends EventTarget {
   started: boolean

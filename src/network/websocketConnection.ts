@@ -1,10 +1,9 @@
 import type { Models } from '@kittycad/lib'
-import type { ClientMetrics } from './utils'
+import type { ClientMetrics } from '@src/network/utils'
 import {
-  logger,
   EngineConnectionEvents,
   toRTCSessionDescriptionInit,
-} from './utils'
+} from '@src/network/utils'
 import { EngineDebugger } from '@src/lib/debugger'
 
 /**
@@ -79,6 +78,7 @@ export const createOnWebSocketMessage = ({
   addIceCandidate,
   webrtcStatsCollector,
   sdpAnswerResolve,
+  sdpAnswerReject,
 }: {
   disconnectAll: () => void
   setPong: (pong: number) => void
@@ -92,6 +92,7 @@ export const createOnWebSocketMessage = ({
   addIceCandidate: (candidate: RTCIceCandidateInit) => void
   webrtcStatsCollector: () => (() => Promise<ClientMetrics>) | undefined
   sdpAnswerResolve: (value: any) => void
+  sdpAnswerReject: (value: any) => void
 }) => {
   const onWebSocketMessage = async (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
@@ -229,6 +230,11 @@ export const createOnWebSocketMessage = ({
             offer: offer as Models['RtcSessionDescription_type'],
           })
         } catch (e) {
+          EngineDebugger.addLog({
+            label: 'onWebSocketMessage',
+            message: 'peerConnection.setLocalDescription(offer) failed',
+            metadata: { e },
+          })
           disconnectAll()
         }
         break
@@ -242,7 +248,7 @@ export const createOnWebSocketMessage = ({
 
         // sdpAnswer was not handled if undefined!
         if (!sdpAnswer) {
-          throw new Error('NO NO SDP ANSWER')
+          return sdpAnswerReject('sdpAnswer is undefined')
         }
 
         setSdpAnswer(sdpAnswer)

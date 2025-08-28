@@ -449,6 +449,7 @@ export class Connection extends EventTarget {
       addIceCandidate: this.addIceCandidate.bind(this),
       webrtcStatsCollector: () => this.webrtcStatsCollector?.bind(this),
       sdpAnswerResolve: this.deferredSdpAnswer.resolve,
+      sdpAnswerReject: this.deferredSdpAnswer.reject,
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
