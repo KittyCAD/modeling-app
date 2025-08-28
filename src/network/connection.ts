@@ -22,11 +22,6 @@ import {
 import { EngineDebugger } from '@src/lib/debugger'
 import { uuidv4 } from '@src/lib/utils'
 
-export interface INewTrackArgs {
-  conn: Connection
-  mediaStream: MediaStream
-}
-
 export class Connection extends EventTarget {
   // connection url for the new Websocket()
   readonly url: string
