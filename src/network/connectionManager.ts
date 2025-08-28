@@ -51,7 +51,7 @@ export class ConnectionManager extends EventTarget {
   started: boolean
   idleMode: boolean
   inSequence = 1
-  _camControlsCameraChange = () => { }
+  _camControlsCameraChange = () => {}
   id: string
 
   /**
@@ -107,10 +107,10 @@ export class ConnectionManager extends EventTarget {
       [localUnsubscribeId: string]: (a: any) => void
     }
   } = {} as any
-  _commandLogCallBack: (command: CommandLog[]) => void = () => { }
+  _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Rogue runtime dependency from the modeling machine. hope it is there!
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
-    (() => { }) as any
+    (() => {}) as any
   // Any event listener into this map to be cleaned up later
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
@@ -202,7 +202,7 @@ export class ConnectionManager extends EventTarget {
       url,
       token,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
-      tearDownManager: this.tearDown.bind(this)
+      tearDownManager: this.tearDown.bind(this),
     })
 
     // Only used for useNetworkStatus.tsx listeners, why?!
@@ -461,7 +461,7 @@ export class ConnectionManager extends EventTarget {
       this.connection.unreliableDataChannel &&
       !forceWebsocket
     ) {
-      ; (cmd as any).sequence = this.outSequence
+      ;(cmd as any).sequence = this.outSequence
       this.outSequence++
       this.connection.unreliableSend(command)
       return Promise.resolve(null)
@@ -486,7 +486,7 @@ export class ConnectionManager extends EventTarget {
       command.cmd.type === 'default_camera_look_at' ||
       command.cmd.type === ('default_camera_perspective_settings' as any)
     ) {
-      ; (cmd as any).sequence = this.outSequence++
+      ;(cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
     return this.sendCommand(

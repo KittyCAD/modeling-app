@@ -87,7 +87,7 @@ export class Connection extends EventTarget {
     url,
     token,
     handleOnDataChannelMessage,
-    tearDownManager
+    tearDownManager,
   }: {
     url: string
     token: string
@@ -678,7 +678,10 @@ export class Connection extends EventTarget {
       EngineDebugger.addLog({
         label: 'connection',
         message: 'disconnectUnreliableDataChannel',
-        metadata: { id: this.id, readyState: this.unreliableDataChannel.readyState },
+        metadata: {
+          id: this.id,
+          readyState: this.unreliableDataChannel.readyState,
+        },
       })
     }
   }
@@ -699,7 +702,10 @@ export class Connection extends EventTarget {
       EngineDebugger.addLog({
         label: 'connection',
         message: 'disconnectPeerConnection',
-        metadata: { id: this.id, connectionState: this.peerConnection.connectionState },
+        metadata: {
+          id: this.id,
+          connectionState: this.peerConnection.connectionState,
+        },
       })
     }
   }
