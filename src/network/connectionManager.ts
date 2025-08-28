@@ -796,6 +796,7 @@ export class ConnectionManager extends EventTarget {
     })
   }
 
+  // Only bound on the WASM side, no JS calls.
   async startNewSession() {
     this.responseMap = {}
     EngineDebugger.addLog({
