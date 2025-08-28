@@ -160,8 +160,8 @@ export function useNetworkStatus() {
   useEffect(() => {
     setHasIssues(
       issues[ConnectingTypeGroup.WebSocket] ||
-        issues[ConnectingTypeGroup.ICE] ||
-        issues[ConnectingTypeGroup.WebRTC]
+      issues[ConnectingTypeGroup.ICE] ||
+      issues[ConnectingTypeGroup.WebRTC]
     )
   }, [issues])
 
@@ -230,7 +230,28 @@ export function useNetworkStatus() {
       })
     }
 
+    const onEngineAvailable = ({ detail: connection }: CustomEvent) => {
+      connection.addEventListener(
+        EngineConnectionEvents.PingPongChanged,
+        onPingPongChange as EventListener
+      )
+      connection.addEventListener(
+        EngineConnectionEvents.ConnectionStateChanged,
+        onConnectionStateChange as EventListener
+      )
+    }
+
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.EngineAvailable,
+      onEngineAvailable as EventListener
+    )
+
     return () => {
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.EngineAvailable,
+        onEngineAvailable as EventListener
+      )
+
       // When the component is unmounted these should be assigned, but it's possible
       // the component mounts and unmounts before engine is available.
       engineCommandManager.connection?.removeEventListener(
