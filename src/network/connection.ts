@@ -50,7 +50,6 @@ export class Connection extends EventTarget {
   peerConnectionPromiseReject: ((value: unknown) => void) | null
 
   iceCandidatePromises: Promise<unknown>[]
-  onNetworkStatusReady: (() => void) | undefined
 
   // Initialized from peerConnection onTrack event
   public webrtcStatsCollector: (() => Promise<ClientMetrics>) | undefined
@@ -174,33 +173,7 @@ export class Connection extends EventTarget {
     })
     this.peerConnectionPromise = peerConnectionPrommise
 
-    // TODO: reconnect with createWebSocketConnection only?
-    if (this.onNetworkStatusReady) {
-      throw new Error('onNetworkStatusReady already exists, you messed up.')
-    }
-
-    // TODO: make sync .connect()
-    // Once the engine is availabe create a web socket connection
-    this.onNetworkStatusReady = () => {
-      EngineDebugger.addLog({
-        label: 'connection',
-        message: 'onnetworkstatusready',
-        metadata: { id: this.id },
-      })
-      this.createWebSocketConnection()
-    }
-
-    // Event comes from onEngineAvailable in the connection manager
-    this.trackListener('use-network-status-ready', {
-      event: 'use-network-status-ready',
-      callback: this.onNetworkStatusReady,
-      type: 'window',
-    })
-    window.addEventListener(
-      'use-network-status-ready',
-      this.onNetworkStatusReady
-    )
-
+    this.createWebSocketConnection()
     return connectionPromise
   }
 
@@ -286,6 +259,7 @@ export class Connection extends EventTarget {
     })
     this.peerConnection.createDataChannel(DATACHANNEL_NAME_UMC)
     this.peerConnectionPromiseResolve(true)
+
     EngineDebugger.addLog({
       label: 'connection',
       message: 'createDataChannel',
@@ -408,7 +382,7 @@ export class Connection extends EventTarget {
     })
     this.peerConnection.addEventListener('datachannel', onDataChannel)
 
-    // TODO: Save off all event listener functions and remove thme in clean up
+    // TODO: Save off all event listener functions and remove them in clean up
     // recusively for any nested classes with event listener callbacks as well
     return this.peerConnection
   }

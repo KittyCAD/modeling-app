@@ -196,7 +196,6 @@ export class ConnectionManager extends EventTarget {
 
     const url = this.generateWebsocketURL()
     this.connection = new Connection({
-      connectionManager: this,
       url,
       token,
     })

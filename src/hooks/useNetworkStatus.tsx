@@ -230,39 +230,14 @@ export function useNetworkStatus() {
       })
     }
 
-    const onEngineAvailable = ({ detail: engineConnection }: CustomEvent) => {
-      engineConnection.addEventListener(
-        EngineConnectionEvents.PingPongChanged,
-        onPingPongChange as EventListener
-      )
-      engineConnection.addEventListener(
-        EngineConnectionEvents.ConnectionStateChanged,
-        onConnectionStateChange as EventListener
-      )
-
-      console.warn('FIRE!')
-      // Tell EngineConnection to start firing events.
-      window.dispatchEvent(new CustomEvent('use-network-status-ready', {}))
-    }
-
-    engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.EngineAvailable,
-      onEngineAvailable as EventListener
-    )
-
     return () => {
-      engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.EngineAvailable,
-        onEngineAvailable as EventListener
-      )
-
       // When the component is unmounted these should be assigned, but it's possible
       // the component mounts and unmounts before engine is available.
-      engineCommandManager.engineConnection?.removeEventListener(
+      engineCommandManager.connection?.removeEventListener(
         EngineConnectionEvents.PingPongChanged,
         onPingPongChange as EventListener
       )
-      engineCommandManager.engineConnection?.removeEventListener(
+      engineCommandManager.connection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChange as EventListener
       )

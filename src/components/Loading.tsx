@@ -147,17 +147,17 @@ const Loading = ({
       )
     }
 
-    if (engineCommandManager.engineConnection) {
+    if (engineCommandManager.connection) {
       // Do an initial state check in case there is an immediate issue
       onConnectionStateChange(
         new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
-          detail: engineCommandManager.engineConnection.state,
+          detail: engineCommandManager.connection.state,
         })
       )
       // Set up a listener on the state for future updates
       onEngineAvailable(
         new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
-          detail: engineCommandManager.engineConnection,
+          detail: engineCommandManager.connection,
         })
       )
     } else {
@@ -174,13 +174,13 @@ const Loading = ({
         EngineCommandManagerEvents.EngineAvailable,
         onEngineAvailable as EventListener
       )
-      engineCommandManager.engineConnection?.removeEventListener(
+      engineCommandManager.connection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChange as EventListener
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, engineCommandManager.engineConnection])
+  }, [engineCommandManager, engineCommandManager.connection])
 
   useEffect(() => {
     // Don't set long loading time if there's a more severe error
