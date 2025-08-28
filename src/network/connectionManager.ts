@@ -203,8 +203,6 @@ export class ConnectionManager extends EventTarget {
     await this.connection.connect()
     console.warn('connect')
 
-    // await this.connection.deferredPeerConnection?.promise
-    // await this.deferredMediaStreamAndWebrtcStatsCollector.promise
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
 

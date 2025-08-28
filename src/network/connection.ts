@@ -146,13 +146,16 @@ export class Connection extends EventTarget {
   }
 
   stopPingPong() {
-    clearInterval(this._pingIntervalId)
-    this._pingIntervalId = undefined
     EngineDebugger.addLog({
       label: 'connection',
       message: 'stopPingPong',
-      metadata: { id: this.id },
+      metadata: {
+        id: this.id,
+        startPingPongNeverCalled: this._pingIntervalId === undefined,
+      },
     })
+    clearInterval(this._pingIntervalId)
+    this._pingIntervalId = undefined
   }
 
   // TODO: Pass reconnect here? or call a function for reconnect
@@ -178,8 +181,14 @@ export class Connection extends EventTarget {
     return this.deferredConnection.promise
   }
 
-  // This is only metadata overhead to keep track of all the event listeners which allows for easy
-  // removal during cleanUp. It can help prevent multiple runtime initializations of events.
+  /**
+   * This is only metadata overhead to keep track of all the event listeners which allows for easy
+   * removal during cleanUp. It can help prevent multiple runtime initializations of events.
+   * name does not need to be eventListenerTracked.event, it is a unique human readable one to prevent collisions on
+   * two different real event listeners
+   * e.g. What is websocket has 'open' and peerConnection has 'open'. You do want two 'open' events but not on the same class
+   * the name allows you to do websocket-open and peerConnection-open instead.
+   */
   trackListener(name: string, eventListenerTracked: IEventListenerTracked) {
     if (this.allEventListeners.has(name)) {
       throw new Error(
@@ -440,9 +449,6 @@ export class Connection extends EventTarget {
       onWebSocketClose()
     }
 
-    // the first key name can be anything, the event needs to be the actual eventlistener event name.
-    // multiple JS classes may have a open event listener so we cannot globally register multiple
-    // open values in the Map. The value can store that same event:'open'
     this.trackListener('websocket-open', {
       event: 'open',
       callback: onWebSocketOpen,
