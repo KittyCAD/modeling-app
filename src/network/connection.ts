@@ -55,6 +55,7 @@ export class Connection extends EventTarget {
   deferredConnection: IDeferredPromise | null
   deferredPeerConnection: IDeferredPromise | null
   deferredMediaStreamAndWebrtcStatsCollector: IDeferredPromise | null
+  deferredSdpAnswer: IDeferredPromise | null
 
   iceCandidatePromises: Promise<unknown>[]
 
@@ -94,6 +95,7 @@ export class Connection extends EventTarget {
     this.deferredConnection = null
     this.deferredPeerConnection = null
     this.deferredMediaStreamAndWebrtcStatsCollector = null
+    this.deferredSdpAnswer = null
 
     this.iceCandidatePromises = []
     this.allEventListeners = new Map()
@@ -174,10 +176,13 @@ export class Connection extends EventTarget {
     this.deferredConnection = promiseFactory<any>()
     this.deferredPeerConnection = promiseFactory<any>()
     this.deferredMediaStreamAndWebrtcStatsCollector = promiseFactory<any>()
+    this.deferredSdpAnswer = promiseFactory<any>()
 
     this.createWebSocketConnection()
     await this.deferredPeerConnection.promise
     await this.deferredMediaStreamAndWebrtcStatsCollector.promise
+    await this.deferredSdpAnswer.promise
+
     return this.deferredConnection.promise
   }
 
@@ -406,6 +411,10 @@ export class Connection extends EventTarget {
   }
 
   createWebSocketConnection() {
+    if (!this.deferredSdpAnswer?.resolve) {
+      throw new Error('deferredSdpAnswer resolve is undefined')
+    }
+
     EngineDebugger.addLog({
       label: 'connection',
       message: 'createWebSocketConnection',
@@ -433,6 +442,7 @@ export class Connection extends EventTarget {
       initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
       addIceCandidate: this.addIceCandidate.bind(this),
       webrtcStatsCollector: () => this.webrtcStatsCollector?.bind(this),
+      sdpAnswerResolve: this.deferredSdpAnswer.resolve,
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,

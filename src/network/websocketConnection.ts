@@ -80,6 +80,7 @@ export const createOnWebSocketMessage = ({
   initiateConnectionExclusive,
   addIceCandidate,
   webrtcStatsCollector,
+  sdpAnswerResolve,
 }: {
   disconnectAll: () => void
   setPong: (pong: number) => void
@@ -92,6 +93,7 @@ export const createOnWebSocketMessage = ({
   initiateConnectionExclusive: () => void
   addIceCandidate: (candidate: RTCIceCandidateInit) => void
   webrtcStatsCollector: () => (() => Promise<ClientMetrics>) | undefined
+  sdpAnswerResolve: (value: any) => void
 }) => {
   const onWebSocketMessage = async (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
@@ -246,6 +248,7 @@ export const createOnWebSocketMessage = ({
         }
 
         setSdpAnswer(sdpAnswer)
+        sdpAnswerResolve(true)
 
         // We might have received this after ice candidates finish
         // Make sure we attempt to connect when we do.
