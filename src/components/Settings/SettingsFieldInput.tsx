@@ -145,19 +145,24 @@ export function SettingsFieldInput({
           }}
         />
       )
-    case 'number':
+    case 'number': {
+      const effectiveValue =
+        setting[settingsLevel] !== undefined
+          ? setting[settingsLevel]
+          : setting.getFallback(settingsLevel)
       return (
         <input
+          // When reverting to default value then the input doesn't update without a key change.
+          // Another fix for this would be to make this a controlled component.
+          key={`${category}-${settingName}-${settingsLevel}-${String(
+            effectiveValue
+          )}`}
           name={`${category}-${settingName}`}
           data-testid={`${category}-${settingName}`}
           type="number"
           step="any"
           className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full disabled:opacity-50 disabled:pointer-events-none"
-          defaultValue={Number(
-            setting[settingsLevel] !== undefined
-              ? setting[settingsLevel]
-              : setting.getFallback(settingsLevel)
-          )}
+          defaultValue={Number(effectiveValue)}
           min={
             setting.commandConfig && 'min' in setting.commandConfig
               ? setting.commandConfig.min
@@ -167,10 +172,7 @@ export function SettingsFieldInput({
           onBlur={(e) => {
             const numValue = parseFloat(e.target.value)
             if (!Number.isNaN(numValue)) {
-              const currentValue =
-                setting[settingsLevel] !== undefined
-                  ? setting[settingsLevel]
-                  : setting.getFallback(settingsLevel)
+              const currentValue = effectiveValue
               if (currentValue !== numValue) {
                 send({
                   type: `set.${category}.${settingName}`,
@@ -184,6 +186,7 @@ export function SettingsFieldInput({
           }}
         />
       )
+    }
   }
   return (
     <p className="text-destroy-70 dark:text-destroy-20">
