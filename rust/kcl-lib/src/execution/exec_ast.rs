@@ -857,7 +857,9 @@ impl Node<AscribedExpression> {
 }
 
 impl Node<SketchBlock> {
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        exec_state.warn_experimental("sketch blocks", self.into());
+
         let metadata = Metadata {
             source_range: SourceRange::from(self),
         };
