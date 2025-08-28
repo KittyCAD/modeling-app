@@ -212,7 +212,11 @@ export class ConnectionManager extends EventTarget {
       })
     )
 
-    await this.connection.peerConnectionPromise
+    if (!this.connection.deferredPeerConnection?.promise) {
+      throw new Error('this.connection.deferredPeerConnection is undefined')
+    }
+
+    await this.connection.deferredPeerConnection?.promise
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
     console.warn('connectionPromise')

@@ -1,6 +1,6 @@
 import { markOnce } from '@src/lib/performance'
 import type { ClientMetrics, IEventListenerTracked } from './utils'
-import { DATACHANNEL_NAME_UMC, pingIntervalMs } from './utils'
+import { DATACHANNEL_NAME_UMC, pingIntervalMs, promiseFactory } from './utils'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -22,6 +22,16 @@ import {
 import { EngineDebugger } from '@src/lib/debugger'
 import { uuidv4 } from '@src/lib/utils'
 
+// An interface for a promise that needs to be awaited and pass the resolve reject to
+// other dependenices. We do not need to pass values between these. It is mainly
+// to know did it pass or fail, not what the result is?
+// A specific case from the promiseFactor<T>() call
+interface IDeferredPromise {
+  promise: Promise<any>
+  resolve: (value: any) => void
+  reject: (value: any) => void
+}
+
 export class Connection extends EventTarget {
   // connection url for the new Websocket()
   readonly url: string
@@ -40,14 +50,10 @@ export class Connection extends EventTarget {
   websocket: WebSocket | undefined
   sdpAnswer: RTCSessionDescriptionInit | undefined
 
-  // Track if the connection has been completed or not
-  connectionPromise: Promise<unknown> | null
-  connectionPromiseResolve: ((value: unknown) => void) | null
-  connectionPromiseReject: ((value: unknown) => void) | null
-
-  peerConnectionPromise: Promise<unknown> | null
-  peerConnectionPromiseResolve: ((value: unknown) => void) | null
-  peerConnectionPromiseReject: ((value: unknown) => void) | null
+  // Promises to write sync code and await the multiple levels of
+  // initialization across Websocket -> peerConnection and their event handler
+  deferredConnection: IDeferredPromise | null
+  deferredPeerConnection: IDeferredPromise | null
 
   iceCandidatePromises: Promise<unknown>[]
 
@@ -83,12 +89,10 @@ export class Connection extends EventTarget {
     this.url = url
     this._token = token
     this._pingPongSpan = { ping: undefined, pong: undefined }
-    this.connectionPromise = null
-    this.connectionPromiseResolve = null
-    this.connectionPromiseReject = null
-    this.peerConnectionPromise = null
-    this.peerConnectionPromiseResolve = null
-    this.peerConnectionPromiseReject = null
+
+    this.deferredConnection = null
+    this.deferredPeerConnection = null
+
     this.iceCandidatePromises = []
     this.allEventListeners = new Map()
     // No connection has been made when the class is initialized
@@ -157,24 +161,15 @@ export class Connection extends EventTarget {
       metadata: { id: this.id },
     })
 
-    if (this.connectionPromise) {
+    if (this.deferredConnection) {
       Promise.reject('currently connecting, try again later.')
     }
 
-    const connectionPromise = new Promise((resolve, reject) => {
-      this.connectionPromiseResolve = resolve
-      this.connectionPromiseReject = reject
-    })
-    this.connectionPromise = connectionPromise
-
-    const peerConnectionPrommise = new Promise((resolve, reject) => {
-      this.peerConnectionPromiseResolve = resolve
-      this.peerConnectionPromiseReject = reject
-    })
-    this.peerConnectionPromise = peerConnectionPrommise
+    this.deferredConnection = promiseFactory<any>()
+    this.deferredPeerConnection = promiseFactory<any>()
 
     this.createWebSocketConnection()
-    return connectionPromise
+    return this.deferredConnection.promise
   }
 
   // This is only metadata overhead to keep track of all the event listeners which allows for easy
@@ -241,11 +236,11 @@ export class Connection extends EventTarget {
   }
 
   createPeerConnection() {
-    if (!this.peerConnectionPromiseResolve) {
+    if (!this.deferredPeerConnection?.resolve) {
       throw new Error('peerConnectionPromiseResolve is undefined')
     }
 
-    if (!this.connectionPromiseResolve) {
+    if (!this.deferredConnection?.resolve) {
       throw new Error('connectionPromiseResolve is undefined')
     }
 
@@ -258,7 +253,7 @@ export class Connection extends EventTarget {
       metadata: { id: this.id },
     })
     this.peerConnection.createDataChannel(DATACHANNEL_NAME_UMC)
-    this.peerConnectionPromiseResolve(true)
+    this.deferredPeerConnection.resolve(true)
 
     EngineDebugger.addLog({
       label: 'connection',
@@ -296,7 +291,7 @@ export class Connection extends EventTarget {
       dispatchEvent: this.dispatchEvent.bind(this),
       trackListener: this.trackListener.bind(this),
       startPingPong: this.startPingPong.bind(this),
-      connectionPromiseResolve: this.connectionPromiseResolve,
+      connectionPromiseResolve: this.deferredConnection.resolve,
     })
 
     // Watch out human! The names of the next couple events are really similar!
