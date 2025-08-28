@@ -1,6 +1,13 @@
 import { markOnce } from '@src/lib/performance'
 import type { ClientMetrics, IEventListenerTracked } from './utils'
-import { DATACHANNEL_NAME_UMC, pingIntervalMs, promiseFactory } from './utils'
+import {
+  ConnectingType,
+  DATACHANNEL_NAME_UMC,
+  EngineConnectionEvents,
+  EngineConnectionStateType,
+  pingIntervalMs,
+  promiseFactory,
+} from './utils'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -248,12 +255,32 @@ export class Connection extends EventTarget {
         message: 'initiateConnectionExclusive',
         metadata: { id: this.id },
       })
+      this.dispatchEvent(
+        new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+          detail: {
+            type: EngineConnectionStateType.Connecting,
+            value: {
+              type: ConnectingType.WebRTCConnecting,
+            },
+          },
+        })
+      )
       await this.peerConnection.setRemoteDescription(this.sdpAnswer)
       EngineDebugger.addLog({
         label: 'connection',
         message: 'setRemoteDescription',
         metadata: { id: this.id },
       })
+      this.dispatchEvent(
+        new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+          detail: {
+            type: EngineConnectionStateType.Connecting,
+            value: {
+              type: ConnectingType.SetRemoteDescription,
+            },
+          },
+        })
+      )
       this.cleanUpTimeouts()
     } catch (error) {
       console.error('Failed to set remote description:', error)
@@ -279,6 +306,18 @@ export class Connection extends EventTarget {
     this.peerConnection = new RTCPeerConnection({
       bundlePolicy: 'max-bundle',
     })
+
+    this.dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+        detail: {
+          type: EngineConnectionStateType.Connecting,
+          value: {
+            type: ConnectingType.PeerConnectionCreated,
+          },
+        },
+      })
+    )
+
     EngineDebugger.addLog({
       label: 'connection',
       message: 'RTCPeerConnection',
@@ -297,6 +336,7 @@ export class Connection extends EventTarget {
       initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
       send: this.send.bind(this),
       setTimeoutToForceConnectId: this.setTimeoutToForceConnectId.bind(this),
+      dispatchEvent: this.dispatchEvent.bind(this),
     })
     const onIceGatheringStateChange = createOnIceGatheringStateChange({
       initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
@@ -420,6 +460,16 @@ export class Connection extends EventTarget {
     if (!this.deferredSdpAnswer?.resolve) {
       throw new Error('deferredSdpAnswer resolve is undefined')
     }
+    dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+        detail: {
+          type: EngineConnectionStateType.Connecting,
+          value: {
+            type: ConnectingType.WebSocketConnecting,
+          },
+        },
+      })
+    )
 
     EngineDebugger.addLog({
       label: 'connection',
@@ -432,6 +482,7 @@ export class Connection extends EventTarget {
     const onWebSocketOpen = createOnWebSocketOpen({
       send: this.send.bind(this),
       token: this.token,
+      dispatchEvent: this.dispatchEvent.bind(this),
     })
     const onWebSocketError = createOnWebSocketError()
     const onWebSocketMessage = createOnWebSocketMessage({

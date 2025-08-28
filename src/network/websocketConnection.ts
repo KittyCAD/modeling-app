@@ -1,7 +1,9 @@
 import type { Models } from '@kittycad/lib'
 import type { ClientMetrics } from '@src/network/utils'
 import {
+  ConnectingType,
   EngineConnectionEvents,
+  EngineConnectionStateType,
   toRTCSessionDescriptionInit,
 } from '@src/network/utils'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -17,9 +19,11 @@ import { EngineDebugger } from '@src/lib/debugger'
 export const createOnWebSocketOpen = ({
   send,
   token,
+  dispatchEvent,
 }: {
   send: (message: Models['WebSocketRequest_type']) => void
   token: string | undefined
+  dispatchEvent: (event: Event) => boolean
 }) => {
   const onWebSocketOpen = (event: Event) => {
     // TODO: hmmm I do not like this pattern
@@ -39,9 +43,16 @@ export const createOnWebSocketOpen = ({
         },
       })
 
-      // TODO: Why? Why would this need to send a ping?
-      // Why not start the pingPong Interval
-      // TODO: Send an initial ping
+      dispatchEvent(
+        new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+          detail: {
+            type: EngineConnectionStateType.Connecting,
+            value: {
+              type: ConnectingType.WebSocketOpen,
+            },
+          },
+        })
+      )
     }
   }
   return onWebSocketOpen
@@ -206,6 +217,16 @@ export const createOnWebSocketMessage = ({
             iceTransportPolicy: 'relay',
           })
         }
+        dispatchEvent(
+          new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+            detail: {
+              type: EngineConnectionStateType.Connecting,
+              value: {
+                type: ConnectingType.ICEServersSet,
+              },
+            },
+          })
+        )
 
         // We have an ICE Servers set now. We just setConfiguration, so let's
         // start adding things we care about to the PeerConnection and let
@@ -225,10 +246,30 @@ export const createOnWebSocketMessage = ({
           const offer = await peerConnection.createOffer()
           // This was not error handled before!
           await peerConnection.setLocalDescription(offer)
+          dispatchEvent(
+            new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+              detail: {
+                type: EngineConnectionStateType.Connecting,
+                value: {
+                  type: ConnectingType.SetLocalDescription,
+                },
+              },
+            })
+          )
           send({
             type: 'sdp_offer',
             offer: offer as Models['RtcSessionDescription_type'],
           })
+          dispatchEvent(
+            new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+              detail: {
+                type: EngineConnectionStateType.Connecting,
+                value: {
+                  type: ConnectingType.OfferedSdp,
+                },
+              },
+            })
+          )
         } catch (e) {
           EngineDebugger.addLog({
             label: 'onWebSocketMessage',
@@ -253,6 +294,17 @@ export const createOnWebSocketMessage = ({
 
         setSdpAnswer(sdpAnswer)
         sdpAnswerResolve(true)
+
+        dispatchEvent(
+          new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+            detail: {
+              type: EngineConnectionStateType.Connecting,
+              value: {
+                type: ConnectingType.ReceivedSdp,
+              },
+            },
+          })
+        )
 
         // We might have received this after ice candidates finish
         // Make sure we attempt to connect when we do.

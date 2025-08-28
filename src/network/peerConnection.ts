@@ -1,5 +1,9 @@
 import type { ClientMetrics, IEventListenerTracked } from '@src/network/utils'
-import { EngineConnectionEvents } from '@src/network/utils'
+import {
+  ConnectingType,
+  EngineConnectionEvents,
+  EngineConnectionStateType,
+} from '@src/network/utils'
 import type { Models } from '@kittycad/lib'
 import type { Connection } from '@src/network/connection'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -10,10 +14,12 @@ export function createOnIceCandidate({
   initiateConnectionExclusive,
   send,
   setTimeoutToForceConnectId,
+  dispatchEvent,
 }: {
   initiateConnectionExclusive: () => void
   send: (message: Models['WebSocketRequest_type']) => void
   setTimeoutToForceConnectId: (id: ReturnType<typeof setTimeout>) => void
+  dispatchEvent: (event: Event) => boolean
 }) {
   const onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
     EngineDebugger.addLog({
@@ -27,6 +33,17 @@ export function createOnIceCandidate({
       initiateConnectionExclusive()
       return
     }
+
+    dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+        detail: {
+          type: EngineConnectionStateType.Connecting,
+          value: {
+            type: ConnectingType.ICECandidateReceived,
+          },
+        },
+      })
+    )
 
     send({
       type: 'trickle_ice',
