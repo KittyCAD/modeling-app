@@ -81,15 +81,18 @@ export class Connection extends EventTarget {
   id: string
 
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
+  tearDownManager: () => void
 
   constructor({
     url,
     token,
     handleOnDataChannelMessage,
+    tearDownManager
   }: {
     url: string
     token: string
     handleOnDataChannelMessage: (event: MessageEvent<any>) => void
+    tearDownManager: () => void
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -102,6 +105,7 @@ export class Connection extends EventTarget {
     this.url = url
     this._token = token
     this.handleOnDataChannelMessage = handleOnDataChannelMessage
+    this.tearDownManager = tearDownManager
     this._pingPongSpan = { ping: undefined, pong: undefined }
 
     this.deferredConnection = null
@@ -520,7 +524,7 @@ export class Connection extends EventTarget {
       onWebSocketOpen: onWebSocketOpen,
       onWebSocketError: onWebSocketError,
       onWebSocketMessage: onWebSocketMessage,
-      disconnectAll: this.disconnectAll.bind(this),
+      tearDownManager: this.tearDownManager.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
     })
 
@@ -638,6 +642,13 @@ export class Connection extends EventTarget {
         metadata: { id: this.id },
       })
       this.websocket.close()
+    } else if (this.websocket.readyState === WebSocket.CLOSED) {
+      // no op it is already closed
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'websocket is already closed, do not need to call close()',
+        metadata: { id: this.id },
+      })
     } else {
       throw new Error(
         `websocket is defined but readyState is wrong ${this.websocket.readyState}`
@@ -656,7 +667,7 @@ export class Connection extends EventTarget {
       return
     }
 
-    if (this.unreliableDataChannel.readyState === 'open') {
+    if (this.unreliableDataChannel.readyState !== 'closed') {
       EngineDebugger.addLog({
         label: 'connection',
         message: 'disconnectUnreliableDataChannel',
@@ -664,9 +675,11 @@ export class Connection extends EventTarget {
       })
       this.unreliableDataChannel.close()
     } else {
-      throw new Error(
-        `unreliableDataChannel is defined but readyState is wrong ${this.unreliableDataChannel.readyState}`
-      )
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'disconnectUnreliableDataChannel',
+        metadata: { id: this.id, readyState: this.unreliableDataChannel.readyState },
+      })
     }
   }
 
@@ -675,7 +688,7 @@ export class Connection extends EventTarget {
       throw new Error('peerConnection is undefined')
     }
 
-    if (this.peerConnection.connectionState === 'connected') {
+    if (this.peerConnection.connectionState === 'closed') {
       EngineDebugger.addLog({
         label: 'connection',
         message: 'disconnectPeerConnection',
@@ -683,9 +696,11 @@ export class Connection extends EventTarget {
       })
       this.peerConnection.close()
     } else {
-      throw new Error(
-        `peerConnection is defined but connectionState is wrong ${this.peerConnection.connectionState}`
-      )
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'disconnectPeerConnection',
+        metadata: { id: this.id, connectionState: this.peerConnection.connectionState },
+      })
     }
   }
 

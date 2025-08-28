@@ -45,8 +45,8 @@ type ClientMetrics = Models['ClientMetrics_type']
 type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : U extends void
-    ? { type: T }
-    : { type: T; value: U }
+  ? { type: T }
+  : { type: T; value: U }
 
 type State<T, U> = Value<T, U>
 
@@ -258,41 +258,41 @@ class EngineConnection extends EventTarget {
   sdpAnswer?: RTCSessionDescriptionInit
   triggeredStart = false
 
-  onWebSocketOpen = function (event: Event) {}
-  onWebSocketClose = function (event: Event) {}
-  onWebSocketError = function (event: Event) {}
-  onWebSocketMessage = function (event: MessageEvent) {}
+  onWebSocketOpen = function (event: Event) { }
+  onWebSocketClose = function (event: Event) { }
+  onWebSocketError = function (event: Event) { }
+  onWebSocketMessage = function (event: MessageEvent) { }
   onIceGatheringStateChange = function (
     this: RTCPeerConnection,
     event: Event
-  ) {}
+  ) { }
   onIceConnectionStateChange = function (
     this: RTCPeerConnection,
     event: Event
-  ) {}
-  onNegotiationNeeded = function (this: RTCPeerConnection, event: Event) {}
+  ) { }
+  onNegotiationNeeded = function (this: RTCPeerConnection, event: Event) { }
   onIceCandidate = function (
     this: RTCPeerConnection,
     event: RTCPeerConnectionIceEvent
-  ) {}
+  ) { }
   onIceCandidateError = function (
     this: RTCPeerConnection,
     event: RTCPeerConnectionIceErrorEvent
-  ) {}
-  onConnectionStateChange = function (this: RTCPeerConnection, event: Event) {}
-  onSignalingStateChange = function (this: RTCDataChannel, event: Event) {}
+  ) { }
+  onConnectionStateChange = function (this: RTCPeerConnection, event: Event) { }
+  onSignalingStateChange = function (this: RTCDataChannel, event: Event) { }
 
-  onTrack = function (this: RTCPeerConnection, event: RTCTrackEvent) {}
-  onDataChannelOpen = function (this: RTCDataChannel, event: Event) {}
-  onDataChannelClose = function (this: RTCDataChannel, event: Event) {}
-  onDataChannelError = function (this: RTCDataChannel, event: Event) {}
-  onDataChannelMessage = function (this: RTCDataChannel, event: MessageEvent) {}
+  onTrack = function (this: RTCPeerConnection, event: RTCTrackEvent) { }
+  onDataChannelOpen = function (this: RTCDataChannel, event: Event) { }
+  onDataChannelClose = function (this: RTCDataChannel, event: Event) { }
+  onDataChannelError = function (this: RTCDataChannel, event: Event) { }
+  onDataChannelMessage = function (this: RTCDataChannel, event: MessageEvent) { }
   onDataChannel = function (
     this: RTCPeerConnection,
     event: RTCDataChannelEvent
-  ) {}
+  ) { }
 
-  onNetworkStatusReady = () => {}
+  onNetworkStatusReady = () => { }
 
   private _state: EngineConnectionState = {
     type: EngineConnectionStateType.Fresh,
@@ -408,7 +408,7 @@ class EngineConnection extends EventTarget {
         },
       })
     }
-    this.tearDown = () => {}
+    this.tearDown = () => { }
     this.websocket.addEventListener('open', this.onWebSocketOpen)
 
     this.websocket?.addEventListener('message', ((event: MessageEvent) => {
@@ -894,7 +894,7 @@ class EngineConnection extends EventTarget {
             const result: UnreliableResponses = JSON.parse(event.data)
             Object.values(
               this.engineCommandManager.unreliableSubscriptions[result.type] ||
-                {}
+              {}
             ).forEach(
               // TODO: There is only one response that uses the unreliable channel atm,
               // highlight_set_entity, if there are more it's likely they will all have the same
@@ -1410,7 +1410,7 @@ export class EngineCommandManager extends EventTarget {
     height: 1337,
   }
 
-  _commandLogCallBack: (command: CommandLog[]) => void = () => {}
+  _commandLogCallBack: (command: CommandLog[]) => void = () => { }
 
   subscriptions: {
     [event: string]: {
@@ -1430,33 +1430,33 @@ export class EngineCommandManager extends EventTarget {
     this.settings = settings
       ? settings
       : {
-          pool: null,
-          theme: Themes.Dark,
-          highlightEdges: true,
-          enableSSAO: true,
-          showScaleGrid: false,
-          cameraProjection: 'perspective',
-          cameraOrbit: 'spherical',
-        }
+        pool: null,
+        theme: Themes.Dark,
+        highlightEdges: true,
+        enableSSAO: true,
+        showScaleGrid: false,
+        cameraProjection: 'perspective',
+        cameraOrbit: 'spherical',
+      }
   }
 
-  private _camControlsCameraChange = () => {}
+  private _camControlsCameraChange = () => { }
   set camControlsCameraChange(cb: () => void) {
     this._camControlsCameraChange = cb
   }
 
-  private onEngineConnectionOpened = () => {}
-  private onEngineConnectionClosed = () => {}
-  private onVideoTrackMute = () => {}
+  private onEngineConnectionOpened = () => { }
+  private onEngineConnectionClosed = () => { }
+  private onVideoTrackMute = () => { }
   private onDarkThemeMediaQueryChange = (e: MediaQueryListEvent) => {
     this.setTheme(e.matches ? Themes.Dark : Themes.Light).catch(reportRejection)
   }
-  private onEngineConnectionStarted = ({ detail: engineConnection }: any) => {}
+  private onEngineConnectionStarted = ({ detail: engineConnection }: any) => { }
   private onEngineConnectionNewTrack = ({
     detail,
-  }: CustomEvent<NewTrackArgs>) => {}
+  }: CustomEvent<NewTrackArgs>) => { }
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
-    (() => {}) as any
+    (() => { }) as any
   kclManager: null | KclManager = null
   codeManager?: CodeManager
   rustContext?: RustContext
@@ -1720,8 +1720,8 @@ export class EngineCommandManager extends EventTarget {
         token,
         width: 256,
         height: 256,
-        setMediaStream: () => {},
-        setIsStreamReady: () => {},
+        setMediaStream: () => { },
+        setIsStreamReady: () => { },
         callbackOnEngineLiteConnect: () => {
           resolve(true)
         },
@@ -2045,7 +2045,7 @@ export class EngineCommandManager extends EventTarget {
       this.engineConnection?.unreliableDataChannel &&
       !forceWebsocket
     ) {
-      ;(cmd as any).sequence = this.outSequence
+      ; (cmd as any).sequence = this.outSequence
       this.outSequence++
       this.engineConnection?.unreliableSend(command)
       return Promise.resolve(null)
@@ -2070,7 +2070,7 @@ export class EngineCommandManager extends EventTarget {
       command.cmd.type === 'default_camera_look_at' ||
       command.cmd.type === ('default_camera_perspective_settings' as any)
     ) {
-      ;(cmd as any).sequence = this.outSequence++
+      ; (cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
     return this.sendCommand(
@@ -2238,9 +2238,9 @@ export class EngineCommandManager extends EventTarget {
     // Can't send commands if there's no connection
     if (
       this.engineConnection.state.type ===
-        EngineConnectionStateType.Disconnecting ||
+      EngineConnectionStateType.Disconnecting ||
       this.engineConnection.state.type ===
-        EngineConnectionStateType.Disconnected
+      EngineConnectionStateType.Disconnected
     )
       return
 
@@ -2285,8 +2285,8 @@ export class EngineCommandManager extends EventTarget {
 }
 
 function promiseFactory<T>() {
-  let resolve: (value: T | PromiseLike<T>) => void = () => {}
-  let reject: (value: T | PromiseLike<T>) => void = () => {}
+  let resolve: (value: T | PromiseLike<T>) => void = () => { }
+  let reject: (value: T | PromiseLike<T>) => void = () => { }
   const promise = new Promise<T>((_resolve, _reject) => {
     resolve = _resolve
     reject = _reject

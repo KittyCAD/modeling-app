@@ -355,14 +355,14 @@ export const createOnWebSocketClose = ({
   onWebSocketOpen,
   onWebSocketError,
   onWebSocketMessage,
-  disconnectAll,
+  tearDownManager,
   dispatchEvent,
 }: {
   websocket: WebSocket
   onWebSocketOpen: (event: Event) => void
   onWebSocketError: (event: Event) => void
   onWebSocketMessage: (event: MessageEvent<any>) => void
-  disconnectAll: () => void
+  tearDownManager: () => void
   dispatchEvent: (event: Event) => boolean
 }) => {
   const onDataChannelClose = () => {
@@ -370,7 +370,7 @@ export const createOnWebSocketClose = ({
     websocket.removeEventListener('error', onWebSocketError)
     websocket.removeEventListener('message', onWebSocketMessage)
     dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-    disconnectAll()
+    tearDownManager()
   }
   return onDataChannelClose
 }

@@ -29,6 +29,8 @@ export const ConnectionStream = (props: {
   // For attaching right-click menu events
   const videoWrapperRef = useRef<HTMLDivElement>(null)
 
+  window.videoRef = videoRef
+
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
     console.log('handleMouseUp cached, no op')
   }
