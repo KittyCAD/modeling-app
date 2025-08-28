@@ -192,7 +192,7 @@ jobs:
           smctl.exe keypair ls
           C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
           smksp_cert_sync.exe
-          smctl windows certsync keypair-alias=1317820207
+          smctl windows certsync --keypair-alias=1317820207
         # This last line `smctl windows certsync` was added after windows codesign failures started happening
         # with staging-v25.4.10. It looks like `smksp_cert_sync.exe` used to do the sync to the local cert store,
         # but stopped doing it overnight. This extra call that I randomly got from this azure-related doc page
