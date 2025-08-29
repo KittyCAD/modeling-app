@@ -118,16 +118,23 @@ export function SettingsFieldInput({
             ))}
         </select>
       )
-    case 'string':
+    case 'string': {
+      const effectiveValue =
+        setting[settingsLevel] !== undefined
+          ? setting[settingsLevel]
+          : setting.getFallback(settingsLevel)
       return (
         <input
+          // When reverting to default value then the input doesn't update without a key change.
+          // Another fix for this would be to make this a controlled component.
+          key={`${category}-${settingName}-${settingsLevel}-${String(
+            effectiveValue
+          )}`}
           name={`${category}-${settingName}`}
           data-testid={`${category}-${settingName}`}
           type="text"
           className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
-          defaultValue={String(
-            setting[settingsLevel] || setting.getFallback(settingsLevel)
-          )}
+          defaultValue={String(effectiveValue)}
           onBlur={(e) => {
             if (
               setting[settingsLevel] === undefined
@@ -145,6 +152,7 @@ export function SettingsFieldInput({
           }}
         />
       )
+    }
     case 'number': {
       const effectiveValue =
         setting[settingsLevel] !== undefined
