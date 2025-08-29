@@ -1429,8 +1429,14 @@ export class SceneEntities {
         if (trap(_node)) return Promise.reject(_node)
         const sketchInit = _node.node?.declaration.init
 
-        const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
-        const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
+        const snapRes = this.getSnappedDragPoint(
+          args.intersectionPoint.twoD,
+          args.intersects,
+          args.mouseEvent
+        )
+        const { snappedPoint } = snapRes
+        const x = snappedPoint[0] - rectangleOrigin[0]
+        const y = snappedPoint[1] - rectangleOrigin[1]
 
         if (sketchInit.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tag)
@@ -1458,24 +1464,6 @@ export class SceneEntities {
         sgPaths.forEach((seg, index) =>
           this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
         )
-
-        const { intersectionPoint } = args
-        if (!intersectionPoint?.twoD) return
-        const { snappedPoint, isSnapped } = this.getSnappedDragPoint(
-          intersectionPoint.twoD,
-          args.intersects,
-          args.mouseEvent
-        )
-        if (isSnapped) {
-          this.positionDraftPoint({
-            snappedPoint: new Vector2(...snappedPoint),
-            origin: sketchOrigin,
-            yAxis: forward,
-            zAxis: up,
-          })
-        } else {
-          this.removeDraftPoint()
-        }
       },
       onClick: async (args) => {
         // If there is a valid camera interaction that matches, do that instead
@@ -1484,11 +1472,16 @@ export class SceneEntities {
         )
         if (interaction !== 'none') return
         // Commit the rectangle to the full AST/code and return to sketch.idle
-        const cornerPoint = args.intersectionPoint?.twoD
-        if (!cornerPoint || args.mouseEvent.button !== 0) return
+        const twoD = args.intersectionPoint?.twoD
+        if (!twoD || args.mouseEvent.button !== 0) return
 
-        const x = roundOff((cornerPoint.x || 0) - rectangleOrigin[0])
-        const y = roundOff((cornerPoint.y || 0) - rectangleOrigin[1])
+        const { snappedPoint } = this.getSnappedDragPoint(
+          twoD,
+          args.intersects,
+          args.mouseEvent
+        )
+        const x = roundOff(snappedPoint[0] - rectangleOrigin[0])
+        const y = roundOff(snappedPoint[1] - rectangleOrigin[1])
 
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
@@ -1635,8 +1628,13 @@ export class SceneEntities {
         if (trap(_node)) return Promise.reject(_node)
         const sketchInit = _node.node?.declaration.init
 
-        const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
-        const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
+        const { snappedPoint } = this.getSnappedDragPoint(
+          args.intersectionPoint.twoD,
+          args.intersects,
+          args.mouseEvent
+        )
+        const x = snappedPoint[0] - rectangleOrigin[0]
+        const y = snappedPoint[1] - rectangleOrigin[1]
 
         if (sketchInit.type === 'PipeExpression') {
           const maybeError = updateCenterRectangleSketch(
@@ -1682,11 +1680,16 @@ export class SceneEntities {
         )
         if (interaction !== 'none') return
         // Commit the rectangle to the full AST/code and return to sketch.idle
-        const cornerPoint = args.intersectionPoint?.twoD
-        if (!cornerPoint || args.mouseEvent.button !== 0) return
+        const twoD = args.intersectionPoint?.twoD
+        if (!twoD || args.mouseEvent.button !== 0) return
 
-        const x = roundOff((cornerPoint.x || 0) - rectangleOrigin[0])
-        const y = roundOff((cornerPoint.y || 0) - rectangleOrigin[1])
+        const { snappedPoint } = this.getSnappedDragPoint(
+          twoD,
+          args.intersects,
+          args.mouseEvent
+        )
+        const x = roundOff(snappedPoint[0] - rectangleOrigin[0])
+        const y = roundOff(snappedPoint[1] - rectangleOrigin[1])
 
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
