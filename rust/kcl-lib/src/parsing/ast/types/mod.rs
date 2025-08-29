@@ -1974,9 +1974,6 @@ pub struct CallExpressionKw {
     pub callee: Node<Name>,
     pub unlabeled: Option<Expr>,
     pub arguments: Vec<LabeledArg>,
-    // A block of code. Currently only used to parse sketch blocks.
-    #[serde(skip)]
-    pub block: Option<BoxNode<Block>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -2025,7 +2022,6 @@ impl CallExpressionKw {
             callee: Name::new(name),
             unlabeled,
             arguments,
-            block: None,
             digest: None,
             non_code_meta: Default::default(),
         }))

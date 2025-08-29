@@ -3254,26 +3254,28 @@ fn is_callee_sketch_block(callee: &Name) -> bool {
 
 fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_call = fn_call_kw.parse_next(i)?;
-    if is_callee_sketch_block(&fn_call.callee)
-        && let Node {
+    if is_callee_sketch_block(&fn_call.callee) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
+        // We have `sketch() {`. Parse the block.
+        ignore_whitespace(i);
+        let (_, body, close) = parse_block(i)?;
+        let end = close.end;
+
+        let Node {
             start,
-            end,
+            end: _,
             module_id,
-            outer_attrs,
             pre_comments,
             comment_start,
+            outer_attrs,
             inner:
                 CallExpressionKw {
                     callee: _,
                     unlabeled,
                     arguments,
-                    block: Some(block),
                     non_code_meta,
                     digest: _,
                 },
-        } = fn_call
-    {
-        // We have a `sketch() {}`. Change the AST node type.
+        } = fn_call;
         ParseContext::experimental("sketch blocks", SourceRange::new(start, end, module_id));
         return Ok(Expr::SketchBlock(Box::new(Node {
             start,
@@ -3285,19 +3287,11 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             inner: SketchBlock {
                 unlabeled,
                 arguments,
-                body: *block,
+                body,
                 non_code_meta,
                 digest: None,
             },
         })));
-    } else if fn_call.block.is_some() {
-        let msg = format!(
-            "The function `{}` is not a sketch block, so it cannot have a block of code attached to it. Try removing the block of code.",
-            fn_call.callee
-        );
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(fn_call.as_source_range(), msg).into(),
-        ));
     }
     Ok(Expr::CallExpressionKw(Box::new(fn_call)))
 }
@@ -3322,14 +3316,6 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         if early_close.is_ok() {
             ignore_whitespace(i);
             let end = close_paren.parse_next(i)?.end;
-            let (block, end) =
-                if is_callee_sketch_block(&fn_name) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
-                    ignore_whitespace(i);
-                    let (_, body, close) = parse_block(i)?;
-                    (Some(Box::new(body)), close.end)
-                } else {
-                    (None, end)
-                };
             let result = Node::new_node(
                 fn_name.start,
                 end,
@@ -3338,7 +3324,6 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                     callee: fn_name,
                     unlabeled: initial_unlabeled_arg,
                     arguments: Default::default(),
-                    block,
                     digest: None,
                     non_code_meta: Default::default(),
                 },
@@ -3455,14 +3440,6 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
             msg,
         ));
     }
-    let (block, end) = if is_callee_sketch_block(&fn_name) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok()
-    {
-        ignore_whitespace(i);
-        let (_, body, close) = parse_block(i)?;
-        (Some(Box::new(body)), close.end)
-    } else {
-        (None, end)
-    };
     let non_code_meta = NonCodeMeta {
         non_code_nodes,
         ..Default::default()
@@ -3475,7 +3452,6 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
             callee: fn_name,
             unlabeled: initial_unlabeled_arg,
             arguments: args,
-            block,
             digest: None,
             non_code_meta,
         },
