@@ -8,6 +8,7 @@ use crate::{ModuleId, NodePath, SourceRange, parsing::ast::types::ItemVisibility
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]

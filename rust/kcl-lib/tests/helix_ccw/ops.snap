@@ -88,15 +88,7 @@ description: Operations executed helix_ccw.kcl
     {
       "type": "StdLibCall",
       "name": "helix",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {
         "angleStart": {
           "value": {
