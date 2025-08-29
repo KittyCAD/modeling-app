@@ -46,12 +46,13 @@ import type { SourceRange } from '@src/lang/wasm'
 import type { KclManager } from '@src/lang/KclSingleton'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
+import { reportRejection } from '@src/lib/trap'
 
 export class ConnectionManager extends EventTarget {
   started: boolean
   idleMode: boolean
   inSequence = 1
-  _camControlsCameraChange = () => {}
+  _camControlsCameraChange = () => { }
   id: string
 
   /**
@@ -107,10 +108,10 @@ export class ConnectionManager extends EventTarget {
       [localUnsubscribeId: string]: (a: any) => void
     }
   } = {} as any
-  _commandLogCallBack: (command: CommandLog[]) => void = () => {}
+  _commandLogCallBack: (command: CommandLog[]) => void = () => { }
   // Rogue runtime dependency from the modeling machine. hope it is there!
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
-    (() => {}) as any
+    (() => { }) as any
   // Any event listener into this map to be cleaned up later
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
@@ -464,7 +465,7 @@ export class ConnectionManager extends EventTarget {
       this.connection.unreliableDataChannel &&
       !forceWebsocket
     ) {
-      ;(cmd as any).sequence = this.outSequence
+      ; (cmd as any).sequence = this.outSequence
       this.outSequence++
       this.connection.unreliableSend(command)
       return Promise.resolve(null)
@@ -489,7 +490,7 @@ export class ConnectionManager extends EventTarget {
       command.cmd.type === 'default_camera_look_at' ||
       command.cmd.type === ('default_camera_perspective_settings' as any)
     ) {
-      ;(cmd as any).sequence = this.outSequence++
+      ; (cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
     return this.sendCommand(
@@ -903,7 +904,7 @@ export class ConnectionManager extends EventTarget {
             eventListenerTracked.callback
           )
         } else {
-          throw new Error(`untracked listener type ${type}`)
+          console.error(`untracked listener type ${type}`)
         }
       }
     )
@@ -961,7 +962,7 @@ export class ConnectionManager extends EventTarget {
       command,
       range,
       idToRangeMap,
-    })
+    }).catch(reportRejection)
   }
 
   /**
@@ -1057,7 +1058,7 @@ export class ConnectionManager extends EventTarget {
 
   async setPlaneHidden(id: string, hidden: boolean) {
     if (this.connection === undefined) {
-      Promise.reject(new Error('setPlaneHidden - this.connection is undefined'))
+      return Promise.reject(new Error('setPlaneHidden - this.connection is undefined'))
     }
 
     // TODO: Can't send commands if there's no connection
