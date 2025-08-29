@@ -10,10 +10,15 @@ import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { sceneInfra } from '@src/lib/singletons'
 import { btnName } from '@src/lib/cameraControls'
 import { getDimensions } from '@src/network/utils'
-import { trap } from '@src/lib/trap'
+import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import Loading from '@src/components/Loading'
 import { useAppState } from '@src/AppState'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { sendSelectEventToEngine } from '@src/lib/selections'
+import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 
 let didInit = false
 
@@ -24,22 +29,72 @@ export const ConnectionStream = (props: {
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settings = useSettings()
   const { setAppState } = useAppState()
+  const { overallState } = useNetworkContext()
+  const { state: modelingMachineState } = useModelingContext()
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   // For attaching right-click menu events
   const videoWrapperRef = useRef<HTMLDivElement>(null)
+  const isNetworkOkay =
+    overallState === NetworkHealthState.Ok ||
+    overallState === NetworkHealthState.Weak
 
   window.videoRef = videoRef
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
-    console.log('handleMouseUp cached, no op')
+    if (!isNetworkOkay) return
+    if (!videoRef.current) return
+    // If we're in sketch mode, don't send a engine-side select event
+    if (modelingMachineState.matches('Sketch')) return
+
+    // If we're mousing up from a camera drag, don't send a select event
+    if (sceneInfra.camControls.wasDragging === true) return
+
+    if (btnName(e.nativeEvent).left) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sendSelectEventToEngine(e, videoRef.current)
+    }
   }
+
+  /**
+   * On double-click of sketch entities we automatically enter sketch mode with the selected sketch,
+   * allowing for quick editing of sketches. TODO: This should be moved to a more central place.
+   */
   const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> = (
     e
   ) => {
-    console.log('enterSketchModeIfSelectingSketch cached, no op')
+    if (
+      !isNetworkOkay ||
+      !videoRef.current ||
+      modelingMachineState.matches('Sketch') ||
+      sceneInfra.camControls.wasDragging === true ||
+      !btnName(e.nativeEvent).left
+    ) {
+      return
+    }
+
+    sendSelectEventToEngine(e, videoRef.current)
+      .then((result) => {
+        if (!result) {
+          return
+        }
+        const { entity_id } = result
+        if (!entity_id) {
+          // No entity selected. This is benign
+          return
+        }
+        const path = getArtifactOfTypes(
+          { key: entity_id, types: ['path', 'solid2d', 'segment', 'helix'] },
+          kclManager.artifactGraph
+        )
+        if (err(path)) {
+          return path
+        }
+        sceneInfra.modelingSend({ type: 'Enter sketch' })
+      })
+      .catch(reportRejection)
   }
 
   // Run once on initialization
