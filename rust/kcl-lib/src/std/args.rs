@@ -100,7 +100,7 @@ impl Args {
     where
         T: for<'a> FromKclValue<'a>,
     {
-        match self.kw_args.labeled.get(label) {
+        match self.labeled.get(label) {
             None => return Ok(None),
             Some(a) => {
                 if let KclValue::KclNone { .. } = &a.value {
@@ -116,7 +116,7 @@ impl Args {
     where
         T: for<'a> FromKclValue<'a>,
     {
-        let Some(arg) = self.kw_args.labeled.get(label) else {
+        let Some(arg) = self.labeled.get(label) else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument `{label}`"),
                 vec![self.source_range],
@@ -168,7 +168,7 @@ impl Args {
         &self,
         label: &str,
     ) -> Result<Vec<(EdgeReference, SourceRange)>, KclError> {
-        let Some(arg) = self.kw_args.labeled.get(label) else {
+        let Some(arg) = self.labeled.get(label) else {
             let err = KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument '{label}'"),
                 vec![self.source_range],
