@@ -409,8 +409,7 @@ impl SketchBlock {
             }
         }
 
-        // TODO: sketch-api: Implement hover info for the sketch block's body.
-
-        None
+        let value = self.body.get_expr_for_position(pos)?;
+        value.get_hover_value_for_position(pos, code, opts)
     }
 }

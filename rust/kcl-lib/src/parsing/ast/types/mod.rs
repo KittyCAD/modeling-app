@@ -553,12 +553,7 @@ impl Program {
         let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
-        match item {
-            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => None,
-            BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
-            BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
-        }
+        item.get_expr_for_position(pos)
     }
 
     /// Checks if the ast has any import statements.    
@@ -929,6 +924,15 @@ impl BodyItem {
             BodyItem::ReturnStatement(return_statement) => {
                 return_statement.argument.replace_value(source_range, new_value)
             }
+        }
+    }
+
+    fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
+        match self {
+            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => None,
+            BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
+            BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
         }
     }
 }
@@ -1362,6 +1366,25 @@ impl Block {
         for item in &mut self.items {
             item.rename_identifiers(old_name, new_name);
         }
+    }
+
+    /// Returns the body item that includes the given character position.
+    fn get_body_item_for_position(&self, pos: usize) -> Option<&BodyItem> {
+        for item in &self.items {
+            let source_range = SourceRange::from(item);
+            if source_range.contains(pos) {
+                return Some(item);
+            }
+        }
+
+        None
+    }
+
+    /// Returns an Expr that includes the given character position.
+    pub fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
+        let item = self.get_body_item_for_position(pos)?;
+
+        item.get_expr_for_position(pos)
     }
 }
 
