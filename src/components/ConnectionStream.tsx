@@ -53,7 +53,6 @@ export const ConnectionStream = (props: {
     if (sceneInfra.camControls.wasDragging === true) return
 
     if (btnName(e.nativeEvent).left) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sendSelectEventToEngine(e, videoRef.current)
     }
   }
