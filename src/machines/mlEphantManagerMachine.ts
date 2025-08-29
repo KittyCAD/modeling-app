@@ -28,6 +28,7 @@ import {
   submitTextToCadMultiFileIterationRequest,
   constructMultiFileIterationRequestWithPromptHelpers,
 } from '@src/lib/promptToEdit'
+import toast from 'react-hot-toast'
 
 const MLEPHANT_POLL_STATUSES_MS = 5000
 
@@ -181,6 +182,18 @@ export const mlEphantManagerMachine = setup({
   types: {
     context: {} as MlEphantManagerContext,
     events: {} as MlEphantManagerEvents,
+  },
+  actions: {
+    toastError: ({ event }) => {
+      console.error(event)
+      if ('output' in event && event.output instanceof Error) {
+        toast.error(event.output.message)
+      } else if ('data' in event && event.data instanceof Error) {
+        toast.error(event.data.message)
+      } else if ('error' in event && event.error instanceof Error) {
+        toast.error(event.error.message)
+      }
+    },
   },
   actors: {
     [MlEphantManagerTransitions.GetConversationsThatCreatedProjects]:
@@ -553,7 +566,7 @@ export const mlEphantManagerMachine = setup({
         // On failure we need correct dependencies still.
         onError: {
           target: MlEphantManagerStates.NeedDependencies,
-          actions: console.error,
+          actions: 'toastError',
         },
       },
     },
@@ -582,7 +595,7 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
           },
@@ -625,7 +638,7 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.GetPromptsBelongingToConversation]: {
@@ -640,7 +653,7 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.GetReasoningForPrompt]: {
@@ -670,7 +683,7 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.PromptCreateModel]: {
@@ -685,7 +698,7 @@ export const mlEphantManagerMachine = setup({
                   target: MlEphantManagerTransitions.GetReasoningForPrompt,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.PromptEditModel]: {
@@ -700,7 +713,7 @@ export const mlEphantManagerMachine = setup({
                   target: MlEphantManagerTransitions.GetReasoningForPrompt,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.PromptFeedback]: {
@@ -715,7 +728,7 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.AppendThoughtForPrompt]: {

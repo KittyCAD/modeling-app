@@ -59,6 +59,10 @@ export async function submitTextToCadMultiFileIterationRequest(
 
   if (!response.ok) {
     const errorBody = await response.json()
+    if ('message' in errorBody) {
+      return new Error(errorBody.message)
+    }
+
     return new Error(
       `HTTP error! status: ${response.status}, error: ${JSON.stringify(errorBody)}`
     )
