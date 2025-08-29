@@ -22,7 +22,7 @@ export function createAuthCommands({
       groupId: ACTOR_IDS.AUTH,
       name: 'refresh',
       displayName: 'Refresh app',
-      description: 'Force the the scene, features, and editor to reload.',
+      description: 'Force the scene, features, and editor to reload.',
       icon: 'exclamationMark',
       needsReview: false,
       onSubmit: () => {
