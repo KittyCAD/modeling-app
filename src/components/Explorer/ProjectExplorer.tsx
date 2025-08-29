@@ -33,6 +33,7 @@ import {
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useKclContext } from '@src/lang/KclProvider'
 import type { MaybePressOrBlur } from '@src/lib/types'
+import toast from 'react-hot-toast'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -369,7 +370,7 @@ export const ProjectExplorer = ({
                   },
                 })
               } else {
-                console.error('failed to copy and paste the result is null')
+                toast.error('Failed to copy and paste the result is null')
               }
             }
 
