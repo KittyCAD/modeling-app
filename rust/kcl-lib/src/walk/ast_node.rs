@@ -1,6 +1,6 @@
 use crate::{
+    SourceRange,
     parsing::ast::types::{self, NodeRef},
-    source_range::SourceRange,
 };
 
 /// The "Node" type wraps all the AST elements we're able to find in a KCL

@@ -1,5 +1,5 @@
 use indexmap::IndexMap;
-use schemars::JsonSchema;
+pub use kcl_error::{CompilationError, Severity, Suggestion, Tag};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
@@ -7,12 +7,11 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{ArtifactCommand, ArtifactGraph, Operation};
 use crate::{
-    ModuleId,
+    ModuleId, SourceRange,
     exec::KclValue,
     execution::DefaultPlanes,
-    lsp::IntoDiagnostic,
+    lsp::{IntoDiagnostic, ToLspRange},
     modules::{ModulePath, ModuleSource},
-    source_range::SourceRange,
 };
 
 /// How did the KCL execution fail
@@ -704,70 +703,6 @@ impl From<KclError> for pyo3::PyErr {
     }
 }
 
-/// An error which occurred during parsing, etc.
-#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq)]
-#[ts(export)]
-pub struct CompilationError {
-    #[serde(rename = "sourceRange")]
-    pub source_range: SourceRange,
-    pub message: String,
-    pub suggestion: Option<Suggestion>,
-    pub severity: Severity,
-    pub tag: Tag,
-}
-
-impl CompilationError {
-    pub(crate) fn err(source_range: SourceRange, message: impl ToString) -> CompilationError {
-        CompilationError {
-            source_range,
-            message: message.to_string(),
-            suggestion: None,
-            severity: Severity::Error,
-            tag: Tag::None,
-        }
-    }
-
-    pub(crate) fn fatal(source_range: SourceRange, message: impl ToString) -> CompilationError {
-        CompilationError {
-            source_range,
-            message: message.to_string(),
-            suggestion: None,
-            severity: Severity::Fatal,
-            tag: Tag::None,
-        }
-    }
-
-    pub(crate) fn with_suggestion(
-        self,
-        suggestion_title: impl ToString,
-        suggestion_insert: impl ToString,
-        // Will use the error source range if none is supplied
-        source_range: Option<SourceRange>,
-        tag: Tag,
-    ) -> CompilationError {
-        CompilationError {
-            suggestion: Some(Suggestion {
-                title: suggestion_title.to_string(),
-                insert: suggestion_insert.to_string(),
-                source_range: source_range.unwrap_or(self.source_range),
-            }),
-            tag,
-            ..self
-        }
-    }
-
-    #[cfg(test)]
-    pub fn apply_suggestion(&self, src: &str) -> Option<String> {
-        let suggestion = self.suggestion.as_ref()?;
-        Some(format!(
-            "{}{}{}",
-            &src[0..suggestion.source_range.start()],
-            suggestion.insert,
-            &src[suggestion.source_range.end()..]
-        ))
-    }
-}
-
 impl From<CompilationError> for KclErrorDetails {
     fn from(err: CompilationError) -> Self {
         let backtrace = vec![BacktraceItem {
@@ -779,48 +714,5 @@ impl From<CompilationError> for KclErrorDetails {
             backtrace,
             message: err.message,
         }
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
-#[ts(export)]
-pub enum Severity {
-    Warning,
-    Error,
-    Fatal,
-}
-
-impl Severity {
-    pub fn is_err(self) -> bool {
-        match self {
-            Severity::Warning => false,
-            Severity::Error | Severity::Fatal => true,
-        }
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
-#[ts(export)]
-pub enum Tag {
-    Deprecated,
-    Unnecessary,
-    UnknownNumericUnits,
-    None,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq, JsonSchema)]
-#[ts(export)]
-pub struct Suggestion {
-    pub title: String,
-    pub insert: String,
-    pub source_range: SourceRange,
-}
-
-pub type LspSuggestion = (Suggestion, tower_lsp::lsp_types::Range);
-
-impl Suggestion {
-    pub fn to_lsp_edit(&self, code: &str) -> LspSuggestion {
-        let range = self.source_range.to_lsp_range(code);
-        (self.clone(), range)
     }
 }
