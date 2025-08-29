@@ -5,11 +5,12 @@ use kcl_api::{
 };
 use kcl_error::SourceRange;
 
-use crate::id::IncIdGenerator;
+use crate::{Program, id::IncIdGenerator};
 
 #[derive(Debug, Clone)]
 pub(crate) struct FrontendState {
     id_generator: IncIdGenerator<usize>,
+    program: Program,
     scene_graph: SceneGraph,
 }
 
@@ -17,6 +18,7 @@ impl FrontendState {
     fn new() -> Self {
         Self {
             id_generator: IncIdGenerator::new(),
+            program: Program::empty(),
             scene_graph: SceneGraph {
                 project: ProjectId(0),
                 file: FileId(0),
