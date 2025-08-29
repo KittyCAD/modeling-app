@@ -49,6 +49,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, uuidv4 } from '@src/lib/utils'
 import type { PlaneVisibilityMap } from '@src/machines/modelingMachine'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -468,6 +469,15 @@ export class KclManager extends EventTarget {
       path: this.singletons.codeManager.currentFilePath || undefined,
       rustContext: this.singletons.rustContext,
     })
+
+    const livePathsToWatch = Object.values(execState.filenames)
+      .filter((file) => {
+        return file?.type === 'Local'
+      })
+      .map((file) => {
+        return file.value
+      })
+    kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
 
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
