@@ -56,6 +56,7 @@ export enum EngineConnectionStateType {
   ConnectionEstablished = 'connection-established',
   Disconnecting = 'disconnecting',
   Disconnected = 'disconnected',
+  Paused = 'paused',
 }
 
 export enum DisconnectingType {
@@ -206,6 +207,7 @@ export type EngineConnectionState =
   | State<EngineConnectionStateType.Connecting, ConnectingValue>
   | State<EngineConnectionStateType.ConnectionEstablished, void>
   | State<EngineConnectionStateType.Disconnecting, DisconnectingValue>
+  | State<EngineConnectionStateType.Paused, void>
   | State<EngineConnectionStateType.Disconnected, void>
 
 export enum EngineConnectionEvents {
@@ -1308,7 +1310,7 @@ class EngineConnection extends EventTarget {
       )
     } else {
       this.state = {
-        type: EngineConnectionStateType.Disconnected,
+        type: EngineConnectionStateType.Paused,
       }
     }
     this.triggeredStart = false

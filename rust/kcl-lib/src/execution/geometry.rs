@@ -5,7 +5,6 @@ use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, websocket::ModelingCmdReq};
 use parse_display::{Display, FromStr};
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -21,7 +20,7 @@ use crate::{
 type Point3D = kcmc::shared::Point3d<f64>;
 
 /// A geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -50,7 +49,7 @@ impl Geometry {
 }
 
 /// A geometry including an imported geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -74,7 +73,7 @@ impl GeometryWithImportedGeometry {
 }
 
 /// A set of geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::vec_box)]
@@ -93,7 +92,7 @@ impl From<Geometry> for Geometries {
 }
 
 /// Data for an imported geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ImportedGeometry {
@@ -142,7 +141,7 @@ impl ImportedGeometry {
 }
 
 /// Data for a solid, sketch, or an imported geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
@@ -205,7 +204,7 @@ impl SolidOrSketchOrImportedGeometry {
 }
 
 /// Data for a solid or an imported geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
@@ -251,7 +250,7 @@ impl SolidOrImportedGeometry {
 }
 
 /// A helix.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Helix {
@@ -272,7 +271,7 @@ pub struct Helix {
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Plane {
@@ -289,7 +288,7 @@ pub struct Plane {
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PlaneInfo {
@@ -573,7 +572,7 @@ impl Plane {
 }
 
 /// A face.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Face {
@@ -595,7 +594,7 @@ pub struct Face {
 }
 
 /// Type for a plane.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[display(style = "camelCase")]
 pub enum PlaneType {
@@ -616,7 +615,7 @@ pub enum PlaneType {
     Uninit,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct Sketch {
@@ -651,10 +650,6 @@ pub struct Sketch {
     /// If not given, defaults to true.
     #[serde(default = "very_true", skip_serializing_if = "is_true")]
     pub is_closed: bool,
-}
-
-fn very_true() -> bool {
-    true
 }
 
 fn is_true(b: &bool) -> bool {
@@ -698,7 +693,7 @@ impl Sketch {
 }
 
 /// A sketch type.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum SketchSurface {
@@ -824,7 +819,7 @@ impl Sketch {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct Solid {
@@ -865,7 +860,7 @@ impl Solid {
 }
 
 /// A fillet or a chamfer.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EdgeCut {
@@ -928,7 +923,7 @@ impl EdgeCut {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
@@ -960,7 +955,7 @@ impl Point2d {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema, Default)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, Default)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,
@@ -1124,7 +1119,7 @@ impl Mul<f64> for Point3d {
 }
 
 /// A base path.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BasePath {
@@ -1155,7 +1150,7 @@ impl BasePath {
 }
 
 /// Geometry metadata.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct GeoMeta {
@@ -1167,7 +1162,7 @@ pub struct GeoMeta {
 }
 
 /// A path.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Path {
@@ -1528,7 +1523,7 @@ fn linear_distance(
 }
 
 /// An extrude surface.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ExtrudeSurface {
@@ -1540,7 +1535,7 @@ pub enum ExtrudeSurface {
 }
 
 // Chamfer surface.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ChamferSurface {
@@ -1554,7 +1549,7 @@ pub struct ChamferSurface {
 }
 
 // Fillet surface.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FilletSurface {
@@ -1568,7 +1563,7 @@ pub struct FilletSurface {
 }
 
 /// An extruded plane.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudePlane {
@@ -1582,7 +1577,7 @@ pub struct ExtrudePlane {
 }
 
 /// An extruded arc.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudeArc {

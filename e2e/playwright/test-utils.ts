@@ -60,14 +60,6 @@ export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
 
 export const deg = (Math.PI * 2) / 360
 
-export const commonPoints = {
-  startAt: '[-12.99, -10.63]',
-  num1: 8.2,
-  num2: 14.44,
-  /** The Y-value of a common lineTo move we perform in tests */
-  num3: -2.44,
-} as const
-
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
 
@@ -1067,7 +1059,7 @@ export async function createProject({
 
 async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
-  await expect(page.getByRole('tab', { name: 'Projects' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {
@@ -1180,10 +1172,7 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
     .toBe(lines)
 }
 
-// TODO: fix type to allow for meta.id in configuration
-export function settingsToToml(
-  settings: DeepPartial<Configuration | { settings: { meta: { id: string } } }>
-) {
+export function settingsToToml(settings: DeepPartial<Configuration>) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
 }

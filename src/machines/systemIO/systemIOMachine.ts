@@ -87,7 +87,6 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.createKCLFile
           data: {
             requestedProjectName: string
-            requestedSubDirectory?: string
             requestedFileNameWithExtension: string
             requestedCode: string
           }
@@ -288,7 +287,6 @@ export const systemIOMachine = setup({
       toast.success(
         ('data' in event && typeof event.data === 'string' && event.data) ||
           ('output' in event &&
-            event.output !== undefined &&
             'message' in event.output &&
             typeof event.output.message === 'string' &&
             event.output.message) ||
@@ -330,15 +328,6 @@ export const systemIOMachine = setup({
         `Project name is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters`
       )
     },
-    [SystemIOMachineActions.setMlEphantConversations]: assign({
-      mlEphantConversations: ({ event }) => {
-        assertEvent(event, [
-          SystemIOMachineEvents.done_getMlEphantConversations,
-          SystemIOMachineEvents.done_saveMlEphantConversations,
-        ])
-        return event.output
-      },
-    }),
   },
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
@@ -385,7 +374,6 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           requestedProjectName: string
-          requestedSubDirectory?: string
           requestedFileNameWithExtension: string
           requestedCode: string
           rootContext: AppMachineContext
@@ -641,7 +629,6 @@ export const systemIOMachine = setup({
     lastProjectDeleteRequest: {
       project: NO_PROJECT_DIRECTORY,
     },
-    mlEphantConversations: undefined,
   }),
   states: {
     [SystemIOMachineStates.idle]: {

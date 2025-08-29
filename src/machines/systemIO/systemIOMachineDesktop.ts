@@ -4,7 +4,6 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
-  getAppSettingsFilePath,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
@@ -22,8 +21,6 @@ import type {
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
-  jsonToMlConversations,
-  mlConversationsToJson,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
@@ -33,8 +30,6 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { IElectronAPI } from '@root/interface'
-
-const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
 const sharedBulkCreateWorkflow = async ({
   electron,
