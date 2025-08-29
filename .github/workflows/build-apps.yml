@@ -1,17 +1,19 @@
 name: build-apps
 
 on:
-  pull_request:
+  # pull_request:
   push:
     branches:
       - main
+      - pierremtb/conversational-ttc-as-separate-nightly
+      - conversational-ttc
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  IS_RELEASE: true
-  # IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
-  IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
+  IS_STAGING: true
+  # IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -104,8 +106,7 @@ jobs:
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
         run: |
-          # export VERSION=${GITHUB_REF_NAME#v}
-          export VERSION=0.0.0
+          export VERSION=${GITHUB_REF_NAME#v}
           npm run files:set-version
 
       - uses: actions/upload-artifact@v4
@@ -217,7 +218,6 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          CSC_FOR_PULL_REQUEST: true
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
@@ -257,7 +257,8 @@ jobs:
     permissions:
       contents: write
     # Equivalent to IS_RELEASE || IS_STAGING (but we can't access those env vars here)
-    if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+    # TODO: make sure to re-enable this check before merging
+    # if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
@@ -314,7 +315,7 @@ jobs:
         env:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
-          WEBSITE_DIR: ${{ env.IS_STAGING == 'true' && 'dl.zoo.dev/releases/modeling-app/staging' || 'dl.zoo.dev/releases/modeling-app' }}
+          WEBSITE_DIR: ${{ env.IS_STAGING == 'true' && 'dl.zoo.dev/releases/modeling-app/staging/conversational-ttc' || 'dl.zoo.dev/releases/modeling-app' }}
           URL_CODED_NAME: ${{ env.IS_STAGING == 'true' && 'Zoo%20Design%20Studio%20%28Staging%29' || 'Zoo%20Design%20Studio' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
@@ -382,7 +383,7 @@ jobs:
           path: out
           glob: '*'
           parent: false
-          destination: 'dl.kittycad.io/releases/modeling-app/staging'
+          destination: 'dl.kittycad.io/releases/modeling-app/staging/conversational-ttc'
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
         if: ${{ env.IS_STAGING == 'true' }}

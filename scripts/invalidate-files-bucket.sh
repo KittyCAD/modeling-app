@@ -1,7 +1,7 @@
 #!/bin/bash
 base_dir="/releases/modeling-app"
 if [[ $1 = "--staging" ]]; then
-    base_dir="/releases/modeling-app/staging"
+    base_dir="/releases/modeling-app/staging/conversational-ttc"
 fi
 
 echo "Invalidating json and yml files at $base_dir in the download bucket"
