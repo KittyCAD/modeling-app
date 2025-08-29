@@ -5,13 +5,11 @@ on:
   push:
     branches:
       - main
-      - pierremtb/issue8178-build-apps-zoo-cert-design-studio-location
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  # IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
-  IS_RELEASE: true
+  IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
   IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 concurrency:
@@ -105,8 +103,7 @@ jobs:
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
         run: |
-          # export VERSION=${GITHUB_REF_NAME#v}
-          export VERSION=255.255.255
+          export VERSION=${GITHUB_REF_NAME#v}
           npm run files:set-version
 
       - uses: actions/upload-artifact@v4
@@ -257,7 +254,7 @@ jobs:
     permissions:
       contents: write
     # Equivalent to IS_RELEASE || IS_STAGING (but we can't access those env vars here)
-    # if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+    if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
@@ -314,8 +311,7 @@ jobs:
         env:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
-          # WEBSITE_DIR: ${{ env.IS_STAGING == 'true' && 'dl.zoo.dev/releases/design-studio/staging' || 'dl.zoo.dev/releases/design-studio' }}
-          WEBSITE_DIR: ${{ env.IS_STAGING == 'true' && 'dl.zoo.dev/releases/design-studio/staging' || 'dl.zoo.dev/releases/design-studio/test' }}
+          WEBSITE_DIR: ${{ env.IS_STAGING == 'true' && 'dl.zoo.dev/releases/design-studio/staging' || 'dl.zoo.dev/releases/design-studio' }}
           URL_CODED_NAME: ${{ env.IS_STAGING == 'true' && 'Zoo%20Design%20Studio%20%28Staging%29' || 'Zoo%20Design%20Studio' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
@@ -388,25 +384,3 @@ jobs:
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
         if: ${{ env.IS_STAGING == 'true' }}
         run: npm run files:invalidate-bucket:staging
-
-      # For test purpose only, TODO: delete the following steps
-      - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v2.1.10'
-        with:
-          credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
-
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2.1.4
-        with:
-          project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
-
-      - name: Upload staging files to public bucket
-        uses: google-github-actions/upload-cloud-storage@v2.2.2
-        with:
-          path: out
-          glob: '*'
-          parent: false
-          destination: 'dl.kittycad.io/releases/design-studio/test'
-
-      - name: Invalidate bucket cache on latest*.yml and last_download.json files
-        run: npm run files:invalidate-bucket
