@@ -325,7 +325,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: settings.app.fixed_size_grid,
+            fixed_size_grid: settings.modeling.fixed_size_grid,
         }
     }
 }

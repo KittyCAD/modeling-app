@@ -1,31 +1,8 @@
 import type { Group, Mesh, OrthographicCamera, Quaternion } from 'three'
-import {
-  GridHelper,
-  LineBasicMaterial,
-  PerspectiveCamera,
-  Vector3,
-} from 'three'
+import { PerspectiveCamera, Vector3 } from 'three'
 
 import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
 
-export function createGridHelper({
-  size,
-  divisions,
-}: {
-  size: number
-  divisions: number
-}) {
-  const gridHelperMaterial = new LineBasicMaterial({
-    color: 0xaaaaaa,
-    transparent: true,
-    opacity: 0.5,
-    depthTest: false,
-  })
-  const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
-  gridHelper.material = gridHelperMaterial
-  gridHelper.rotation.x = Math.PI / 2
-  return gridHelper
-}
 const fudgeFactor = 72.66985970437086
 
 export const orthoScale = (cam: OrthographicCamera | PerspectiveCamera) =>

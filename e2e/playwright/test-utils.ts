@@ -947,10 +947,6 @@ export async function setup(
             },
             ...TEST_SETTINGS.project,
             onboarding_status: 'dismissed',
-            // Tests were written before this setting existed.
-            // It's true by default because it's a good user experience, but
-            // these tests require it to be false.
-            fixed_size_grid: false,
           },
           project: {
             ...TEST_SETTINGS.project,

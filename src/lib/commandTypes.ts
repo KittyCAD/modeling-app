@@ -255,6 +255,24 @@ export type CommandArgumentConfig<
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
     }
+  | {
+      inputType: 'number'
+      min?: number
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => OutputType)
+      defaultValueFromContext?: (context: C) => OutputType
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+    }
 )
 
 export type CommandArgument<
@@ -398,6 +416,22 @@ export type CommandArgument<
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>
           ) => OutputType)
+    }
+  | {
+      inputType: 'number'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
 )
 

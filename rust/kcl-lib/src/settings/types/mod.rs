@@ -64,7 +64,7 @@ pub struct Settings {
 }
 
 /// Application wide settings.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
@@ -94,10 +94,6 @@ pub struct AppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
-    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
-    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
-    #[serde(default = "make_it_so", skip_serializing_if = "is_true")]
-    pub fixed_size_grid: bool,
 }
 
 /// Default to true.
@@ -107,20 +103,6 @@ fn make_it_so() -> bool {
 
 fn is_true(b: &bool) -> bool {
     *b
-}
-
-impl Default for AppSettings {
-    fn default() -> Self {
-        Self {
-            appearance: Default::default(),
-            onboarding_status: Default::default(),
-            dismiss_web_banner: Default::default(),
-            stream_idle_mode: Default::default(),
-            allow_orbit_in_sketch_mode: Default::default(),
-            show_debug_panel: Default::default(),
-            fixed_size_grid: make_it_so(),
-        }
-    }
 }
 
 fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
@@ -270,7 +252,7 @@ impl From<AppTheme> for kittycad::types::Color {
 }
 
 /// Settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ModelingSettings {
@@ -301,6 +283,23 @@ pub struct ModelingSettings {
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
+    /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
+    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
+    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+    #[serde(default = "make_it_so", skip_serializing_if = "is_true")]
+    pub fixed_size_grid: bool,
+    /// Whether or not to snap to the scale grid in sketching mode.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub snap_to_grid: bool,
+    /// The space between major grid lines, specified in the current unit
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub major_grid_spacing: f64,
+    /// Specifies ow many minor grid lines to have per major grid line.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub minor_grids_per_major: f64,
+    /// The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub snaps_per_minor: f64,
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
@@ -681,6 +680,7 @@ text_wrapping = true"#;
                     base_unit: UnitLength::In,
                     mouse_controls: MouseControlType::Zoo,
                     camera_projection: CameraProjectionType::Perspective,
+                    fixed_size_grid: true,
                     ..Default::default()
                 },
                 project: ProjectSettings {

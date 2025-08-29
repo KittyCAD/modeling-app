@@ -120,7 +120,7 @@ pub struct ProjectAppearanceSettings {
 }
 
 /// Project specific settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ProjectModelingSettings {
@@ -133,6 +133,21 @@ pub struct ProjectModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fixed_size_grid: Option<bool>,
+    /// Whether or not to snap to the scale grid in sketching mode.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snap_to_grid: Option<bool>,
+    /// The space between major grid lines, specified in the current unit
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_grid_spacing: Option<f64>,
+    /// Specifies how many minor grid lines to have per major grid line.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_grids_per_major: Option<f64>,
+    /// The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snaps_per_minor: Option<f64>,
 }
 
 fn named_view_point_version_one() -> f64 {
@@ -331,6 +346,11 @@ color = 1567.4"#;
                     base_unit: UnitLength::Yd,
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
+                    snap_to_grid: None,
+                    major_grid_spacing: None,
+                    minor_grids_per_major: None,
+                    snaps_per_minor: None,
+                    fixed_size_grid: None,
                 },
                 text_editor: TextEditorSettings {
                     text_wrapping: false.into(),

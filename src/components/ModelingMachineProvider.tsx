@@ -48,11 +48,15 @@ import {
   EngineConnectionEvents,
 } from '@src/lang/std/engineConnection'
 import { err, reportRejection, trap, reject } from '@src/lib/trap'
+
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { isNonNullable, platform, uuidv4 } from '@src/lib/utils'
 import { promptToEditFlow } from '@src/lib/promptToEdit'
 import type { FileMeta } from '@src/lib/types'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, settingsActor } from '@src/lib/singletons'
 import { useToken, useSettings } from '@src/lib/singletons'
+
 import type { IndexLoaderData } from '@src/lib/types'
 import {
   EXPORT_TOAST_MESSAGES,
@@ -126,7 +130,13 @@ export const ModelingMachineProvider = ({
 }) => {
   const {
     app: { allowOrbitInSketchMode },
-    modeling: { defaultUnit, cameraProjection, cameraOrbit, useNewSketchMode },
+    modeling: {
+      defaultUnit,
+      cameraProjection,
+      cameraOrbit,
+      useNewSketchMode,
+      snapToGrid,
+    },
   } = useSettings()
   const loaderData = useLoaderData() as IndexLoaderData
   const projects = useFolders()
@@ -1551,6 +1561,14 @@ export const ModelingMachineProvider = ({
   })
   useHotkeys(['mod + alt + x'], () => {
     resetCameraPosition().catch(reportRejection)
+  })
+
+  // Toggle Snap to grid
+  useHotkeyWrapper([SNAP_TO_GRID_HOTKEY], () => {
+    settingsActor.send({
+      type: 'set.modeling.snapToGrid',
+      data: { level: 'project', value: !snapToGrid.current },
+    })
   })
 
   useModelingMachineCommands({

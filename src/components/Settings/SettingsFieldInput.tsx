@@ -118,16 +118,23 @@ export function SettingsFieldInput({
             ))}
         </select>
       )
-    case 'string':
+    case 'string': {
+      const effectiveValue =
+        setting[settingsLevel] !== undefined
+          ? setting[settingsLevel]
+          : setting.getFallback(settingsLevel)
       return (
         <input
+          // When reverting to default value then the input doesn't update without a key change.
+          // Another fix for this would be to make this a controlled component.
+          key={`${category}-${settingName}-${settingsLevel}-${String(
+            effectiveValue
+          )}`}
           name={`${category}-${settingName}`}
           data-testid={`${category}-${settingName}`}
           type="text"
           className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
-          defaultValue={String(
-            setting[settingsLevel] || setting.getFallback(settingsLevel)
-          )}
+          defaultValue={String(effectiveValue)}
           onBlur={(e) => {
             if (
               setting[settingsLevel] === undefined
@@ -145,6 +152,49 @@ export function SettingsFieldInput({
           }}
         />
       )
+    }
+    case 'number': {
+      const effectiveValue =
+        setting[settingsLevel] !== undefined
+          ? setting[settingsLevel]
+          : setting.getFallback(settingsLevel)
+      return (
+        <input
+          // When reverting to default value then the input doesn't update without a key change.
+          // Another fix for this would be to make this a controlled component.
+          key={`${category}-${settingName}-${settingsLevel}-${String(
+            effectiveValue
+          )}`}
+          name={`${category}-${settingName}`}
+          data-testid={`${category}-${settingName}`}
+          type="number"
+          step="any"
+          className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full disabled:opacity-50 disabled:pointer-events-none"
+          defaultValue={Number(effectiveValue)}
+          min={
+            setting.commandConfig && 'min' in setting.commandConfig
+              ? setting.commandConfig.min
+              : undefined
+          }
+          disabled={!setting.isEnabled(context)}
+          onBlur={(e) => {
+            const numValue = parseFloat(e.target.value)
+            if (!Number.isNaN(numValue)) {
+              const currentValue = effectiveValue
+              if (currentValue !== numValue) {
+                send({
+                  type: `set.${category}.${settingName}`,
+                  data: {
+                    level: settingsLevel,
+                    value: numValue,
+                  },
+                } as unknown as EventFrom<WildcardSetEvent>)
+              }
+            }
+          }}
+        />
+      )
+    }
   }
   return (
     <p className="text-destroy-70 dark:text-destroy-20">

@@ -418,7 +418,7 @@ test.describe('Command bar tests', () => {
       name: 'rectangle Corner rectangle',
     })
     const lineToolCommand = page.getByRole('option', {
-      name: 'Line',
+      name: 'line Line Start drawing',
     })
     const lineToolButton = page.getByRole('button', {
       name: 'line Line',
