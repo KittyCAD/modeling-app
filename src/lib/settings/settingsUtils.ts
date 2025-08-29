@@ -76,6 +76,7 @@ export function configurationToSettingsPayload(
       ),
       enableTouchControls:
         configuration?.settings?.modeling?.enable_touch_controls,
+      useNewSketchMode: configuration?.settings?.modeling?.use_new_sketch_mode,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
@@ -126,6 +127,7 @@ export function settingsPayloadToConfiguration(
           ? cameraSystemToMouseControl(configuration?.modeling?.mouseControls)
           : undefined,
         enable_touch_controls: configuration?.modeling?.enableTouchControls,
+        use_new_sketch_mode: configuration?.modeling?.useNewSketchMode,
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
         show_scale_grid: configuration?.modeling?.showScaleGrid,

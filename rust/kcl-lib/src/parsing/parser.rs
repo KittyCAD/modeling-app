@@ -57,7 +57,7 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let result = match program.parse(i) {
         Ok(result) => Some(result),
         Err(e) => {
-            ParseContext::err(e.into());
+            ParseContext::err(error_from_winnow_error(e));
             None
         }
     };
@@ -166,38 +166,36 @@ pub(crate) struct ContextError<C = StrContext> {
     pub cause: Option<CompilationError>,
 }
 
-impl From<winnow::error::ParseError<TokenSlice<'_>, ContextError>> for CompilationError {
-    fn from(err: winnow::error::ParseError<TokenSlice<'_>, ContextError>) -> Self {
-        let Some(last_token) = err.input().last() else {
-            return CompilationError::fatal(Default::default(), "file is empty");
-        };
+fn error_from_winnow_error(err: winnow::error::ParseError<TokenSlice<'_>, ContextError>) -> CompilationError {
+    let Some(last_token) = err.input().last() else {
+        return CompilationError::fatal(Default::default(), "file is empty");
+    };
 
-        let (input, offset, err) = (err.input(), err.offset(), err.clone().into_inner());
+    let (input, offset, err) = (err.input(), err.offset(), err.clone().into_inner());
 
-        if let Some(e) = err.cause {
-            return e;
-        }
-
-        // See docs on `offset`.
-        if offset >= input.len() {
-            let context = err.context.first();
-            return CompilationError::fatal(
-                last_token.as_source_range(),
-                match context {
-                    Some(what) => format!("Unexpected end of file. The compiler {what}"),
-                    None => "Unexpected end of file while still parsing".to_owned(),
-                },
-            );
-        }
-
-        let bad_token = input.token(offset);
-        // TODO: Add the Winnow parser context to the error.
-        // See https://github.com/KittyCAD/modeling-app/issues/784
-        CompilationError::fatal(
-            bad_token.as_source_range(),
-            format!("Unexpected token: {}", bad_token.value),
-        )
+    if let Some(e) = err.cause {
+        return e;
     }
+
+    // See docs on `offset`.
+    if offset >= input.len() {
+        let context = err.context.first();
+        return CompilationError::fatal(
+            last_token.as_source_range(),
+            match context {
+                Some(what) => format!("Unexpected end of file. The compiler {what}"),
+                None => "Unexpected end of file while still parsing".to_owned(),
+            },
+        );
+    }
+
+    let bad_token = input.token(offset);
+    // TODO: Add the Winnow parser context to the error.
+    // See https://github.com/KittyCAD/modeling-app/issues/784
+    CompilationError::fatal(
+        bad_token.as_source_range(),
+        format!("Unexpected token: {}", bad_token.value),
+    )
 }
 
 impl<C> From<CompilationError> for ContextError<C> {
@@ -3479,7 +3477,7 @@ mod tests {
         let tokens = crate::parsing::token::lex("fn firstPrime(", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         let last = tokens.last().unwrap().as_source_range();
-        let err: CompilationError = program.parse(tokens).unwrap_err().into();
+        let err: CompilationError = error_from_winnow_error(program.parse(tokens).unwrap_err());
         assert_eq!(err.source_range, last);
         // TODO: Better comment. This should explain the compiler expected ) because the user had started declaring the function's parameters.
         // Part of https://github.com/KittyCAD/modeling-app/issues/784
@@ -3530,7 +3528,7 @@ mod tests {
     #[test]
     fn weird_program_just_a_pipe() {
         let tokens = crate::parsing::token::lex("|", ModuleId::default()).unwrap();
-        let err: CompilationError = program.parse(tokens.as_slice()).unwrap_err().into();
+        let err: CompilationError = error_from_winnow_error(program.parse(tokens.as_slice()).unwrap_err());
         assert_eq!(err.source_range, SourceRange::new(0, 1, ModuleId::default()));
         assert_eq!(err.message, "Unexpected token: |");
     }

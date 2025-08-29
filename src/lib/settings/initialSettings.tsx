@@ -27,6 +27,7 @@ import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -132,6 +133,7 @@ const MS_IN_MINUTE = 1000 * 60
 
 export function createSettings() {
   return {
+    // Gotcha: If you add a new setting here, you will likely need to update rust/kcl-lib/src/settings/types/mod.rs as well.
     app: {
       /**
        * The overall appearance of the app: light, dark, or system
@@ -456,6 +458,20 @@ export function createSettings() {
         hideOnLevel: 'project',
         description:
           'Enable touch events to navigate the 3D scene. When enabled, orbit with one-finger drag, pan with two-finger drag, and zoom with pinch.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Use the new sketch mode implementation - solver (Dev only)
+       */
+      useNewSketchMode: new Setting<boolean>({
+        hideOnLevel: 'project',
+        // Don't show in prod, consider switching to use AdamS's endpoint https://github.com/KittyCAD/common/pull/1704
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        defaultValue: false,
+        description: 'Use the new sketch mode implementation (Dev only)',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
