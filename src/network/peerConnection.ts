@@ -430,6 +430,15 @@ export const createOnDataChannelOpen = ({
     startPingPong()
     markOnce('code/endInitialEngineConnect')
     connectionPromiseResolve(true)
+
+    // One part of the equation to enable the toolbar buttons
+    dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+        detail: {
+          type: EngineConnectionStateType.ConnectionEstablished,
+        },
+      })
+    )
   }
   return onDataChannelOpen
 }

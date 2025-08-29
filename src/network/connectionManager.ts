@@ -143,11 +143,13 @@ export class ConnectionManager extends EventTarget {
     width,
     height,
     token,
+    setStreamIsReady,
   }: {
     settings?: SettingsViaQueryString
     width: number
     height: number
     token: string
+    setStreamIsReady: (setStreamIsReady: boolean) => void
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -324,6 +326,7 @@ export class ConnectionManager extends EventTarget {
       camControlsCameraChange: this._camControlsCameraChange,
       sceneInfra: this.sceneInfra,
       connection: this.connection,
+      setStreamIsReady,
     })
 
     // Engine is ready to start sending events!

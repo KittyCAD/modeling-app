@@ -13,6 +13,7 @@ import { getDimensions } from '@src/network/utils'
 import { trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import Loading from '@src/components/Loading'
+import { useAppState } from '@src/AppState'
 
 let didInit = false
 
@@ -22,6 +23,7 @@ export const ConnectionStream = (props: {
 }) => {
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settings = useSettings()
+  const { setAppState } = useAppState()
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -62,6 +64,9 @@ export const ConnectionStream = (props: {
               width,
               height,
               token: props.authToken,
+              setStreamIsReady: () => {
+                setAppState({ isStreamReady: true })
+              },
             })
             .then(() => {
               if (!videoRef.current) {

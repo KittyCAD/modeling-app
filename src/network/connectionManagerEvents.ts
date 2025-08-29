@@ -55,6 +55,7 @@ export const createOnEngineConnectionOpened = ({
   camControlsCameraChange,
   sceneInfra,
   connection,
+  setStreamIsReady,
 }: {
   rustContext: RustContext
   settings: SettingsViaQueryString
@@ -71,6 +72,7 @@ export const createOnEngineConnectionOpened = ({
   camControlsCameraChange: () => void
   sceneInfra: SceneInfra
   connection: Connection
+  setStreamIsReady: (isStreamReady: boolean) => void
 }) => {
   const onEngineConnectionOpened = async () => {
     try {
@@ -142,7 +144,7 @@ export const createOnEngineConnectionOpened = ({
       message: 'restoreRemoteCameraStateAndTriggerSync',
     })
     await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
-    // TODO: setIsStreamReady()
+
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'Dispatching SceneReady',
@@ -153,6 +155,9 @@ export const createOnEngineConnectionOpened = ({
         detail: connection,
       })
     )
+
+    // Enables the toolbar reading from App state
+    setStreamIsReady(true)
   }
   return onEngineConnectionOpened
 }
