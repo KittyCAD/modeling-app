@@ -36,7 +36,7 @@ win:
     sign: "./scripts/sign-win.js"
     signingHashAlgorithms:
       - sha256
-    publisherName: "KittyCAD Inc" # needs to be exactly like on Digicert
+    publisherName: "ZOO CORPORATION" # needs to be exactly like on Digicert
   icon: "assets/icon.ico"
   fileAssociations:
     - ext: kcl
@@ -65,7 +65,7 @@ linux:
       role: Editor
 publish:
   - provider: generic
-    url: https://dl.zoo.dev/releases/modeling-app
+    url: https://dl.zoo.dev/releases/design-studio
     channel: latest
 releaseInfo:
   releaseNotesFile: release-notes.md
