@@ -197,6 +197,21 @@ impl Node<CallExpressionKw> {
         let fn_name = &self.callee;
         let callsite: SourceRange = self.into();
 
+        // Evaluate the unlabeled first param, if any exists.
+        let unlabeled = if let Some(ref arg_expr) = self.unlabeled {
+            let source_range = SourceRange::from(arg_expr.clone());
+            let metadata = Metadata { source_range };
+            let value = ctx
+                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
+                .await?;
+
+            let label = arg_expr.ident_name().map(str::to_owned);
+
+            Some((label, Arg::new(value, source_range)))
+        } else {
+            None
+        };
+
         // Build a hashmap from argument labels to the final evaluated values.
         let mut fn_args = IndexMap::with_capacity(self.arguments.len());
         let mut errors = Vec::new();
@@ -220,21 +235,6 @@ impl Node<CallExpressionKw> {
                 }
             }
         }
-
-        // Evaluate the unlabeled first param, if any exists.
-        let unlabeled = if let Some(ref arg_expr) = self.unlabeled {
-            let source_range = SourceRange::from(arg_expr.clone());
-            let metadata = Metadata { source_range };
-            let value = ctx
-                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
-                .await?;
-
-            let label = arg_expr.ident_name().map(str::to_owned);
-
-            Some((label, Arg::new(value, source_range)))
-        } else {
-            None
-        };
 
         let args = Args::new_kw(
             KwArgs {
