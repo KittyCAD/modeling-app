@@ -148,12 +148,10 @@ export function createOnConnectionStateChange({
   dispatchEvent,
   connection,
   disconnectAll,
-  cleanUp,
 }: {
   dispatchEvent: (event: Event) => boolean
   connection: Connection
   disconnectAll: () => void
-  cleanUp: () => void
 }) {
   // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
   // Event type: generic Event type...

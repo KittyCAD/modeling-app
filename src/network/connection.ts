@@ -370,7 +370,6 @@ export class Connection extends EventTarget {
       dispatchEvent: this.dispatchEvent.bind(this),
       connection: this,
       disconnectAll: this.disconnectAll.bind(this),
-      cleanUp: this.cleanUp.bind(this),
     })
     const onTrack = createOnTrack({
       setMediaStream: this.setMediaStream.bind(this),
