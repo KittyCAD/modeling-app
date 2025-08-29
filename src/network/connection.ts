@@ -638,7 +638,8 @@ export class Connection extends EventTarget {
 
   disconnectWebsocket() {
     if (!this.websocket) {
-      throw new Error('websocket is undefined')
+      console.error('websocket is undefined unable to disconnect')
+      return
     }
 
     if (this.websocket.readyState < WebSocket.CLOSED) {
@@ -656,9 +657,7 @@ export class Connection extends EventTarget {
         metadata: { id: this.id },
       })
     } else {
-      throw new Error(
-        `websocket is defined but readyState is wrong ${this.websocket.readyState}`
-      )
+      console.error(`websocket is defined but readyState is wrong ${this.websocket.readyState}`)
     }
   }
 
@@ -694,7 +693,8 @@ export class Connection extends EventTarget {
 
   disconnectPeerConnection() {
     if (!this.peerConnection) {
-      throw new Error('peerConnection is undefined')
+      console.error('peerConnection is undefined')
+      return
     }
 
     if (this.peerConnection.connectionState === 'closed') {
@@ -745,7 +745,7 @@ export class Connection extends EventTarget {
             eventListenerTracked.callback
           )
         } else {
-          throw new Error(`untracked listener type ${type}`)
+          console.error(`untracked listener type ${type}`)
         }
       }
     )
@@ -764,9 +764,6 @@ export class Connection extends EventTarget {
     this.timeoutToForceConnectId = undefined
   }
 
-  cleanUp() {
-    throw new Error('cleanUp')
-  }
 
   addIceCandidate(candidate: RTCIceCandidateInit) {
     if (!this.peerConnection) {

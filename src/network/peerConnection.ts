@@ -188,7 +188,7 @@ export function createOnConnectionStateChange({
         disconnectAll()
         break
       case 'closed':
-        cleanUp()
+        disconnectAll()
         break
       default:
         break
