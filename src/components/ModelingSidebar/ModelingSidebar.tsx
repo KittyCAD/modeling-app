@@ -133,7 +133,7 @@ export function ModelingSidebar() {
       title: 'Refresh app',
       sidebarName: 'Refresh app',
       icon: 'exclamationMark',
-      keybinding: 'Mod + R',
+      keybinding: '', // as a last resort, this action shouldn't have a shortcut
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       action: async () => {
         refreshPage('Sidebar button').catch(reportRejection)
@@ -387,9 +387,11 @@ function ModelingPaneButton({
             {disabledText !== undefined ? ` (${disabledText})` : ''}
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
-          <kbd className="hotkey text-xs capitalize">
-            {hotkeyDisplay(paneConfig.keybinding, platform)}
-          </kbd>
+          {paneConfig.keybinding && (
+            <kbd className="hotkey text-xs capitalize">
+              {hotkeyDisplay(paneConfig.keybinding, platform)}
+            </kbd>
+          )}
         </Tooltip>
       </button>
       {!!showBadge?.value && (
