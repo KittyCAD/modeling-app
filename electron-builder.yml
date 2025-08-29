@@ -65,8 +65,7 @@ linux:
       role: Editor
 publish:
   - provider: generic
-    url: https://dl.zoo.dev/releases/design-studio/test
-    # url: https://dl.zoo.dev/releases/design-studio
+    url: https://dl.zoo.dev/releases/design-studio
     channel: latest
 releaseInfo:
   releaseNotesFile: release-notes.md
