@@ -210,24 +210,6 @@ export const systemIOMachine = setup({
             src: string
             target: string
           }
-        }
-      | {
-          type: SystemIOMachineEvents.getMlEphantConversations
-        }
-      | {
-          type: SystemIOMachineEvents.done_getMlEphantConversations
-          output: SystemIOContext['mlEphantConversations']
-        }
-      | {
-          type: SystemIOMachineEvents.saveMlEphantConversations
-          data: {
-            projectId: string
-            conversationId: string
-          }
-        }
-      | {
-          type: SystemIOMachineEvents.done_saveMlEphantConversations
-          output: SystemIOContext['mlEphantConversations']
         },
   },
   guards: {
@@ -585,24 +567,6 @@ export const systemIOMachine = setup({
         }
       }
     ),
-    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
-      return new Map()
-    }),
-    [SystemIOMachineActors.saveMlEphantConversations]: fromPromise(
-      async (args: {
-        input: {
-          context: SystemIOContext
-          event: {
-            data: {
-              projectId: string
-              conversationId: string
-            }
-          }
-        }
-      }) => {
-        return new Map()
-      }
-    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -719,12 +683,6 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.copyRecursive]: {
           target: SystemIOMachineStates.copyingRecursive,
-        },
-        [SystemIOMachineEvents.getMlEphantConversations]: {
-          target: SystemIOMachineStates.gettingMlEphantConversations,
-        },
-        [SystemIOMachineEvents.saveMlEphantConversations]: {
-          target: SystemIOMachineStates.savingMlEphantConversations,
         },
       },
     },
@@ -1318,46 +1276,6 @@ export const systemIOMachine = setup({
         onError: {
           target: SystemIOMachineStates.idle,
           actions: [SystemIOMachineActions.toastError],
-        },
-      },
-    },
-    [SystemIOMachineStates.gettingMlEphantConversations]: {
-      invoke: {
-        id: SystemIOMachineActors.getMlEphantConversations,
-        src: SystemIOMachineActors.getMlEphantConversations,
-        // No input required.
-        // Implicit input is settings path, which comes from a function
-        // we call internally.
-        input: ({ event }) => {
-          assertEvent(event, SystemIOMachineEvents.getMlEphantConversations)
-          return {}
-        },
-        onDone: {
-          target: SystemIOMachineStates.idle,
-          actions: [SystemIOMachineActions.setMlEphantConversations],
-        },
-        onError: {
-          target: SystemIOMachineStates.idle,
-        },
-      },
-    },
-    [SystemIOMachineStates.savingMlEphantConversations]: {
-      invoke: {
-        id: SystemIOMachineActors.saveMlEphantConversations,
-        src: SystemIOMachineActors.saveMlEphantConversations,
-        input: ({ event, context }) => {
-          assertEvent(event, SystemIOMachineEvents.saveMlEphantConversations)
-          return {
-            context,
-            event,
-          }
-        },
-        onDone: {
-          target: SystemIOMachineStates.idle,
-          actions: [SystemIOMachineActions.setMlEphantConversations],
-        },
-        onError: {
-          target: SystemIOMachineStates.idle,
         },
       },
     },

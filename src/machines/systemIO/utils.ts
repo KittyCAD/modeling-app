@@ -25,8 +25,6 @@ export enum SystemIOMachineActors {
   renameFolderAndNavigateToFile = 'rename folder and navigate to file',
   deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
   copyRecursive = 'copy recursive',
-  getMlEphantConversations = 'get ml-ephant conversations',
-  saveMlEphantConversations = 'save ml-ephant conversations',
 }
 
 export enum SystemIOMachineStates {
@@ -53,8 +51,6 @@ export enum SystemIOMachineStates {
   renamingFolderAndNavigateToFile = 'renamingFolderAndNavigateToFile',
   deletingFileOrFolderAndNavigate = 'delete file or folder and navigate',
   copyingRecursive = 'copying recursive',
-  gettingMlEphantConversations = 'getting ml-ephant conversations',
-  savingMlEphantConversations = 'saving ml-ephant conversations',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -98,10 +94,6 @@ export enum SystemIOMachineEvents {
   done_deleteFileOrFolderAndNavigate = donePrefix +
     'delete file or folder and navigate',
   copyRecursive = 'copy recursive',
-  getMlEphantConversations = 'get ml-ephant conversations',
-  done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
-  saveMlEphantConversations = 'save ml-ephant conversations',
-  done_saveMlEphantConversations = donePrefix + 'save ml-ephant conversations',
 }
 
 export enum SystemIOMachineActions {
