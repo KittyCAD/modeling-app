@@ -123,7 +123,7 @@ jobs:
           path: out
           glob: '*'
           parent: false
-          destination: 'dl.kittycad.io/releases/modeling-app'
+          destination: 'dl.kittycad.io/releases/design-studio'
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
         run: npm run files:invalidate-bucket
