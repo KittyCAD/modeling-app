@@ -31,7 +31,6 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 use parse_display::{Display, FromStr};
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use uuid::Uuid;
@@ -845,7 +844,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn close(&self);
 }
 
-#[derive(Debug, Hash, Eq, Copy, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Display, FromStr)]
+#[derive(Debug, Hash, Eq, Copy, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Display, FromStr)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum PlaneName {

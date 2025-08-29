@@ -125,25 +125,37 @@ export async function applyConstraintAngleLength({
   const isReferencingXAxisAngle =
     isReferencingXAxis && angleOrLength === 'setAngle'
 
-  let forceVal = valueUsedInTransform || 0
+  let forceVal = valueUsedInTransform || ''
+  // TODO it would be better to preserve the units, but its an edge case for now.
+  let degrees
+  if (forceVal.endsWith('rad')) {
+    degrees =
+      Number(forceVal.substring(0, forceVal.length - 3)) * (180 / Math.PI)
+  } else {
+    if (forceVal.endsWith('deg')) {
+      forceVal = forceVal.substring(0, forceVal.length - 3)
+    }
+    degrees = Number(forceVal)
+  }
+
   let calcIdentifier = createName(['turns'], 'ZERO')
   if (isReferencingYAxisAngle) {
     calcIdentifier = createName(
       ['turns'],
-      forceVal < 0 ? 'THREE_QUARTER_TURN' : 'QUARTER_TURN'
+      degrees < 0 ? 'THREE_QUARTER_TURN' : 'QUARTER_TURN'
     )
-    forceVal = normaliseAngle(forceVal + (forceVal < 0 ? 90 : -90))
+    degrees = normaliseAngle(degrees + (degrees < 0 ? 90 : -90))
   } else if (isReferencingXAxisAngle) {
     calcIdentifier = createName(
       ['turns'],
-      Math.abs(forceVal) > 90 ? 'HALF_TURN' : 'ZERO'
+      Math.abs(degrees) > 90 ? 'HALF_TURN' : 'ZERO'
     )
-    forceVal =
-      Math.abs(forceVal) > 90 ? normaliseAngle(forceVal - 180) : forceVal
+    degrees = Math.abs(degrees) > 90 ? normaliseAngle(degrees - 180) : forceVal
   }
+  const value = degrees === 0 ? String(degrees) : String(degrees) + 'deg'
   const { valueNode, variableName, newVariableInsertIndex, sign } =
     await getModalInfo({
-      value: forceVal,
+      value,
       valueName: angleOrLength === 'setAngle' ? 'angle' : 'length',
       shouldCreateVariable: true,
       selectionRanges,

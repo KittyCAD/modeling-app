@@ -1,13 +1,12 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use schemars::JsonSchema;
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
-    ModuleId,
+    ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
@@ -16,7 +15,6 @@ use crate::{
         types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
     },
     parsing::ast::types::TagNode,
-    source_range::SourceRange,
     std::{
         shapes::{PolygonType, SketchOrSurface},
         sketch::FaceTag,
@@ -89,16 +87,6 @@ impl TyF64 {
     pub fn map_value(mut self, n: f64) -> Self {
         self.n = n;
         self
-    }
-}
-
-impl JsonSchema for TyF64 {
-    fn schema_name() -> String {
-        "TyF64".to_string()
-    }
-
-    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-        r#gen.subschema_for::<f64>()
     }
 }
 

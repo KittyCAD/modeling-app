@@ -43,10 +43,10 @@ use tower_lsp::{
 use crate::{
     ModuleId, Program, SourceRange,
     docs::kcl_doc::ModData,
-    errors::LspSuggestion,
     exec::KclValue,
     execution::{cache, kcl_value::FunctionSource},
     lsp::{
+        LspSuggestion, ToLspRange,
         backend::Backend as _,
         kcl::hover::{Hover, HoverOpts},
         util::IntoDiagnostic,
