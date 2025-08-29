@@ -81,6 +81,16 @@ export function RouteProvider({ children }: { children: ReactNode }) {
               n.path.path.includes(fileNameWithExtension)))
       )
 
+      const isInExecStateFilenames = Object.values(
+        kclManager.execState.filenames
+      ).some((filename) => {
+        if (filename && filename.type === 'Local' && filename.value === path) {
+          return true
+        }
+
+        return false
+      })
+
       const isCurrentFile = loadedProject?.file?.path === path
       if (isCurrentFile && eventType === 'change') {
         if (window.electron) {
@@ -90,7 +100,10 @@ export function RouteProvider({ children }: { children: ReactNode }) {
           codeManager.updateCodeStateEditor(code)
           await kclManager.executeCode()
         }
-      } else if (isImportedInCurrentFile && eventType === 'change') {
+      } else if (
+        (isImportedInCurrentFile || isInExecStateFilenames) &&
+        eventType === 'change'
+      ) {
         // Re execute the file you are in because an imported file was changed
         await kclManager.executeAst()
       }
