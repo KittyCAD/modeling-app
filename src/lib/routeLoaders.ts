@@ -22,7 +22,7 @@ import {
   loadAndValidateSettings,
   readLocalStorageAppSettingsFile,
 } from '@src/lib/settings/settingsUtils'
-import { codeManager } from '@src/lib/singletons'
+import { codeManager, rustContext } from '@src/lib/singletons'
 import type {
   FileLoaderData,
   HomeLoaderData,
@@ -142,6 +142,7 @@ export const fileLoader: LoaderFunction = async (
       : null
 
     const project = maybeProjectInfo ?? defaultProjectData
+    await rustContext.sendOpenProject(project, currentFilePath)
 
     // Fire off the event to load the project settings
     // once we know it's idle.

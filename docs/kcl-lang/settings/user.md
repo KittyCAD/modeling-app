@@ -138,6 +138,13 @@ Toggle touch controls for 3D view navigation
 
 **Default:** None
 
+##### use_new_sketch_mode
+
+Toggle new sketch mode implementation (Dev only)
+
+
+**Default:** None
+
 ##### highlight_edges
 
 Highlight edges of 3D objects?

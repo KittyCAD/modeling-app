@@ -36,12 +36,3 @@
     transform: rotate(360deg);
   }
 }
-
-@keyframes send-up {
-  from {
-    transform: translateY(0px);
-  }
-  to {
-    transform: translateY(-10000px);
-  }
-}

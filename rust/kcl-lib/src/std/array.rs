@@ -1,7 +1,7 @@
 use indexmap::IndexMap;
 
 use crate::{
-    ExecutorContext,
+    ExecutorContext, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState,
@@ -9,7 +9,6 @@ use crate::{
         kcl_value::{FunctionSource, KclValue},
         types::RuntimeType,
     },
-    source_range::SourceRange,
 };
 
 /// Apply a function to each element of an array.

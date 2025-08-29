@@ -2,7 +2,7 @@ use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
 use crate::{
-    CompilationError, NodePath,
+    CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo,
@@ -13,7 +13,6 @@ use crate::{
         types::RuntimeType,
     },
     parsing::ast::types::{CallExpressionKw, DefaultParamVal, FunctionExpression, Node, Program, Type},
-    source_range::SourceRange,
     std::StdFn,
 };
 
