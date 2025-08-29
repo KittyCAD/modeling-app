@@ -1356,7 +1356,11 @@ export const ModelingMachineProvider = ({
   // the up vector otherwise the conconical orientation for the camera modes will be
   // wrong
   useEffect(() => {
-    sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+    engineCommandManager.connection?.deferredPeerConnection?.promise.then(
+      () => {
+        sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+      }
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [cameraOrbit.current])
 

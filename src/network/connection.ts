@@ -817,12 +817,8 @@ export class Connection extends EventTarget {
       throw new Error('send, websocket is undefined')
     }
 
-    if (this.websocket.readyState !== WebSocket.OPEN) {
-      throw new Error('websocket is not in a ready state')
-    }
-
     // Not connected, don't send anything
-    if (this.websocket?.readyState !== WebSocket.OPEN) {
+    if (this.websocket.readyState !== WebSocket.OPEN) {
       EngineDebugger.addLog({
         label: 'websocket',
         message: 'readyState is not WebSocket.OPEN',
