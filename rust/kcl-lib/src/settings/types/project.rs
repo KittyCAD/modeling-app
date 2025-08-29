@@ -120,7 +120,7 @@ pub struct ProjectAppearanceSettings {
 }
 
 /// Project specific settings that affect the behavior while modeling.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ProjectModelingSettings {
@@ -148,21 +148,6 @@ pub struct ProjectModelingSettings {
     /// The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snaps_per_minor: Option<f64>,
-}
-
-impl Default for ProjectModelingSettings {
-    fn default() -> Self {
-        Self {
-            base_unit: Default::default(),
-            highlight_edges: Default::default(),
-            enable_ssao: Default::default(),
-            fixed_size_grid: Default::default(),
-            snap_to_grid: Default::default(),
-            major_grid_spacing: Default::default(),
-            minor_grids_per_major: Default::default(),
-            snaps_per_minor: Default::default(),
-        }
-    }
 }
 
 fn named_view_point_version_one() -> f64 {
