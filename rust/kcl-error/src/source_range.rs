@@ -92,6 +92,22 @@ impl SourceRange {
         Self::default()
     }
 
+    pub fn merge(mut ranges: impl Iterator<Item = SourceRange>) -> Self {
+        let mut result = ranges.next().unwrap_or_default();
+
+        for r in ranges {
+            debug_assert!(r.0[2] == result.0[2], "Merging source ranges from different files");
+            if r.0[0] < result.0[0] {
+                result.0[0] = r.0[0]
+            }
+            if r.0[1] > result.0[1] {
+                result.0[1] = r.0[1];
+            }
+        }
+
+        result
+    }
+
     /// True if this is a source range that doesn't correspond to any source
     /// code.
     pub fn is_synthetic(&self) -> bool {
