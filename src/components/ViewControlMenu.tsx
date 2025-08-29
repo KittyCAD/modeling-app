@@ -5,7 +5,6 @@ import {
   ContextMenu,
   ContextMenuDivider,
   ContextMenuItem,
-  ContextMenuItemRefresh,
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { AxisNames } from '@src/lib/constants'
@@ -140,8 +139,6 @@ export function useViewControlMenuItems() {
       >
         Start sketch on selection
       </ContextMenuItem>,
-      <ContextMenuDivider />,
-      <ContextMenuItemRefresh />,
     ],
     [
       shouldLockView,
