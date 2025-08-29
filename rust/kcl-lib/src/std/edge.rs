@@ -34,7 +34,7 @@ async fn inner_get_opposite_edge(
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
-    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false)?;
 
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
     let tagged_path_id = tagged_path.id;
@@ -82,7 +82,7 @@ async fn inner_get_next_adjacent_edge(
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
-    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false)?;
 
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
     let tagged_path_id = tagged_path.id;
@@ -136,7 +136,7 @@ async fn inner_get_previous_adjacent_edge(
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
-    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false)?;
 
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
     let tagged_path_id = tagged_path.id;
@@ -216,8 +216,8 @@ async fn inner_get_common_edge(
         return Ok(id);
     }
 
-    let first_face_id = args.get_adjacent_face_to_tag(exec_state, &face1, false).await?;
-    let second_face_id = args.get_adjacent_face_to_tag(exec_state, &face2, false).await?;
+    let first_face_id = args.get_adjacent_face_to_tag(exec_state, &face1, false)?;
+    let second_face_id = args.get_adjacent_face_to_tag(exec_state, &face2, false)?;
 
     let first_tagged_path = args.get_tag_engine_info(exec_state, &face1)?.clone();
     let second_tagged_path = args.get_tag_engine_info(exec_state, &face2)?;

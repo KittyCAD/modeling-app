@@ -58,7 +58,7 @@ async fn inner_shell(
             .await?;
 
         for tag in &faces {
-            let extrude_plane_id = tag.get_face_id(solid, exec_state, &args, false).await?;
+            let extrude_plane_id = tag.get_face_id(solid, exec_state, &args, false)?;
 
             face_ids.push(extrude_plane_id);
         }

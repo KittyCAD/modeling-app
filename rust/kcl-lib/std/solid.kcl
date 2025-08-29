@@ -70,6 +70,8 @@ export fn fillet(
   radius: number(Length),
   /// The paths you want to fillet
   tags: [Edge; 1+],
+  /// Pairs of faces that uniquely define an edge. Equivalent to `getCommonEdge`.
+  faces?: [[TaggedFace; 2+]; 1+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// Create a new tag which refers to this fillet

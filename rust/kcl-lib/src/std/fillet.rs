@@ -2,7 +2,11 @@
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutType};
+use kcmc::{
+    ModelingCmd, each_cmd as mcmd,
+    length_unit::LengthUnit,
+    shared::{CutType, EdgeReference as TmpName},
+};
 use kittycad_modeling_cmds as kcmc;
 use serde::{Deserialize, Serialize};
 
@@ -12,10 +16,10 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, ModelingCmdMeta, Solid, TagIdentifier,
-        types::RuntimeType,
+        types::{ArrayLen, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::Args,
+    std::{Args, sketch::FaceTag},
 };
 
 /// A tag or a uuid of an edge.
@@ -65,12 +69,23 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source("tags")?;
+    let faces: Option<Vec<Vec<FaceTag>>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Array(
+                Box::new(RuntimeType::tagged_face()),
+                ArrayLen::Minimum(2),
+            )),
+            ArrayLen::Minimum(1),
+        ),
+        exec_state,
+    )?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     // Run the function.
     validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
+    let value = inner_fillet(solid, radius, tags, tolerance, tag, faces, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -80,6 +95,7 @@ async fn inner_fillet(
     tags: Vec<EdgeReference>,
     tolerance: Option<TyF64>,
     tag: Option<TagNode>,
+    faces: Option<Vec<Vec<FaceTag>>>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -112,12 +128,38 @@ async fn inner_fillet(
     for _ in 0..num_extra_ids {
         extra_face_ids.push(exec_state.next_uuid());
     }
+
+    let mut edges_references: Vec<TmpName> = edge_ids
+        .clone()
+        .into_iter()
+        .map(|edge_id| TmpName::Edge { uuid: edge_id })
+        .collect();
+
+    let face_references = if let Some(faces) = faces {
+        faces
+            .into_iter()
+            .map(|face| {
+                face.into_iter()
+                    .map(|face_tag| face_tag.get_face_id(solid.as_ref(), exec_state, &args, false))
+                    .collect::<Result<Vec<_>, _>>()
+            })
+            .collect::<Result<Vec<Vec<_>>, _>>()?
+    } else {
+        vec![vec![]]
+    };
+
+    for face_reference in face_references {
+        edges_references.push(TmpName::Face { uuids: face_reference });
+        extra_face_ids.push(exec_state.next_uuid());
+    }
+
     exec_state
         .batch_end_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id: None,
-                edge_ids: edge_ids.clone(),
+                edge_ids: vec![],
+                edges_references,
                 extra_face_ids,
                 strategy: Default::default(),
                 object_id: solid.id,
@@ -128,6 +170,7 @@ async fn inner_fillet(
         )
         .await?;
 
+    //TODO: the new edges_references are not included in this.
     let new_edge_cuts = edge_ids.into_iter().map(|edge_id| EdgeCut::Fillet {
         id,
         edge_id,

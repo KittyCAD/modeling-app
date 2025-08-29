@@ -59,7 +59,7 @@ impl std::fmt::Display for FaceTag {
 
 impl FaceTag {
     /// Get the face id from the tag.
-    pub async fn get_face_id(
+    pub fn get_face_id(
         &self,
         solid: &Solid,
         exec_state: &mut ExecState,
@@ -67,7 +67,7 @@ impl FaceTag {
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         match self {
-            FaceTag::Tag(t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
+            FaceTag::Tag(t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar),
             FaceTag::StartOrEnd(StartOrEnd::Start) => solid.start_cap_id.ok_or_else(|| {
                 KclError::new_type(KclErrorDetails::new(
                     "Expected a start face".to_string(),
@@ -997,7 +997,7 @@ async fn start_sketch_on_face(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Box<Face>, KclError> {
-    let extrude_plane_id = tag.get_face_id(&solid, exec_state, args, true).await?;
+    let extrude_plane_id = tag.get_face_id(&solid, exec_state, args, true)?;
 
     Ok(Box::new(Face {
         id: extrude_plane_id,

@@ -351,7 +351,7 @@ impl Args {
     }
 
     // TODO: Move this to the modeling module.
-    pub(crate) async fn get_adjacent_face_to_tag(
+    pub(crate) fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,
         tag: &TagIdentifier,
@@ -805,6 +805,7 @@ macro_rules! impl_from_kcl_for_vec {
 }
 
 impl_from_kcl_for_vec!(FaceTag);
+impl_from_kcl_for_vec!(Vec<FaceTag>);
 impl_from_kcl_for_vec!(crate::execution::EdgeCut);
 impl_from_kcl_for_vec!(crate::execution::Metadata);
 impl_from_kcl_for_vec!(super::fillet::EdgeReference);

@@ -60,7 +60,7 @@ pub(crate) async fn inner_plane_of(
     }
 
     // Query the engine to learn what plane, if any, this face is on.
-    let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
+    let face_id = face.get_face_id(&solid, exec_state, args, true)?;
     let plane_id = exec_state.id_generator().next_uuid();
     let meta = ModelingCmdMeta::with_id(&args.ctx, args.source_range, plane_id);
     let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar { object_id: face_id });
