@@ -257,8 +257,8 @@ jobs:
     permissions:
       contents: write
     # Equivalent to IS_RELEASE || IS_STAGING (but we can't access those env vars here)
-    # TODO: disable the next line to get those conversational-ttc "staging" builds updated to modeling-app/staging/conversational-ttc
-    if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+    # TODO: make sure to re-enable this check before merging
+    # if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
