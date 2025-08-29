@@ -8,7 +8,6 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
-use schemars::JsonSchema;
 use serde::Serialize;
 
 use super::{
@@ -30,7 +29,7 @@ use crate::{
 };
 
 /// A sketch surface or a sketch.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(untagged)]
 pub enum SketchOrSurface {
@@ -348,7 +347,7 @@ async fn inner_circle_three_point(
 }
 
 /// Type of the polygon
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, Default)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Default)]
 #[ts(export)]
 #[serde(rename_all = "lowercase")]
 pub enum PolygonType {

@@ -78,7 +78,7 @@ export default defineConfig(({ command, mode }) => {
     },
     plugins: [
       react(),
-      indexHtmlCsp(!process.env.VERCEL && mode === 'production'),
+      indexHtmlCsp(!process.env.VERCEL && mode !== 'development'),
       viteTsconfigPaths(),
       eslint(),
       version(),

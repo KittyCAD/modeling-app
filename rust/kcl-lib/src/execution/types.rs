@@ -1,7 +1,6 @@
 use std::{collections::HashMap, fmt};
 
 use anyhow::Result;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -348,7 +347,7 @@ impl fmt::Display for RuntimeType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ts_rs::TS)]
 pub enum ArrayLen {
     None,
     Minimum(usize),
@@ -460,7 +459,7 @@ impl fmt::Display for PrimitiveType {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum NumericType {
@@ -831,7 +830,7 @@ impl From<UnitAngle> for NumericType {
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitType {
@@ -864,7 +863,7 @@ impl std::fmt::Display for UnitType {
 
 // TODO called UnitLen so as not to clash with UnitLength in settings.
 /// A unit of length.
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitLen {
@@ -991,7 +990,7 @@ impl From<UnitLen> for kittycad_modeling_cmds::units::UnitLength {
 }
 
 /// A unit of angle.
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitAngle {

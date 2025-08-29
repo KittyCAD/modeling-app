@@ -2,7 +2,7 @@ use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
 use crate::{
-    CompilationError, NodePath,
+    CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo,
@@ -13,7 +13,6 @@ use crate::{
         types::RuntimeType,
     },
     parsing::ast::types::{CallExpressionKw, DefaultParamVal, FunctionExpression, Node, Program, Type},
-    source_range::SourceRange,
     std::StdFn,
 };
 
@@ -585,7 +584,7 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
 
     if found.is_unknown_number() {
         exec_state.clear_units_warnings(source_range);
-        result.push_str("\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`.");
+        result.push_str("\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: mm` or `(a * b): deg`.");
     }
 
     result
@@ -631,7 +630,7 @@ fn type_check_params_kw(
                                 );
                                 if let Some(ty) = e.explicit_coercion {
                                     // TODO if we have access to the AST for the argument we could choose which example to suggest.
-                                    message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
+                                    message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): {ty}`");
                                 }
                                 KclError::new_argument(KclErrorDetails::new(
                                     message,
@@ -977,7 +976,7 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
         let err = parse_execute(program).await.unwrap_err();
         assert_eq!(
             err.message(),
-            "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`."
+            "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: mm` or `(a * b): deg`."
         )
     }
 }
