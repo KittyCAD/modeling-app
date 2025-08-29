@@ -1,5 +1,5 @@
 import { Connection } from '@src/network/connection'
-import type { ClientMetrics, IEventListenerTracked } from './utils'
+import type { ClientMetrics, IEventListenerTracked } from '@src/network/utils'
 
 const TEST_URL = 'nicenicenice'
 const TEST_TOKEN = 'mycooltoken'

@@ -3,7 +3,6 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclSingleton'
 import CodeManager from '@src/lang/codeManager'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 
@@ -38,12 +37,9 @@ import type { AppMachineContext } from '@src/lib/types'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { EngineDebugger } from '@src/lib/debugger'
-import { Connection } from '@src/network/connection'
 import { ConnectionManager } from '@src/network/connectionManager'
 
 export const codeManager = new CodeManager()
-// export const engineCommandManager = new EngineCommandManager()
 export const engineCommandManager = new ConnectionManager()
 export const rustContext = new RustContext(engineCommandManager)
 
@@ -279,8 +275,6 @@ export const useCommandBarState = () => {
   return useSelector(commandBarActor, cmdBarStateSelector)
 }
 
-window.engineStreamActor = engineStreamActor
-
 // Initialize global commands
 commandBarActor.send({
   type: 'Add commands',
@@ -291,14 +285,6 @@ commandBarActor.send({
     ],
   },
 })
-
-window.start = () => {
-  window.engineCommandManager.start({
-    width: 500,
-    height: 500,
-    token: env().VITE_KITTYCAD_API_TOKEN,
-  })
-}
 
 // const cm = new ConnectionManager()
 // cm.rustContext = rustContext

@@ -1,6 +1,5 @@
 import type { FileEntry, Project } from '@src/lib/project'
 import type CodeManager from '@src/lang/codeManager'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'

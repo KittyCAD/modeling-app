@@ -657,7 +657,9 @@ export class Connection extends EventTarget {
         metadata: { id: this.id },
       })
     } else {
-      console.error(`websocket is defined but readyState is wrong ${this.websocket.readyState}`)
+      console.error(
+        `websocket is defined but readyState is wrong ${this.websocket.readyState}`
+      )
     }
   }
 
@@ -764,19 +766,21 @@ export class Connection extends EventTarget {
     this.timeoutToForceConnectId = undefined
   }
 
-
   addIceCandidate(candidate: RTCIceCandidateInit) {
     if (!this.peerConnection) {
-      throw new Error('do not do this, crashing!')
+      console.error('do not do this, crashing!')
+      return
     }
 
-    const tracker = new Promise(async (resolve, reject) => {
-      try {
-        const result = await this.peerConnection?.addIceCandidate(candidate)
-        resolve(result)
-      } catch (e) {
-        reject(e)
-      }
+    const tracker = new Promise<boolean>((resolve, reject) => {
+      this.peerConnection
+        ?.addIceCandidate(candidate)
+        .then(() => {
+          resolve(true)
+        })
+        .catch((e) => {
+          reject(e)
+        })
     })
     this.iceCandidatePromises.push(tracker)
     EngineDebugger.addLog({
@@ -790,17 +794,18 @@ export class Connection extends EventTarget {
   // WebSocketRequest type!
   unreliableSend(message: Models['WebSocketRequest_type']) {
     if (!this.unreliableDataChannel) {
-      throw new Error('race condition my guy, unreliableSend')
+      console.error('race condition my guy, unreliableSend')
+      return
     }
 
     if (this.unreliableDataChannel.readyState === 'connecting') {
-      throw new Error(
-        'sending message while unreliableDataChannel is connecting'
-      )
+      console.error('sending message while unreliableDataChannel is connecting')
+      return
     }
 
     if (this.unreliableDataChannel.readyState === 'closing') {
-      throw new Error('sending message while unreliableDataChannel is closing')
+      console.error('sending message while unreliableDataChannel is closing')
+      return
     }
 
     if (this.unreliableDataChannel.readyState === 'closed') {
@@ -817,7 +822,8 @@ export class Connection extends EventTarget {
 
   send(message: Models['WebSocketRequest_type']) {
     if (!this.websocket) {
-      throw new Error('send, websocket is undefined')
+      console.error('send, websocket is undefined')
+      return
     }
 
     // Not connected, don't send anything

@@ -29,17 +29,19 @@ import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 beforeAll(async () => {
   await initPromise
 
-  await new Promise((resolve) => {
-    engineCommandManager.start({
-      token: env().VITE_KITTYCAD_API_TOKEN,
-      width: 256,
-      height: 256,
-      setMediaStream: () => {},
-      setIsStreamReady: () => {},
-      callbackOnEngineLiteConnect: () => {
-        resolve(true)
-      },
-    })
+  await new Promise((resolve, reject) => {
+    engineCommandManager
+      .start({
+        token: env().VITE_KITTYCAD_API_TOKEN,
+        width: 256,
+        height: 256,
+        setMediaStream: () => {},
+        setIsStreamReady: () => {},
+        callbackOnEngineLiteConnect: () => {
+          resolve(true)
+        },
+      })
+      .catch(reject)
   })
 }, 30_000)
 
