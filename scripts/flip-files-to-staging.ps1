@@ -8,7 +8,7 @@ yq -i '.productName = env(PRODUCT_NAME)' -p=json -o=json package.json
 yq -i '.name = "zoo-modeling-app-staging"' -p=json -o=json package.json
 
 # electron-builder.yml
-yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/staging/conversational-ttc"' electron-builder.yml
+yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/staging"' electron-builder.yml
 yq -i '.appId = "dev.zoo.modeling-app-staging"' electron-builder.yml
 yq -i '.nsis.include = "./scripts/installer-staging.nsh"' electron-builder.yml
 

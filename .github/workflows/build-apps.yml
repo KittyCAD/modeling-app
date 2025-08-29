@@ -1,10 +1,12 @@
 name: build-apps
 
 on:
-  pull_request:
+  # pull_request:
   push:
     branches:
       - main
+      - pierremtb/conversational-ttc-as-separate-nightly
+      - conversational-ttc
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
@@ -216,7 +218,6 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          CSC_FOR_PULL_REQUEST: true
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
