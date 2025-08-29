@@ -1,5 +1,5 @@
 import { markOnce } from '@src/lib/performance'
-import type { ClientMetrics, IEventListenerTracked } from './utils'
+import type { ClientMetrics, IEventListenerTracked } from '@src/network/utils'
 import {
   ConnectingType,
   DATACHANNEL_NAME_UMC,
@@ -7,7 +7,7 @@ import {
   EngineConnectionStateType,
   pingIntervalMs,
   promiseFactory,
-} from './utils'
+} from '@src/network/utils'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -18,14 +18,14 @@ import {
   createOnNegotiationNeeded,
   createOnSignalingStateChange,
   createOnTrack,
-} from './peerConnection'
+} from '@src/network/peerConnection'
 import type { Models } from '@kittycad/lib'
 import {
   createOnWebSocketClose,
   createOnWebSocketError,
   createOnWebSocketMessage,
   createOnWebSocketOpen,
-} from './websocketConnection'
+} from '@src/network/websocketConnection'
 import { EngineDebugger } from '@src/lib/debugger'
 import { uuidv4 } from '@src/lib/utils'
 
@@ -147,7 +147,8 @@ export class Connection extends EventTarget {
     })
 
     if (this._pingIntervalId) {
-      throw new Error('Attempting to startPingPong before stopping it.')
+      console.warn('Attempting to startPingPong before stopping it.')
+      return
     }
 
     this._pingIntervalId = setInterval(() => {
@@ -185,7 +186,7 @@ export class Connection extends EventTarget {
     })
 
     if (this.deferredConnection) {
-      Promise.reject('currently connecting, try again later.')
+      return Promise.reject('currently connecting, try again later.')
     }
 
     // TODO: Make sure each resolve and each reject is called.
@@ -213,9 +214,10 @@ export class Connection extends EventTarget {
    */
   trackListener(name: string, eventListenerTracked: IEventListenerTracked) {
     if (this.allEventListeners.has(name)) {
-      throw new Error(
-        `You are trying to track something twice, good luck! you're crashing. ${name}`
+      console.error(
+        `You are trying to track something twice, good luck! you're crashing: ${name}. This is actuall bad.`
       )
+      return
     }
 
     this.allEventListeners.set(name, eventListenerTracked)
@@ -230,7 +232,7 @@ export class Connection extends EventTarget {
    */
   async initiateConnectionExclusive() {
     if (!this.peerConnection) {
-      throw new Error('peerConnection is undefined')
+      return Promise.reject(new Error('peerConnection is undefined'))
     }
 
     if (!this.sdpAnswer) {
@@ -294,17 +296,20 @@ export class Connection extends EventTarget {
 
   createPeerConnection() {
     if (!this.deferredPeerConnection?.resolve) {
-      throw new Error('deferredPeerConnection resolve is undefined')
+      console.error('deferredPeerConnection resolve is undefined')
+      return
     }
 
     if (!this.deferredConnection?.resolve) {
-      throw new Error('deferredConnection resolve is undefined')
+      console.error('deferredConnection resolve is undefined')
+      return
     }
 
     if (!this.deferredMediaStreamAndWebrtcStatsCollector?.resolve) {
-      throw new Error(
+      console.error(
         'deferredMediaStreamAndWebrtcStatsCollector resolve is undefined'
       )
+      return
     }
 
     this.peerConnection = new RTCPeerConnection({
@@ -475,7 +480,8 @@ export class Connection extends EventTarget {
 
   createWebSocketConnection() {
     if (!this.deferredSdpAnswer?.resolve) {
-      throw new Error('deferredSdpAnswer resolve is undefined')
+      console.error('deferredSdpAnswer resolve is undefined')
+      return
     }
     dispatchEvent(
       new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {

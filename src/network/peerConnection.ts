@@ -16,7 +16,7 @@ export function createOnIceCandidate({
   setTimeoutToForceConnectId,
   dispatchEvent,
 }: {
-  initiateConnectionExclusive: () => void
+  initiateConnectionExclusive: () => Promise<undefined>
   send: (message: Models['WebSocketRequest_type']) => void
   setTimeoutToForceConnectId: (id: ReturnType<typeof setTimeout>) => void
   dispatchEvent: (event: Event) => boolean
@@ -30,7 +30,7 @@ export function createOnIceCandidate({
     // This is null when the ICE gathering state is done.
     // Windows ONLY uses this to signal it's done!
     if (event.candidate === null) {
-      initiateConnectionExclusive()
+      initiateConnectionExclusive().catch(reportRejection)
       return
     }
 
@@ -64,7 +64,7 @@ export function createOnIceCandidate({
     // Sometimes the remote end doesn't report the end of candidates.
     // They have 3 seconds to.
     const id = setTimeout(() => {
-      initiateConnectionExclusive()
+      initiateConnectionExclusive().catch(reportRejection)
       console.warn('attempting initiateConnectionExclusive after 3 seconds')
       EngineDebugger.addLog({
         label: 'onIceCandidate',
@@ -81,7 +81,7 @@ export function createOnIceCandidate({
 export function createOnIceGatheringStateChange({
   initiateConnectionExclusive,
 }: {
-  initiateConnectionExclusive: () => void
+  initiateConnectionExclusive: () => Promise<unknown>
 }) {
   const onIceGatheringStateChange = (event: Event) => {
     EngineDebugger.addLog({
@@ -91,7 +91,7 @@ export function createOnIceGatheringStateChange({
     })
     // Gotcha: This is invoked here because sdpAnswer could be done by the time this is called
     // or it could not be done. Who knows!
-    initiateConnectionExclusive()
+    initiateConnectionExclusive().catch(reportRejection)
   }
 
   return onIceGatheringStateChange

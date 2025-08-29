@@ -7,6 +7,7 @@ import {
   toRTCSessionDescriptionInit,
 } from '@src/network/utils'
 import { EngineDebugger } from '@src/lib/debugger'
+import { reportRejection } from '@src/lib/trap'
 
 /**
  * 4 different event listeners to clean up
@@ -99,13 +100,13 @@ export const createOnWebSocketMessage = ({
   createPeerConnection: () => RTCPeerConnection
   send: (message: Models['WebSocketRequest_type']) => void
   setSdpAnswer: (answer: RTCSessionDescriptionInit) => void
-  initiateConnectionExclusive: () => void
+  initiateConnectionExclusive: () => Promise<unknown>
   addIceCandidate: (candidate: RTCIceCandidateInit) => void
   webrtcStatsCollector: () => (() => Promise<ClientMetrics>) | undefined
   sdpAnswerResolve: (value: any) => void
   sdpAnswerReject: (value: any) => void
 }) => {
-  const onWebSocketMessage = async (event: MessageEvent<any>) => {
+  const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
     // the server that relate to the ICE handshake, or WebRTC
     // negotiation. There may be other messages (including ArrayBuffer
@@ -242,42 +243,60 @@ export const createOnWebSocketMessage = ({
         // Create a session description offer based on our local environment
         // that we will send to the remote end. The remote will send back
         // what it supports via sdp_answer.
-        try {
-          const offer = await peerConnection.createOffer()
-          // This was not error handled before!
-          await peerConnection.setLocalDescription(offer)
-          dispatchEvent(
-            new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
-              detail: {
-                type: EngineConnectionStateType.Connecting,
-                value: {
-                  type: ConnectingType.SetLocalDescription,
-                },
-              },
-            })
-          )
-          send({
-            type: 'sdp_offer',
-            offer: offer as Models['RtcSessionDescription_type'],
+        peerConnection
+          .createOffer()
+          .then((offer) => {
+            peerConnection
+              .setLocalDescription(offer)
+              .then(() => {
+                dispatchEvent(
+                  new CustomEvent(
+                    EngineConnectionEvents.ConnectionStateChanged,
+                    {
+                      detail: {
+                        type: EngineConnectionStateType.Connecting,
+                        value: {
+                          type: ConnectingType.SetLocalDescription,
+                        },
+                      },
+                    }
+                  )
+                )
+                send({
+                  type: 'sdp_offer',
+                  offer: offer as Models['RtcSessionDescription_type'],
+                })
+                dispatchEvent(
+                  new CustomEvent(
+                    EngineConnectionEvents.ConnectionStateChanged,
+                    {
+                      detail: {
+                        type: EngineConnectionStateType.Connecting,
+                        value: {
+                          type: ConnectingType.OfferedSdp,
+                        },
+                      },
+                    }
+                  )
+                )
+              })
+              .catch((e) => {
+                EngineDebugger.addLog({
+                  label: 'onWebSocketMessage',
+                  message: 'peerConnection.setLocalDescription(offer) failed',
+                  metadata: { e },
+                })
+                disconnectAll()
+              })
           })
-          dispatchEvent(
-            new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
-              detail: {
-                type: EngineConnectionStateType.Connecting,
-                value: {
-                  type: ConnectingType.OfferedSdp,
-                },
-              },
+          .catch((e) => {
+            EngineDebugger.addLog({
+              label: 'onWebSocketMessage',
+              message: 'peerConnection.createOffer failed',
+              metadata: { e },
             })
-          )
-        } catch (e) {
-          EngineDebugger.addLog({
-            label: 'onWebSocketMessage',
-            message: 'peerConnection.setLocalDescription(offer) failed',
-            metadata: { e },
+            disconnectAll()
           })
-          disconnectAll()
-        }
         break
       case 'sdp_answer':
         const answer = resp.data.answer
@@ -308,7 +327,7 @@ export const createOnWebSocketMessage = ({
 
         // We might have received this after ice candidates finish
         // Make sure we attempt to connect when we do.
-        initiateConnectionExclusive()
+        initiateConnectionExclusive().catch(reportRejection)
         break
       case 'trickle_ice':
         const candidate = resp.data.candidate
@@ -320,29 +339,31 @@ export const createOnWebSocketMessage = ({
          * is initialized from the ice_server_info workflow. This means we need to drop these requests
          * until the function is initialized
          */
-        try {
-          const collector = webrtcStatsCollector()
-          if (!collector) {
-            EngineDebugger.addLog({
-              label: 'onWebSocketMessage',
-              message:
-                'dropping metrics_request, webrtcStatsCollector is undefined',
-              metadata: { event },
-            })
-            return
-          }
-          // webrtcStatsCollector is created from createPeerConnection
-          // which is an event within this switch case so it is not easy
-          // to have this be a sync workflow? You could have two onMessageHandlers
-          // once the other one is created but that could be more confusing.
-          const clientMetrics = await collector()
-          send({
-            type: 'metrics_response',
-            metrics: clientMetrics,
+        const collector = webrtcStatsCollector()
+        if (!collector) {
+          EngineDebugger.addLog({
+            label: 'onWebSocketMessage',
+            message:
+              'dropping metrics_request, webrtcStatsCollector is undefined',
+            metadata: { event },
           })
-        } catch (e) {
-          console.error(e)
+          return
         }
+        // webrtcStatsCollector is created from createPeerConnection
+        // which is an event within this switch case so it is not easy
+        // to have this be a sync workflow? You could have two onMessageHandlers
+        // once the other one is created but that could be more confusing.
+        collector()
+          .then((clientMetrics) => {
+            send({
+              type: 'metrics_response',
+              metrics: clientMetrics,
+            })
+          })
+          .catch((e) => {
+            console.error(e)
+          })
+
         break
     }
   }
