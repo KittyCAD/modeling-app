@@ -2571,4 +2571,17 @@ startSketchOn(XY)
 "#;
         parse_execute(code).await.unwrap_err();
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn vector_module() {
+        let ast = r#"
+cylinder = startSketchOn(XY)
+  |> circle(center = [0.67, 0.47], radius = 1.06)
+  |> extrude(length = 5)
+p = planeOf(cylinder, face = END)
+q = vector::cross(p.xAxis, v = p.yAxis)
+r = vector::cross(p.xAxis, v = q)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
 }

@@ -54,7 +54,7 @@ async fn call_map_closure(
         ctxt.clone(),
         exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
     );
-    let output = map_fn.call_kw(None, exec_state, ctxt, args, source_range).await?;
+    let output = map_fn.call(None, exec_state, ctxt, args, source_range).await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
         KclError::new_semantic(KclErrorDetails::new(
@@ -111,7 +111,7 @@ async fn call_reduce_closure(
         exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
     );
     let transform_fn_return = reduce_fn
-        .call_kw(None, exec_state, ctxt, reduce_fn_args, source_range)
+        .call(None, exec_state, ctxt, reduce_fn_args, source_range)
         .await?;
 
     // Unpack the returned transform object.
