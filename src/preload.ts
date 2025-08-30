@@ -104,6 +104,7 @@ const watchFileOff = (path: string, key: string) => {
     fsWatchListeners.set(path, watchers)
   }
 }
+const copy = fs.cp
 const readFile = fs.readFile
 // It seems like from the node source code this does not actually block but also
 // don't trust me on that (jess).
@@ -313,4 +314,5 @@ contextBridge.exposeInMainWorld('electron', {
   disableMenu,
   menuOn,
   canReadWriteDirectory,
+  copy,
 })
