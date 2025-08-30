@@ -2274,6 +2274,7 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     case 'UnaryExpression':
     case 'MemberExpression':
     case 'IfExpression':
+    case 'SketchVar':
       return true
     case 'TagDeclarator':
     case 'PipeSubstitution':
