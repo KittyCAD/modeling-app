@@ -126,6 +126,7 @@ export class KclManager extends EventTarget {
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
   private _kclVersion: string | undefined = undefined
+  private _isPaused = false
   private singletons: Singletons
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
@@ -145,6 +146,7 @@ export class KclManager extends EventTarget {
   private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
+  private _isPausedCallback: (arg: boolean) => void = () => {}
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   get ast() {
@@ -264,6 +266,21 @@ export class KclManager extends EventTarget {
     this._executeIsStale = executeIsStale
   }
 
+  get isPaused() {
+    return this._isPaused
+  }
+
+  set isPaused(isPaused) {
+    this._isPaused = isPaused
+    this._isPausedCallback(isPaused)
+    if (!isPaused && this.executeIsStale) {
+      const args = this.executeIsStale
+      this.executeIsStale = null
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      this.executeAst(args)
+    }
+  }
+
   get wasmInitFailed() {
     return this._wasmInitFailed
   }
@@ -300,6 +317,7 @@ export class KclManager extends EventTarget {
     setDiagnostics,
     setIsExecuting,
     setWasmInitFailed,
+    setIsPaused,
   }: {
     setVariables: (arg: VariableMap) => void
     setAst: (arg: Node<Program>) => void
@@ -308,6 +326,7 @@ export class KclManager extends EventTarget {
     setDiagnostics: (errors: Diagnostic[]) => void
     setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
+    setIsPaused: (arg: boolean) => void
   }) {
     this._variablesCallBack = setVariables
     this._astCallBack = setAst
@@ -316,6 +335,7 @@ export class KclManager extends EventTarget {
     this._diagnosticsCallback = setDiagnostics
     this._isExecutingCallback = setIsExecuting
     this._wasmInitFailedCallback = setWasmInitFailed
+    this._isPausedCallback = setIsPaused
   }
 
   clearAst() {
@@ -441,6 +461,10 @@ export class KclManager extends EventTarget {
   // this function, too many other things that don't want it exist. For that,
   // use updateModelingState().
   async executeAst(args: ExecuteArgs = {}): Promise<void> {
+    if (this.isPaused) {
+      this.executeIsStale = args
+      return
+    }
     if (this.isExecuting) {
       this.executeIsStale = args
 
@@ -821,6 +845,10 @@ export class KclManager extends EventTarget {
     this.sceneInfraBaseUnitMultiplierSetter(
       settings?.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
     )
+  }
+
+  togglePause(): void {
+    this.isPaused = !this.isPaused
   }
 }
 
