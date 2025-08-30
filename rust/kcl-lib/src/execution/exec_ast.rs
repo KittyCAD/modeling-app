@@ -20,8 +20,8 @@ use crate::{
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
         BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, MemberExpression, Name,
-        Node, NodeRef, ObjectExpression, PipeExpression, Program, SketchBlock, TagDeclarator, Type, UnaryExpression,
-        UnaryOperator,
+        Node, NodeRef, ObjectExpression, PipeExpression, Program, SketchBlock, SketchVar, TagDeclarator, Type,
+        UnaryExpression, UnaryOperator,
     },
     std::args::TyF64,
 };
@@ -819,6 +819,7 @@ impl ExecutorContext {
             }
             Expr::AscribedExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::SketchBlock(expr) => expr.get_result(exec_state, self).await?,
+            Expr::SketchVar(expr) => expr.get_result(exec_state, self).await?,
         };
         Ok(item)
     }
@@ -866,6 +867,26 @@ impl Node<SketchBlock> {
             value: false,
             meta: vec![metadata],
         })
+    }
+}
+
+impl Node<SketchVar> {
+    pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        exec_state.warn_experimental("sketch variables", self.into());
+        // TODO: sketch-api: Implement sketch variable execution
+        if let Some(initial) = &self.initial {
+            Ok(KclValue::from_numeric_literal(initial, exec_state))
+        } else {
+            let metadata = Metadata {
+                source_range: SourceRange::from(self),
+            };
+
+            Ok(KclValue::Number {
+                value: 0.0,
+                ty: NumericType::default(),
+                meta: vec![metadata],
+            })
+        }
     }
 }
 
@@ -920,6 +941,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.execute(exec_state, ctx).await,
             BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
             BinaryPart::AscribedExpression(e) => e.get_result(exec_state, ctx).await,
+            BinaryPart::SketchVar(e) => e.get_result(exec_state, ctx).await,
         }
     }
 }
