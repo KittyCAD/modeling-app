@@ -536,3 +536,7 @@ export fn assert(
   /// If the value was false, the program will terminate with this error message
   error?: string,
 ) {}
+
+/// Set a label.
+@(impl = std_rust)
+export fn label(@item: any, text: string): {}

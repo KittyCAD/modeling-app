@@ -238,6 +238,30 @@ impl From<&KclValue> for SourceRange {
 }
 
 impl KclValue {
+    pub(crate) fn id(&self) -> Option<uuid::Uuid> {
+        match self {
+            KclValue::Uuid { value, .. } => Some(*value),
+            KclValue::Bool { .. } => None,
+            KclValue::Number { .. } => None,
+            KclValue::String { .. } => None,
+            KclValue::Tuple { .. } => None,
+            KclValue::HomArray { .. } => None,
+            KclValue::Object { .. } => None,
+            KclValue::TagIdentifier(tag) => tag.get_cur_info().map(|info| info.id),
+            KclValue::TagDeclarator(_) => None,
+            KclValue::Plane { value } => Some(value.id),
+            KclValue::Face { value } => Some(value.id),
+            KclValue::Sketch { value } => Some(value.id),
+            KclValue::Solid { value } => Some(value.id),
+            KclValue::Helix { value } => Some(value.value),
+            KclValue::ImportedGeometry(imported_geometry) => Some(imported_geometry.id),
+            KclValue::Function { .. } => None,
+            KclValue::Module { .. } => None,
+            KclValue::Type { .. } => None,
+            KclValue::KclNone { .. } => None,
+        }
+    }
+
     pub(crate) fn metadata(&self) -> Vec<Metadata> {
         match self {
             KclValue::Uuid { value: _, meta } => meta.clone(),

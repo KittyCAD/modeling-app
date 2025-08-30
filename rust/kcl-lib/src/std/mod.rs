@@ -12,6 +12,7 @@ pub mod edge;
 pub mod extrude;
 pub mod fillet;
 pub mod helix;
+pub mod label;
 pub mod loft;
 pub mod math;
 pub mod mirror;
@@ -193,6 +194,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("prelude", "assertIs") => (
             |e, a| Box::pin(crate::std::assert::assert_is(e, a)),
             StdFnProps::default("std::assertIs"),
+        ),
+        ("prelude", "label") => (
+            |e, a| Box::pin(crate::std::label::label(e, a)),
+            StdFnProps::default("std::label"),
         ),
         ("solid", "fillet") => (
             |e, a| Box::pin(crate::std::fillet::fillet(e, a)),
