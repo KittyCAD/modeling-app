@@ -197,6 +197,32 @@ impl Node<CallExpressionKw> {
         let fn_name = &self.callee;
         let callsite: SourceRange = self.into();
 
+        // Clone the function so that we can use a mutable reference to
+        // exec_state.
+        let func = fn_name.get_result(exec_state, ctx).await?.clone();
+
+        let Some(fn_src) = func.as_function() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "cannot call this because it isn't a function".to_string(),
+                vec![callsite],
+            )));
+        };
+
+        // Evaluate the unlabeled first param, if any exists.
+        let unlabeled = if let Some(ref arg_expr) = self.unlabeled {
+            let source_range = SourceRange::from(arg_expr.clone());
+            let metadata = Metadata { source_range };
+            let value = ctx
+                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
+                .await?;
+
+            let label = arg_expr.ident_name().map(str::to_owned);
+
+            Some((label, Arg::new(value, source_range)))
+        } else {
+            None
+        };
+
         // Build a hashmap from argument labels to the final evaluated values.
         let mut fn_args = IndexMap::with_capacity(self.arguments.len());
         let mut errors = Vec::new();
@@ -221,21 +247,6 @@ impl Node<CallExpressionKw> {
             }
         }
 
-        // Evaluate the unlabeled first param, if any exists.
-        let unlabeled = if let Some(ref arg_expr) = self.unlabeled {
-            let source_range = SourceRange::from(arg_expr.clone());
-            let metadata = Metadata { source_range };
-            let value = ctx
-                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
-                .await?;
-
-            let label = arg_expr.ident_name().map(str::to_owned);
-
-            Some((label, Arg::new(value, source_range)))
-        } else {
-            None
-        };
-
         let args = Args::new_kw(
             KwArgs {
                 unlabeled,
@@ -246,17 +257,6 @@ impl Node<CallExpressionKw> {
             ctx.clone(),
             exec_state.pipe_value().map(|v| Arg::new(v.clone(), callsite)),
         );
-
-        // Clone the function so that we can use a mutable reference to
-        // exec_state.
-        let func = fn_name.get_result(exec_state, ctx).await?.clone();
-
-        let Some(fn_src) = func.as_function() else {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "cannot call this because it isn't a function".to_string(),
-                vec![callsite],
-            )));
-        };
 
         let return_value = fn_src
             .call_kw(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
