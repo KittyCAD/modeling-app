@@ -1,4 +1,4 @@
-import { expect, test } from '@e2e/playwright/zoo-test'
+import { test } from '@e2e/playwright/zoo-test'
 import path from 'path'
 import fsp from 'fs/promises'
 
@@ -64,7 +64,7 @@ test.describe('edit with AI example snapshots', () => {
     `change colour`,
     // TODO this is more of a snapshot, but atm it needs to be manually run locally to update the files
     { tag: ['@desktop'] },
-    async ({ context, homePage, cmdBar, editor, page, scene }) => {
+    async ({ context, homePage, cmdBar, editor, page, scene, toolbar }) => {
       const project = 'test-dir'
       await context.folderSetupFn(async (dir) => {
         const projectDir = path.join(dir, project)
@@ -85,7 +85,6 @@ test.describe('edit with AI example snapshots', () => {
         body1CapCoords.x,
         body1CapCoords.y
       )
-      const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
 
       await test.step('wait for scene to load select body and check selection came through', async () => {
         await clickBody1Cap()
@@ -98,16 +97,9 @@ test.describe('edit with AI example snapshots', () => {
 
       await test.step('fire off edit prompt', async () => {
         await cmdBar.captureTextToCadRequestSnapshot(test.info())
-        await cmdBar.openCmdBar('promptToEdit')
+        await toolbar.fireTtcPrompt('make this neon green please, use #39FF14')
         await page.waitForTimeout(100)
-        await cmdBar.progressCmdBar()
-        // being specific about the color with a hex means asserting pixel color is more stable
-        await page
-          .getByTestId('cmd-bar-arg-value')
-          .fill('make this neon green please, use #39FF14')
         await page.waitForTimeout(100)
-        await cmdBar.progressCmdBar()
-        await expect(submittingToast).toBeVisible()
       })
     }
   )

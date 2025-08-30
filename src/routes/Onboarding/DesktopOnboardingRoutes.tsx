@@ -16,10 +16,7 @@ import { useEffect, useState } from 'react'
 import { commandBarActor, systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { joinRouterPaths, PATHS } from '@src/lib/paths'
-import {
-  ONBOARDING_DATA_ATTRIBUTE,
-  ONBOARDING_PROJECT_NAME,
-} from '@src/lib/constants'
+import { ONBOARDING_PROJECT_NAME } from '@src/lib/constants'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { Selections } from '@src/lib/selections'
 import { Spinner } from '@src/components/Spinner'
@@ -160,7 +157,7 @@ function Toolbar() {
 
 function TextToCad() {
   // Highlight the text-to-cad button if it's present
-  useOnboardingHighlight('ai-group')
+  useOnboardingHighlight('command-bar-open-button')
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -170,9 +167,9 @@ function TextToCad() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Text-to-CAD</h1>
         <p className="my-4">
-          This last button is Text-to-CAD. This allows you to write up a
-          description of what you want, and our AI will generate the CAD for
-          you. Text-to-CAD is currently in an experimental stage. We are
+          You can find Text-to-CAD in the command palette. This allows you to
+          write up a description of what you want, and our AI will generate the
+          CAD for you. Text-to-CAD is currently in an experimental stage. We are
           improving it every day.
         </p>
         <p className="my-4">
@@ -381,25 +378,8 @@ function OtherPanes() {
 function PromptToEdit() {
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
-  // Click the text-to-cad dropdown button if it's available
-  useEffect(() => {
-    const dropdownButton = document.querySelector(
-      `[data-${ONBOARDING_DATA_ATTRIBUTE}="ai-dropdown-button"]`
-    )
-    if (dropdownButton === null) {
-      console.error(
-        `Expected dropdown is not present in onboarding step '${thisOnboardingStatus}'`
-      )
-      return
-    }
-
-    if (dropdownButton instanceof HTMLButtonElement) {
-      dropdownButton.click()
-    }
-  }, [])
-
-  // Close the panes on mount, close on unmount
-  useOnboardingPanes()
+  // Open the text-to-cad pane
+  useOnboardingPanes(['text-to-cad'], ['text-to-cad'])
 
   // navigate to the main assembly file
   useEffect(() => {
@@ -422,8 +402,8 @@ function PromptToEdit() {
         <h1 className="text-xl font-bold">Modify with Zoo Text-to-CAD</h1>
         <p className="my-4">
           Text-to-CAD not only can <strong>create</strong> a part, but also{' '}
-          <strong>modify</strong> an existing part. In the dropdown, you’ll see
-          “Modify with Zoo Text-to-CAD”. Once clicked, you’ll describe the
+          <strong>modify</strong> an existing part. In the right toolbar, you’ll
+          see a “Text-to-CAD” pane. Once clicked, you’ll be able to describe the
           change you want for your part, and our AI will generate the change.
           Once again, this will cost <strong>one credit per minute</strong> it
           took to generate, but as mentioned before, most calls are typically
@@ -444,8 +424,23 @@ function PromptToEditPrompt() {
   const prompt =
     'Change the fan diameter to be 150 mm and update the housing size and mounting hole placements to accommodate for the change. Change the housing to be purple.'
 
-  // Ensure panes are closed
-  useOnboardingPanes()
+  // Open the text-to-cad pane
+  useOnboardingPanes(['text-to-cad'], ['text-to-cad'])
+
+  // Fill in the prompt if available
+  useEffect(() => {
+    const promptInput = document.querySelector(
+      `[data-testid="ml-ephant-conversation-input"]`
+    )
+    if (promptInput === null) {
+      console.error(
+        `Expected promptInput is not present in onboarding step '${thisOnboardingStatus}'`
+      )
+      return
+    }
+
+    promptInput.textContent = prompt
+  }, [])
 
   // Enter the prompt-to-edit flow with a prebaked prompt
   const [isReady, setIsReady] = useState(

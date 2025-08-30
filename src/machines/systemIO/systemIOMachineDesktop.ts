@@ -4,6 +4,7 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
+  getAppSettingsFilePath,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
@@ -21,6 +22,8 @@ import type {
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
+  jsonToMlConversations,
+  mlConversationsToJson,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
@@ -30,6 +33,8 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { IElectronAPI } from '@root/interface'
+
+const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
 const sharedBulkCreateWorkflow = async ({
   electron,
@@ -682,6 +687,57 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           message: `Folder ${folderName} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
         }
+      }
+    ),
+    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
+      // In the future we can add cache behavior but it's really pointless
+      // for the amount of data and frequency we're dealing with.
+
+      // We need the settings path to find the sibling `ml-conversations.json`
+      try {
+        const json = await window.electron?.readFile(
+          window.electron?.path.join(
+            window.electron?.path.dirname(
+              await getAppSettingsFilePath(window.electron)
+            ),
+            ML_CONVERSATIONS_FILE_NAME
+          ),
+          'utf-8'
+        )
+        return jsonToMlConversations(json ?? '')
+      } catch (e) {
+        console.warn('Cannot get conversations', e)
+        return new Map()
+      }
+    }),
+    [SystemIOMachineActors.saveMlEphantConversations]: fromPromise(
+      async (args: {
+        input: {
+          context: SystemIOContext
+          event: {
+            data: {
+              projectId: string
+              conversationId: string
+            }
+          }
+        }
+      }) => {
+        const next = new Map(args.input.context.mlEphantConversations)
+        next.set(
+          args.input.event.data.projectId,
+          args.input.event.data.conversationId
+        )
+        const json = mlConversationsToJson(next)
+        await window.electron?.writeFile(
+          window.electron?.path.join(
+            window.electron?.path.dirname(
+              await getAppSettingsFilePath(window.electron)
+            ),
+            ML_CONVERSATIONS_FILE_NAME
+          ),
+          json
+        )
+        return next
       }
     ),
   },

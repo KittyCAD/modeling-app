@@ -326,4 +326,13 @@ export class ToolbarFixture {
     await expect(goToDefinitionMenuButton).toBeVisible()
     await goToDefinitionMenuButton.click()
   }
+
+  async fireTtcPrompt(prompt: string) {
+    await this.openPane('text-to-cad')
+    await expect(
+      this.page.getByTestId('ml-ephant-conversation-input')
+    ).toBeVisible()
+    await this.page.getByTestId('ml-ephant-conversation-input').fill(prompt)
+    await this.page.getByTestId('ml-ephant-conversation-input-button').click()
+  }
 }

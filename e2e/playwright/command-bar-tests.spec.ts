@@ -762,7 +762,7 @@ theta = 45deg
     await homePage.textToCadBtn.click()
     await cmdBar.expectState({
       stage: 'arguments',
-      commandName: 'Text-to-CAD Create',
+      commandName: 'Create Project using Text-to-CAD',
       currentArgKey: 'prompt',
       currentArgValue: '',
       headerArguments: {
