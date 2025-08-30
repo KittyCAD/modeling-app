@@ -1021,7 +1021,7 @@ impl Expr {
             Expr::IfExpression(_) => None,
             Expr::LabelledExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::AscribedExpression(expr) => expr.expr.get_non_code_meta(),
-            Expr::SketchBlock(_) => None,
+            Expr::SketchBlock(expr) => Some(&expr.non_code_meta),
             Expr::None(_none) => None,
         }
     }
