@@ -715,6 +715,7 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                 Expr::ObjectExpression(x) => BinaryPart::ObjectExpression(x),
                 Expr::IfExpression(x) => BinaryPart::IfExpression(x),
                 Expr::AscribedExpression(x) => BinaryPart::AscribedExpression(x),
+                Expr::SketchVar(x) => BinaryPart::SketchVar(x),
             };
             Ok(expr)
         })
