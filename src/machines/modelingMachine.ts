@@ -140,6 +140,7 @@ import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraCont
 import { addShell, addOffsetPlane } from '@src/lang/modifyAst/faces'
 import { intersectInfo } from '@src/components/Toolbar/Intersect'
 import { addHelix } from '@src/lang/modifyAst/geometry'
+import { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
 
 export type SetSelections =
   | {
@@ -942,25 +943,7 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          if (!args) return
-          const { intersectionPoint } = args
-          if (!intersectionPoint?.twoD) return
-          const { snappedPoint, isSnapped } =
-            sceneEntitiesManager.getSnappedDragPoint(
-              intersectionPoint.twoD,
-              args.intersects,
-              args.mouseEvent
-            )
-          if (isSnapped) {
-            sceneEntitiesManager.positionDraftPoint({
-              snappedPoint: new Vector2(...snappedPoint),
-              origin: sketchDetails.origin,
-              yAxis: sketchDetails.yAxis,
-              zAxis: sketchDetails.zAxis,
-            })
-          } else {
-            sceneEntitiesManager.removeDraftPoint()
-          }
+          listenForOriginMove(args, sketchDetails)
         },
         onClick: (args) => {
           sceneEntitiesManager.removeDraftPoint()
@@ -1001,25 +984,7 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          if (!args) return
-          const { intersectionPoint } = args
-          if (!intersectionPoint?.twoD) return
-          const { snappedPoint, isSnapped } =
-            sceneEntitiesManager.getSnappedDragPoint(
-              intersectionPoint.twoD,
-              args.intersects,
-              args.mouseEvent
-            )
-          if (isSnapped) {
-            sceneEntitiesManager.positionDraftPoint({
-              snappedPoint: new Vector2(...snappedPoint),
-              origin: sketchDetails.origin,
-              yAxis: sketchDetails.yAxis,
-              zAxis: sketchDetails.zAxis,
-            })
-          } else {
-            sceneEntitiesManager.removeDraftPoint()
-          }
+          listenForOriginMove(args, sketchDetails)
         },
         onClick: (args) => {
           sceneEntitiesManager.removeDraftPoint()
@@ -5157,6 +5122,30 @@ export const modelingMachine = setup({
     },
   },
 })
+
+function listenForOriginMove(
+  args: OnMoveCallbackArgs,
+  sketchDetails: SketchDetails
+) {
+  if (!args) return
+  const { intersectionPoint } = args
+  if (!intersectionPoint?.twoD) return
+  const { snappedPoint, isSnapped } = sceneEntitiesManager.getSnappedDragPoint(
+    intersectionPoint.twoD,
+    args.intersects,
+    args.mouseEvent
+  )
+  if (isSnapped) {
+    sceneEntitiesManager.positionDraftPoint({
+      snappedPoint: new Vector2(...snappedPoint),
+      origin: sketchDetails.origin,
+      yAxis: sketchDetails.yAxis,
+      zAxis: sketchDetails.zAxis,
+    })
+  } else {
+    sceneEntitiesManager.removeDraftPoint()
+  }
+}
 
 export function isEditingExistingSketch({
   sketchDetails,

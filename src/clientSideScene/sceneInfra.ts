@@ -70,7 +70,7 @@ export interface OnClickCallbackArgs {
   selected?: Object3D<Object3DEventMap>
 }
 
-interface OnMoveCallbackArgs {
+export interface OnMoveCallbackArgs {
   mouseEvent: MouseEvent
   intersectionPoint: {
     twoD: Vector2
