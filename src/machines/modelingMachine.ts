@@ -140,7 +140,7 @@ import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraCont
 import { addShell, addOffsetPlane } from '@src/lang/modifyAst/faces'
 import { intersectInfo } from '@src/components/Toolbar/Intersect'
 import { addHelix } from '@src/lang/modifyAst/geometry'
-import { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
+import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
 
 export type SetSelections =
   | {
@@ -1065,6 +1065,9 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1074,7 +1077,11 @@ export const modelingMachine = setup({
           if (twoD) {
             sceneInfra.modelingSend({
               type: 'Add first point',
-              data: [twoD.x, twoD.y],
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             })
           } else {
             console.error('No intersection point found')
@@ -1117,6 +1124,9 @@ export const modelingMachine = setup({
       sceneInfra.scene.add(draftPoint)
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1128,7 +1138,11 @@ export const modelingMachine = setup({
               type: 'Add second point',
               data: {
                 p1: event.data,
-                p2: [twoD.x, twoD.y],
+                p2: sceneEntitiesManager.getSnappedDragPoint(
+                  twoD,
+                  args.intersects,
+                  args.mouseEvent
+                ).snappedPoint,
               },
             })
           } else {
