@@ -1024,6 +1024,9 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1033,7 +1036,11 @@ export const modelingMachine = setup({
           if (twoD) {
             sceneInfra.modelingSend({
               type: 'Add circle origin',
-              data: [twoD.x, twoD.y],
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             })
           } else {
             console.error('No intersection point found')
