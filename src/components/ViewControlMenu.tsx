@@ -5,7 +5,6 @@ import {
   ContextMenu,
   ContextMenuDivider,
   ContextMenuItem,
-  ContextMenuItemRefresh,
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { AxisNames } from '@src/lib/constants'
@@ -164,8 +163,6 @@ export function useViewControlMenuItems() {
             </ContextMenuItem>,
           ]
         : []),
-      <ContextMenuDivider />,
-      <ContextMenuItemRefresh />,
     ],
     [
       shouldLockView,
