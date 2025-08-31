@@ -179,7 +179,6 @@ import type {
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
-import { sceneEntitiesManager } from '@src/lib/singletons'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -1827,7 +1826,7 @@ export class SceneEntities {
               type: 'circle-three-point-segment',
               p1: [point1[0], point1[1]],
               p2: [point2[0], point2[1]],
-              p3: sceneEntitiesManager.getSnappedDragPoint(
+              p3: this.getSnappedDragPoint(
                 args.intersectionPoint.twoD,
                 args.intersects,
                 args.mouseEvent
@@ -1892,7 +1891,7 @@ export class SceneEntities {
               type: 'circle-three-point-segment',
               p1: [point1[0], point1[1]],
               p2: [point2[0], point2[1]],
-              p3: sceneEntitiesManager.getSnappedDragPoint(
+              p3: this.getSnappedDragPoint(
                 cornerPoint,
                 args.intersects,
                 args.mouseEvent
