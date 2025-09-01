@@ -16,16 +16,23 @@ uniform int minorsPerMajor;
 
 out float vLineType;
 
+// snap to .25 or .75 pixels to avoid line flickering. Could also use thicker lines or snap lineOffsetNDC
 float snapToPixel(float ndcCoord, float viewport)
 {
-	// NDC [-1,1] -> pixels [0, viewport]
+	// NDC [-1, 1] -> pixels [0, viewport]
 	float px = (ndcCoord * 0.5 + 0.5) * viewport;
 
-	// Snap to pixel *centers* for crisp 1px lines
-	px = round(px - 0.5) + 0.5;
+	// base pixel index
+	float base = floor(px);
 
-	// Back to NDC
-	return (px / viewport - 0.5) * 2.0;
+	// fractional part [0,1)
+	float frac = px - base;
+
+	// choose 0.25 if frac < 0.5, otherwise 0.75
+	float snapped = base + (frac < 0.5 ? 0.25 : 0.75);
+
+	// back to NDC
+	return (snapped / viewport - 0.5) * 2.0;
 }
 
 void main()
@@ -42,7 +49,7 @@ void main()
 
 		float screenX = lineOffsetNDC.x + float(lineIndex) * lineGapNDC.x;
 		float screenY = (vertIndex == 0) ? -1.0 : 1.0;
-		//screenX = snapToPixel(screenX, viewportPx.x);
+		screenX = snapToPixel(screenX, viewportPx.x);
 		screenPos = vec2(screenX, screenY);
 
 		vLineType = lineIndex % minorsPerMajor == 0 ? 1.0 : 0.0;
@@ -54,7 +61,7 @@ void main()
 
 		float screenX = (vertIndex == 0) ? -1.0 : 1.0;
 		float screenY = lineOffsetNDC.y + float(lineIndex) * lineGapNDC.y;
-		//screenY = snapToPixel(screenY, viewportPx.y);
+		screenY = snapToPixel(screenY, viewportPx.y);
 		screenPos = vec2(screenX, screenY);
 
 		vLineType = lineIndex % minorsPerMajor == 0 ? 1.0 : 0.0;
