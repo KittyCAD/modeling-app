@@ -138,9 +138,16 @@ Toggle touch controls for 3D view navigation
 
 **Default:** None
 
+##### enable_copilot
+
+Toggle copilot features
+
+
+**Default:** None
+
 ##### use_new_sketch_mode
 
-Toggle new sketch mode implementation (Dev only)
+Toggle new sketch mode implementation
 
 
 **Default:** None
