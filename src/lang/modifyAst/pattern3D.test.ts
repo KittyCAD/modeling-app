@@ -204,4 +204,50 @@ example = extrude(exampleSketch, length = -5)
     expect(newCode).toContain('axis = myAxis')
     expect(newCode).toContain('center = myCenter')
   })
+
+  it('should prioritize array values over variable names when both exist', async () => {
+    const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+    const { ast, selections, artifactGraph } =
+      await getAstAndSolidSelections(code)
+
+    // Test the precedence by creating a mock axis that simulates the edge case
+    const baseExpression = await getKclCommandValue('[1, 0, 0]')
+    const mockAxisWithBothProperties = {
+      ...baseExpression,
+      variableName: 'someVariable', // This exists but should be ignored
+      variableDeclarationAst: { type: 'VariableDeclaration' } as any,
+      variableIdentifierAst: { type: 'Identifier', name: 'someVariable' } as any,
+      insertIndex: 0,
+      value: [1, 0, 0] // This should take precedence
+    }
+
+    const result = addPatternCircular3D({
+      ast,
+      artifactGraph,
+      solids: selections,
+      instances: await getKclCommandValue('5'),
+      axis: mockAxisWithBothProperties,
+      center: await getKclCommandValue('[0, 0, 0]'),
+    })
+
+    if (err(result)) {
+      throw result
+    }
+
+    const { modifiedAst } = result
+    const newCode = recast(modifiedAst)
+
+    expect(newCode).toContain('patternCircular3d(')
+    expect(newCode).toContain('instances = 5')
+    // Should use the array value, not the variable name
+    expect(newCode).toContain('axis = [1, 0, 0]')
+    expect(newCode).not.toContain('axis = someVariable')
+    expect(newCode).toContain('center = [0, 0, 0]')
+  })
 })
