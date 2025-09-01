@@ -15,8 +15,6 @@ export default function lspRenameExt(
         {
           key: 'F2',
           run: (view) => {
-            if (!plugin) return false
-
             const value = view.plugin(plugin)
             if (!value) return false
 
