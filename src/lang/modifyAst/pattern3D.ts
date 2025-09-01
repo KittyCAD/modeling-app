@@ -140,14 +140,20 @@ export function addPatternCircular3D({
     insertVariableAndOffsetPathToNode(instances, modifiedAst, nodeToEdit)
   }
   // Only insert axis variable if we used valueOrVariable (not for strings or arrays)
-  if (typeof axis !== 'string' && 
-      !('value' in axis && isArray(axis.value)) && 
-      'variableName' in axis && axis.variableName) {
+  if (
+    typeof axis !== 'string' &&
+    !('value' in axis && isArray(axis.value)) &&
+    'variableName' in axis &&
+    axis.variableName
+  ) {
     insertVariableAndOffsetPathToNode(axis, modifiedAst, nodeToEdit)
   }
   // Only insert center variable if we used valueOrVariable (not for arrays)
-  if (!('value' in center && isArray(center.value)) && 
-      'variableName' in center && center.variableName) {
+  if (
+    !('value' in center && isArray(center.value)) &&
+    'variableName' in center &&
+    center.variableName
+  ) {
     insertVariableAndOffsetPathToNode(center, modifiedAst, nodeToEdit)
   }
   if (arcDegrees && 'variableName' in arcDegrees && arcDegrees.variableName) {

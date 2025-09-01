@@ -222,9 +222,12 @@ example = extrude(exampleSketch, length = -5)
       ...baseExpression,
       variableName: 'someVariable', // This exists but should be ignored
       variableDeclarationAst: { type: 'VariableDeclaration' } as any,
-      variableIdentifierAst: { type: 'Identifier', name: 'someVariable' } as any,
+      variableIdentifierAst: {
+        type: 'Identifier',
+        name: 'someVariable',
+      } as any,
       insertIndex: 0,
-      value: [1, 0, 0] // This should take precedence
+      value: [1, 0, 0], // This should take precedence
     }
 
     const result = addPatternCircular3D({
