@@ -147,23 +147,10 @@ export class SceneInfra {
     const viewportSize = this.renderer.getDrawingBufferSize(new Vector2())
 
     // one [mm] in screen space (pixels) multiplied by baseUnitMultiplier
-    let rulerWidth =
+    return (
       (((1 / worldViewportWidth) * viewportSize.x) / window.devicePixelRatio) *
       this._baseUnitMultiplier
-
-    return rulerWidth
-    // const zoom = camera.zoom
-    // const worldViewportWidth = (camera.right - camera.left) / zoom
-    // const worldViewportHeight = (camera.top - camera.bottom) / zoom
-    //
-    // const worldToScreenX = 2 / worldViewportWidth
-    // const worldToScreenY = 2 / worldViewportHeight
-    //
-    // const pxPerWorldX = viewportWidthPx / worldViewportWidth
-    // const pxPerWorldY = viewportHeightPx / worldViewportHeight
-    //
-    // They should be the same, they are not after window size is changed, until zoom occurs.
-    // const pxPerWorld = Math.min(pxPerWorldX, pxPerWorldY)
+    )
   }
 
   set theme(theme: Themes) {
