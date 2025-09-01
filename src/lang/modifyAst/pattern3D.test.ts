@@ -288,7 +288,7 @@ exampleSketch = startSketchOn(XZ)
     expect(newCode).toContain('exampleSketch = startSketchOn(XZ)')
     expect(newCode).toContain('|> extrude(length = 5)')
     expect(newCode).toContain('pattern001 = patternCircular3d(')
-    expect(newCode).toContain('exampleSketch,')  // References the original variable
+    expect(newCode).toContain('exampleSketch,') // References the original variable
   })
 
   it('should extend pipeline when selection is from unnamed pipeline', async () => {
