@@ -166,7 +166,7 @@ export function addPatternCircular3D({
     call,
     pathToEdit: nodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
-    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PATTERN,
   })
   if (err(pathToNode)) {
     return pathToNode
