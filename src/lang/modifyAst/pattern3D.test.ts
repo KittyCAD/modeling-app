@@ -253,4 +253,116 @@ example = extrude(exampleSketch, length = -5)
     expect(newCode).not.toContain('axis = someVariable')
     expect(newCode).toContain('center = [0, 0, 0]')
   })
+
+  it('should create new pattern variable when selection is piped into named variable', async () => {
+    const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+  |> extrude(length = 5)
+`
+
+    const { ast, selections, artifactGraph } =
+      await getAstAndSolidSelections(code)
+
+    const result = addPatternCircular3D({
+      ast,
+      artifactGraph,
+      solids: selections,
+      instances: await getKclCommandValue('6'),
+      axis: 'Y',
+      center: await getKclCommandValue('[0, 0, 0]'),
+    })
+
+    if (err(result)) {
+      throw result
+    }
+
+    const { modifiedAst } = result
+    const newCode = recast(modifiedAst)
+
+    expect(newCode).toContain('patternCircular3d(')
+    expect(newCode).toContain('instances = 6')
+    expect(newCode).toContain('axis = Y')
+    expect(newCode).toContain('center = [0, 0, 0]')
+    // Should create new pattern variable referencing the named variable
+    expect(newCode).toContain('exampleSketch = startSketchOn(XZ)')
+    expect(newCode).toContain('|> extrude(length = 5)')
+    expect(newCode).toContain('pattern001 = patternCircular3d(')
+    expect(newCode).toContain('exampleSketch,')  // References the original variable
+  })
+
+  it('should extend pipeline when selection is from unnamed pipeline', async () => {
+    const code = `
+sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+
+startSketchOn(XY)
+  |> circle(center = [1, 1], radius = 0.5)
+  |> extrude(length = 3)
+`
+
+    const { ast, selections, artifactGraph } =
+      await getAstAndSolidSelections(code)
+
+    const result = addPatternCircular3D({
+      ast,
+      artifactGraph,
+      solids: selections,
+      instances: await getKclCommandValue('8'),
+      axis: 'Z',
+      center: await getKclCommandValue('[2, 2, 0]'),
+    })
+
+    if (err(result)) {
+      throw result
+    }
+
+    const { modifiedAst } = result
+    const newCode = recast(modifiedAst)
+
+    expect(newCode).toContain('patternCircular3d(')
+    expect(newCode).toContain('instances = 8')
+    expect(newCode).toContain('axis = Z')
+    expect(newCode).toContain('center = [2, 2, 0]')
+    // Should extend the unnamed pipeline
+    expect(newCode).toContain('startSketchOn(XY)')
+    expect(newCode).toContain('|> extrude(length = 3)')
+    expect(newCode).toContain('|> patternCircular3d(')
+  })
+
+  it('should pipe pattern when selection is from unnamed standalone expression', async () => {
+    const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+extrude(exampleSketch, length = -5)
+`
+
+    const { ast, selections, artifactGraph } =
+      await getAstAndSolidSelections(code)
+
+    const result = addPatternCircular3D({
+      ast,
+      artifactGraph,
+      solids: selections,
+      instances: await getKclCommandValue('4'),
+      axis: await getKclCommandValue('[0, 1, 0]'),
+      center: await getKclCommandValue('[5, 0, 0]'),
+    })
+
+    if (err(result)) {
+      throw result
+    }
+
+    const { modifiedAst } = result
+    const newCode = recast(modifiedAst)
+
+    expect(newCode).toContain('patternCircular3d(')
+    expect(newCode).toContain('instances = 4')
+    expect(newCode).toContain('axis = [0, 1, 0]')
+    expect(newCode).toContain('center = [5, 0, 0]')
+    // Should pipe directly onto the unnamed expression
+    expect(newCode).toContain('extrude(exampleSketch, length = -5)')
+    expect(newCode).toContain('|> patternCircular3d(')
+  })
 })
