@@ -5,6 +5,8 @@ excerpt: "Add a hyperbolic section to an existing sketch."
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 Add a hyperbolic section to an existing sketch.
 
 ```kcl
@@ -43,6 +45,8 @@ hyperbolic(
 ### Examples
 
 ```kcl
+@settings(experimentalFeatures = allow)
+
 exampleSketch = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> hyperbolic(

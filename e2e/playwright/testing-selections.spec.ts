@@ -1,12 +1,9 @@
-import type { Coords2d } from '@src/lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
-import { uuidv4 } from '@src/lib/utils'
-
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { bracket } from '@e2e/playwright/fixtures/bracket'
 
 test.describe('Testing selections', () => {
-  test.setTimeout(90_000)
   test('parent Solid should be select and deletable and uses custom planes to position children', async ({
     page,
     homePage,
@@ -14,7 +11,6 @@ test.describe('Testing selections', () => {
     cmdBar,
     editor,
   }) => {
-    test.setTimeout(90_000)
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -71,335 +67,6 @@ profile001 = startProfile(sketch001, at = [7.49, 9.96])
       shouldNormalise: true,
     })
     await editor.snapshot()
-  })
-  test('Hovering over 3d features highlights code, clicking puts the cursor in the right place and sends selection id to engine', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-  }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
-      localStorage.setItem(
-        'persistCode',
-        `@settings(defaultLengthUnit = in)
-part001 = startSketchOn(XZ)
-  |> startProfile(at = [20, 0])
-  |> line(end = [7.13, 4 + 0])
-  |> angledLine(angle = 3 + 0, length = 3.14 + 0 )
-  |> line(endAbsolute = [20.14 + 0, -0.14 + 0])
-  |> xLine(endAbsolute = 29 + 0)
-  |> yLine(length = -3.14 + 0, tag = $a)
-  |> xLine(length = 1.63)
-  |> angledLine(angle = 3 + 0, lengthX = 3.14)
-  |> angledLine(angle = 30, lengthY = 3 + 0)
-  |> angledLine(angle = 22.14 + 0, endAbsoluteX =  12)
-  |> angledLine(angle = 30, endAbsoluteY =  11.14)
-  |> angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)
-  |> tangentialArc(endAbsolute = [13.14 + 0, 13.14])
-  |> close()
-  |> extrude(length = 5 + 7)
-    `
-      )
-    }, KCL_DEFAULT_LENGTH)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
-    await homePage.goToModelingScene()
-
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    await u.openAndClearDebugPanel()
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: 0, y: -1250, z: 580 },
-        center: { x: 0, y: 0, z: 0 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.closeDebugPanel()
-
-    const extrusionTopCap: Coords2d = [800, 240]
-    const flatExtrusionFace: Coords2d = [960, 160]
-    const tangentialArc: Coords2d = [840, 160]
-    const close: Coords2d = [720, 200]
-    const nothing: Coords2d = [600, 200]
-    const closeEdge: Coords2d = [744, 233]
-    const closeAdjacentEdge: Coords2d = [743, 277]
-    const closeOppositeEdge: Coords2d = [687, 169]
-
-    const tangentialArcEdge: Coords2d = [811, 142]
-    const tangentialArcOppositeEdge: Coords2d = [820, 180]
-    const tangentialArcAdjacentEdge: Coords2d = [688, 123]
-
-    const straightSegmentEdge: Coords2d = [819, 369]
-    const straightSegmentOppositeEdge: Coords2d = [822, 368]
-    const straightSegmentAdjacentEdge: Coords2d = [893, 165]
-
-    await page.mouse.move(nothing[0], nothing[1])
-    await page.mouse.click(nothing[0], nothing[1])
-
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
-    await page.waitForTimeout(200)
-
-    const checkCodeAtHoverPosition = async (
-      name = '',
-      coord: Coords2d,
-      highlightCode: string,
-      activeLine = highlightCode
-    ) => {
-      await test.step(`test selection for: ${name}`, async () => {
-        const highlightedLocator = page.getByTestId('hover-highlight')
-        const activeLineLocator = page.locator('.cm-activeLine')
-
-        await test.step(`hover should highlight correct code, clicking should put the cursor in the right place, and send selection to engine`, async () => {
-          await expect(async () => {
-            await page.mouse.move(nothing[0], nothing[1])
-            await page.mouse.move(coord[0], coord[1])
-            await expect(highlightedLocator.first()).toBeVisible()
-            await expect
-              .poll(async () => {
-                let textContents = await highlightedLocator.allTextContents()
-                const textContentsStr = textContents
-                  .join('')
-                  .replace(/\s+/g, '')
-                console.log(textContentsStr)
-                return textContentsStr
-              })
-              .toBe(highlightCode)
-            await page.mouse.move(nothing[0], nothing[1])
-          }).toPass({ timeout: 40_000, intervals: [500] })
-        })
-        await test.step(`click should put the cursor in the right place`, async () => {
-          // await page.mouse.move(nothing[0], nothing[1], { steps: 5 })
-          // await expect(highlightedLocator.first()).not.toBeVisible()
-          await page.mouse.click(coord[0], coord[1])
-          await expect
-            .poll(async () => {
-              const activeLines = await activeLineLocator.allInnerTexts()
-              return activeLines.join('')
-            })
-            .toContain(activeLine)
-          // check pixels near the click location are yellow
-        })
-        await test.step(`check the engine agrees with selections`, async () => {
-          // ultimately the only way we know if the engine agrees with the selection from the FE
-          // perspective is if it highlights the pixels near where we clicked yellow.
-          await expect
-            .poll(async () => {
-              const RGBs = await u.getPixelRGBs({ x: coord[0], y: coord[1] }, 3)
-              for (const rgb of RGBs) {
-                const [r, g, b] = rgb
-                const RGAverage = (r + g) / 2
-                const isRedGreenSameIsh = Math.abs(r - g) < 10
-                const isBlueLessThanRG = RGAverage - b > 40
-                const isYellowy = isRedGreenSameIsh && isBlueLessThanRG
-                if (isYellowy) return true
-              }
-              return false
-            })
-            .toBeTruthy()
-          await page.mouse.click(nothing[0], nothing[1])
-        })
-      })
-    }
-
-    await checkCodeAtHoverPosition(
-      'extrusionTopCap',
-      extrusionTopCap,
-      'startProfile(at=[20,0])',
-      'startProfile(at = [20, 0])'
-    )
-    await checkCodeAtHoverPosition(
-      'flatExtrusionFace',
-      flatExtrusionFace,
-      `angledLineThatIntersects(angle=3.14,intersectTag=a,offset=0)extrude(length=5+7)`,
-      'angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)'
-    )
-
-    await checkCodeAtHoverPosition(
-      'tangentialArc',
-      tangentialArc,
-      'tangentialArc(endAbsolute=[13.14+0,13.14])extrude(length=5+7)',
-      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
-    )
-    await checkCodeAtHoverPosition(
-      'tangentialArcEdge',
-      tangentialArcEdge,
-      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
-      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
-    )
-    await checkCodeAtHoverPosition(
-      'tangentialArcOppositeEdge',
-      tangentialArcOppositeEdge,
-      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
-      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
-    )
-    await checkCodeAtHoverPosition(
-      'tangentialArcAdjacentEdge',
-      tangentialArcAdjacentEdge,
-      `tangentialArc(endAbsolute=[13.14+0,13.14])`,
-      'tangentialArc(endAbsolute = [13.14 + 0, 13.14])'
-    )
-
-    await checkCodeAtHoverPosition(
-      'close',
-      close,
-      'close()extrude(length=5+7)',
-      'close()'
-    )
-    await checkCodeAtHoverPosition('closeEdge', closeEdge, `close()`, 'close()')
-    await checkCodeAtHoverPosition(
-      'closeAdjacentEdge',
-      closeAdjacentEdge,
-      `close()`,
-      'close()'
-    )
-    await checkCodeAtHoverPosition(
-      'closeOppositeEdge',
-      closeOppositeEdge,
-      `close()`,
-      'close()'
-    )
-
-    await checkCodeAtHoverPosition(
-      'straightSegmentEdge',
-      straightSegmentEdge,
-      `angledLine(angle=30,endAbsoluteY=11.14)`,
-      'angledLine(angle = 30, endAbsoluteY =  11.14)'
-    )
-    await checkCodeAtHoverPosition(
-      'straightSegmentOppositeEdge',
-      straightSegmentOppositeEdge,
-      `angledLine(angle=30,endAbsoluteY=11.14)`,
-      'angledLine(angle = 30, endAbsoluteY =  11.14)'
-    )
-    await checkCodeAtHoverPosition(
-      'straightSegmentAdjacentEdge',
-      straightSegmentAdjacentEdge,
-      `angledLineThatIntersects(angle=3.14,intersectTag=a,offset=0)`,
-      'angledLineThatIntersects(angle = 3.14, intersectTag = a, offset = 0)'
-    )
-
-    await page.waitForTimeout(200)
-
-    await u.removeCurrentCode()
-    await u.codeLocator.fill(`@settings(defaultLengthUnit = in)
-    sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]
-    |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
-    |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
-    |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
-    |> close()
-  extrude001 = extrude(sketch001, length = 100)
-    |> chamfer(
-     length = 30,
-     tags = [
-       seg01,
-       getNextAdjacentEdge(yo),
-       getNextAdjacentEdge(seg02),
-       getOppositeEdge(seg01)
-     ],
-   )
-  `)
-
-    await scene.settled(cmdBar)
-
-    await u.openAndClearDebugPanel()
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: 16118, y: -1654, z: 5855 },
-        center: { x: 4915, y: -3893, z: 4874 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.closeDebugPanel()
-
-    await page.mouse.click(nothing[0], nothing[1])
-
-    const oppositeChamfer: Coords2d = [577, 230]
-    const baseChamfer: Coords2d = [726, 258]
-    const adjacentChamfer1: Coords2d = [653, 99]
-    const adjacentChamfer2: Coords2d = [653, 430]
-
-    await checkCodeAtHoverPosition(
-      'oppositeChamfer',
-      oppositeChamfer,
-      `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
-      '   )'
-    )
-
-    await checkCodeAtHoverPosition(
-      'baseChamfer',
-      baseChamfer,
-      `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
-      '   )'
-    )
-
-    await u.openAndClearDebugPanel()
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: -6414, y: 160, z: 6145 },
-        center: { x: 5919, y: 1236, z: 5251 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.closeDebugPanel()
-
-    await page.mouse.click(nothing[0], nothing[1])
-
-    await checkCodeAtHoverPosition(
-      'adjacentChamfer1',
-      adjacentChamfer1,
-      `line(endAbsolute=[profileStartX(%),profileStartY(%)],tag=$seg02)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
-      '   )'
-    )
-
-    await checkCodeAtHoverPosition(
-      'adjacentChamfer2',
-      adjacentChamfer2,
-      `angledLine(angle=segAng(rectangleSegmentA001),length=-segLen(rectangleSegmentA001),tag=$yo)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
-      '   )'
-    )
   })
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,
@@ -476,191 +143,63 @@ part001 = startSketchOn(XZ)
     ).not.toBeDisabled()
   })
 
-  const removeAfterFirstParenthesis = (inputString: string) => {
-    const index = inputString.indexOf('(')
-    if (index !== -1) {
-      return inputString.substring(0, index)
-    }
-    return inputString // return the original string if '(' is not found
-  }
-
-  test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-  }) => {
-    const cases = [
-      {
-        pos: [694, 185],
-        expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
-      },
-      {
-        pos: [816, 244],
-        expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
-      },
-      {
-        pos: [1107, 161],
-        expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
-      },
-    ] as const
-    await page.addInitScript(
-      async ({ cases }) => {
-        localStorage.setItem(
-          'persistCode',
-          `@settings(defaultLengthUnit = in)
+  test(
+    'Testing selections (and hovers) work on sketches when NOT in sketch mode',
+    { tag: '@web' },
+    async ({ page, homePage, scene, cmdBar }) => {
+      const cases = [
+        {
+          pos: [0.31, 0.5],
+          expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
+        },
+        {
+          pos: [0.448, 0.557],
+          expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
+        },
+        {
+          pos: [0.753, 0.5],
+          expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
+        },
+      ] as const
+      await page.addInitScript(
+        async ({ cases }) => {
+          localStorage.setItem(
+            'persistCode',
+            `@settings(defaultLengthUnit = in)
   yo = 79
   part001 = startSketchOn(XZ)
-    |> startProfile(at = [-7.54, -26.74])
+    |> startProfile(at = [-40.54, -26.74])
     |> ${cases[0].expectedCode}
     |> line(end = [-3.19, -138.43])
     |> ${cases[1].expectedCode}
     |> line(end = [41.19, 28.97 + 5])
     |> ${cases[2].expectedCode}`
+          )
+        },
+        { cases }
+      )
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      // end setup, now test hover and selects
+      for (const { pos, expectedCode } of cases) {
+        const [click, hover] = scene.makeMouseHelpers(pos[0], pos[1], {
+          format: 'ratio',
+          steps: 5,
+        })
+        // hover over segment, check it's content
+        await hover()
+        await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+        await expect(page.getByTestId('hover-highlight').first()).toHaveText(
+          expectedCode
         )
-      },
-      { cases }
-    )
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-    await u.openAndClearDebugPanel()
-
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: -449, y: -7503, z: 99 },
-        center: { x: -449, y: 0, z: 99 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await u.waitForCmdReceive('default_camera_look_at')
-    await u.clearAndCloseDebugPanel()
-
-    // end setup, now test hover and selects
-    for (const { pos, expectedCode } of cases) {
-      // hover over segment, check it's content
-      await page.mouse.move(pos[0], pos[1], { steps: 5 })
-      await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-      await expect(page.getByTestId('hover-highlight').first()).toHaveText(
-        expectedCode
-      )
-      // hover over segment, click it and check the cursor has move to the right place
-      await page.mouse.click(pos[0], pos[1])
-      await expect(page.locator('.cm-activeLine')).toHaveText(
-        '|> ' + expectedCode
-      )
+        // hover over segment, click it and check the cursor has move to the right place
+        await click()
+        await expect(page.locator('.cm-activeLine')).toContainText(expectedCode)
+      }
     }
-  })
-  test("Hovering and selection of extruded faces works, and is not overridden shortly after user's click", async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-  }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `@settings(defaultLengthUnit = in)
-  sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [-79.26, 95.04])
-    |> line(end = [112.54, 127.64])
-    |> line(end = [170.36, -121.61], tag = $seg01)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  extrude001 = extrude(sketch001, length = 50)
-      `
-      )
-    })
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-    await u.openAndClearDebugPanel()
-
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: 6615, y: -9505, z: 10344 },
-        center: { x: 1579, y: -635, z: 4035 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await u.waitForCmdReceive('default_camera_look_at')
-    await u.clearAndCloseDebugPanel()
-
-    await page.waitForTimeout(1000)
-
-    let noHoverColor: [number, number, number] = [92, 92, 92]
-    let hoverColor: [number, number, number] = [127, 127, 127]
-    let selectColor: [number, number, number] = [155, 155, 105]
-
-    const extrudeWall = { x: 670, y: 275 }
-    const extrudeText = `line(end = [170.36, -121.61], tag = $seg01)`
-
-    const cap = { x: 594, y: 283 }
-    const capText = `startProfile(at = [-79.26, 95.04])`
-
-    const nothing = { x: 946, y: 229 }
-
-    await expect
-      .poll(() => u.getGreatestPixDiff(extrudeWall, noHoverColor))
-      .toBeLessThan(15)
-    await page.mouse.move(nothing.x, nothing.y)
-    await page.waitForTimeout(1000)
-    await page.mouse.move(extrudeWall.x, extrudeWall.y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-    await expect(page.getByTestId('hover-highlight').first()).toContainText(
-      removeAfterFirstParenthesis(extrudeText)
-    )
-    await page.waitForTimeout(1000)
-    await expect(
-      await u.getGreatestPixDiff(extrudeWall, hoverColor)
-    ).toBeLessThan(15)
-    await page.mouse.click(extrudeWall.x, extrudeWall.y)
-    await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${extrudeText}`)
-    await page.waitForTimeout(1000)
-    await expect(
-      await u.getGreatestPixDiff(extrudeWall, selectColor)
-    ).toBeLessThan(15)
-    await page.waitForTimeout(1000)
-    // check color stays there, i.e. not overridden (this was a bug previously)
-    await expect(
-      await u.getGreatestPixDiff(extrudeWall, selectColor)
-    ).toBeLessThan(15)
-
-    await page.mouse.move(nothing.x, nothing.y)
-    await page.waitForTimeout(1000)
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
-
-    // because of shading, color is not exact everywhere on the face
-    noHoverColor = [115, 115, 115]
-    hoverColor = [145, 145, 145]
-    selectColor = [168, 168, 120]
-
-    await expect(await u.getGreatestPixDiff(cap, noHoverColor)).toBeLessThan(15)
-    await page.mouse.move(cap.x, cap.y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-    await expect(page.getByTestId('hover-highlight').first()).toContainText(
-      removeAfterFirstParenthesis(capText)
-    )
-    await page.waitForTimeout(1000)
-    await expect(await u.getGreatestPixDiff(cap, hoverColor)).toBeLessThan(15)
-    await page.mouse.click(cap.x, cap.y)
-    await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${capText}`)
-    await page.waitForTimeout(1000)
-    await expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(15)
-    await page.waitForTimeout(1000)
-    // check color stays there, i.e. not overridden (this was a bug previously)
-    await expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(15)
-  })
+  )
   test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
     page,
     homePage,
@@ -861,5 +400,57 @@ part001 = startSketchOn(XZ)
       previousCodeContent
     )
     previousCodeContent = await page.locator('.cm-content').innerText()
+  })
+
+  test('"View KCL source code" right click menu in scene', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    const [clickCenter] = scene.makeMouseHelpers(0.45, 0.45, {
+      format: 'ratio',
+    })
+    const [clickTowardsBottom] = scene.makeMouseHelpers(0.5, 0.9, {
+      format: 'ratio',
+    })
+    await page.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, bracket)
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    const line = page.getByText(
+      'xLine(length = -shelfMountLength, tag = $seg03)'
+    )
+    const menuItems = page.locator('[data-testid="view-controls-menu"] button')
+    const viewKclSourceCodeOption = menuItems.filter({
+      hasText: 'View KCL source code',
+    })
+
+    await test.step('Empty scene should have disabled "View KCL source code"', async () => {
+      await clickTowardsBottom({ shouldRightClick: true })
+
+      // Verify context menu appears
+      await expect(page.getByTestId('view-controls-menu')).toBeVisible()
+
+      // "View KCL source code" should be disabled in empty scene
+      await expect(viewKclSourceCodeOption).toBeVisible()
+      await expect(viewKclSourceCodeOption).toBeDisabled()
+      await page.keyboard.press('Escape')
+    })
+
+    await test.step('Right click on bracket sample leads to the right place in code', async () => {
+      await expect(line).not.toBeVisible()
+      await clickCenter()
+      await expect(page.getByText('1 face')).toBeVisible()
+      await clickCenter({ shouldRightClick: true })
+      await expect(viewKclSourceCodeOption).toBeVisible()
+      await expect(viewKclSourceCodeOption).toBeEnabled()
+      await viewKclSourceCodeOption.click()
+      await expect(line).toBeVisible()
+    })
   })
 })

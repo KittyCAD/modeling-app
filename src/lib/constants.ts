@@ -61,7 +61,7 @@ export const KCL_DEFAULT_LENGTH = `5`
 export const KCL_DEFAULT_TRANSFORM = `0`
 
 /** The default KCL degree expression */
-export const KCL_DEFAULT_DEGREE = `360`
+export const KCL_DEFAULT_DEGREE = `360deg`
 
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`

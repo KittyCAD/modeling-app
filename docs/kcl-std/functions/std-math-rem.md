@@ -31,8 +31,6 @@ rem(
 ### Examples
 
 ```kcl
-import rem from "std::math"
-
 assert(rem(7, divisor = 4), isEqualTo = 3, error = "remainder is 3")
 assert(rem(-7, divisor = 4), isEqualTo = -3, error = "remainder is -3")
 assert(rem(7, divisor = -4), isEqualTo = 3, error = "remainder is 3")

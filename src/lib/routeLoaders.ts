@@ -2,7 +2,7 @@ import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
-import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import { normalizeLineEndings } from '@src/lib/codeEditor'
 import {
   BROWSER_FILE_NAME,
@@ -22,7 +22,7 @@ import {
   loadAndValidateSettings,
   readLocalStorageAppSettingsFile,
 } from '@src/lib/settings/settingsUtils'
-import { codeManager } from '@src/lib/singletons'
+import { codeManager, rustContext } from '@src/lib/singletons'
 import type {
   FileLoaderData,
   HomeLoaderData,
@@ -39,7 +39,7 @@ export const fileLoader: LoaderFunction = async (
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
   const heuristicProjectFilePath =
-    isDesktop() && params.id
+    window.electron && params.id
       ? params.id
           .split(window.electron.sep)
           .slice(0, -1)
@@ -63,11 +63,11 @@ export const fileLoader: LoaderFunction = async (
     const urlObj = new URL(routerData.request.url)
 
     if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = isDesktop()
-        ? (await getProjectInfo(projectPath)).default_file
+      const fallbackFile = window.electron
+        ? (await getProjectInfo(window.electron, projectPath)).default_file
         : ''
       let fileExists = isDesktop()
-      if (currentFilePath && fileExists) {
+      if (currentFilePath && fileExists && window.electron) {
         try {
           await window.electron.stat(currentFilePath)
         } catch (e) {
@@ -88,7 +88,13 @@ export const fileLoader: LoaderFunction = async (
         return redirect(requestUrlWithDefaultFile)
       }
 
-      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
+      if (
+        !fileExists ||
+        !currentFileName ||
+        !currentFilePath ||
+        !projectName ||
+        !window.electron
+      ) {
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(
             isDesktop() ? fallbackFile : params.id + '/' + PROJECT_ENTRYPOINT
@@ -118,7 +124,7 @@ export const fileLoader: LoaderFunction = async (
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
-    fileSystemManager.dir = projectPath
+    projectFsManager.dir = projectPath
 
     const defaultProjectData = {
       name: projectName || 'unnamed',
@@ -131,11 +137,12 @@ export const fileLoader: LoaderFunction = async (
       readWriteAccess: true,
     }
 
-    const maybeProjectInfo = isDesktop()
-      ? await getProjectInfo(projectPath)
+    const maybeProjectInfo = window.electron
+      ? await getProjectInfo(window.electron, projectPath)
       : null
 
     const project = maybeProjectInfo ?? defaultProjectData
+    await rustContext.sendOpenProject(project, currentFilePath)
 
     // Fire off the event to load the project settings
     // once we know it's idle.

@@ -2,7 +2,7 @@ use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
 use crate::{
-    CompilationError, NodePath,
+    CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo,
@@ -13,7 +13,6 @@ use crate::{
         types::RuntimeType,
     },
     parsing::ast::types::{CallExpressionKw, DefaultParamVal, FunctionExpression, Node, Program, Type},
-    source_range::SourceRange,
     std::StdFn,
 };
 
@@ -110,11 +109,13 @@ impl KwArgs {
     }
 }
 
+#[derive(Debug)]
 struct FunctionDefinition<'a> {
     input_arg: Option<(String, Option<Type>)>,
     named_args: IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
     return_type: Option<Node<Type>>,
     deprecated: bool,
+    experimental: bool,
     include_in_feature_tree: bool,
     is_std: bool,
     body: FunctionBody<'a>,
@@ -153,13 +154,19 @@ impl<'a> From<&'a FunctionSource> for FunctionDefinition<'a> {
         }
 
         match value {
-            FunctionSource::Std { func, ast, props } => {
+            FunctionSource::Std {
+                func,
+                ast,
+                props,
+                attrs,
+            } => {
                 let (input_arg, named_args) = args_from_ast(ast);
                 FunctionDefinition {
                     input_arg,
                     named_args,
                     return_type: ast.return_type.clone(),
-                    deprecated: props.deprecated,
+                    deprecated: attrs.deprecated,
+                    experimental: attrs.experimental,
                     include_in_feature_tree: props.include_in_feature_tree,
                     is_std: true,
                     body: FunctionBody::Rust(*func),
@@ -172,6 +179,7 @@ impl<'a> From<&'a FunctionSource> for FunctionDefinition<'a> {
                     named_args,
                     return_type: ast.return_type.clone(),
                     deprecated: false,
+                    experimental: false,
                     include_in_feature_tree: true,
                     // TODO I think this might be wrong for pure Rust std functions
                     is_std: false,
@@ -188,6 +196,32 @@ impl Node<CallExpressionKw> {
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let fn_name = &self.callee;
         let callsite: SourceRange = self.into();
+
+        // Clone the function so that we can use a mutable reference to
+        // exec_state.
+        let func = fn_name.get_result(exec_state, ctx).await?.clone();
+
+        let Some(fn_src) = func.as_function() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "cannot call this because it isn't a function".to_string(),
+                vec![callsite],
+            )));
+        };
+
+        // Evaluate the unlabeled first param, if any exists.
+        let unlabeled = if let Some(ref arg_expr) = self.unlabeled {
+            let source_range = SourceRange::from(arg_expr.clone());
+            let metadata = Metadata { source_range };
+            let value = ctx
+                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
+                .await?;
+
+            let label = arg_expr.ident_name().map(str::to_owned);
+
+            Some((label, Arg::new(value, source_range)))
+        } else {
+            None
+        };
 
         // Build a hashmap from argument labels to the final evaluated values.
         let mut fn_args = IndexMap::with_capacity(self.arguments.len());
@@ -213,21 +247,6 @@ impl Node<CallExpressionKw> {
             }
         }
 
-        // Evaluate the unlabeled first param, if any exists.
-        let unlabeled = if let Some(ref arg_expr) = self.unlabeled {
-            let source_range = SourceRange::from(arg_expr.clone());
-            let metadata = Metadata { source_range };
-            let value = ctx
-                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
-                .await?;
-
-            let label = arg_expr.ident_name().map(str::to_owned);
-
-            Some((label, Arg::new(value, source_range)))
-        } else {
-            None
-        };
-
         let args = Args::new_kw(
             KwArgs {
                 unlabeled,
@@ -238,17 +257,6 @@ impl Node<CallExpressionKw> {
             ctx.clone(),
             exec_state.pipe_value().map(|v| Arg::new(v.clone(), callsite)),
         );
-
-        // Clone the function so that we can use a mutable reference to
-        // exec_state.
-        let func = fn_name.get_result(exec_state, ctx).await?.clone();
-
-        let Some(fn_src) = func.as_function() else {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "cannot call this because it isn't a function".to_string(),
-                vec![callsite],
-            )));
-        };
 
         let return_value = fn_src
             .call_kw(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
@@ -302,6 +310,15 @@ impl FunctionDefinition<'_> {
                     ),
                 ),
                 annotations::WARN_DEPRECATED,
+            );
+        }
+        if self.experimental {
+            exec_state.warn_experimental(
+                &match &fn_name {
+                    Some(n) => format!("`{n}`"),
+                    None => "This function".to_owned(),
+                },
+                callsite,
             );
         }
 
@@ -567,7 +584,7 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
 
     if found.is_unknown_number() {
         exec_state.clear_units_warnings(source_range);
-        result.push_str("\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`.");
+        result.push_str("\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: mm` or `(a * b): deg`.");
     }
 
     result
@@ -613,7 +630,7 @@ fn type_check_params_kw(
                                 );
                                 if let Some(ty) = e.explicit_coercion {
                                     // TODO if we have access to the AST for the argument we could choose which example to suggest.
-                                    message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
+                                    message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): {ty}`");
                                 }
                                 KclError::new_argument(KclErrorDetails::new(
                                     message,
@@ -959,7 +976,7 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
         let err = parse_execute(program).await.unwrap_err();
         assert_eq!(
             err.message(),
-            "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`."
+            "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: mm` or `(a * b): deg`."
         )
     }
 }

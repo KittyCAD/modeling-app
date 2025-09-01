@@ -1,15 +1,14 @@
-use std::sync::Arc;
+use std::{str::FromStr, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
-    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs,
+    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, SourceRange,
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
@@ -21,7 +20,6 @@ use crate::{
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
-    source_range::SourceRange,
 };
 
 /// State for executing a program.
@@ -149,6 +147,21 @@ impl ExecState {
         }
 
         self.global.errors.push(e);
+    }
+
+    pub fn warn_experimental(&mut self, feature_name: &str, source_range: SourceRange) {
+        let Some(severity) = self.mod_local.settings.experimental_features.severity() else {
+            return;
+        };
+        let error = CompilationError {
+            source_range,
+            message: format!("Use of {feature_name} is experimental and may change or be removed."),
+            suggestion: None,
+            severity,
+            tag: crate::errors::Tag::None,
+        };
+
+        self.global.errors.push(error);
     }
 
     pub fn clear_units_warnings(&mut self, source_range: &SourceRange) {
@@ -500,11 +513,7 @@ impl ModuleState {
             module_exports: Default::default(),
             explicit_length_units: false,
             path,
-            settings: MetaSettings {
-                default_length_units: Default::default(),
-                default_angle_units: Default::default(),
-                kcl_version: "0.1".to_owned(),
-            },
+            settings: Default::default(),
             artifacts: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
@@ -519,13 +528,25 @@ impl ModuleState {
     }
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {
     pub default_length_units: types::UnitLen,
     pub default_angle_units: types::UnitAngle,
+    pub experimental_features: annotations::WarningLevel,
     pub kcl_version: String,
+}
+
+impl Default for MetaSettings {
+    fn default() -> Self {
+        MetaSettings {
+            default_length_units: Default::default(),
+            default_angle_units: Default::default(),
+            experimental_features: annotations::WarningLevel::Deny,
+            kcl_version: "1.0".to_owned(),
+        }
+    }
 }
 
 impl MetaSettings {
@@ -552,6 +573,20 @@ impl MetaSettings {
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_number(&p.inner.value)?;
                     self.kcl_version = value;
+                }
+                annotations::SETTINGS_EXPERIMENTAL_FEATURES => {
+                    let value = annotations::expect_ident(&p.inner.value)?;
+                    let value = annotations::WarningLevel::from_str(value).map_err(|_| {
+                        KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Invalid value for {} settings property, expected one of: {}",
+                                annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+                                annotations::WARN_LEVELS.join(", ")
+                            ),
+                            annotation.as_source_ranges(),
+                        ))
+                    })?;
+                    self.experimental_features = value;
                 }
                 name => {
                     return Err(KclError::new_semantic(KclErrorDetails::new(

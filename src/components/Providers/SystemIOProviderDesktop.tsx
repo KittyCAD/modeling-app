@@ -37,6 +37,7 @@ import { useLspContext } from '@src/components/LspProvider'
 import { useLocation } from 'react-router-dom'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
@@ -214,7 +215,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
         const folderName =
           systemIOActor.getSnapshot().context.lastProjectDeleteRequest.project
-        const folderPath = `${projectDirectoryPath}${window.electron.sep}${folderName}`
+        const folderPath = `${projectDirectoryPath}${fsManager.path.sep}${folderName}`
         if (
           folderName !== NO_PROJECT_DIRECTORY &&
           (eventType === 'unlinkDir' || eventType === 'unlink') &&

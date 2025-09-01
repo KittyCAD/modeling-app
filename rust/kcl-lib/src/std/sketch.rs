@@ -10,7 +10,6 @@ use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
 use parse_display::{Display, FromStr};
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::{
@@ -39,7 +38,7 @@ use crate::{
 };
 
 /// A tag for a face.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "snake_case", untagged)]
 pub enum FaceTag {
@@ -85,7 +84,7 @@ impl FaceTag {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -768,7 +767,7 @@ pub async fn inner_angled_line_that_intersects(
 
 /// Data for start sketch on.
 /// You can start a sketch on a plane or an solid.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 #[allow(clippy::large_enum_variant)]
@@ -779,7 +778,7 @@ pub enum SketchData {
 }
 
 /// Orientation data that can be used to construct a plane, not a plane in itself.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 #[allow(clippy::large_enum_variant)]
@@ -1535,7 +1534,7 @@ async fn inner_tangential_arc(
 }
 
 /// Data to draw a tangential arc.
-#[derive(Debug, Clone, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum TangentialArcData {
@@ -2017,16 +2016,6 @@ async fn inner_elliptic_point(
 
 /// Draw an elliptical arc.
 pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(
-        crate::CompilationError {
-            source_range: args.source_range,
-            message: "Use of elliptic is currently experimental and the interface may change.".to_string(),
-            suggestion: None,
-            severity: crate::errors::Severity::Warning,
-            tag: crate::errors::Tag::None,
-        },
-        annotations::WARN_EXPERIMENTAL,
-    );
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
@@ -2229,16 +2218,6 @@ async fn inner_hyperbolic_point(
 
 /// Draw a hyperbolic arc.
 pub async fn hyperbolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(
-        crate::CompilationError {
-            source_range: args.source_range,
-            message: "Use of hyperbolic is currently experimental and the interface may change.".to_string(),
-            suggestion: None,
-            severity: crate::errors::Severity::Warning,
-            tag: crate::errors::Tag::None,
-        },
-        annotations::WARN_EXPERIMENTAL,
-    );
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let semi_major = args.get_kw_arg("semiMajor", &RuntimeType::length(), exec_state)?;
@@ -2394,16 +2373,6 @@ async fn inner_parabolic_point(
 
 /// Draw a parabolic arc.
 pub async fn parabolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(
-        crate::CompilationError {
-            source_range: args.source_range,
-            message: "Use of parabolic is currently experimental and the interface may change.".to_string(),
-            suggestion: None,
-            severity: crate::errors::Severity::Warning,
-            tag: crate::errors::Tag::None,
-        },
-        annotations::WARN_EXPERIMENTAL,
-    );
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let coefficients = args.get_kw_arg_opt(
@@ -2588,16 +2557,6 @@ fn conic_tangent(coefficients: [f64; 6], point: [f64; 2]) -> [f64; 2] {
 
 /// Draw a conic section
 pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(
-        crate::CompilationError {
-            source_range: args.source_range,
-            message: "Use of conics is currently experimental and the interface may change.".to_string(),
-            suggestion: None,
-            severity: crate::errors::Severity::Warning,
-            tag: crate::errors::Tag::None,
-        },
-        annotations::WARN_EXPERIMENTAL,
-    );
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let start_tangent = args.get_kw_arg_opt("startTangent", &RuntimeType::point2d(), exec_state)?;

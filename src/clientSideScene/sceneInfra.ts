@@ -232,8 +232,8 @@ export class SceneInfra {
         _angle = typeof angle === 'number' ? angle : getAngle(from, to)
       }
 
-      const x = (vector.x * 0.5 + 0.5) * window.innerWidth
-      const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
+      const x = (vector.x * 0.5 + 0.5) * this.renderer.domElement.clientWidth
+      const y = (-vector.y * 0.5 + 0.5) * this.renderer.domElement.clientHeight
       const pathToNodeString = JSON.stringify(group.userData.pathToNode)
       return {
         type: 'set-one',
@@ -443,7 +443,23 @@ export class SceneInfra {
   private _processingMouseMove = false
   private _lastUnprocessedMouseEvent: MouseEvent | undefined
 
+  private updateCurrentMouseVector(event: MouseEvent, target: HTMLElement) {
+    const rect = target.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) {
+      return
+    }
+    const localX = event.clientX - rect.left
+    const localY = event.clientY - rect.top
+    this.currentMouseVector.x = (localX / rect.width) * 2 - 1
+    this.currentMouseVector.y = -(localY / rect.height) * 2 + 1
+  }
+
   onMouseMove = async (mouseEvent: MouseEvent) => {
+    if (!(mouseEvent.currentTarget instanceof HTMLElement)) {
+      console.error('unexpected targetless event')
+      return
+    }
+
     if (this.mouseMoveThrottling) {
       // Throttle mouse move events to help with performance.
       // Without this a new call to executeAstMock() is made by SceneEntities/onDragSegment() while the
@@ -456,9 +472,7 @@ export class SceneInfra {
       this._processingMouseMove = true
     }
 
-    this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
-    this.currentMouseVector.y =
-      -(mouseEvent.clientY / window.innerHeight) * 2 + 1
+    this.updateCurrentMouseVector(mouseEvent, mouseEvent.currentTarget)
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
@@ -599,8 +613,14 @@ export class SceneInfra {
     // Check the ring points
     for (let i = 0; i < rayRingCount; i++) {
       const angle = (i / rayRingCount) * Math.PI * 2
-      const offsetX = ((pixelRadius * Math.cos(angle)) / window.innerWidth) * 2
-      const offsetY = ((pixelRadius * Math.sin(angle)) / window.innerHeight) * 2
+      const offsetX =
+        ((pixelRadius * Math.cos(angle)) /
+          this.renderer.domElement.clientWidth) *
+        2
+      const offsetY =
+        ((pixelRadius * Math.sin(angle)) /
+          this.renderer.domElement.clientHeight) *
+        2
       const ringVector = new Vector2(
         mouseDownVector.x + offsetX,
         mouseDownVector.y - offsetY
@@ -624,8 +644,11 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
-    this.currentMouseVector.x = (event.clientX / window.innerWidth) * 2 - 1
-    this.currentMouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1
+    if (!(event.currentTarget instanceof HTMLElement)) {
+      console.error('unexpected targetless event')
+      return
+    }
+    this.updateCurrentMouseVector(event, event.currentTarget)
 
     const mouseDownVector = this.currentMouseVector.clone()
     const intersect = this.raycastRing()[0]
@@ -643,9 +666,11 @@ export class SceneInfra {
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
-    this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
-    this.currentMouseVector.y =
-      -(mouseEvent.clientY / window.innerHeight) * 2 + 1
+    if (!(mouseEvent.currentTarget instanceof HTMLElement)) {
+      console.error('unexpected targetless event')
+      return
+    }
+    this.updateCurrentMouseVector(mouseEvent, mouseEvent.currentTarget)
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 

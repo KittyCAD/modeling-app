@@ -1,12 +1,12 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { Resizable } from 're-resizable'
-import type { MouseEventHandler } from 'react'
+import type { HTMLProps, MouseEventHandler } from 'react'
 import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useAppState } from '@src/AppState'
 import { ActionIcon } from '@src/components/ActionIcon'
-import type { CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
 import type {
@@ -133,7 +133,7 @@ export function ModelingSidebar() {
       title: 'Refresh app',
       sidebarName: 'Refresh app',
       icon: 'exclamationMark',
-      keybinding: 'Mod + R',
+      keybinding: '', // as a last resort, this action shouldn't have a shortcut
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       action: async () => {
         refreshPage('Sidebar button').catch(reportRejection)
@@ -222,42 +222,41 @@ export function ModelingSidebar() {
 
   return (
     <Resizable
-      className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${pointerEventsCssClass}`}
+      className={`group z-10 flex flex-col ${pointerEventsCssClass} ${context.store?.openPanes.length ? undefined : '!w-auto'}`}
       defaultSize={{
         width: '550px',
         height: 'auto',
       }}
-      minWidth={200}
-      maxWidth={window.innerWidth - 10}
+      minWidth={context.store?.openPanes.length ? 200 : undefined}
       handleWrapperClass="sidebar-resize-handles"
-      handleClasses={{
-        right:
-          (context.store?.openPanes.length === 0 ? 'hidden ' : 'block ') +
-          'translate-x-1/2 hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ',
-        left: 'hidden',
-        top: 'hidden',
-        topLeft: 'hidden',
-        topRight: 'hidden',
-        bottom: 'hidden',
-        bottomLeft: 'hidden',
-        bottomRight: 'hidden',
+      enable={{
+        right: true,
+        top: false,
+        bottom: false,
+        left: false,
+        topRight: false,
+        bottomRight: false,
+        bottomLeft: false,
+        topLeft: false,
+      }}
+      handleComponent={{
+        right: (
+          <ResizeHandle
+            className={
+              context.store?.openPanes.length === 0 ? 'hidden ' : 'block '
+            }
+          />
+        ),
       }}
     >
-      <div id="app-sidebar" className="flex flex-row h-full">
+      <div id="app-sidebar" className="flex flex-row flex-1">
         <ul
           className={
-            (context.store?.openPanes.length === 0 ? 'rounded-r ' : '') +
-            'relative z-[2] pointer-events-auto p-0 col-start-1 col-span-1 h-fit w-fit flex flex-col ' +
-            'bg-chalkboard-10 border border-solid border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80 group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 shadow-sm '
+            'relative pointer-events-auto p-0 col-start-1 col-span-1 flex flex-col items-stretch ' +
+            'bg-chalkboard-10 border-r border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80 '
           }
         >
-          <ul
-            id="pane-buttons-section"
-            className={
-              'w-fit p-2 flex flex-col gap-2 ' +
-              (context.store?.openPanes.length >= 1 ? 'pr-0.5' : '')
-            }
-          >
+          <ul id="pane-buttons-section" className="flex flex-col items-stretch">
             {filteredPanes.map((pane) => (
               <ModelingPaneButton
                 key={pane.id}
@@ -272,10 +271,7 @@ export function ModelingSidebar() {
           {filteredActions.length > 0 && (
             <>
               <hr className="w-full border-chalkboard-30 dark:border-chalkboard-80" />
-              <ul
-                id="sidebar-actions"
-                className="w-fit p-2 flex flex-col gap-2"
-              >
+              <ul id="sidebar-actions" className="flex flex-col">
                 {filteredActions.map((action) => (
                   <ModelingPaneButton
                     key={action.id}
@@ -298,7 +294,7 @@ export function ModelingSidebar() {
         <ul
           id="pane-section"
           className={
-            'ml-[-1px] col-start-2 col-span-1 flex flex-col items-stretch gap-2 ' +
+            'ml-[-1px] col-start-2 col-span-1 flex flex-col items-stretch border-x border-chalkboard-30 dark:border-chalkboard-80 ' +
             (context.store?.openPanes.length >= 1 ? `w-full` : `hidden`)
           }
         >
@@ -360,11 +356,11 @@ function ModelingPaneButton({
   return (
     <div
       id={paneConfig.id + '-button-holder'}
-      className="relative"
+      className="relative py-[1px]"
       data-onboarding-id={`${paneConfig.id}-pane-button`}
     >
       <button
-        className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
+        className={`group pointer-events-auto flex items-center justify-center border-0 border-r-2 rounded-none border-transparent dark:border-transparent p-2 m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''}`}
         onClick={onClick}
         name={paneConfig.sidebarName}
         data-testid={paneConfig.id + SIDEBAR_BUTTON_SUFFIX}
@@ -374,12 +370,8 @@ function ModelingPaneButton({
       >
         <ActionIcon
           icon={paneConfig.icon}
-          className={paneConfig.iconClassName || ''}
           size={paneConfig.iconSize || 'md'}
-          iconClassName={paneIsOpen ? ' !text-chalkboard-10' : ''}
-          bgClassName={
-            'rounded-sm ' + (paneIsOpen ? '!bg-primary' : '!bg-transparent')
-          }
+          bgClassName="rounded-sm !bg-transparent"
         />
         <span className="sr-only">
           {paneConfig.sidebarName}
@@ -395,9 +387,11 @@ function ModelingPaneButton({
             {disabledText !== undefined ? ` (${disabledText})` : ''}
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
-          <kbd className="hotkey text-xs capitalize">
-            {hotkeyDisplay(paneConfig.keybinding, platform)}
-          </kbd>
+          {paneConfig.keybinding && (
+            <kbd className="hotkey text-xs capitalize">
+              {hotkeyDisplay(paneConfig.keybinding, platform)}
+            </kbd>
+          )}
         </Tooltip>
       </button>
       {!!showBadge?.value && (
@@ -406,7 +400,7 @@ function ModelingPaneButton({
           className={
             showBadge.className
               ? showBadge.className
-              : 'absolute m-0 p-0 bottom-4 left-4 min-w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+              : 'absolute m-0 p-0 top-0 right-0 min-w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-bl border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
           }
           onClick={showBadge.onClick}
           title={
@@ -431,6 +425,24 @@ function ModelingPaneButton({
           )}
         </p>
       )}
+    </div>
+  )
+}
+
+function ResizeHandle(props: HTMLProps<HTMLDivElement>) {
+  return (
+    <div
+      {...props}
+      className={'group/grip absolute inset-0 ' + props.className}
+    >
+      <div className="hidden group-hover/grip:block absolute bg-chalkboard-30 dark:bg-chalkboard-70 w-[1px] h-auto left-1/2 top-0 bottom-0" />
+      <div
+        className={
+          'hidden group-hover/grip:block py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm w-fit group-hover/grip:bg-chalkboard-30 group-hover/grip:dark:bg-chalkboard-70 bg-transparent transition-colors border border-transparent group-hover/grip:border-chalkboard-40 dark:group-hover/grip:border-chalkboard-90 duration-75 transition-ease-out delay-100'
+        }
+      >
+        <CustomIcon className="w-5 -mx-0.5 rotate-90" name="sixDots" />
+      </div>
     </div>
   )
 }

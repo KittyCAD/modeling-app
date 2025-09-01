@@ -8,7 +8,6 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
-use schemars::JsonSchema;
 use serde::Serialize;
 
 use super::{
@@ -19,7 +18,7 @@ use crate::{
     SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, annotations,
+        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface,
         types::{RuntimeType, UnitLen},
     },
     parsing::ast::types::TagNode,
@@ -30,7 +29,7 @@ use crate::{
 };
 
 /// A sketch surface or a sketch.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(untagged)]
 pub enum SketchOrSurface {
@@ -348,7 +347,7 @@ async fn inner_circle_three_point(
 }
 
 /// Type of the polygon
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, Default)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Default)]
 #[ts(export)]
 #[serde(rename_all = "lowercase")]
 pub enum PolygonType {
@@ -525,16 +524,6 @@ async fn inner_polygon(
 
 /// Sketch an ellipse.
 pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(
-        crate::CompilationError {
-            source_range: args.source_range,
-            message: "Use of ellipse is currently experimental and the interface may change.".to_string(),
-            suggestion: None,
-            severity: crate::errors::Severity::Warning,
-            tag: crate::errors::Tag::None,
-        },
-        annotations::WARN_EXPERIMENTAL,
-    );
     let sketch_or_surface =
         args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
     let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;

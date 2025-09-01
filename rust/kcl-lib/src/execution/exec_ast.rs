@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 
 use crate::{
-    CompilationError, NodePath,
+    CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
@@ -22,7 +22,6 @@ use crate::{
         BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, MemberExpression, Name,
         Node, NodeRef, ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
     },
-    source_range::SourceRange,
     std::args::TyF64,
 };
 
@@ -404,8 +403,8 @@ impl ExecutorContext {
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
-                    let impl_kind = annotations::get_impl(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
-                    match impl_kind {
+                    let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
+                    match attrs.impl_ {
                         annotations::Impl::Rust => {
                             let std_path = match &exec_state.mod_local.path {
                                 ModulePath::Std { value } => value,
@@ -743,17 +742,17 @@ impl ExecutorContext {
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
-                let rust_impl = annotations::get_impl(annotations, metadata.source_range)?
-                    .map(|s| s == annotations::Impl::Rust)
-                    .unwrap_or(false);
-
-                if rust_impl {
+                let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
+                if let Some(attrs) = attrs
+                    && attrs.impl_ == annotations::Impl::Rust
+                {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
                             value: FunctionSource::Std {
                                 func,
                                 props,
+                                attrs,
                                 ast: function_expression.clone(),
                             },
                             meta: vec![metadata.to_owned()],
@@ -870,9 +869,9 @@ fn apply_ascription(
 
     value.coerce(&ty, false, exec_state).map_err(|_| {
         let suggestion = if ty == RuntimeType::length() {
-            ", you might try coercing to a fully specified numeric type such as `number(mm)`"
+            ", you might try coercing to a fully specified numeric type such as `mm`"
         } else if ty == RuntimeType::angle() {
-            ", you might try coercing to a fully specified numeric type such as `number(deg)`"
+            ", you might try coercing to a fully specified numeric type such as `deg`"
         } else {
             ""
         };
@@ -1947,6 +1946,18 @@ mixedArr = [0, "a"]: [number(mm)]
             ),
             "Expected error but found {err:?}"
         );
+
+        let program = r#"
+mixedArr = [0, "a"]: [mm]
+"#;
+        let result = parse_execute(program).await;
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string().contains(
+                "could not coerce an array of `number`, `string` (with type `[any; 2]`) to type `[number(mm)]`"
+            ),
+            "Expected error but found {err:?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2116,7 +2127,25 @@ a = foo()
 
         parse_execute(program).await.unwrap();
 
+        let program = r#"fn foo(): mm {
+  return 42
+}
+
+a = foo()
+"#;
+
+        parse_execute(program).await.unwrap();
+
         let program = r#"fn foo(): number(mm) {
+  return { bar: 42 }
+}
+
+a = foo()
+"#;
+
+        parse_execute(program).await.unwrap_err();
+
+        let program = r#"fn foo(): mm {
   return { bar: 42 }
 }
 
@@ -2181,6 +2210,9 @@ startSketchOn(XY)
     #[tokio::test(flavor = "multi_thread")]
     async fn ascription_in_binop() {
         let ast = r#"foo = tan(0): number(rad) - 4deg"#;
+        parse_execute(ast).await.unwrap();
+
+        let ast = r#"foo = tan(0): rad - 4deg"#;
         parse_execute(ast).await.unwrap();
     }
 

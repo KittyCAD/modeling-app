@@ -16,6 +16,7 @@ import { expect } from '@e2e/playwright/zoo-test'
 type MouseParams = {
   pixelDiff?: number
   shouldDbClick?: boolean
+  shouldRightClick?: boolean
   delay?: number
 }
 type MouseDragToParams = MouseParams & {
@@ -85,7 +86,8 @@ export class SceneFixture {
   convertPagePositionToStream = async (
     x: number,
     y: number,
-    format: 'pixels' | 'ratio' | undefined = 'pixels'
+    format: 'pixels' | 'ratio' | undefined = 'pixels',
+    relativeToStream = false
   ) => {
     const viewportSize = this.page.viewportSize()
     const streamBoundingBox = await this.streamWrapper.boundingBox()
@@ -99,11 +101,11 @@ export class SceneFixture {
     const resolvedX =
       (x / (format === 'pixels' ? viewportSize.width : 1)) *
         streamBoundingBox.width +
-      streamBoundingBox.x
+      (relativeToStream ? 0 : streamBoundingBox.x)
     const resolvedY =
       (y / (format === 'pixels' ? viewportSize.height : 1)) *
         streamBoundingBox.height +
-      streamBoundingBox.y
+      (relativeToStream ? 0 : streamBoundingBox.y)
 
     const resolvedPoint = {
       x: Math.round(resolvedX),
@@ -136,9 +138,14 @@ export class SceneFixture {
                 ? this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
                     delay: clickParams?.delay || 0,
                   })
-                : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
-                    delay: clickParams?.delay || 0,
-                  }),
+                : clickParams?.shouldRightClick
+                  ? this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                      button: 'right',
+                      delay: clickParams?.delay || 0,
+                    })
+                  : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                      delay: clickParams?.delay || 0,
+                    }),
             clickParams.pixelDiff
           )
         }
@@ -146,9 +153,14 @@ export class SceneFixture {
           ? this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
               delay: clickParams?.delay || 0,
             })
-          : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
-              delay: clickParams?.delay || 0,
-            })
+          : clickParams?.shouldRightClick
+            ? this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                button: 'right',
+                delay: clickParams?.delay || 0,
+              })
+            : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                delay: clickParams?.delay || 0,
+              })
       },
       async (moveParams?: MouseParams) => {
         const resolvedPoint = await this.convertPagePositionToStream(
@@ -203,12 +215,14 @@ export class SceneFixture {
         const resolvedToPoint = await this.convertPagePositionToStream(
           x,
           y,
-          format
+          format,
+          true
         )
         const resolvedFromPoint = await this.convertPagePositionToStream(
           dragToParams.fromPoint.x,
           dragToParams.fromPoint.y,
-          format
+          format,
+          true
         )
         if (debug) {
           console.log({
@@ -239,12 +253,14 @@ export class SceneFixture {
         const resolvedFromPoint = await this.convertPagePositionToStream(
           x,
           y,
-          format
+          format,
+          true
         )
         const resolvedToPoint = await this.convertPagePositionToStream(
           dragFromParams.toPoint.x,
           dragFromParams.toPoint.y,
-          format
+          format,
+          true
         )
         if (debug) {
           console.log({

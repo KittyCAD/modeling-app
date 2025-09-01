@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExecutorContext, ImportedGeometry, ModelingCmdMeta, annotations, typed_path::TypedPath,
@@ -21,7 +22,6 @@ use crate::{
     },
     fs::FileSystem,
     parsing::ast::types::{Annotation, Node},
-    source_range::SourceRange,
 };
 
 // Zoo co-ordinate system.

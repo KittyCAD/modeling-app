@@ -5,6 +5,8 @@ excerpt: "Add an elliptic section to an existing sketch."
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 Add an elliptic section to an existing sketch.
 
 ```kcl
@@ -47,6 +49,8 @@ elliptic(
 ### Examples
 
 ```kcl
+@settings(experimentalFeatures = allow)
+
 majorRadius = 2
 minorRadius = 1
 ellip = ellipticPoint(majorRadius, minorRadius, x = 2)
@@ -56,7 +60,7 @@ exampleSketch = startSketchOn(XY)
   |> elliptic(
        center = [0, 0],
        angleStart = segAng(start),
-       angleEnd = 160,
+       angleEnd = 160deg,
        majorRadius,
        minorRadius,
      )
