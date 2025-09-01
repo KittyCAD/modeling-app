@@ -155,16 +155,16 @@ export class InfiniteGridRenderer extends LineSegments<
       // In non-fixed size mode, adjust major spacing based on current zoom level
       let majorPx = effectiveMajorSpacing * pixelsPerBaseUnit
 
-      if (majorPx < 40) {
-        while (majorPx < 40) {
-          effectiveMajorSpacing *= 10
-          majorPx *= 10
-        }
-      } else {
-        while (majorPx > viewportWidthPx * 0.7) {
-          effectiveMajorSpacing /= 10
-          majorPx /= 10
-        }
+      const minPx = 40
+      const maxPx = Math.max(viewportWidthPx * 0.7, 100)
+
+      // Multiply / divide by 10 until majorPx falls within [minPx, maxPx]
+      if (majorPx < minPx) {
+        const factor = Math.ceil(Math.log10(minPx / majorPx))
+        effectiveMajorSpacing *= 10 ** factor
+      } else if (majorPx > maxPx) {
+        const factor = Math.ceil(Math.log10(majorPx / maxPx))
+        effectiveMajorSpacing /= 10 ** factor
       }
 
       minorSpacing = effectiveMajorSpacing / options.minorGridsPerMajor
