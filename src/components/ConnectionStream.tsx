@@ -155,7 +155,8 @@ export const ConnectionStream = (props: {
                 })
               )
               .catch(trap)
-          }).catch(reportRejection)
+          })
+          .catch(reportRejection)
       } else {
         console.error('DOM is not initialized for the stream.')
         return
