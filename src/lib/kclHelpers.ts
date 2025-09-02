@@ -55,11 +55,13 @@ export async function getCalculatedKclExpressionValue(value: string) {
     : typeof resultRawValue === 'number'
       ? String(resultRawValue)
       : isArray(resultRawValue)
-        ? `[${resultRawValue.map(item => 
-            typeof item === 'object' && item !== null && 'value' in item 
-              ? item.value 
-              : item
-          ).join(', ')}]`
+        ? `[${resultRawValue
+            .map((item) =>
+              typeof item === 'object' && item !== null && 'value' in item
+                ? item.value
+                : item
+            )
+            .join(', ')}]`
         : typeof resultRawValue === 'string'
           ? resultRawValue
           : 'NAN'
