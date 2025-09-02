@@ -482,6 +482,7 @@ export class Connection extends EventTarget {
       console.error('deferredSdpAnswer resolve is undefined')
       return
     }
+
     dispatchEvent(
       new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
         detail: {

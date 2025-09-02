@@ -97,7 +97,7 @@ export const createOnWebSocketMessage = ({
   dispatchEvent: (event: Event) => boolean
   ping: () => number | undefined
   setPing: (pong: number | undefined) => void
-  createPeerConnection: () => RTCPeerConnection
+  createPeerConnection: () => RTCPeerConnection | undefined
   send: (message: Models['WebSocketRequest_type']) => void
   setSdpAnswer: (answer: RTCSessionDescriptionInit) => void
   initiateConnectionExclusive: () => Promise<unknown>
@@ -190,6 +190,18 @@ export const createOnWebSocketMessage = ({
 
         // You have reference!
         const peerConnection = createPeerConnection()
+
+        if (!peerConnection) {
+          console.error('unable to create peer connnection')
+          EngineDebugger.addLog({
+            label: 'onWebSocketMessage',
+            message: 'ice_server_info',
+            metadata: { error: 'unable to createPeerConnection' },
+          })
+          // TODO: Handle failure case
+          return
+        }
+
         EngineDebugger.addLog({
           label: 'onWebSocketMessage',
           message: 'createPeerConnection from ice_server_info',

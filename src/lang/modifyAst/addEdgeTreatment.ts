@@ -21,7 +21,6 @@ import {
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { getSweepArtifactFromSelection } from '@src/lang/std/artifactGraph'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import {
   addTagForSketchOnFace,
   sketchLineHelperMapKw,
@@ -46,6 +45,7 @@ import {
 } from '@src/lang/modifyAst/tagManagement'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import { deleteTopLevelStatement } from '@src/lang/modifyAst'
+import { ConnectionManager } from '@src/network/connectionManager'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {
@@ -70,7 +70,7 @@ export async function modifyAstWithEdgeTreatmentAndTag(
   parameters: EdgeTreatmentParameters,
   dependencies: {
     kclManager: KclManager
-    engineCommandManager: EngineCommandManager
+    engineCommandManager: ConnectionManager
     editorManager: EditorManager
     codeManager: CodeManager
   }

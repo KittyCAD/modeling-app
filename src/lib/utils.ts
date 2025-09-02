@@ -5,13 +5,12 @@ import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
 import type { AsyncFn } from '@src/lib/types'
 
 import * as THREE from 'three'
-
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type {
   CameraViewState_type,
   UnitLength_type,
 } from '@kittycad/lib/dist/types/src/models'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import { ConnectionManager } from '@src/network/connectionManager'
 
 export const uuidv4 = v4
 
@@ -628,7 +627,7 @@ export async function engineStreamZoomToFit({
   engineCommandManager,
   padding,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   padding: number
 }) {
   // It makes sense to also call zoom to fit here, when a new file is
@@ -650,7 +649,7 @@ export async function engineViewIsometricWithGeometryPresent({
   engineCommandManager,
   padding,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   padding: number
 }) {
   /**
@@ -686,7 +685,7 @@ export async function engineViewIsometricWithoutGeometryPresent({
   unit,
   cameraProjection,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   unit: UnitLength_type
   cameraProjection: CameraProjectionType
 }) {
