@@ -10,7 +10,6 @@ import type { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { BSON } from 'bson'
 
 import type { Models } from '@kittycad/lib/dist/types/src'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
 import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'

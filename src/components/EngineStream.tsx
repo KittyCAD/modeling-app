@@ -394,29 +394,7 @@ export const EngineStream = (props: {
      */
   }, [file])
 
-  window.startFile = () => {
-    kclManager
-      .executeCode()
-      .catch(trap)
-      .then(() =>
-        // It makes sense to also call zoom to fit here, when a new file is
-        // loaded for the first time, but not overtaking the work kevin did
-        // so the camera isn't moving all the time.
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
-      )
-      .catch(trap)
-  }
-
-  const IDLE_TIME_MS = Number(30000)
+  /* const IDLE_TIME_MS = Number(30000) */
 
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)

@@ -1,7 +1,7 @@
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
-import { err } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import type { Selection } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import env from '@src/env'
@@ -11,16 +11,18 @@ beforeAll(async () => {
   await initPromise
 
   await new Promise((resolve) => {
-    engineCommandManager.start({
-      token: env().VITE_KITTYCAD_API_TOKEN,
-      width: 256,
-      height: 256,
-      setMediaStream: () => {},
-      setIsStreamReady: () => {},
-      callbackOnEngineLiteConnect: () => {
-        resolve(true)
-      },
-    })
+    engineCommandManager
+      .start({
+        token: env().VITE_KITTYCAD_API_TOKEN,
+        width: 256,
+        height: 256,
+        setMediaStream: () => {},
+        setIsStreamReady: () => {},
+        callbackOnEngineLiteConnect: () => {
+          resolve(true)
+        },
+      })
+      .catch(reportRejection)
   })
 }, 30_000)
 

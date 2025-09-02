@@ -34,23 +34,25 @@ import {
   engineCommandManager,
   kclManager,
 } from '@src/lib/singletons'
-import { err } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import { isOverlap } from '@src/lib/utils'
 
 beforeAll(async () => {
   await initPromise
 
   await new Promise((resolve) => {
-    engineCommandManager.start({
-      token: env().VITE_KITTYCAD_API_TOKEN,
-      width: 256,
-      height: 256,
-      setMediaStream: () => {},
-      setIsStreamReady: () => {},
-      callbackOnEngineLiteConnect: () => {
-        resolve(true)
-      },
-    })
+    engineCommandManager
+      .start({
+        token: env().VITE_KITTYCAD_API_TOKEN,
+        width: 256,
+        height: 256,
+        setMediaStream: () => {},
+        setIsStreamReady: () => {},
+        callbackOnEngineLiteConnect: () => {
+          resolve(true)
+        },
+      })
+      .catch(reportRejection)
   })
 }, 30_000)
 

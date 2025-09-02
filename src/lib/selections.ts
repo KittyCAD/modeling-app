@@ -46,7 +46,6 @@ import {
   isOverlap,
   uuidv4,
 } from '@src/lib/utils'
-import { engineStreamActor } from '@src/lib/singletons'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
@@ -166,7 +165,7 @@ export function getEventForSegmentSelection(
       return (
         entry[1].type === 'segment' &&
         JSON.stringify(entry[1].codeRef.pathToNode) ===
-        JSON.stringify(group?.userData?.pathToNode)
+          JSON.stringify(group?.userData?.pathToNode)
       )
     }
   )?.[0]
@@ -509,7 +508,8 @@ export function getSelectionTypeDisplayText(
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
-        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${count > 1 ? 's' : ''
+        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
+          count > 1 ? 's' : ''
         }`
     )
     .join(', ')
@@ -958,10 +958,10 @@ export async function selectOffsetSketchPlane(
           planeInfo.origin.y,
           planeInfo.origin.z,
         ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
-            number,
-            number,
-            number,
-          ],
+          number,
+          number,
+          number,
+        ],
         planeId,
         pathToNode: artifact.codeRef.pathToNode,
         negated,

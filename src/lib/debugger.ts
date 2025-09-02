@@ -1,3 +1,5 @@
+import { reportRejection } from '@src/lib/trap'
+
 interface ILog {
   time: number
   message: string
@@ -46,10 +48,9 @@ export class Debugger {
 
   writeToDisk() {
     if (window.electron) {
-      window.electron.writeFile(
-        '/tmp/engineDebug.json',
-        JSON.stringify(this.logs)
-      )
+      window.electron
+        .writeFile('/tmp/engineDebug.json', JSON.stringify(this.logs))
+        .catch(reportRejection)
     }
   }
 }

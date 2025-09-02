@@ -3,6 +3,7 @@ import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
+import { reportRejection } from '@src/lib/trap'
 
 export enum EngineStreamState {
   WaitingForDependencies = 'waiting-for-dependencies',
@@ -126,12 +127,14 @@ export const engineStreamMachine = setup({
         rootContext.engineCommandManager.settings = settingsNext
 
         window.requestAnimationFrame(() => {
-          rootContext.engineCommandManager.start({
-            width,
-            height,
-            token: context.authToken,
-            settings: settingsNext,
-          })
+          rootContext.engineCommandManager
+            .start({
+              width,
+              height,
+              token: context.authToken,
+              settings: settingsNext,
+            })
+            .catch(reportRejection)
 
           event.modelingMachineActorSend({
             type: 'Set context',

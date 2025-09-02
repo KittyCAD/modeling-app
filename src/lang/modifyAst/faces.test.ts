@@ -7,7 +7,7 @@ import {
 } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
-import { err } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import {
   addOffsetPlane,
   addShell,
@@ -32,16 +32,18 @@ import type { StdLibCallOp } from '@src/lang/queryAst'
 beforeAll(async () => {
   await initPromise
   await new Promise((resolve) => {
-    engineCommandManager.start({
-      token: env().VITE_KITTYCAD_API_TOKEN,
-      width: 256,
-      height: 256,
-      setMediaStream: () => {},
-      setIsStreamReady: () => {},
-      callbackOnEngineLiteConnect: () => {
-        resolve(true)
-      },
-    })
+    engineCommandManager
+      .start({
+        token: env().VITE_KITTYCAD_API_TOKEN,
+        width: 256,
+        height: 256,
+        setMediaStream: () => {},
+        setIsStreamReady: () => {},
+        callbackOnEngineLiteConnect: () => {
+          resolve(true)
+        },
+      })
+      .catch(reportRejection)
   })
 }, 30_000)
 

@@ -9,13 +9,8 @@ import type { ErrorType } from '@src/lang/std/engineConnection'
 import {
   CONNECTION_ERROR_TEXT,
   ConnectionError,
-  DisconnectingType,
-  EngineCommandManagerEvents,
-  EngineConnectionEvents,
-  EngineConnectionStateType,
 } from '@src/lang/std/engineConnection'
 import { SafeRenderer } from '@src/lib/markdown'
-import { engineCommandManager } from '@src/lib/singletons'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
 interface LoadingProps extends React.PropsWithChildren {

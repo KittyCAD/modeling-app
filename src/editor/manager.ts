@@ -24,7 +24,6 @@ import {
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 import type { KclManager } from '@src/lang/KclSingleton'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { isTopLevelModule } from '@src/lang/util'
 import { markOnce } from '@src/lib/performance'
 import type { Selection, Selections } from '@src/lib/selections'

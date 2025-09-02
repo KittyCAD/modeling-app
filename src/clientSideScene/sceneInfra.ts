@@ -34,7 +34,6 @@ import {
   getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { Coords2d } from '@src/lang/std/sketch'
 import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/lib/selections'

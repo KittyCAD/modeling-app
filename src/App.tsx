@@ -10,7 +10,6 @@ import {
 } from 'react-router-dom'
 
 import { AppHeader } from '@src/components/AppHeader'
-import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
 import { useLspContext } from '@src/components/LspProvider'
 import {
