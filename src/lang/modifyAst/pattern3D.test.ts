@@ -365,4 +365,43 @@ extrude(exampleSketch, length = -5)
     expect(newCode).toContain('extrude(exampleSketch, length = -5)')
     expect(newCode).toContain('|> patternCircular3d(')
   })
+
+  it('should handle all optional parameters', async () => {
+    const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+    const { ast, selections, artifactGraph } =
+      await getAstAndSolidSelections(code)
+
+    const result = addPatternCircular3D({
+      ast,
+      artifactGraph,
+      solids: selections,
+      instances: await getKclCommandValue('6'),
+      axis: 'Y',
+      center: await getKclCommandValue('[0, 0, 0]'),
+      arcDegrees: await getKclCommandValue('180'),
+      rotateDuplicates: true,
+      useOriginal: false,
+    })
+
+    if (err(result)) {
+      throw result
+    }
+
+    const { modifiedAst } = result
+    const newCode = recast(modifiedAst)
+
+    expect(newCode).toContain('patternCircular3d(')
+    expect(newCode).toContain('instances = 6')
+    expect(newCode).toContain('axis = Y')
+    expect(newCode).toContain('center = [0, 0, 0]')
+    expect(newCode).toContain('arcDegrees = 180')
+    expect(newCode).toContain('rotateDuplicates = true')
+    expect(newCode).toContain('useOriginal = false')
+  })
 })
