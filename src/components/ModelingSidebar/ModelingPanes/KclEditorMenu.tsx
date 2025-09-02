@@ -7,12 +7,24 @@ import { ActionIcon } from '@src/components/ActionIcon'
 import { editorShortcutMeta } from '@src/components/ModelingSidebar/ModelingPanes/KclEditorPane'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { kclManager } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { reportRejection, trap } from '@src/lib/trap'
 import { commandBarActor, settingsActor } from '@src/lib/singletons'
 
 import styles from './KclEditorMenu.module.css'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import toast from 'react-hot-toast'
+
+function copyKclCodeToClipboard() {
+  if (globalThis && 'navigator' in globalThis && codeManager.code) {
+    navigator.clipboard
+      .writeText(codeManager.code)
+      .then(() => toast.success(`Copied current file's code to clipboard`))
+      .catch((_e) =>
+        trap(new Error(`Failed to copy current file's code to clipboard`))
+      )
+  }
+}
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
@@ -50,6 +62,11 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
             >
               <span>Format code</span>
               <small>{editorShortcutMeta.formatCode.display}</small>
+            </button>
+          </Menu.Item>
+          <Menu.Item>
+            <button onClick={copyKclCodeToClipboard} className={styles.button}>
+              <span>Copy code</span>
             </button>
           </Menu.Item>
           {convertToVarEnabled && (
