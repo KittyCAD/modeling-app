@@ -490,16 +490,25 @@ export class SceneEntities {
             ? [0.2, 0.2, 0.2, 1.0]
             : [0.9, 0.9, 0.9, 1.0]
 
+          const pixelsPerBaseUnit = this.sceneInfra.getPixelsPerBaseUnit(camera)
+          const fixedSizeGrid = settings.modeling.fixedSizeGrid.current
+          const gridScaleFactor = getGridScaleFactor({
+            majorGridSpacing,
+            pixelsPerBaseUnit,
+            viewportSize,
+            fixedSizeGrid,
+          })
           gridRenderer.update(
             camera,
             [viewportSize.x, viewportSize.y],
-            this.sceneInfra.getPixelsPerBaseUnit(camera),
+            pixelsPerBaseUnit,
+            gridScaleFactor,
             {
               majorGridSpacing,
               minorGridsPerMajor,
               majorColor,
               minorColor,
-              fixedSizeGrid: settings.modeling.fixedSizeGrid.current,
+              fixedSizeGrid,
             }
           )
         }
@@ -580,8 +589,8 @@ export class SceneEntities {
       return { point, snapped: false }
     }
 
-    const snapsPerMinor = settings.modeling.snapsPerMinor.current
     const minorsPerMajor = settings.modeling.minorGridsPerMajor.current
+    const snapsPerMinor = settings.modeling.snapsPerMinor.current
     const multiplier = minorsPerMajor * snapsPerMinor
     return {
       point: [
@@ -4064,6 +4073,33 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
       groupExpressionIndex === sketchEntryNodePath[1][0]
     return isProfileStartOfCurrentExpr
   }
+}
+
+// returns the factor by which to multiply the grid depending on zoom level in non-fixed size mode
+function getGridScaleFactor(options: {
+  majorGridSpacing: number
+  pixelsPerBaseUnit: number
+  viewportSize: Vector2
+  fixedSizeGrid: boolean
+}) {
+  let effectiveMajorSpacing = options.majorGridSpacing
+  const viewportWidthPx = options.viewportSize.x
+  let gridScaleFactor = 1
+  if (!options.fixedSizeGrid) {
+    // In non-fixed size mode, adjust major spacing based on current zoom level
+    let majorPx = effectiveMajorSpacing * options.pixelsPerBaseUnit
+
+    const minPx = 40
+    const maxPx = Math.max(viewportWidthPx * 0.7, 100)
+
+    // Multiply / divide by 10 until majorPx falls within [minPx, maxPx]
+    if (majorPx < minPx) {
+      gridScaleFactor = 10 ** Math.ceil(Math.log10(minPx / majorPx))
+    } else if (majorPx > maxPx) {
+      gridScaleFactor = 1 / 10 ** Math.ceil(Math.log10(majorPx / maxPx))
+    }
+  }
+  return gridScaleFactor
 }
 
 // Returns the 2D tangent direction vector at the end of the segmentGroup
