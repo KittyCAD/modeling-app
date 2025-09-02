@@ -166,7 +166,7 @@ export function getEventForSegmentSelection(
       return (
         entry[1].type === 'segment' &&
         JSON.stringify(entry[1].codeRef.pathToNode) ===
-          JSON.stringify(group?.userData?.pathToNode)
+        JSON.stringify(group?.userData?.pathToNode)
       )
     }
   )?.[0]
@@ -407,7 +407,7 @@ export function updateExtraSegments(
 function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[]
 ): Models['WebSocketRequest_type'][] {
-  if (!engineCommandManager.engineConnection?.isReady()) {
+  if (engineCommandManager.connection?.pingIntervalId === undefined) {
     return []
   }
   return [
@@ -509,8 +509,7 @@ export function getSelectionTypeDisplayText(
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
-        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
-          count > 1 ? 's' : ''
+        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${count > 1 ? 's' : ''
         }`
     )
     .join(', ')
@@ -959,10 +958,10 @@ export async function selectOffsetSketchPlane(
           planeInfo.origin.y,
           planeInfo.origin.z,
         ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
-          number,
-          number,
-          number,
-        ],
+            number,
+            number,
+            number,
+          ],
         planeId,
         pathToNode: artifact.codeRef.pathToNode,
         negated,

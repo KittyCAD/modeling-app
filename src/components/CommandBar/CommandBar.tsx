@@ -49,7 +49,7 @@ export const CommandBar = () => {
   useEffect(() => {
     if (
       !commandBarActor.getSnapshot().matches('Closed') &&
-      engineCommandManager.engineConnection &&
+      engineCommandManager.connection &&
       (immediateState.type === EngineConnectionStateType.Disconnecting ||
         immediateState.type === EngineConnectionStateType.Disconnected)
     ) {
