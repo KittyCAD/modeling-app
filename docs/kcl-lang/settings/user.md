@@ -168,28 +168,28 @@ When enabled, the grid will use a fixed size based on your selected units rather
 
 ##### snap_to_grid
 
-Whether or not to snap to the scale grid in sketching mode.
+When enabled, tools like line, rectangle, etc. will snap to the grid.
 
 
 **Default:** None
 
 ##### major_grid_spacing
 
-The space between major grid lines, specified in the current unit
+The space between major grid lines, specified in the current unit.
 
 
 **Default:** None
 
 ##### minor_grids_per_major
 
-Specifies ow many minor grid lines to have per major grid line.
+The number of minor grid lines per major grid line.
 
 
 **Default:** None
 
 ##### snaps_per_minor
 
-The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
+The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
 
 
 **Default:** None

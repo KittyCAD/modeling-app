@@ -288,16 +288,16 @@ pub struct ModelingSettings {
     /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
     #[serde(default = "make_it_so", skip_serializing_if = "is_true")]
     pub fixed_size_grid: bool,
-    /// Whether or not to snap to the scale grid in sketching mode.
+    /// When enabled, tools like line, rectangle, etc. will snap to the grid.
     #[serde(default, skip_serializing_if = "is_default")]
     pub snap_to_grid: bool,
-    /// The space between major grid lines, specified in the current unit
+    /// The space between major grid lines, specified in the current unit.
     #[serde(default, skip_serializing_if = "is_default")]
     pub major_grid_spacing: f64,
-    /// Specifies how many minor grid lines to have per major grid line.
+    /// The number of minor grid lines per major grid line.
     #[serde(default, skip_serializing_if = "is_default")]
     pub minor_grids_per_major: f64,
-    /// The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
+    /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
     #[serde(default, skip_serializing_if = "is_default")]
     pub snaps_per_minor: f64,
 }

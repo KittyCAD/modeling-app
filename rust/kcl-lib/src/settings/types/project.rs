@@ -134,18 +134,20 @@ pub struct ProjectModelingSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
     /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
+    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
+    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fixed_size_grid: Option<bool>,
-    /// Whether or not to snap to the scale grid in sketching mode.
+    /// When enabled, tools like line, rectangle, etc. will snap to the grid.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snap_to_grid: Option<bool>,
-    /// The space between major grid lines, specified in the current unit
+    /// The space between major grid lines, specified in the current unit.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub major_grid_spacing: Option<f64>,
-    /// Specifies how many minor grid lines to have per major grid line.
+    /// The number of minor grid lines per major grid line.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub minor_grids_per_major: Option<f64>,
-    /// The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
+    /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snaps_per_minor: Option<f64>,
 }
