@@ -7,10 +7,10 @@ use crate::{
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, Associativity, BinaryExpression,
             BinaryOperator, BinaryPart, Block, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr,
-            FormatOptions, FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility,
-            LabeledArg, Literal, LiteralValue, MemberExpression, Node, NodeList, NonCodeMeta, NonCodeNode,
-            NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program, SketchBlock, TagDeclarator,
-            TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
+            FormatOptions, FunctionExpression, Identifier, IfExpression, ImportSelector, ImportStatement,
+            ItemVisibility, LabeledArg, Literal, LiteralValue, MemberExpression, Name, Node, NodeList, NonCodeMeta,
+            NonCodeNode, NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program, SketchBlock,
+            TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
         },
         deprecation,
     },
@@ -391,71 +391,98 @@ impl BinaryPart {
 }
 
 impl CallExpressionKw {
-    fn recast_args(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Vec<String> {
-        let mut arg_list = if let Some(first_arg) = &self.unlabeled {
-            let mut first = String::with_capacity(256);
-            first_arg.recast(&mut first, options, indentation_level, ctxt);
-            vec![first.trim().to_owned()]
-        } else {
-            Vec::with_capacity(self.arguments.len())
-        };
-        arg_list.extend(self.arguments.iter().map(|arg| {
-            let mut buf = String::with_capacity(256);
-            arg.recast(&mut buf, options, indentation_level, ctxt);
-            buf
-        }));
-        arg_list
-    }
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
-        let smart_indent_level = if ctxt == ExprContext::Pipe {
-            0
+        recast_call(
+            &self.callee,
+            &self.unlabeled,
+            &self.arguments,
+            buf,
+            options,
+            indentation_level,
+            ctxt,
+        );
+    }
+}
+
+fn recast_args(
+    unlabeled: &Option<Expr>,
+    arguments: &[LabeledArg],
+    options: &FormatOptions,
+    indentation_level: usize,
+    ctxt: ExprContext,
+) -> Vec<String> {
+    let mut arg_list = if let Some(first_arg) = unlabeled {
+        let mut first = String::with_capacity(256);
+        first_arg.recast(&mut first, options, indentation_level, ctxt);
+        vec![first.trim().to_owned()]
+    } else {
+        Vec::with_capacity(arguments.len())
+    };
+    arg_list.extend(arguments.iter().map(|arg| {
+        let mut buf = String::with_capacity(256);
+        arg.recast(&mut buf, options, indentation_level, ctxt);
+        buf
+    }));
+    arg_list
+}
+
+fn recast_call(
+    callee: &Name,
+    unlabeled: &Option<Expr>,
+    arguments: &[LabeledArg],
+    buf: &mut String,
+    options: &FormatOptions,
+    indentation_level: usize,
+    ctxt: ExprContext,
+) {
+    let smart_indent_level = if ctxt == ExprContext::Pipe {
+        0
+    } else {
+        indentation_level
+    };
+    let name = callee;
+
+    if let Some(suggestion) = deprecation(&name.name.inner.name, DeprecationKind::Function) {
+        options.write_indentation(buf, smart_indent_level);
+        return write!(buf, "{suggestion}").no_fail();
+    }
+
+    let arg_list = recast_args(unlabeled, arguments, options, indentation_level, ctxt);
+    let has_lots_of_args = arg_list.len() >= 4;
+    let args = arg_list.join(", ");
+    let some_arg_is_already_multiline = arg_list.len() > 1 && arg_list.iter().any(|arg| arg.contains('\n'));
+    let multiline = has_lots_of_args || some_arg_is_already_multiline;
+    if multiline {
+        let next_indent = indentation_level + 1;
+        let inner_indentation = if ctxt == ExprContext::Pipe {
+            options.get_indentation_offset_pipe(next_indent)
         } else {
-            indentation_level
+            options.get_indentation(next_indent)
         };
-        let name = &self.callee;
-
-        if let Some(suggestion) = deprecation(&name.inner.name.inner.name, DeprecationKind::Function) {
-            options.write_indentation(buf, smart_indent_level);
-            return write!(buf, "{suggestion}").no_fail();
-        }
-
-        let arg_list = self.recast_args(options, indentation_level, ctxt);
-        let has_lots_of_args = arg_list.len() >= 4;
-        let args = arg_list.join(", ");
-        let some_arg_is_already_multiline = arg_list.len() > 1 && arg_list.iter().any(|arg| arg.contains('\n'));
-        let multiline = has_lots_of_args || some_arg_is_already_multiline;
-        if multiline {
-            let next_indent = indentation_level + 1;
-            let inner_indentation = if ctxt == ExprContext::Pipe {
-                options.get_indentation_offset_pipe(next_indent)
-            } else {
-                options.get_indentation(next_indent)
-            };
-            let arg_list = self.recast_args(options, next_indent, ctxt);
-            let mut args = arg_list.join(&format!(",\n{inner_indentation}"));
-            args.push(',');
-            let args = args;
-            let end_indent = if ctxt == ExprContext::Pipe {
-                options.get_indentation_offset_pipe(indentation_level)
-            } else {
-                options.get_indentation(indentation_level)
-            };
-            options.write_indentation(buf, smart_indent_level);
-            name.write_to(buf).no_fail();
-            buf.push('(');
-            buf.push('\n');
-            write!(buf, "{inner_indentation}").no_fail();
-            write!(buf, "{args}").no_fail();
-            buf.push('\n');
-            write!(buf, "{end_indent}").no_fail();
-            buf.push(')');
+        let arg_list = recast_args(unlabeled, arguments, options, next_indent, ctxt);
+        let mut args = arg_list.join(&format!(",\n{inner_indentation}"));
+        args.push(',');
+        let args = args;
+        let end_indent = if ctxt == ExprContext::Pipe {
+            options.get_indentation_offset_pipe(indentation_level)
         } else {
-            options.write_indentation(buf, smart_indent_level);
-            name.write_to(buf).no_fail();
-            buf.push('(');
-            write!(buf, "{args}").no_fail();
-            buf.push(')');
-        }
+            options.get_indentation(indentation_level)
+        };
+        options.write_indentation(buf, smart_indent_level);
+        name.write_to(buf).no_fail();
+        buf.push('(');
+        buf.push('\n');
+        write!(buf, "{inner_indentation}").no_fail();
+        write!(buf, "{args}").no_fail();
+        buf.push('\n');
+        write!(buf, "{end_indent}").no_fail();
+        buf.push(')');
+    } else {
+        options.write_indentation(buf, smart_indent_level);
+        name.write_to(buf).no_fail();
+        buf.push('(');
+        write!(buf, "{args}").no_fail();
+        buf.push(')');
     }
 }
 
@@ -983,24 +1010,37 @@ impl SketchBlock {
         indentation_level: usize,
         ctxt: ExprContext,
     ) {
+        let name = Name {
+            name: Node {
+                inner: Identifier {
+                    name: SketchBlock::CALLEE_NAME.to_owned(),
+                    digest: None,
+                },
+                start: Default::default(),
+                end: Default::default(),
+                module_id: Default::default(),
+                outer_attrs: Default::default(),
+                pre_comments: Default::default(),
+                comment_start: Default::default(),
+            },
+            path: Vec::new(),
+            abs_path: false,
+            digest: None,
+        };
+        recast_call(
+            &name,
+            &self.unlabeled,
+            &self.arguments,
+            buf,
+            options,
+            indentation_level,
+            ctxt,
+        );
+
         // We don't want to end with a new line inside nested blocks.
         let mut new_options = options.clone();
         new_options.insert_final_newline = false;
 
-        buf.push_str("sketch(");
-        if let Some(unlabeled) = &self.unlabeled {
-            unlabeled.recast(buf, options, indentation_level, ctxt);
-            if !self.arguments.is_empty() {
-                buf.push_str(", ");
-            }
-        }
-        for (i, argument) in self.arguments.iter().enumerate() {
-            argument.recast(buf, options, indentation_level, ctxt);
-            if i < self.arguments.len() - 1 {
-                buf.push_str(", ");
-            }
-        }
-        buf.push(')');
         writeln!(buf, " {{").no_fail();
         self.body.recast(buf, &new_options, indentation_level + 1);
         buf.push('\n');
@@ -1292,6 +1332,19 @@ export import a, b as bbb from "a.kcl"
     fn test_recast_sketch_block_with_labeled_args() {
         let input = r#"sketch(on = XY) {
   return 0
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_sketch_block_with_statements_in_block() {
+        let input = r#"sketch() {
+  // Comments inside block.
+  x = 5
+  y = 2
 }
 "#;
         let program = crate::parsing::top_level_parse(input).unwrap();
