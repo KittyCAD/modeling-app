@@ -394,7 +394,7 @@ impl CallExpressionKw {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
         recast_call(
             &self.callee,
-            &self.unlabeled,
+            self.unlabeled.as_ref(),
             &self.arguments,
             buf,
             options,
@@ -405,7 +405,7 @@ impl CallExpressionKw {
 }
 
 fn recast_args(
-    unlabeled: &Option<Expr>,
+    unlabeled: Option<&Expr>,
     arguments: &[LabeledArg],
     options: &FormatOptions,
     indentation_level: usize,
@@ -428,7 +428,7 @@ fn recast_args(
 
 fn recast_call(
     callee: &Name,
-    unlabeled: &Option<Expr>,
+    unlabeled: Option<&Expr>,
     arguments: &[LabeledArg],
     buf: &mut String,
     options: &FormatOptions,
@@ -1027,15 +1027,7 @@ impl SketchBlock {
             abs_path: false,
             digest: None,
         };
-        recast_call(
-            &name,
-            &self.unlabeled,
-            &self.arguments,
-            buf,
-            options,
-            indentation_level,
-            ctxt,
-        );
+        recast_call(&name, None, &self.arguments, buf, options, indentation_level, ctxt);
 
         // We don't want to end with a new line inside nested blocks.
         let mut new_options = options.clone();
@@ -1309,17 +1301,6 @@ export import a, b as bbb from "a.kcl"
     #[test]
     fn test_recast_sketch_block_with_no_args() {
         let input = r#"sketch() {
-  return 0
-}
-"#;
-        let program = crate::parsing::top_level_parse(input).unwrap();
-        let output = program.recast_top(&Default::default(), 0);
-        assert_eq!(output, input);
-    }
-
-    #[test]
-    fn test_recast_sketch_block_with_unlabeled_arg() {
-        let input = r#"sketch(XY) {
   return 0
 }
 "#;

@@ -1281,7 +1281,6 @@ impl AscribedExpression {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct SketchBlock {
-    pub unlabeled: Option<Expr>,
     pub arguments: Vec<LabeledArg>,
     pub body: Node<Block>,
 
@@ -1298,17 +1297,10 @@ impl SketchBlock {
 
     /// Iterate over all arguments.
     pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
-        self.unlabeled
-            .iter()
-            .map(|e| (None, e))
-            .chain(self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg)))
+        self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg))
     }
 
     fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        if let Some(unlabeled) = &mut self.unlabeled {
-            unlabeled.replace_value(source_range, new_value.clone());
-        }
-
         for arg in &mut self.arguments {
             arg.arg.replace_value(source_range, new_value.clone());
         }
@@ -1317,10 +1309,6 @@ impl SketchBlock {
     }
 
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        if let Some(unlabeled) = &mut self.unlabeled {
-            unlabeled.rename_identifiers(old_name, new_name);
-        }
-
         for arg in &mut self.arguments {
             arg.arg.rename_identifiers(old_name, new_name);
         }

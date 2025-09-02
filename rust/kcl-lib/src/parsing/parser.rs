@@ -3277,6 +3277,12 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                 },
         } = fn_call;
         ParseContext::experimental("sketch blocks", SourceRange::new(start, end, module_id));
+        if let Some(unlabeled) = unlabeled {
+            ParseContext::err(CompilationError::err(
+                unlabeled.into(),
+                "Sketch blocks cannot have an unlabeled argument. Use a labeled argument instead, like `on = XY`.",
+            ));
+        }
         return Ok(Expr::SketchBlock(Box::new(Node {
             start,
             end,
@@ -3285,7 +3291,6 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             pre_comments,
             comment_start,
             inner: SketchBlock {
-                unlabeled,
                 arguments,
                 body,
                 non_code_meta,
@@ -3589,15 +3594,6 @@ mod tests {
     #[test]
     fn parse_sketch_block_no_args() {
         let tokens = crate::parsing::token::lex("sketch() {}", ModuleId::default()).unwrap();
-        let tokens = tokens.as_slice();
-        in_ctx(|| {
-            matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
-        });
-    }
-
-    #[test]
-    fn parse_sketch_block_unlabeled_arg() {
-        let tokens = crate::parsing::token::lex("sketch(XY) {}", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         in_ctx(|| {
             matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
