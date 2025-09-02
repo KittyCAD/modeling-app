@@ -4109,7 +4109,7 @@ function getGridScaleFactor(options: {
     let majorPx = effectiveMajorSpacing * options.pixelsPerBaseUnit
 
     const minPx = 40
-    const maxPx = Math.max(viewportWidthPx * 0.7, 100)
+    const maxPx = minPx * 10
 
     // Multiply / divide by 10 until majorPx falls within [minPx, maxPx]
     if (majorPx < minPx) {
