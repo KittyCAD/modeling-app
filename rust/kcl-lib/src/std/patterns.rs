@@ -223,7 +223,7 @@ async fn make_transform<T: GeometryTrait>(
         ))
     })?;
     let transforms = match transform_fn_return {
-        KclValue::Object { value, meta: _ } => vec![value],
+        KclValue::Object { value, .. } => vec![value],
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             let transforms: Vec<_> = value
                 .into_iter()
@@ -291,7 +291,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
 
     let mut rotation = Rotation::default();
     if let Some(rot) = transform.get("rotation") {
-        let KclValue::Object { value: rot, meta: _ } = rot else {
+        let KclValue::Object { value: rot, .. } = rot else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "The 'rotation' key must be an object (with optional fields 'angle', 'axis' and 'origin')".to_owned(),
                 source_ranges.clone(),

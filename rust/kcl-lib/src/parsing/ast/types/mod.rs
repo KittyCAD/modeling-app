@@ -3216,6 +3216,8 @@ impl PipeExpression {
 pub enum PrimitiveType {
     /// The super type of all other types.
     Any,
+    /// `none`, the type of none values.
+    None,
     /// A string type.
     String,
     /// A number type.
@@ -3237,6 +3239,7 @@ impl PrimitiveType {
     pub fn primitive_from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
         match (s, suffix) {
             ("any", None) => Some(PrimitiveType::Any),
+            ("none", None) => Some(PrimitiveType::None),
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
             ("TagDecl", None) => Some(PrimitiveType::TagDecl),
@@ -3250,6 +3253,7 @@ impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
             PrimitiveType::Any => "values".to_owned(),
+            PrimitiveType::None => "none".to_owned(),
             PrimitiveType::Number(_) => "numbers".to_owned(),
             PrimitiveType::String => "strings".to_owned(),
             PrimitiveType::Boolean => "bools".to_owned(),
@@ -3265,6 +3269,7 @@ impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             PrimitiveType::Any => write!(f, "any"),
+            PrimitiveType::None => write!(f, "none"),
             PrimitiveType::Number(suffix) => {
                 write!(f, "number")?;
                 if *suffix != NumericSuffix::None {

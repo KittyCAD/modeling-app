@@ -1086,6 +1086,7 @@ description: Operations executed poopy-shoe.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

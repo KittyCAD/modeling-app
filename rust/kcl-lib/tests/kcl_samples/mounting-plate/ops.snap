@@ -711,6 +711,7 @@ description: Operations executed mounting-plate.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

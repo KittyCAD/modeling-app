@@ -142,6 +142,7 @@ description: Operations executed coerce_from_trig_to_point.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -19,6 +19,7 @@ description: Variables in memory after executing non_string_key_of_object.kcl
           }
         }
       }
-    }
+    },
+    "constrainable": false
   }
 }

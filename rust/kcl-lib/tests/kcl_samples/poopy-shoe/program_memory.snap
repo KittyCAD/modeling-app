@@ -61,7 +61,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "xAxis": {
         "type": "Object",
@@ -105,7 +106,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "yAxis": {
         "type": "Object",
@@ -149,9 +151,11 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             }
           }
-        }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
   },
   "customPlane2": {
     "type": "Object",
@@ -198,7 +202,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "xAxis": {
         "type": "Object",
@@ -242,7 +247,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "yAxis": {
         "type": "Object",
@@ -286,9 +292,11 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             }
           }
-        }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
   },
   "customPlane3": {
     "type": "Object",
@@ -335,7 +343,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "xAxis": {
         "type": "Object",
@@ -379,7 +388,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "yAxis": {
         "type": "Object",
@@ -423,9 +433,11 @@ description: Variables in memory after executing poopy-shoe.kcl
               }
             }
           }
-        }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
   },
   "exitHeight": {
     "type": "Number",

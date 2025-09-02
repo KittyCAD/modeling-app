@@ -147,6 +147,7 @@ description: Operations executed complex_expr_as_array_index.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

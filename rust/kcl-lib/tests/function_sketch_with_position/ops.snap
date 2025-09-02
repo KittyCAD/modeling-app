@@ -332,6 +332,7 @@ description: Operations executed function_sketch_with_position.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

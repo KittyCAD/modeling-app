@@ -1010,6 +1010,7 @@ description: Operations executed scale_after_fillet.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

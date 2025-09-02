@@ -530,6 +530,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

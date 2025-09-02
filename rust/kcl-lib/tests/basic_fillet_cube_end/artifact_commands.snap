@@ -228,6 +228,7 @@ description: Artifact commands basic_fillet_cube_end.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

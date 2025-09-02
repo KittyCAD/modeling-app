@@ -265,6 +265,7 @@ description: Operations executed basic_revolve_circle.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

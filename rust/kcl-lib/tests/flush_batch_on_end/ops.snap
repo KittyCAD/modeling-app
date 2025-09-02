@@ -329,6 +329,7 @@ description: Operations executed flush_batch_on_end.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

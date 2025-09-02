@@ -320,6 +320,7 @@ description: Operations executed subtract_regression06.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

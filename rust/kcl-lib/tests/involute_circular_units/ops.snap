@@ -669,6 +669,7 @@ description: Operations executed involute_circular_units.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

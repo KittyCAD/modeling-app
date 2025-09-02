@@ -115,6 +115,7 @@ description: Operations executed import_cycle1.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

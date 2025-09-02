@@ -9,6 +9,7 @@ description: Artifact commands export_var_only_at_top_level.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

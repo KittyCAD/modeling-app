@@ -156,6 +156,7 @@ description: Operations executed kw_fn_too_few_args.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

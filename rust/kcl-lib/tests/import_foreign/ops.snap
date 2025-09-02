@@ -135,6 +135,7 @@ description: Operations executed import_foreign.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

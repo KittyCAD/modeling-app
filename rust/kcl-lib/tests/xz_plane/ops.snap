@@ -195,6 +195,7 @@ description: Operations executed xz_plane.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

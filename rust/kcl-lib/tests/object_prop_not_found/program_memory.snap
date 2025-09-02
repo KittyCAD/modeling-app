@@ -5,6 +5,7 @@ description: Variables in memory after executing object_prop_not_found.kcl
 {
   "obj": {
     "type": "Object",
-    "value": {}
+    "value": {},
+    "constrainable": false
   }
 }

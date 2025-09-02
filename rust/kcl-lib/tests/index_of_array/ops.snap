@@ -213,6 +213,7 @@ description: Operations executed index_of_array.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

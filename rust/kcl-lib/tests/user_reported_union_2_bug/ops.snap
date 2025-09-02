@@ -806,6 +806,7 @@ description: Operations executed user_reported_union_2_bug.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],
