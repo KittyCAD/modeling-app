@@ -67,9 +67,6 @@ export function addPatternCircular3D({
   if (typeof axis === 'string') {
     // Named axis like 'X', 'Y', 'Z'
     axisExpr = createLocalName(axis)
-  } else if ('variableName' in axis && axis.variableName) {
-    // Variable reference
-    axisExpr = valueOrVariable(axis)
   } else if ('value' in axis && isArray(axis.value)) {
     // Direct array value [x, y, z]
     const arrayElements = []
@@ -85,6 +82,9 @@ export function addPatternCircular3D({
       }
     }
     axisExpr = createArrayExpression(arrayElements)
+  } else if ('variableName' in axis && axis.variableName) {
+    // Variable reference
+    axisExpr = valueOrVariable(axis)
   } else {
     // Fallback to valueOrVariable
     axisExpr = valueOrVariable(axis)
@@ -135,14 +135,25 @@ export function addPatternCircular3D({
     ...useOriginalExpr,
   ])
 
-  // Insert variables for labeled arguments if provided
+  // Insert variables for labeled arguments only when we actually use the variable
   if ('variableName' in instances && instances.variableName) {
     insertVariableAndOffsetPathToNode(instances, modifiedAst, nodeToEdit)
   }
-  if (typeof axis !== 'string' && 'variableName' in axis && axis.variableName) {
+  // Only insert axis variable if we used valueOrVariable (not for strings or arrays)
+  if (
+    typeof axis !== 'string' &&
+    !('value' in axis && isArray(axis.value)) &&
+    'variableName' in axis &&
+    axis.variableName
+  ) {
     insertVariableAndOffsetPathToNode(axis, modifiedAst, nodeToEdit)
   }
-  if ('variableName' in center && center.variableName) {
+  // Only insert center variable if we used valueOrVariable (not for arrays)
+  if (
+    !('value' in center && isArray(center.value)) &&
+    'variableName' in center &&
+    center.variableName
+  ) {
     insertVariableAndOffsetPathToNode(center, modifiedAst, nodeToEdit)
   }
   if (arcDegrees && 'variableName' in arcDegrees && arcDegrees.variableName) {
@@ -155,7 +166,7 @@ export function addPatternCircular3D({
     call,
     pathToEdit: nodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
-    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PATTERN,
   })
   if (err(pathToNode)) {
     return pathToNode
