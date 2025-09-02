@@ -129,6 +129,7 @@ impl Expr {
                 .ty
                 .get_hover_value_for_position(pos, code, opts)
                 .or_else(|| expr.expr.get_hover_value_for_position(pos, code, opts)),
+            Expr::SketchBlock(expr) => expr.get_hover_value_for_position(pos, code, opts),
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Expr::PipeSubstitution(_) => None,
         }
@@ -378,5 +379,37 @@ impl ElseIf {
         self.cond
             .get_hover_value_for_position(pos, code, opts)
             .or_else(|| self.then_val.get_hover_value_for_position(pos, code, opts))
+    }
+}
+
+impl SketchBlock {
+    fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
+        for (index, (label, arg)) in self.iter_arguments().enumerate() {
+            let source_range: SourceRange = arg.into();
+            if source_range.contains(pos) {
+                return if opts.prefer_sig {
+                    Some(Hover::Signature {
+                        name: Self::CALLEE_NAME.to_owned(),
+                        parameter_index: index as u32,
+                        range: source_range.to_lsp_range(code),
+                    })
+                } else {
+                    arg.get_hover_value_for_position(pos, code, opts)
+                };
+            }
+
+            if let Some(id) = label
+                && id.as_source_range().contains(pos)
+            {
+                return Some(Hover::KwArg {
+                    name: id.name.clone(),
+                    callee_name: Self::CALLEE_NAME.to_owned(),
+                    range: id.as_source_range().to_lsp_range(code),
+                });
+            }
+        }
+
+        let value = self.body.get_expr_for_position(pos)?;
+        value.get_hover_value_for_position(pos, code, opts)
     }
 }
