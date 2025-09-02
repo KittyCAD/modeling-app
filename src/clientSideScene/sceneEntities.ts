@@ -591,7 +591,26 @@ export class SceneEntities {
 
     const minorsPerMajor = settings.modeling.minorGridsPerMajor.current
     const snapsPerMinor = settings.modeling.snapsPerMinor.current
-    const multiplier = minorsPerMajor * snapsPerMinor
+
+    let gridScaleFactor = 1
+    if (this.sceneInfra.camControls.camera instanceof OrthographicCamera) {
+      const pixelsPerBaseUnit = this.sceneInfra.getPixelsPerBaseUnit(
+        this.sceneInfra.camControls.camera
+      )
+      const fixedSizeGrid = settings.modeling.fixedSizeGrid.current
+      gridScaleFactor = getGridScaleFactor({
+        majorGridSpacing: settings.modeling.majorGridSpacing.current,
+        pixelsPerBaseUnit,
+        viewportSize: this.sceneInfra.renderer.getDrawingBufferSize(
+          new Vector2()
+        ),
+        fixedSizeGrid,
+      })
+    } else {
+      console.error("Camera is not orthographic, can't snap to grid")
+    }
+
+    const multiplier = (minorsPerMajor * snapsPerMinor) / gridScaleFactor
     return {
       point: [
         Math.round(point[0] * multiplier) / multiplier,
