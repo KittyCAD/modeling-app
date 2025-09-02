@@ -1414,6 +1414,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

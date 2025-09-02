@@ -663,6 +663,7 @@ description: Artifact commands artifact_graph_sketch_on_face_etc.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

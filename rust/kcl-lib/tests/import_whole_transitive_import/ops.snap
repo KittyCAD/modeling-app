@@ -260,6 +260,7 @@ description: Operations executed import_whole_transitive_import.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

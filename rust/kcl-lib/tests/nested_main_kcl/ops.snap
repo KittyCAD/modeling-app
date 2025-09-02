@@ -257,6 +257,7 @@ description: Operations executed nested_main_kcl.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

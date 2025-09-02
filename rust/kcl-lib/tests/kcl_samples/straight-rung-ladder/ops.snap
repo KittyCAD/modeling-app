@@ -772,6 +772,7 @@ description: Operations executed straight-rung-ladder.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

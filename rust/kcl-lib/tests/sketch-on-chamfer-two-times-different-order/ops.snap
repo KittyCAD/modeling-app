@@ -527,6 +527,7 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

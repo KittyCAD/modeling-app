@@ -73,7 +73,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "axis001": {
     "type": "Object",
@@ -140,7 +141,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "binBaseLength": {
     "type": "Number",
@@ -21103,7 +21105,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "plane001": {
     "type": "Object",
@@ -21240,7 +21243,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "plane002": {
     "type": "Object",
@@ -21377,7 +21381,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "secondStep": {
     "type": "Number",
