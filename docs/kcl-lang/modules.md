@@ -60,6 +60,42 @@ subdirectory you can only import `main.kcl`.
 
 ---
 
+## Import path requirements
+
+Some import paths require an alias because they cannot be used as valid identifiers. An alias is a custom name you provide using the `as` keyword.
+
+You must provide an alias when the filename contains hyphens or starts with an underscore:
+
+```kcl
+import "my-part.kcl" as myPart
+import "_internal.kcl" as internal
+```
+
+You must also provide an alias when the path contains relative directory components:
+
+```kcl
+import "../library/teardropHole.kcl" as teardropHole
+import "./utils/helper.kcl" as helper
+```
+
+### Subdirectory restrictions
+
+When importing from subdirectories, you can only import `main.kcl` files:
+
+```kcl
+import "library/main.kcl" as library
+import "utils/main.kcl" as utils
+```
+
+```kcl
+import "library/teardropHole.kcl"        // Error: "Import path to subdirectory can only refer to main.kcl"
+import "utils/helper.kcl"                // Error: "Import path to subdirectory can only refer to main.kcl"
+```
+
+If you need to import a specific file from a subdirectory, you can move it to the current directory or use a symbolic link.
+
+---
+
 ## Functions vs `clone`
 
 There are two common patterns for re‑using geometry:
@@ -276,4 +312,31 @@ cube
   |> translate(x=10)
 clone(cube)
   |> translate(x=20)
+```
+
+---
+
+## Common import errors
+
+### "Import path is not a valid identifier and must be aliased"
+
+This error occurs when the import path contains characters that cannot be used as a valid identifier. Add an alias:
+
+```kcl
+import "../library/teardropHole.kcl" as teardropHole
+import "my-part.kcl" as myPart
+```
+
+### "Import path to subdirectory can only refer to main.kcl"
+
+This error occurs when trying to import a specific file from a subdirectory. Import `main.kcl` instead:
+
+```kcl
+import "library/main.kcl" as library
+```
+
+Or move the file to the current directory:
+
+```kcl
+import "teardropHole.kcl" as teardropHole
 ```
