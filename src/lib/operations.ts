@@ -854,7 +854,9 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
  * Gather up the argument values for the Pattern Circular 3D command
  * to be used in the command bar edit flow.
  */
-const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
+  operation,
+}) => {
   const baseCommand = {
     name: 'Pattern Circular 3D',
     groupId: 'modeling',
@@ -910,7 +912,10 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({ operation
 
   // 5. Convert optional arguments
   let arcDegrees: KclCommandValue | undefined
-  if ('arcDegrees' in operation.labeledArgs && operation.labeledArgs.arcDegrees) {
+  if (
+    'arcDegrees' in operation.labeledArgs &&
+    operation.labeledArgs.arcDegrees
+  ) {
     const result = await stringToKclExpression(
       codeManager.code.slice(
         operation.labeledArgs.arcDegrees.sourceRange[0],
@@ -924,7 +929,10 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({ operation
   }
 
   let rotateDuplicates: boolean | undefined
-  if ('rotateDuplicates' in operation.labeledArgs && operation.labeledArgs.rotateDuplicates) {
+  if (
+    'rotateDuplicates' in operation.labeledArgs &&
+    operation.labeledArgs.rotateDuplicates
+  ) {
     rotateDuplicates =
       codeManager.code.slice(
         operation.labeledArgs.rotateDuplicates.sourceRange[0],
@@ -933,7 +941,10 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({ operation
   }
 
   let useOriginal: boolean | undefined
-  if ('useOriginal' in operation.labeledArgs && operation.labeledArgs.useOriginal) {
+  if (
+    'useOriginal' in operation.labeledArgs &&
+    operation.labeledArgs.useOriginal
+  ) {
     useOriginal =
       codeManager.code.slice(
         operation.labeledArgs.useOriginal.sourceRange[0],
