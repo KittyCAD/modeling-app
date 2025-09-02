@@ -16,14 +16,28 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import toast from 'react-hot-toast'
 
 function copyKclCodeToClipboard() {
-  if (globalThis && 'navigator' in globalThis && codeManager.code) {
-    navigator.clipboard
-      .writeText(codeManager.code)
-      .then(() => toast.success(`Copied current file's code to clipboard`))
-      .catch((_e) =>
-        trap(new Error(`Failed to copy current file's code to clipboard`))
-      )
+
+const copyKclCodeToClipboard = () => {
+  if (!codeManager.code) {
+    toast.error("No code available to copy")
+    return
   }
+  
+  if (!globalThis?.navigator?.clipboard?.writeText) {
+    toast.error("Clipboard functionality not available in your browser")
+    return
+  }
+  
+  navigator.clipboard
+    .writeText(codeManager.code)
+    .then(() => toast.success(`Copied current file's code to clipboard`))
+    .catch((e) => 
+      trap(new Error(`Failed to copy code to clipboard: ${e.message}`))
+    )
+}
+
+copyKclCodeToClipboard()
+
 }
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
