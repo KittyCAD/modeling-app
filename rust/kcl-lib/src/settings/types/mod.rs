@@ -294,7 +294,7 @@ pub struct ModelingSettings {
     /// The space between major grid lines, specified in the current unit
     #[serde(default, skip_serializing_if = "is_default")]
     pub major_grid_spacing: f64,
-    /// Specifies ow many minor grid lines to have per major grid line.
+    /// Specifies how many minor grid lines to have per major grid line.
     #[serde(default, skip_serializing_if = "is_default")]
     pub minor_grids_per_major: f64,
     /// The number of snaps to have between minor grid lines. 1 means snapping to the minor grid lines.
