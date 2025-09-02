@@ -8,6 +8,7 @@ import {
 import type { KclExpression } from '@src/lib/commandTypes'
 import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
@@ -53,7 +54,15 @@ export async function getCalculatedKclExpressionValue(value: string) {
     ? resultValueWithUnits
     : typeof resultRawValue === 'number'
       ? String(resultRawValue)
-      : 'NAN'
+      : isArray(resultRawValue)
+        ? `[${resultRawValue.map(item => 
+            typeof item === 'object' && item !== null && 'value' in item 
+              ? item.value 
+              : item
+          ).join(', ')}]`
+        : typeof resultRawValue === 'string'
+          ? resultRawValue
+          : 'NAN'
 
   return {
     astNode: variableDeclaratorAstNode,

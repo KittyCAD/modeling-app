@@ -500,6 +500,32 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
+      {
+        id: 'pattern',
+        array: [
+          {
+            id: 'pattern3d',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Pattern Circular 3D', groupId: 'modeling' },
+              }),
+            status: 'available',
+            title: 'Circular Pattern',
+            icon: 'patternCircular3d',
+            description:
+              'Create a circular pattern of 3D solids around an axis.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-patternCircular3d'
+                ),
+              },
+            ],
+          },
+        ],
+      },
       'break',
       {
         id: 'ai',
