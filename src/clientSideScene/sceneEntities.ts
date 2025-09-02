@@ -495,7 +495,6 @@ export class SceneEntities {
           const gridScaleFactor = getGridScaleFactor({
             majorGridSpacing,
             pixelsPerBaseUnit,
-            viewportSize,
             fixedSizeGrid,
           })
           gridRenderer.update(
@@ -601,9 +600,6 @@ export class SceneEntities {
       gridScaleFactor = getGridScaleFactor({
         majorGridSpacing: settings.modeling.majorGridSpacing.current,
         pixelsPerBaseUnit,
-        viewportSize: this.sceneInfra.renderer.getDrawingBufferSize(
-          new Vector2()
-        ),
         fixedSizeGrid,
       })
     } else {
@@ -4098,11 +4094,9 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
 function getGridScaleFactor(options: {
   majorGridSpacing: number
   pixelsPerBaseUnit: number
-  viewportSize: Vector2
   fixedSizeGrid: boolean
 }) {
   let effectiveMajorSpacing = options.majorGridSpacing
-  const viewportWidthPx = options.viewportSize.x
   let gridScaleFactor = 1
   if (!options.fixedSizeGrid) {
     // In non-fixed size mode, adjust major spacing based on current zoom level
