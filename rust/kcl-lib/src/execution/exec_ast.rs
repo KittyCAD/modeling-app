@@ -872,7 +872,6 @@ impl Node<SketchBlock> {
 
 impl Node<SketchVar> {
     pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        exec_state.warn_experimental("sketch variables", self.into());
         // TODO: sketch-api: Implement sketch variable execution
         if let Some(initial) = &self.initial {
             Ok(KclValue::from_numeric_literal(initial, exec_state))
