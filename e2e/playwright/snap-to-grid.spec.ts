@@ -1,8 +1,7 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { getUtils } from '@e2e/playwright/test-utils'
 
 test.describe('Snap to Grid', () => {
-  test('draws a line with snap off, then another with snap on', async ({
+  test('draws a line with snap to grid turned on', async ({
     page,
     homePage,
     toolbar,
