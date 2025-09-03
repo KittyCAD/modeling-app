@@ -2,10 +2,11 @@
 use anyhow::Result;
 use kcl_lib::{
     lint::{checks, Discovered},
-    ExecutorContext, UnitLength,
+    ExecutorContext,
 };
 use kittycad_modeling_cmds::{
-    self as kcmc, format::InputFormat3d, shared::FileExportFormat, websocket::RawFile, ImageFormat, ImportFile,
+    self as kcmc, format::InputFormat3d, shared::FileExportFormat, units::UnitLength, websocket::RawFile, ImageFormat,
+    ImportFile,
 };
 use pyo3::{
     exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
@@ -41,7 +42,7 @@ fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) 
 
 fn get_output_format(
     format: &FileExportFormat,
-    src_unit: kittycad_modeling_cmds::units::UnitLength,
+    src_unit: UnitLength,
 ) -> kittycad_modeling_cmds::format::OutputFormat3d {
     // Zoo co-ordinate system.
     //
