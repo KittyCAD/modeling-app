@@ -99,7 +99,11 @@ export const MlEphantConversationInput = (
         >
           {lettersForAnimation}
         </div>
-        <div className="flex justify-end">
+        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+        <div
+          className="flex justify-end"
+          onClick={() => refDiv.current?.focus()}
+        >
           <button
             data-testid="ml-ephant-conversation-input-button"
             disabled={props.disabled}
