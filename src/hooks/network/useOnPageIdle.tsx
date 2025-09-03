@@ -90,10 +90,7 @@ export const useOnPageIdle = ({
         timeoutStart.current = null
         return
       }
-
-      console.warn('starting engine connection')
       startCallback()
-
       timeoutStart.current = Date.now()
     }
 

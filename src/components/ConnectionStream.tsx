@@ -186,6 +186,7 @@ export const ConnectionStream = (props: {
       if (!videoWrapperRef.current) return
 
       if (!props.authToken) return
+      if (engineCommandManager.started) return
 
       const { width, height } = getDimensions(
         videoWrapperRef.current.clientWidth,
