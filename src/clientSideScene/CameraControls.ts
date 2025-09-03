@@ -536,8 +536,10 @@ export class CameraControls {
         const newCmdId = uuidv4()
 
         // You can use raw JS to fetch the element from the DOM. We do not need to proxy a ref of a ref element on the DOM element
-        // There will be only one of these in the page. 
-        const videoElement = <HTMLVideoElement>document.getElementById('video-stream')
+        // There will be only one of these in the page.
+        const videoElement = <HTMLVideoElement>(
+          document.getElementById('video-stream')
+        )
         // Nonsense to do anything until the video stream is established.
         if (!videoElement) return
 

@@ -19,6 +19,9 @@ import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { sendSelectEventToEngine } from '@src/lib/selections'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
+import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
+import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
 
 let didInit = false
 
@@ -163,6 +166,44 @@ export const ConnectionStream = (props: {
       }
     }
   }, [props.authToken, setAppState])
+
+  // TODO: Handle 15 second connection window
+  // TODO: Handle global 3 retry connection on any connection attempts
+  // TODO: Handle global disconnections. 1. Websocket closed, 2. Run time initializations
+  // TODO: Handle PingPong checks
+
+  // TODO: When exiting the page via the router teardown the engineCommandManager
+  // Gotcha: If you do it too quickly listenToDarkModeMatcher will complain.
+  useOnPageExit({
+    callback: () => {
+      // reset the ability to initialize
+      didInit = false
+    }
+  })
+  useOnPageResize({ videoWrapperRef, videoRef, canvasRef })
+  useOnPageIdle({
+    startCallback: () => {
+      if (!videoWrapperRef.current)
+        return
+
+      if (!props.authToken)
+        return
+
+      const { width, height } = getDimensions(
+        videoWrapperRef.current.clientWidth,
+        videoWrapperRef.current.clientHeight
+      )
+      engineCommandManager
+        .start({
+          width,
+          height,
+          token: props.authToken,
+          setStreamIsReady: () => {
+            setAppState({ isStreamReady: true })
+          },
+        })
+    }
+  })
 
   return (
     <div

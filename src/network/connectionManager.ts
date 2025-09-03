@@ -52,7 +52,7 @@ export class ConnectionManager extends EventTarget {
   started: boolean
   idleMode: boolean
   inSequence = 1
-  _camControlsCameraChange = () => {}
+  _camControlsCameraChange = () => { }
   id: string
 
   /**
@@ -108,10 +108,10 @@ export class ConnectionManager extends EventTarget {
       [localUnsubscribeId: string]: (a: any) => void
     }
   } = {} as any
-  _commandLogCallBack: (command: CommandLog[]) => void = () => {}
+  _commandLogCallBack: (command: CommandLog[]) => void = () => { }
   // Rogue runtime dependency from the modeling machine. hope it is there!
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
-    (() => {}) as any
+    (() => { }) as any
   // Any event listener into this map to be cleaned up later
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
@@ -466,7 +466,7 @@ export class ConnectionManager extends EventTarget {
       this.connection.unreliableDataChannel &&
       !forceWebsocket
     ) {
-      ;(cmd as any).sequence = this.outSequence
+      ; (cmd as any).sequence = this.outSequence
       this.outSequence++
       this.connection.unreliableSend(command)
       return Promise.resolve(null)
@@ -491,7 +491,7 @@ export class ConnectionManager extends EventTarget {
       command.cmd.type === 'default_camera_look_at' ||
       command.cmd.type === ('default_camera_perspective_settings' as any)
     ) {
-      ;(cmd as any).sequence = this.outSequence++
+      ; (cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
     return this.sendCommand(
@@ -760,8 +760,31 @@ export class ConnectionManager extends EventTarget {
     this._commandLogCallBack = callback
   }
 
-  handleResize() {
-    console.error('NO OP, please implemented')
+  async handleResize({ width, height }: { width: number; height: number }) {
+    if (!this.connection) {
+      console.warn('unable to resize, connection is not found')
+      return
+
+    }
+
+    // Make sure the connection is ready otherwise you are sending the events too early.
+    await this.connection.deferredConnection?.promise
+
+    this.streamDimensions = {
+      width,
+      height,
+    }
+
+    const resizeCmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'reconfigure_stream',
+        ...this.streamDimensions,
+        fps: 60, // This is required but it does next to nothing
+      },
+    }
+    this.connection.send(resizeCmd)
   }
 
   tearDown(opts?: { idleMode: boolean }) {
@@ -1062,9 +1085,12 @@ export class ConnectionManager extends EventTarget {
 
   async setPlaneHidden(id: string, hidden: boolean) {
     if (this.connection === undefined) {
-      return Promise.reject(
-        new Error('setPlaneHidden - this.connection is undefined')
-      )
+      console.error('setPlaneHidden - this.connection is undefined')
+      EngineDebugger.addLog({
+        label: 'setPlaneHidden',
+        message: 'connectionManager, you are too early to set the planes hidden.',
+      })
+      return
     }
 
     // TODO: Can't send commands if there's no connection
