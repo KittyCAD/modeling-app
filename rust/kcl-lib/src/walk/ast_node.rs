@@ -35,6 +35,8 @@ pub enum Node<'a> {
     ElseIf(&'a types::ElseIf),
     LabelledExpression(NodeRef<'a, types::LabelledExpression>),
     AscribedExpression(NodeRef<'a, types::AscribedExpression>),
+    SketchBlock(NodeRef<'a, types::SketchBlock>),
+    Block(NodeRef<'a, types::Block>),
 
     Parameter(&'a types::Parameter),
 
@@ -78,6 +80,8 @@ impl Node<'_> {
             Node::KclNone(n) => n.digest,
             Node::LabelledExpression(n) => n.digest,
             Node::AscribedExpression(n) => n.digest,
+            Node::SketchBlock(n) => n.digest,
+            Node::Block(n) => n.digest,
         }
     }
 
@@ -122,6 +126,8 @@ impl Node<'_> {
             Node::KclNone(n) => *n as *const _ as *const (),
             Node::LabelledExpression(n) => *n as *const _ as *const (),
             Node::AscribedExpression(n) => *n as *const _ as *const (),
+            Node::SketchBlock(n) => *n as *const _ as *const (),
+            Node::Block(n) => *n as *const _ as *const (),
         }
     }
 }
@@ -164,6 +170,8 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::IfExpression(n) => SourceRange::from(*n),
             Node::LabelledExpression(n) => SourceRange::from(*n),
             Node::AscribedExpression(n) => SourceRange::from(*n),
+            Node::SketchBlock(n) => SourceRange::from(*n),
+            Node::Block(n) => SourceRange::from(*n),
 
             // This is broken too
             Node::ElseIf(n) => SourceRange::new(n.cond.start(), n.cond.end(), n.cond.module_id()),
@@ -206,6 +214,7 @@ impl<'tree> From<&'tree types::Expr> for Node<'tree> {
             types::Expr::IfExpression(e) => e.as_ref().into(),
             types::Expr::LabelledExpression(e) => e.as_ref().into(),
             types::Expr::AscribedExpression(e) => e.as_ref().into(),
+            types::Expr::SketchBlock(e) => e.as_ref().into(),
             types::Expr::None(n) => n.into(),
         }
     }
@@ -276,6 +285,8 @@ impl_from!(Node, IfExpression);
 impl_from!(Node, ElseIf);
 impl_from!(Node, LabelledExpression);
 impl_from!(Node, AscribedExpression);
+impl_from!(Node, SketchBlock);
+impl_from!(Node, Block);
 impl_from!(Node, KclNone);
 
 #[cfg(test)]

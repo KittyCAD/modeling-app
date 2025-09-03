@@ -688,6 +688,9 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'AscribedExpressionExpr':
         pathToNode.push(['expr', 'AscribedExpression'])
         break
+      case 'SketchBlock':
+        // TODO: sketch-api: implement arguments and body.
+        break
       default:
         const _exhaustiveCheck: never = step
     }
