@@ -5,7 +5,10 @@ import type {
   PromptMeta,
   MlEphantManagerActor,
 } from '@src/machines/mlEphantManagerMachine'
-import { MlEphantManagerStates } from '@src/machines/mlEphantManagerMachine'
+import {
+  MlEphantManagerStates,
+  MlEphantManagerTransitions,
+} from '@src/machines/mlEphantManagerMachine'
 import type { SystemIOActor } from '@src/lib/singletons'
 import {
   SystemIOMachineEvents,
@@ -50,6 +53,12 @@ export const useProjectIdToConversationId = (
   settings2: typeof settings
 ) => {
   useEffect(() => {
+    // If the project id changes at all, we need to clear the mlephant machine state.
+    mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.ClearProjectSpecificState,
+    })
+    debugger
+
     const subscription = mlEphantManagerActor.subscribe((next) => {
       if (settings2.meta.id.current === undefined) {
         return
