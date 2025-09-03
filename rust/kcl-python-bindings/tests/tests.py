@@ -218,7 +218,7 @@ async def test_import_and_snapshots():
         kcl.SnapshotOptions(camera=None, padding=0),
     ]
     # Read from a file.
-    step_options = kcl.StepImportOptions()
+    step_options = kcl.step_import.Options()
     input_format = kcl.InputFormat3d.Step(step_options)
     print(cube_step_file)
     images = await kcl.import_and_snapshot_views(
@@ -234,7 +234,7 @@ async def test_import_and_snapshots():
 @pytest.mark.asyncio
 async def test_import_and_snapshots_single():
     # Read from a file.
-    step_options = kcl.StepImportOptions()
+    step_options = kcl.step_import.Options()
     input_format = kcl.InputFormat3d.Step(step_options)
     print(cube_step_file)
     image_bytes = await kcl.import_and_snapshot(
@@ -317,13 +317,3 @@ async def test_kcl_execute_code_and_export_with_bad_units():
             assert len(str(e)) > 0
             print(e)
             assert "[1:1]" in str(e)
-
-
-def test_relevant_file_extensions():
-    exts = kcl.relevant_file_extensions()
-    assert isinstance(exts, list)
-    assert len(exts) > 0
-    assert len(exts) > 5
-    assert all(isinstance(x, str) and len(x) > 0 for x in exts)
-    # kcl should always be included in the set
-    assert "kcl" in exts

@@ -1,10 +1,9 @@
 //! Custom notifications for the KCL LSP server that are not part of the LSP specification.
 
-use kittycad_modeling_cmds::units::UnitLength;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::notification::Notification;
 
-use crate::parsing::ast::types::Node;
+use crate::{parsing::ast::types::Node, settings::types::UnitLength};
 
 /// A notification that the AST has changed.
 #[derive(Debug)]
