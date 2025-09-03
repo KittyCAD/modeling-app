@@ -153,13 +153,16 @@ impl<'a> From<&'a FunctionSource> for FunctionDefinition<'a> {
             let mut named_args = IndexMap::new();
             for p in &ast.params {
                 if !p.labeled {
-                    input_arg = Some((p.identifier.name.clone(), p.type_.as_ref().map(|t| t.inner.clone())));
+                    input_arg = Some((
+                        p.identifier.name.clone(),
+                        p.param_type.as_ref().map(|t| t.inner.clone()),
+                    ));
                     continue;
                 }
 
                 named_args.insert(
                     p.identifier.name.clone(),
-                    (p.default_value.clone(), p.type_.as_ref().map(|t| t.inner.clone())),
+                    (p.default_value.clone(), p.param_type.as_ref().map(|t| t.inner.clone())),
                 );
             }
 
@@ -899,7 +902,7 @@ mod test {
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 identifier: ident(s),
-                type_: None,
+                param_type: None,
                 default_value: Some(DefaultParamVal::none()),
                 labeled: true,
                 digest: None,
@@ -908,7 +911,7 @@ mod test {
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 identifier: ident(s),
-                type_: None,
+                param_type: None,
                 default_value: None,
                 labeled: true,
                 digest: None,
