@@ -70,9 +70,6 @@ export const EngineStream = (props: {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  window.videoRef = videoRef
-  window.canvasRef = canvasRef
-
   // For attaching right-click menu events
   const videoWrapperRef = useRef<HTMLDivElement>(null)
 
