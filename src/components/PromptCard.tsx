@@ -179,8 +179,9 @@ export const AvatarUser = (props: { src?: string }) => {
 }
 
 export const PromptCard = (props: PromptCardProps) => {
+  const hasReasoningToShow =
+    props.thoughts !== undefined && props.thoughts.length > 0
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(false)
-  const [showSeeReasoning, setShowSeeReasoning] = useState<boolean>(false)
 
   const cssCard = `flex flex-col p-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden
@@ -226,15 +227,10 @@ export const PromptCard = (props: PromptCardProps) => {
           />
         </div>
       )}
-      <div className="flex flex-row justify-end gap-2 items-center pl-2 pr-10">
-        <div
-          className={`flex flex-row gap-2 ${showSeeReasoning ? 'hidden' : ''}`}
-          onMouseEnter={() =>
-            props.thoughts !== undefined &&
-            props.thoughts.length > 0 &&
-            setShowSeeReasoning(true)
-          }
-        >
+      <div
+        className={`${hasReasoningToShow ? 'group/reasoning' : ''} flex flex-row justify-end gap-2 items-center pl-2 pr-10`}
+      >
+        <div className="flex flex-row gap-2 group-hover/reasoning:hidden">
           {props.onAction !== undefined && (
             <PromptCardActionButton
               status={props.status}
@@ -252,10 +248,7 @@ export const PromptCard = (props: PromptCardProps) => {
             updatedAt={props.updated_at}
           />
         </div>
-        <div
-          onMouseLeave={() => setShowSeeReasoning(false)}
-          className={showSeeReasoning || showFullReasoning ? '' : 'hidden'}
-        >
+        <div className={'hidden group-hover/reasoning:block'}>
           <button className="w-full p-2" onClick={() => onSeeReasoning()}>
             {showFullReasoning ? 'Hide reasoning' : 'See reasoning'}
           </button>
