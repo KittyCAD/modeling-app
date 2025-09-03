@@ -158,6 +158,10 @@ export function SettingsFieldInput({
         setting[settingsLevel] !== undefined
           ? setting[settingsLevel]
           : setting.getFallback(settingsLevel)
+      const min =
+        setting.commandConfig && 'min' in setting.commandConfig
+          ? setting.commandConfig.min
+          : undefined
       return (
         <input
           // When reverting to default value then the input doesn't update without a key change.
@@ -171,22 +175,33 @@ export function SettingsFieldInput({
           step="any"
           className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full disabled:opacity-50 disabled:pointer-events-none"
           defaultValue={Number(effectiveValue)}
-          min={
-            setting.commandConfig && 'min' in setting.commandConfig
-              ? setting.commandConfig.min
-              : undefined
-          }
+          min={min}
           disabled={!setting.isEnabled(context)}
           onBlur={(e) => {
-            const numValue = parseFloat(e.target.value)
-            if (!Number.isNaN(numValue)) {
-              const currentValue = effectiveValue
-              if (currentValue !== numValue) {
+            let numValue = parseFloat(e.target.value)
+            let updatedValue = numValue
+            // "integer" option
+            if (setting.commandConfig && 'integer' in setting.commandConfig) {
+              if (setting.commandConfig.integer) {
+                updatedValue = Math.round(numValue)
+              }
+            }
+            // "min" option
+            if (min !== undefined) {
+              updatedValue = Math.max(updatedValue, min)
+            }
+
+            // Update input if the value is changed (might not get updated otherwise if effectiveValue is the same)
+            if (updatedValue !== numValue) {
+              e.target.value = String(updatedValue)
+            }
+            if (!Number.isNaN(updatedValue)) {
+              if (effectiveValue !== updatedValue) {
                 send({
                   type: `set.${category}.${settingName}`,
                   data: {
                     level: settingsLevel,
-                    value: numValue,
+                    value: updatedValue,
                   },
                 } as unknown as EventFrom<WildcardSetEvent>)
               }

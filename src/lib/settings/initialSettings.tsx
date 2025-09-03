@@ -580,7 +580,8 @@ export function createSettings() {
         validate: (v) => typeof v === 'number',
         commandConfig: {
           inputType: 'number',
-          min: 0,
+          min: 1,
+          integer: true,
         },
       }),
       snapToGrid: new Setting<boolean>({
