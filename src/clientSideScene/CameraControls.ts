@@ -3,8 +3,6 @@ import type {
   CameraViewState_type,
 } from '@kittycad/lib/dist/types/src/models'
 import { isArray } from '@src/lib/utils'
-
-import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
 import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
 import type { Camera } from 'three'
@@ -30,10 +28,6 @@ import {
   ZOOM_MAGIC_NUMBER,
 } from '@src/clientSideScene/sceneUtils'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import type {
-  Subscription,
-  UnreliableSubscription,
-} from '@src/lang/std/engineConnection'
 import type { MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -50,6 +44,7 @@ import {
 import { deg2Rad } from '@src/lib/utils2d'
 import { degToRad } from 'three/src/math/MathUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { Subscription, UnreliableSubscription } from '@src/network/utils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -115,7 +110,6 @@ class CameraRateLimiter {
 
 export class CameraControls {
   engineCommandManager: ConnectionManager
-  engineStreamActor?: EngineStreamActor
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
@@ -541,6 +535,7 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
+        console.error('TODO: this.engineStreamActor')
         const videoRef = this.engineStreamActor?.getSnapshot().context.videoRef
         // Nonsense to do anything until the video stream is established.
         if (!videoRef?.current) return

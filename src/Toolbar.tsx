@@ -11,7 +11,6 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useKclContext } from '@src/lang/KclProvider'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
-import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -27,6 +26,7 @@ import type {
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
 import { codeManager, commandBarActor } from '@src/lib/singletons'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
+import { EngineConnectionStateType } from '@src/network/utils'
 
 export function Toolbar({
   className = '',

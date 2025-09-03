@@ -17,6 +17,7 @@ export class Debugger {
   getNow() {
     const isPerformanceSupported =
       window.performance &&
+      // @ts-ignore this is a real check.
       window.performance.now &&
       window.performance.timing &&
       window.performance.timing.navigationStart
@@ -56,4 +57,3 @@ export class Debugger {
 }
 
 export const EngineDebugger = new Debugger()
-window.logs = EngineDebugger

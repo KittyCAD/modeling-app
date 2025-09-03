@@ -43,13 +43,11 @@ beforeAll(async () => {
   await new Promise((resolve) => {
     engineCommandManager
       .start({
-        token: env().VITE_KITTYCAD_API_TOKEN,
+        token: env().VITE_KITTYCAD_API_TOKEN || '',
         width: 256,
         height: 256,
-        setMediaStream: () => {},
-        setIsStreamReady: () => {},
-        callbackOnEngineLiteConnect: () => {
-          resolve(true)
+        setStreamIsReady: () => {
+          console.log('no op for unit test')
         },
       })
       .catch(reportRejection)

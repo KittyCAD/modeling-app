@@ -32,7 +32,6 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useKclContext } from '@src/lang/KclProvider'
-import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useSettings, mlEphantManagerActor } from '@src/lib/singletons'
@@ -42,6 +41,7 @@ import { refreshPage } from '@src/lib/utils'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import usePlatform from '@src/hooks/usePlatform'
 import { settingsActor } from '@src/lib/singletons'
+import { EngineConnectionStateType } from '@src/network/utils'
 
 interface BadgeInfoComputed {
   value: number | boolean | string

@@ -736,6 +736,9 @@ export class ConnectionManager extends EventTarget {
       token,
       width: 256,
       height: 256,
+      setStreamIsReady: () => {
+        console.error('This is a NO OP. Should not be called in web.')
+      },
     })
   }
 

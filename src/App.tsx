@@ -26,7 +26,6 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import {
   billingActor,
-  sceneInfra,
   codeManager,
   kclManager,
   settingsActor,
@@ -35,8 +34,7 @@ import {
 } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import type { IndexLoaderData } from '@src/lib/types'
-import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
-import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
+import { useSettings, useToken } from '@src/lib/singletons'
 import { BillingTransition } from '@src/machines/billingMachine'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { ShareButton } from '@src/components/ShareButton'
@@ -73,7 +71,8 @@ import env from '@src/env'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 
 // CYCLIC REF
-sceneInfra.camControls.engineStreamActor = engineStreamActor
+// TODO: It is gone.
+// sceneInfra.camControls.engineStreamActor = engineStreamActor
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -147,13 +146,12 @@ export function App() {
     billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
 
     // Tell engineStream to wait for dependencies to start streaming.
-    engineStreamActor.send({ type: EngineStreamTransition.WaitForDependencies })
-
     // When leaving the modeling scene, cut the engine stream.
+
     return () => {
       // When leaving the modeling scene, cut the engine stream.
       // Stop is more serious than Pause
-      engineStreamActor.send({ type: EngineStreamTransition.Stop })
+      // TODO: engineCommandManager.tearDown()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])

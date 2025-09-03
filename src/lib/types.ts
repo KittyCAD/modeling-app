@@ -3,7 +3,6 @@ import type CodeManager from '@src/lang/codeManager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { engineStreamMachine } from '@src/machines/engineStreamMachine'
 import type { authMachine } from '@src/machines/authMachine'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -133,7 +132,6 @@ export type AppMachineContext = {
   authActor?: ActorRefFrom<typeof authMachine>
   settingsActor?: ActorRefFrom<typeof settingsMachine>
   systemIOActor?: ActorRefFrom<typeof systemIOMachine>
-  engineStreamActor?: ActorRefFrom<typeof engineStreamMachine>
   commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   billingActor?: ActorRefFrom<typeof billingMachine>
 }

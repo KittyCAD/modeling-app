@@ -44,10 +44,6 @@ import {
   getNodeFromPath,
   traverse,
 } from '@src/lang/queryAst'
-import {
-  EngineConnectionStateType,
-  EngineConnectionEvents,
-} from '@src/lang/std/engineConnection'
 import { err, reportRejection, trap, reject } from '@src/lib/trap'
 import { platform, uuidv4 } from '@src/lib/utils'
 import { commandBarActor } from '@src/lib/singletons'
@@ -101,6 +97,10 @@ import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { useFolders } from '@src/machines/systemIO/hooks'
+import {
+  EngineConnectionEvents,
+  EngineConnectionStateType,
+} from '@src/network/utils'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -393,13 +393,13 @@ export const ModelingMachineProvider = ({
             // Due to our use of singeton pattern, we need to do this to reliably
             // update this object across React and non-React boundary.
             // We need to do this eagerly because of the exportToEngine call below.
-            if (engineCommandManager.machineManager === null) {
+            if (machineManager === null) {
               console.warn(
-                "engineCommandManager.machineManager is null. It shouldn't be at this point. Aborting operation."
+                "machineManager is null. It shouldn't be at this point. Aborting operation."
               )
               return new Error('Machine manager is not set')
             } else {
-              engineCommandManager.machineManager.currentMachine = input.machine
+              machineManager.currentMachine = input.machine
             }
 
             // Update the rest of the UI that needs to know the current machine
@@ -441,7 +441,7 @@ export const ModelingMachineProvider = ({
               files,
               toastId,
               name,
-              machineManager: engineCommandManager.machineManager,
+              machineManager: machineManager,
             })
           }
         ),

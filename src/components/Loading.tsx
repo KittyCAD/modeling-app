@@ -5,13 +5,10 @@ import type { ReactNode } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
-import type { ErrorType } from '@src/lang/std/engineConnection'
-import {
-  CONNECTION_ERROR_TEXT,
-  ConnectionError,
-} from '@src/lang/std/engineConnection'
 import { SafeRenderer } from '@src/lib/markdown'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { CONNECTION_ERROR_TEXT, ConnectionError } from '@src/network/utils'
+import type { IErrorType } from '@src/network/utils'
 
 interface LoadingProps extends React.PropsWithChildren {
   isDummy?: boolean
@@ -83,7 +80,7 @@ const Loading = ({
   retryAttemptCountdown,
   isRetrying,
 }: LoadingProps) => {
-  const [error, setError] = useState<ErrorType>({
+  const [error, setError] = useState<IErrorType>({
     error: ConnectionError.Unset,
   })
   const [countdown, setCountdown] = useState<undefined | number>(

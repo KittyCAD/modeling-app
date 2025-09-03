@@ -132,7 +132,6 @@ import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { Coords2d } from '@src/lang/std/sketch'
 import {
   addCallExpressionsToPipe,
@@ -179,6 +178,7 @@ import type {
   SketchTool,
 } from '@src/machines/modelingMachine'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -188,7 +188,7 @@ type Vec3Array = [number, number, number]
 // That mostly mean sketch elements.
 // Cameras, controls, raycasters, etc are handled by sceneInfra
 export class SceneEntities {
-  readonly engineCommandManager: EngineCommandManager
+  readonly engineCommandManager: ConnectionManager
   readonly sceneInfra: SceneInfra
   readonly editorManager: EditorManager
   readonly codeManager: CodeManager
@@ -201,7 +201,7 @@ export class SceneEntities {
   currentSketchQuaternion: Quaternion | null = null
 
   constructor(
-    engineCommandManager: EngineCommandManager,
+    engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     editorManager: EditorManager,
     codeManager: CodeManager,

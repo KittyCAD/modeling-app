@@ -22,10 +22,6 @@ import {
   billingMachine,
 } from '@src/machines/billingMachine'
 import {
-  engineStreamContextCreate,
-  engineStreamMachine,
-} from '@src/machines/engineStreamMachine'
-import {
   mlEphantDefaultContext,
   mlEphantManagerMachine,
 } from '@src/machines/mlEphantManagerMachine'
@@ -71,6 +67,7 @@ export const kclManager = new KclManager(engineCommandManager, {
 // Initialize KCL version
 import { setKclVersion } from '@src/lib/kclVersion'
 import { initPromise } from '@src/lang/wasmUtils'
+import { EngineDebugger } from '@src/lib/debugger'
 initPromise
   .then(() => {
     setKclVersion(kclManager.kclVersion)
@@ -114,6 +111,7 @@ if (typeof window !== 'undefined') {
   ;(window as any).editorManager = editorManager
   ;(window as any).codeManager = codeManager
   ;(window as any).rustContext = rustContext
+  ;(window as any).engineDebugger = EngineDebugger
   ;(window as any).enableMousePositionLogs = () =>
     document.addEventListener('mousemove', (e) =>
       console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
@@ -133,20 +131,12 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const {
-  AUTH,
-  SETTINGS,
-  SYSTEM_IO,
-  ENGINE_STREAM,
-  MLEPHANT_MANAGER,
-  COMMAND_BAR,
-  BILLING,
-} = ACTOR_IDS
+const { AUTH, SETTINGS, SYSTEM_IO, MLEPHANT_MANAGER, COMMAND_BAR, BILLING } =
+  ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
   [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-  [ENGINE_STREAM]: engineStreamMachine,
   [MLEPHANT_MANAGER]: mlEphantManagerMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
@@ -176,10 +166,6 @@ const appMachine = setup({
     spawnChild(appMachineActors[SETTINGS], {
       systemId: SETTINGS,
       input: createSettings(),
-    }),
-    spawnChild(appMachineActors[ENGINE_STREAM], {
-      systemId: ENGINE_STREAM,
-      input: engineStreamContextCreate(),
     }),
     spawnChild(appMachineActors[MLEPHANT_MANAGER], {
       systemId: MLEPHANT_MANAGER,
@@ -251,10 +237,6 @@ export type SystemIOActor = ActorRefFrom<
 >
 
 export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
-
-export const engineStreamActor = appActor.system.get(
-  ENGINE_STREAM
-) as ActorRefFrom<(typeof appMachineActors)[typeof ENGINE_STREAM]>
 
 export const mlEphantManagerActor = appActor.system.get(
   MLEPHANT_MANAGER

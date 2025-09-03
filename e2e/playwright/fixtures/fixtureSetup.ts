@@ -87,9 +87,10 @@ export class ElectronZoo {
   async makeAvailableAgain() {
     await this.page.evaluate(async () => {
       return new Promise((resolve) => {
-        if (!window.engineCommandManager.engineConnection?.state?.type) {
-          return resolve(undefined)
-        }
+        // TODO: Kevin
+        // if (!window.engineCommandManager.engineConnection?.state?.type) {
+        //   return resolve(undefined)
+        // }
 
         window.engineCommandManager.tearDown()
 
@@ -98,12 +99,13 @@ export class ElectronZoo {
         const checkDisconnected = () => {
           // It's possible we never even created an engineConnection
           // e.g. never left Projects view.
-          if (
-            window.engineCommandManager?.engineConnection?.state.type ===
-            'disconnected'
-          ) {
-            return resolve(undefined)
-          }
+          // TODO: Kevin
+          // if (
+          //   window.engineCommandManager?.engineConnection?.state.type ===
+          //   'disconnected'
+          // ) {
+          //   return resolve(undefined)
+          // }
 
           if (Date.now() - timeA > 3000) {
             return resolve(undefined)

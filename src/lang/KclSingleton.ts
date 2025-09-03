@@ -20,7 +20,6 @@ import {
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
@@ -821,7 +820,7 @@ const defaultSelectionFilter: EntityType_type[] = [
 
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilterToDefault(
-  engineCommandManager: EngineCommandManager,
+  engineCommandManager: ConnectionManager,
   selectionsToRestore?: Selections
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -835,7 +834,7 @@ function setSelectionFilterToDefault(
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilter(
   filter: EntityType_type[],
-  engineCommandManager: EngineCommandManager,
+  engineCommandManager: ConnectionManager,
   selectionsToRestore?: Selections
 ) {
   const { engineEvents } = selectionsToRestore
