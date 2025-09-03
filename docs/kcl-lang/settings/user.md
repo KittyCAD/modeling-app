@@ -107,7 +107,7 @@ This setting has the following nested options:
 The default unit to use in modeling dimensions.
 
 
-**Default:** None
+**Default:** `mm`
 
 ##### camera_projection
 
@@ -134,6 +134,13 @@ The controls for how to navigate the 3D view.
 ##### enable_touch_controls
 
 Toggle touch controls for 3D view navigation
+
+
+**Default:** None
+
+##### use_new_sketch_mode
+
+Toggle new sketch mode implementation (Dev only)
 
 
 **Default:** None

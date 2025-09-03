@@ -2,12 +2,13 @@
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kittycad_modeling_cmds::units::UnitLength;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
-    AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, UnitLength, is_default,
+    AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, is_default,
 };
 
 /// Project specific settings for the app.
@@ -328,7 +329,7 @@ color = 1567.4"#;
                     ]),
                 },
                 modeling: ProjectModelingSettings {
-                    base_unit: UnitLength::Yd,
+                    base_unit: UnitLength::Yards,
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
                 },

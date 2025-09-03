@@ -8,7 +8,7 @@ use uuid::Uuid;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
-    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs,
+    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, SourceRange,
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
@@ -20,7 +20,6 @@ use crate::{
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
-    source_range::SourceRange,
 };
 
 /// State for executing a program.

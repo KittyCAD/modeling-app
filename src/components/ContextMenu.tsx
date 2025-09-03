@@ -19,7 +19,6 @@ export interface ContextMenuProps
 }
 
 const DefaultContextMenuItems = [
-  <ContextMenuItemRefresh />,
   <ContextMenuItemCopy />,
   // add more default context menu items here
 ]
@@ -190,18 +189,6 @@ export function ContextMenuItem(props: ContextMenuItemProps) {
         <kbd className="hotkey">{hotkeyDisplay(hotkey, platform)}</kbd>
       )}
     </button>
-  )
-}
-
-export function ContextMenuItemRefresh() {
-  return (
-    <ContextMenuItem
-      icon="arrowRotateRight"
-      onClick={() => globalThis?.window?.location.reload()}
-      hotkey="mod+r"
-    >
-      Refresh
-    </ContextMenuItem>
   )
 }
 
