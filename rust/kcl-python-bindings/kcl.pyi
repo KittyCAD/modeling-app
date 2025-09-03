@@ -143,6 +143,102 @@ class InputFormat3d:
 
 class Options:
     r"""
+    Options for importing FBX.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
+    Options for importing STEP format.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
+    Options for importing PLY.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
+    Options for importing SolidWorks parts.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
+    Options for exporting STEP format.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
+    Options for exporting OBJ.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
+    Options for exporting PLY.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
+    Options for exporting DXF format.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
+    Options for importing OBJ.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
+    Options for importing STL.
+    """
+    ...
+
+class Options:
+    r"""
+    Options for exporting FBX.
+    """
+    def __new__(cls) -> Options:
+        r"""
+        Set the options to their defaults.
+        """
+
+class Options:
+    r"""
     Options for exporting glTF 2.0.
     """
     def __new__(cls) -> Options:
@@ -161,103 +257,7 @@ class Options:
 
 class Options:
     r"""
-    Options for exporting PLY.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing STEP format.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing FBX.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing OBJ.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
     Options for exporting STL.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for exporting FBX.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing PLY.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing STL.
-    """
-    ...
-
-class Options:
-    r"""
-    Options for exporting DXF format.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing SolidWorks parts.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for exporting OBJ.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for exporting STEP format.
     """
     def __new__(cls) -> Options:
         r"""
@@ -406,12 +406,12 @@ class Storage(Enum):
     Ascii = ...
     r"""
     Plaintext encoding.
-    
-    This is the default setting.
     """
     Binary = ...
     r"""
-    Binary encoding.
+    Binary STL encoding.
+    
+    This is the default setting.
     """
 
 class Storage(Enum):
@@ -443,6 +443,21 @@ class Storage(Enum):
 
 class Storage(Enum):
     r"""
+    Export storage.
+    """
+    Ascii = ...
+    r"""
+    Plaintext encoding.
+    
+    This is the default setting.
+    """
+    Binary = ...
+    r"""
+    Binary encoding.
+    """
+
+class Storage(Enum):
+    r"""
     Describes the storage format of an FBX file.
     """
     Ascii = ...
@@ -452,21 +467,6 @@ class Storage(Enum):
     Binary = ...
     r"""
     Binary FBX encoding.
-    """
-
-class Storage(Enum):
-    r"""
-    Export storage.
-    """
-    Ascii = ...
-    r"""
-    Plaintext encoding.
-    """
-    Binary = ...
-    r"""
-    Binary STL encoding.
-    
-    This is the default setting.
     """
 
 class UnitAngle(Enum):
@@ -724,5 +724,10 @@ async def parse(path:builtins.str) -> builtins.bool:
 def parse_code(code:builtins.str) -> builtins.bool:
     r"""
     Parse the kcl code.
+    """
+
+def relevant_file_extensions() -> builtins.list[builtins.str]:
+    r"""
+    Get the allowed relevant file extensions (imports + kcl).
     """
 
