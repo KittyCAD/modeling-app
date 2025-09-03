@@ -76,7 +76,7 @@ import { ConnectionStream } from '@src/components/ConnectionStream'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
-    .then(() => { })
+    .then(() => {})
     .catch(reportRejection)
 }
 
@@ -296,18 +296,18 @@ export function App() {
           localItems={[
             ...(getSettings().app.showDebugPanel.current
               ? ([
-                {
-                  id: 'modeling-state',
-                  element: 'text',
-                  label:
-                    modelingState.value instanceof Object
-                      ? (xStateValueToString(modelingState.value) ?? '')
-                      : modelingState.value,
-                  toolTip: {
-                    children: 'The current state of the modeler',
+                  {
+                    id: 'modeling-state',
+                    element: 'text',
+                    label:
+                      modelingState.value instanceof Object
+                        ? (xStateValueToString(modelingState.value) ?? '')
+                        : modelingState.value,
+                    toolTip: {
+                      children: 'The current state of the modeler',
+                    },
                   },
-                },
-              ] satisfies StatusBarItemType[])
+                ] satisfies StatusBarItemType[])
               : []),
             {
               id: 'selection',

@@ -178,31 +178,28 @@ export const ConnectionStream = (props: {
     callback: () => {
       // reset the ability to initialize
       didInit = false
-    }
+    },
   })
   useOnPageResize({ videoWrapperRef, videoRef, canvasRef })
   useOnPageIdle({
     startCallback: () => {
-      if (!videoWrapperRef.current)
-        return
+      if (!videoWrapperRef.current) return
 
-      if (!props.authToken)
-        return
+      if (!props.authToken) return
 
       const { width, height } = getDimensions(
         videoWrapperRef.current.clientWidth,
         videoWrapperRef.current.clientHeight
       )
-      engineCommandManager
-        .start({
-          width,
-          height,
-          token: props.authToken,
-          setStreamIsReady: () => {
-            setAppState({ isStreamReady: true })
-          },
-        })
-    }
+      engineCommandManager.start({
+        width,
+        height,
+        token: props.authToken,
+        setStreamIsReady: () => {
+          setAppState({ isStreamReady: true })
+        },
+      })
+    },
   })
 
   return (
