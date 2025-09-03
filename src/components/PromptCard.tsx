@@ -228,9 +228,9 @@ export const PromptCard = (props: PromptCardProps) => {
         </div>
       )}
       <div
-        className={`${hasReasoningToShow ? 'group/reasoning' : ''} flex flex-row justify-end gap-2 items-center pl-2 pr-10`}
+        className={`${hasReasoningToShow ? 'group/reasoning' : ''} relative pl-2 pr-10`}
       >
-        <div className="flex flex-row gap-2 group-hover/reasoning:hidden">
+        <div className="flex flex-row gap-2 group-hover/reasoning:invisible">
           {props.onAction !== undefined && (
             <PromptCardActionButton
               status={props.status}
@@ -248,8 +248,12 @@ export const PromptCard = (props: PromptCardProps) => {
             updatedAt={props.updated_at}
           />
         </div>
-        <div className={'hidden group-hover/reasoning:block'}>
-          <button className="w-full p-2" onClick={() => onSeeReasoning()}>
+        <div
+          className={
+            'hidden group-hover/reasoning:block absolute right-0 top-1/2 -translate-y-1/2'
+          }
+        >
+          <button className="w-fit p-2" onClick={() => onSeeReasoning()}>
             {showFullReasoning ? 'Hide reasoning' : 'See reasoning'}
           </button>
         </div>
