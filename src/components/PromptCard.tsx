@@ -3,7 +3,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import type { Prompt } from '@src/lib/prompt'
 import type { IResponseMlConversation } from '@src/lib/textToCad'
 import { useState } from 'react'
-import type { Thought } from '@src/machines/mlEphantManagerMachine'
+import type { Models } from '@kittycad/lib'
 import { Thinking } from '@src/components/Thinking'
 
 // In the future we can split this out but the code is 99% the same as
@@ -41,7 +41,7 @@ export const ConvoCard = (props: ConvoCardProps) => {
 
 export interface PromptCardProps extends Prompt {
   disabled?: boolean
-  thoughts?: Thought[]
+  thoughts?: Models['MlCopilotServerMessage_type'][]
   userAvatar?: string
   onSeeReasoning: (id: Prompt['id']) => void
   onAction?: (id: Prompt['id'], prompt: Prompt['prompt']) => void
@@ -112,7 +112,7 @@ export const PromptCardActionButton = (props: {
 
 export const PromptCardStatus = (props: {
   id: Prompt['id']
-  thoughts?: Thought[]
+  thoughts?: Models['MlCopilotServerMessage_type'][]
   status: Prompt['status']
   onlyShowImmediateThought: boolean
   startedAt: Prompt['started_at']

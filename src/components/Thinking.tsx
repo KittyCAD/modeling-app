@@ -5,7 +5,8 @@ import { Marked, escape, unescape } from '@ts-stack/markdown'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useEffect, useState, useRef, type ReactNode } from 'react'
-import type { Thought } from '@src/machines/mlEphantManagerMachine'
+import type { Models } from '@kittycad/lib'
+import type { PlanStep_type } from '@kittycad/lib/dist/types/src/models'
 
 export const Generic = (props: {
   content: string
@@ -31,20 +32,32 @@ export const KclCodeExamples = (props: { content: string }) => {
   )
 }
 
-export const GeneratedKclCode = (props: { code: string }) => {
+export enum EGeneratedKclCode {
+  Created = 'Created',
+  Updated = 'Updated',
+  Deleted = 'Deleted',
+}
+
+export const GeneratedKclCode = (props: {
+  operation: EGeneratedKclCode
+  code: string | undefined
+  filename: string | undefined
+}) => {
   return (
     <ThoughtContainer
       heading={
         <ThoughtHeader icon={<CustomIcon name="code" className="w-6 h-6" />}>
-          'Generated KCL Code'
+          {`${props.operation} KCL Code${props.filename ? ` (${props.filename})` : ''}`}
         </ThoughtHeader>
       }
     >
-      <ThoughtContent>
-        <div>
-          <pre>{props.code}</pre>
-        </div>
-      </ThoughtContent>
+      {props.code && (
+        <ThoughtContent>
+          <div>
+            <pre>{props.code}</pre>
+          </div>
+        </ThoughtContent>
+      )}
     </ThoughtContainer>
   )
 }
@@ -113,7 +126,7 @@ export const FeatureTreeOutline = (props: { content: string }) => {
         <ThoughtHeader
           icon={<CustomIcon name="fileExplorer" className="w-6 h-6" />}
         >
-          Design Plan
+          Feature tree outline
         </ThoughtHeader>
       }
     >
@@ -126,6 +139,30 @@ export const FeatureTreeOutline = (props: { content: string }) => {
             }),
           }}
         ></div>
+      </ThoughtContent>
+    </ThoughtContainer>
+  )
+}
+
+export const DesignPlan = (props: { steps: PlanStep_type[] }) => {
+  return (
+    <ThoughtContainer
+      heading={
+        <ThoughtHeader
+          icon={<CustomIcon name="fileExplorer" className="w-6 h-6" />}
+        >
+          Design Plan
+        </ThoughtHeader>
+      }
+    >
+      <ThoughtContent>
+        <ul>
+          {props.steps.map((step: PlanStep_type) => (
+            <li>
+              {step.filepath_to_edit}: {step.edit_instructions}
+            </li>
+          ))}
+        </ul>
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -269,61 +306,109 @@ interface Range {
 }
 
 const fromDataToComponent = (
-  thought: Thought,
+  thought: Models['MlCopilotServerMessage_type'],
   options: { key?: string | number }
 ) => {
-  if (thought.end_of_stream) {
+  if ('end_of_stream' in thought) {
     return <End />
   }
 
-  switch (thought.reasoning?.type) {
-    case 'text': {
-      return (
-        <>
-          <Text key={options.key} content={thought.reasoning?.content} />
-          <Spacer />
-        </>
-      )
+  if ('reasoning' in thought) {
+    const type = thought.reasoning.type
+    switch (type) {
+      case 'text': {
+        return (
+          <>
+            <Text key={options.key} content={thought.reasoning.content} />
+            <Spacer />
+          </>
+        )
+      }
+      case 'kcl_code_examples': {
+        return (
+          <KclCodeExamples
+            key={options.key}
+            content={thought.reasoning.content}
+          />
+        )
+      }
+      case 'feature_tree_outline': {
+        return (
+          <FeatureTreeOutline
+            key={options.key}
+            content={thought.reasoning.content}
+          />
+        )
+      }
+      case 'design_plan': {
+        return <DesignPlan key={options.key} steps={thought.reasoning.steps} />
+      }
+      case 'kcl_docs': {
+        return <KclDocs key={options.key} content={thought.reasoning.content} />
+      }
+      case 'kcl_code_error': {
+        return (
+          <ErroneousThing key={options.key} content={thought.reasoning.error} />
+        )
+      }
+
+      case 'generated_kcl_code': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Updated}
+            filename={undefined}
+            code={thought.reasoning.code}
+          />
+        )
+      }
+      case 'created_kcl_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Created}
+            filename={thought.reasoning.file_name}
+            code={thought.reasoning.content}
+          />
+        )
+      }
+
+      case 'updated_kcl_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Updated}
+            filename={thought.reasoning.file_name}
+            code={thought.reasoning.content}
+          />
+        )
+      }
+
+      case 'deleted_kcl_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Deleted}
+            filename={thought.reasoning.file_name}
+            code={undefined}
+          />
+        )
+      }
+
+      default:
+        const _ex: never = type
     }
-    case 'kcl_code_examples': {
-      return (
-        <KclCodeExamples
-          key={options.key}
-          content={thought.reasoning?.content}
-        />
-      )
-    }
-    case 'feature_tree_outline': {
-      return (
-        <FeatureTreeOutline
-          key={options.key}
-          content={thought.reasoning?.content}
-        />
-      )
-    }
-    case 'kcl_docs': {
-      return <KclDocs key={options.key} content={thought.reasoning?.content} />
-    }
-    case 'generated_kcl_code': {
-      return (
-        <GeneratedKclCode key={options.key} code={thought.reasoning?.code} />
-      )
-    }
-    case 'error': {
-      return (
-        <ErroneousThing
-          key={options.key}
-          content={thought.reasoning?.content}
-        />
-      )
-    }
-    default:
-      return null
   }
+
+  if ('error' in thought) {
+    return <ErroneousThing key={options.key} content={thought.error.detail} />
+  }
+
+  return null
 }
 
 export const Thinking = (props: {
-  thoughts?: Thought[]
+  thoughts?: Models['MlCopilotServerMessage_type'][]
   onlyShowImmediateThought: boolean
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)
@@ -358,7 +443,8 @@ export const Thinking = (props: {
     <Generic
       content={
         props.thoughts.findLast(
-          (thought) => thought.reasoning?.type === 'text'
+          (thought) =>
+            'reasoning' in thought && thought.reasoning?.type === 'text'
           // Typescript can't figure out only a `text` type or undefined is found
           // @ts-expect-error
         )?.reasoning?.content ?? 'Processing...'

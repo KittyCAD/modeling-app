@@ -1,3 +1,4 @@
+import type { Models } from '@kittycad/lib'
 import { connectReasoningStream } from '@src/lib/reasoningWs'
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
@@ -99,29 +100,11 @@ export type MlEphantManagerEvents =
   | {
       type: MlEphantManagerTransitions.AppendThoughtForPrompt
       promptId: string
-      thought: Thought
+      thought: Models['MlCopilotServerMessage_type']
     }
 
 // Used to specify a specific event in input properties
 type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
-
-export interface Thought {
-  end_of_stream?: object
-  reasoning?:
-    | { type: 'text'; content: string }
-    | { type: 'kcl_code_examples'; content: string }
-    | { type: 'kcl_docs'; content: string }
-    | { type: 'generated_kcl_code'; code: string }
-    | { type: 'feature_tree_outline'; content: string }
-    | { type: 'error'; content: string }
-  tool_output?: {
-    result: {
-      type: 'text_to_cad'
-      outputs: Record<string, string>
-      status_code: number
-    }
-  }
-}
 
 export interface PromptMeta {
   // If it's a creation prompt, it'll run some SystemIO code that
@@ -161,7 +144,7 @@ export interface MlEphantManagerContext {
   promptsMeta: Map<Prompt['id'], PromptMeta>
 
   // Thoughts for each prompt
-  promptsThoughts: Map<Prompt['id'], Thought[]>
+  promptsThoughts: Map<Prompt['id'], Models['MlCopilotServerMessage_type'][]>
 }
 
 export const mlEphantDefaultContext = () => ({
@@ -364,8 +347,6 @@ export const mlEphantManagerMachine = setup({
 
         return {
           promptsPool,
-          // When we release new types this'll be fixed and error
-          // @ts-expect-error
           conversationId: result.conversation_id,
           promptsBelongingToConversation,
           promptsMeta,
@@ -524,7 +505,6 @@ export const mlEphantManagerMachine = setup({
           // TextToCad create and iterate both return a conversation id always
           // I believe in some circumstances (legacy prompts), conversation_id
           // will be undefined or the NIL uuid.
-          // @ts-expect-error
           promptsPool.set(prompt.id, {
             ...result,
             prompt: result.prompt ?? '',
