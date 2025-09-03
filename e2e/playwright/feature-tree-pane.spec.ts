@@ -456,31 +456,7 @@ pattern001 = patternCircular3d(
       // Open the feature tree pane and find the pattern operation
       await toolbar.openPane('feature-tree')
 
-      // Try different possible names for the pattern operation and click on it
-      const possibleNames = [
-        'Pattern',
-        'Circular Pattern',
-        'Pattern Circular 3D',
-        'patternCircular3d',
-      ]
-
-      let patternOperation = null
-      for (const name of possibleNames) {
-        try {
-          const candidate = await toolbar.getFeatureTreeOperation(name, 0)
-          if (await candidate.isVisible()) {
-            patternOperation = candidate
-            break
-          }
-        } catch (error) {
-          // Continue to next name if this one doesn't exist
-        }
-      }
-
-      if (!patternOperation) {
-        throw new Error('Could not find pattern operation to click')
-      }
-
+      const patternOperation = await toolbar.getFeatureTreeOperation('Circular Pattern', 0)
       await patternOperation.dblclick()
 
       // Should open the command bar in edit mode
@@ -598,30 +574,7 @@ pattern001 = patternCircular3d(
     await test.step('Find and click on pattern operation to edit it', async () => {
       await toolbar.openPane('feature-tree')
 
-      const possibleNames = [
-        'Pattern',
-        'Circular Pattern',
-        'Pattern Circular 3D',
-        'patternCircular3d',
-      ]
-
-      let patternOperation = null
-      for (const name of possibleNames) {
-        try {
-          const candidate = await toolbar.getFeatureTreeOperation(name, 0)
-          if (await candidate.isVisible()) {
-            patternOperation = candidate
-            break
-          }
-        } catch (error) {
-          // Continue to next name if this one doesn't exist
-        }
-      }
-
-      if (!patternOperation) {
-        throw new Error('Could not find pattern operation to click')
-      }
-
+      const patternOperation = await toolbar.getFeatureTreeOperation('Circular Pattern', 0)
       await patternOperation.dblclick()
 
       // Feature tree editing shows different header format for optional parameters
