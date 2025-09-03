@@ -230,7 +230,7 @@ export const PromptCard = (props: PromptCardProps) => {
       <div
         className={`${hasReasoningToShow ? 'group/reasoning' : ''} relative pl-2 pr-10`}
       >
-        <div className="flex flex-row gap-2 group-hover/reasoning:invisible">
+        <div className="flex flex-row justify-end gap-2 group-hover/reasoning:invisible">
           {props.onAction !== undefined && (
             <PromptCardActionButton
               status={props.status}
