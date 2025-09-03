@@ -654,7 +654,7 @@ fn lint(code: String) -> PyResult<Vec<Discovered>> {
 
 /// The kcl python module.
 #[pymodule]
-fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Add our types to the module.
     m.add_class::<ImageFormat>()?;
     m.add_class::<RawFile>()?;
