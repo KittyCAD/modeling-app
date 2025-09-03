@@ -367,11 +367,22 @@ impl ArrayLen {
     }
 
     /// True if the length constraint is satisfied by the supplied length.
-    fn satisfied(self, len: usize, allow_shrink: bool) -> Option<usize> {
+    pub fn satisfied(self, len: usize, allow_shrink: bool) -> Option<usize> {
         match self {
             ArrayLen::None => Some(len),
             ArrayLen::Minimum(s) => (len >= s).then_some(len),
             ArrayLen::Known(s) => (if allow_shrink { len >= s } else { len == s }).then_some(s),
+        }
+    }
+
+    pub fn human_friendly_type(self) -> String {
+        match self {
+            ArrayLen::None | ArrayLen::Minimum(0) => "any number of elements".to_owned(),
+            ArrayLen::Minimum(1) => "at least 1 element".to_owned(),
+            ArrayLen::Minimum(n) => format!("at least {n} elements"),
+            ArrayLen::Known(0) => "no elements".to_owned(),
+            ArrayLen::Known(1) => "exactly 1 element".to_owned(),
+            ArrayLen::Known(n) => format!("exactly {n} elements"),
         }
     }
 }
