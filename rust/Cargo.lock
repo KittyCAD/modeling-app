@@ -2417,9 +2417,9 @@ dependencies = [
 
 [[package]]
 name = "inventory"
-version = "0.3.20"
+version = "0.3.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab08d7cd2c5897f2c949e5383ea7c7db03fb19130ffcfbf7eda795137ae3cb83"
+checksum = "bc61209c082fbeb19919bee74b176221b27223e27b65d781eb91af24eb1fb46e"
 dependencies = [
  "rustversion",
 ]
@@ -2824,9 +2824,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.131"
+version = "0.2.133"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b589ac0110d08e13371ee186c2c49f8bf1fffdf37aa9885fbbf43f2d4b977b7c"
+checksum = "2d15a4a2d5872522582cba15607f7ee5bdc966cbffcc56e6a60d618c7deab7ab"
 dependencies = [
  "anyhow",
  "chrono",
@@ -4010,9 +4010,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-stub-gen"
-version = "0.12.2"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "650d9624b551894664cc95867ccfe4fd814a5a225c8fe3a75194a3ae51caae1d"
+checksum = "b93cd67bcfbf726f81cd5d5f2cc85a69e089b4eaa11bb41a6514ad1783fb9355"
 dependencies = [
  "anyhow",
  "chrono",
@@ -4032,9 +4032,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-stub-gen-derive"
-version = "0.12.2"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73947c71903f0e3e31a302a350567594063c75ac155031e40519721429898649"
+checksum = "3f2933be64abedb32a666273e843a1c949e957c18071cf52d543daf4adb2b4e9"
 dependencies = [
  "heck",
  "proc-macro2",
