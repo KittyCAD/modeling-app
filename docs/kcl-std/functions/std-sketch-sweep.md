@@ -73,7 +73,7 @@ sweepSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the sweep function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -107,7 +107,7 @@ springSketch = startSketchOn(XZ)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the sweep function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -145,7 +145,7 @@ sweep([rectangleSketch, circleSketch], path = sweepPath)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the sweep function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -176,7 +176,7 @@ sweep(circleSketch, path = sweepPath, sectional = true)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the sweep function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

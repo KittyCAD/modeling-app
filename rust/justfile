@@ -58,6 +58,14 @@ test:
     cargo install cargo-nextest
     {{cnr}} --workspace --features=artifact-graph --no-fail-fast
 
+[working-directory: 'kcl-python-bindings']
+python-test:
+    just test
+
+[working-directory: 'kcl-python-bindings']
+python-test-filter name:
+    just test-filter {{name}}
+
 bump-kcl-crate-versions bump='patch':
     # First build the kcl-bumper tool.
     cargo build -p kcl-bumper

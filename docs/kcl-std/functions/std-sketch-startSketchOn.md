@@ -86,7 +86,7 @@ example003 = extrude(exampleSketch003, length = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the startSketchOn function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -133,7 +133,7 @@ example003 = extrude(exampleSketch003, length = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the startSketchOn function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -177,7 +177,7 @@ example003 = extrude(exampleSketch003, length = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the startSketchOn function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -216,7 +216,7 @@ example002 = extrude(exampleSketch002, length = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the startSketchOn function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -263,7 +263,7 @@ example002 = extrude(exampleSketch002, length = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the startSketchOn function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -294,7 +294,7 @@ a1 = startSketchOn({
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the startSketchOn function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -327,7 +327,7 @@ subtract(cube001, tools = cube002)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the startSketchOn function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn6_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

@@ -55,7 +55,7 @@ exampleSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the parabolic function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-parabolic0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

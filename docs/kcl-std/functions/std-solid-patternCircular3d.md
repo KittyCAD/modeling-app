@@ -61,7 +61,7 @@ example = extrude(exampleSketch, length = -5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the patternCircular3d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternCircular3d0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -93,7 +93,7 @@ example = extrude(exampleSketch, length = -5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the patternCircular3d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternCircular3d1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

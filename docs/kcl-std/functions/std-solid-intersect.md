@@ -58,7 +58,7 @@ intersectedPart = intersect([part001, part002])
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the intersect function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-intersect0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -97,7 +97,7 @@ intersectedPart = part001 & part002
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the intersect function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-intersect1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

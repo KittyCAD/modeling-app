@@ -2,10 +2,11 @@
 use anyhow::Result;
 use kcl_lib::{
     lint::{checks, Discovered},
-    ExecutorContext, UnitLength,
+    ExecutorContext,
 };
 use kittycad_modeling_cmds::{
-    self as kcmc, format::InputFormat3d, shared::FileExportFormat, websocket::RawFile, ImageFormat, ImportFile,
+    self as kcmc, format::InputFormat3d, shared::FileExportFormat, units::UnitLength, websocket::RawFile, ImageFormat,
+    ImportFile,
 };
 use pyo3::{
     exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
@@ -41,7 +42,7 @@ fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) 
 
 fn get_output_format(
     format: &FileExportFormat,
-    src_unit: kittycad_modeling_cmds::units::UnitLength,
+    src_unit: UnitLength,
 ) -> kittycad_modeling_cmds::format::OutputFormat3d {
     // Zoo co-ordinate system.
     //
@@ -285,6 +286,16 @@ async fn import_and_snapshot(
 
 fn to_py_exception(err: impl std::fmt::Display) -> PyErr {
     PyException::new_err(err.to_string())
+}
+
+/// Get the allowed relevant file extensions (imports + kcl).
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+fn relevant_file_extensions() -> PyResult<Vec<String>> {
+    Ok(kcl_lib::RELEVANT_FILE_EXTENSIONS
+        .iter()
+        .map(|s| s.to_string())
+        .collect::<Vec<String>>())
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
@@ -643,7 +654,7 @@ fn lint(code: String) -> PyResult<Vec<Discovered>> {
 
 /// The kcl python module.
 #[pymodule]
-fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Add our types to the module.
     m.add_class::<ImageFormat>()?;
     m.add_class::<RawFile>()?;
@@ -655,44 +666,18 @@ fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<bridge::CameraLookAt>()?;
     m.add_class::<kcmc::format::InputFormat3d>()?;
 
-    let step_import = PyModule::new(py, "step_import")?;
-    step_import.add_class::<kcmc::format::step::import::Options>()?;
-    m.add_submodule(&step_import)?;
-    let step_export = PyModule::new(py, "step_export")?;
-    step_export.add_class::<kcmc::format::step::export::Options>()?;
-    m.add_submodule(&step_export)?;
-
-    let gltf_import = PyModule::new(py, "gltf_import")?;
-    gltf_import.add_class::<kcmc::format::gltf::import::Options>()?;
-    m.add_submodule(&gltf_import)?;
-    let gltf_export = PyModule::new(py, "gltf_export")?;
-    gltf_export.add_class::<kcmc::format::gltf::export::Options>()?;
-    m.add_submodule(&gltf_export)?;
-
-    let obj_import = PyModule::new(py, "obj_import")?;
-    obj_import.add_class::<kcmc::format::obj::import::Options>()?;
-    m.add_submodule(&obj_import)?;
-    let obj_export = PyModule::new(py, "obj_export")?;
-    obj_export.add_class::<kcmc::format::obj::export::Options>()?;
-    m.add_submodule(&obj_export)?;
-
-    let ply_import = PyModule::new(py, "ply_import")?;
-    ply_import.add_class::<kcmc::format::ply::import::Options>()?;
-    m.add_submodule(&ply_import)?;
-    let ply_export = PyModule::new(py, "ply_export")?;
-    ply_export.add_class::<kcmc::format::ply::export::Options>()?;
-    m.add_submodule(&ply_export)?;
-
-    let stl_import = PyModule::new(py, "stl_import")?;
-    stl_import.add_class::<kcmc::format::stl::import::Options>()?;
-    m.add_submodule(&stl_import)?;
-    let stl_export = PyModule::new(py, "stl_export")?;
-    stl_export.add_class::<kcmc::format::stl::export::Options>()?;
-    m.add_submodule(&stl_export)?;
-
-    let sldprt_import = PyModule::new(py, "sldprt_import")?;
-    sldprt_import.add_class::<kcmc::format::sldprt::import::Options>()?;
-    m.add_submodule(&sldprt_import)?;
+    // These are fine to add top level since we rename them in pyo3 derives.
+    m.add_class::<kcmc::format::step::import::Options>()?;
+    m.add_class::<kcmc::format::step::export::Options>()?;
+    m.add_class::<kcmc::format::gltf::import::Options>()?;
+    m.add_class::<kcmc::format::gltf::export::Options>()?;
+    m.add_class::<kcmc::format::obj::import::Options>()?;
+    m.add_class::<kcmc::format::obj::export::Options>()?;
+    m.add_class::<kcmc::format::ply::import::Options>()?;
+    m.add_class::<kcmc::format::ply::export::Options>()?;
+    m.add_class::<kcmc::format::stl::import::Options>()?;
+    m.add_class::<kcmc::format::stl::export::Options>()?;
+    m.add_class::<kcmc::format::sldprt::import::Options>()?;
 
     // Add our functions to the module.
     m.add_function(wrap_pyfunction!(parse, m)?)?;
@@ -712,6 +697,7 @@ fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(format, m)?)?;
     m.add_function(wrap_pyfunction!(format_dir, m)?)?;
     m.add_function(wrap_pyfunction!(lint, m)?)?;
+    m.add_function(wrap_pyfunction!(relevant_file_extensions, m)?)?;
     Ok(())
 }
 
