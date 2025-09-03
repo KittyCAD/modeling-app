@@ -287,6 +287,16 @@ fn to_py_exception(err: impl std::fmt::Display) -> PyErr {
     PyException::new_err(err.to_string())
 }
 
+/// Get the allowed relevant file extensions (imports + kcl).
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+fn relevant_file_extensions() -> PyResult<Vec<String>> {
+    Ok(kcl_lib::RELEVANT_FILE_EXTENSIONS
+        .iter()
+        .map(|s| s.to_string())
+        .collect::<Vec<String>>())
+}
+
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn import_and_snapshot_views(
@@ -712,6 +722,7 @@ fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(format, m)?)?;
     m.add_function(wrap_pyfunction!(format_dir, m)?)?;
     m.add_function(wrap_pyfunction!(lint, m)?)?;
+    m.add_function(wrap_pyfunction!(relevant_file_extensions, m)?)?;
     Ok(())
 }
 

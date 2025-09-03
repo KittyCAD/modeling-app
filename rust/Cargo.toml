@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+    "ezpz",
     "kcl-api",
     "kcl-bumper",
     "kcl-derive-docs",
@@ -13,7 +14,6 @@ members = [
     "kcl-test-server",
     "kcl-to-core",
     "kcl-wasm-lib",
-    "ezpz",
 ]
 
 [workspace.dependencies]

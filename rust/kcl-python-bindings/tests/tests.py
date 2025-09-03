@@ -317,3 +317,13 @@ async def test_kcl_execute_code_and_export_with_bad_units():
             assert len(str(e)) > 0
             print(e)
             assert "[1:1]" in str(e)
+
+
+def test_relevant_file_extensions():
+    exts = kcl.relevant_file_extensions()
+    assert isinstance(exts, list)
+    assert len(exts) > 0
+    assert len(exts) > 5
+    assert all(isinstance(x, str) and len(x) > 0 for x in exts)
+    # kcl should always be included in the set
+    assert "kcl" in exts
