@@ -601,7 +601,7 @@ export function createSettings() {
         isEnabled: (context) => context.modeling.snapToGrid.current,
         commandConfig: {
           inputType: 'number',
-          min: 0,
+          min: 0.001,
         },
       }),
 
