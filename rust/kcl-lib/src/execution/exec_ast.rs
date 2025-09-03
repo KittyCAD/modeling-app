@@ -1210,7 +1210,7 @@ impl Node<BinaryExpression> {
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new_no_args(self.into(), ctx.clone());
                 let result = crate::std::csg::inner_union(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -1223,7 +1223,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::Sub {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new_no_args(self.into(), ctx.clone());
                 let result = crate::std::csg::inner_subtract(
                     vec![*left.clone()],
                     vec![*right.clone()],
@@ -1237,7 +1237,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::And {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new_no_args(self.into(), ctx.clone());
                 let result = crate::std::csg::inner_intersect(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
