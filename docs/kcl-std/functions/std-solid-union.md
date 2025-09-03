@@ -55,7 +55,7 @@ unionedPart = union([part001, part002])
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the union function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -94,7 +94,7 @@ unionedPart = part001 + part002
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the union function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -135,7 +135,7 @@ unionedPart = part001 | part002
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the union function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
