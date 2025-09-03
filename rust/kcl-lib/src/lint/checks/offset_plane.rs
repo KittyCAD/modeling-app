@@ -1,10 +1,11 @@
 use anyhow::Result;
+use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::{
     SourceRange,
     engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::Suggestion,
-    execution::{PlaneInfo, Point3d, types::UnitLen},
+    execution::{PlaneInfo, Point3d},
     lint::rule::{Discovered, Finding, def_finding},
     parsing::ast::types::{
         BinaryPart, CallExpressionKw, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program, UnaryOperator,
@@ -175,25 +176,11 @@ pub fn common(
                     x,
                     y,
                     z,
-                    units: UnitLen::Mm,
+                    units: Some(UnitLength::Millimeters),
                 })
             }
-            "xAxis" => {
-                x_vec = Some(Point3d {
-                    x,
-                    y,
-                    z,
-                    units: UnitLen::Unknown,
-                })
-            }
-            "yAxis" => {
-                y_vec = Some(Point3d {
-                    x,
-                    y,
-                    z,
-                    units: UnitLen::Unknown,
-                })
-            }
+            "xAxis" => x_vec = Some(Point3d { x, y, z, units: None }),
+            "yAxis" => y_vec = Some(Point3d { x, y, z, units: None }),
             _ => {
                 continue;
             }

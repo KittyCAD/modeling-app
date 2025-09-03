@@ -51,9 +51,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.95
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -70,9 +68,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -89,9 +85,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -108,9 +102,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -120,9 +112,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": -900.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -130,25 +120,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -160,9 +144,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             -1.75,
             1.15
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -171,16 +153,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": -1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -189,12 +167,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 1.15,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "cabinFrontBody": {
@@ -252,9 +226,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.95
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -271,9 +243,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.95
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -290,9 +260,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -309,9 +277,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -328,9 +294,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -340,9 +304,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": -1925.0000000000002,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -350,25 +312,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -380,9 +336,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             -0.9,
             1.15
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -391,16 +345,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 3.8500000000000005,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -413,34 +363,26 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "x": -1925.0000000000002,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -465,9 +407,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.95
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -484,9 +424,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.95
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -503,9 +441,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -522,9 +458,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -541,9 +475,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -553,9 +485,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": -1925.0000000000002,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -563,25 +493,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -593,9 +517,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           -0.9,
           1.15
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -604,9 +526,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "cabinFrontSketch": {
@@ -618,34 +538,26 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "x": -1925.0000000000002,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -654,12 +566,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.8,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "cabinSideBody": {
@@ -710,9 +618,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.95
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -729,9 +635,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -748,9 +652,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -767,9 +669,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -779,9 +679,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": -900.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -789,25 +687,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -819,9 +711,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             -1.75,
             1.15
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -830,16 +720,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": -1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -864,9 +750,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.95
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -883,9 +767,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -902,9 +784,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -921,9 +801,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -933,9 +811,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": 0.0,
           "y": -900.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -943,25 +819,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -973,9 +843,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           -1.75,
           1.15
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -984,9 +852,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "chassis": {
@@ -1044,9 +910,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1063,9 +927,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1082,9 +944,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.7499999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1101,9 +961,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.75
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1120,9 +978,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.75
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -1132,9 +988,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": -900.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1142,25 +996,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1172,9 +1020,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             -1.75,
             0.75
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1183,16 +1029,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": -1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -1201,12 +1043,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "chassisHeight": {
@@ -1214,12 +1052,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "chassisLength": {
@@ -1227,12 +1061,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 3.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "chassisPlane": {
@@ -1244,34 +1074,26 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "x": 0.0,
         "y": -900.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1296,9 +1118,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1315,9 +1135,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1334,9 +1152,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.7499999999999999
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1353,9 +1169,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.75
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1372,9 +1186,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.75
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -1384,9 +1196,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": 0.0,
           "y": -900.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -1394,25 +1204,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1424,9 +1228,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           -1.75,
           0.75
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1435,9 +1237,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "chassisWidth": {
@@ -1445,12 +1245,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 1.8,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "fenderBody": {
@@ -1508,9 +1304,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.75
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1527,9 +1321,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.75
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1546,9 +1338,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1565,9 +1355,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1584,9 +1372,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -1596,9 +1382,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": -1000.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1606,25 +1390,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1636,9 +1414,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             -1.85,
             0.4
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1647,16 +1423,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -1665,12 +1437,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.35,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "fenderInset": {
@@ -1678,12 +1446,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "fenderLength": {
@@ -1691,12 +1455,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 3.7,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "fenderPlane": {
@@ -1708,34 +1468,26 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "x": 0.0,
         "y": -1000.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1760,9 +1512,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.75
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1779,9 +1529,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.75
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1798,9 +1546,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.4
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1817,9 +1563,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.4
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1836,9 +1580,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.4
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -1848,9 +1590,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": 0.0,
           "y": -1000.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -1858,25 +1598,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1888,9 +1622,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           -1.85,
           0.4
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1899,9 +1631,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "fenderWidth": {
@@ -1909,12 +1639,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "fenderWithCutouts": {
@@ -1972,9 +1698,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.75
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1991,9 +1715,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.75
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2010,9 +1732,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2029,9 +1749,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2048,9 +1766,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -2060,9 +1776,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": -1000.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2070,25 +1784,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2100,9 +1808,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             -1.85,
             0.4
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2111,16 +1817,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -2193,9 +1895,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633369868301
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2212,9 +1912,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633369868302
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2231,9 +1929,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.35000000000000003
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2250,9 +1946,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333698683017
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2269,9 +1963,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333698683045
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2288,9 +1980,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.35
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -2300,9 +1990,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -2310,25 +1998,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2340,9 +2022,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.5249999999999999,
             0.35
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2351,16 +2031,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": -0.405,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -2433,9 +2109,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633369868301
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2452,9 +2126,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633369868302
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2471,9 +2143,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.35000000000000003
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2490,9 +2160,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333698683017
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2509,9 +2177,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333698683045
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2528,9 +2194,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.35
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -2540,9 +2204,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -2550,25 +2212,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2580,9 +2236,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.5249999999999999,
             0.35
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2591,16 +2245,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": -0.405,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -2609,12 +2259,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "headlightsBody": {
@@ -2672,9 +2318,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.0699999999999998
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2691,9 +2335,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.0699999999999998
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2710,9 +2352,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2729,9 +2369,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2748,9 +2386,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -2760,9 +2396,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": -1750.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2770,25 +2404,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2800,9 +2428,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             -0.9,
             1.15
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2811,16 +2437,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": -0.05,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -2829,12 +2451,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 1.35,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "headlightsElevation": {
@@ -2842,12 +2460,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 1.15,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "headlightsHeight": {
@@ -2855,12 +2469,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.08000000000000002,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "headlightsPlane": {
@@ -2872,34 +2482,26 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "x": -1750.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2924,9 +2526,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.0699999999999998
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2943,9 +2543,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.0699999999999998
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2962,9 +2560,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2981,9 +2577,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3000,9 +2594,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -3012,9 +2604,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": -1750.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -3022,25 +2612,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3052,9 +2636,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           -0.9,
           1.15
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3063,9 +2645,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "headlightsSketch": {
@@ -3077,34 +2657,26 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "x": -1750.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3113,12 +2685,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 1.8,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "hoodLength": {
@@ -3126,12 +2694,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "lightDepth": {
@@ -3139,12 +2703,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "makeWheelCutout": {
@@ -3220,9 +2780,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633369868301
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3239,9 +2797,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633369868302
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3258,9 +2814,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.35000000000000003
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3277,9 +2831,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333698683017
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3296,9 +2848,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333698683045
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3315,9 +2865,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.35
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -3327,9 +2875,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -3337,25 +2883,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3367,9 +2907,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.5249999999999999,
             0.35
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3378,16 +2916,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": -0.405,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -3396,12 +2930,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 2.0999999999999996,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "rearRightCutout": {
@@ -3473,9 +3003,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633369868301
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3492,9 +3020,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633369868302
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3511,9 +3037,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.35000000000000003
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3530,9 +3054,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333698683017
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3549,9 +3071,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333698683045
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3568,9 +3088,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.35
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -3580,9 +3098,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -3590,25 +3106,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3620,9 +3130,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.5249999999999999,
             0.35
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3631,16 +3139,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": -0.405,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -3649,12 +3153,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.36000000000000004,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "taillightsBody": {
@@ -3712,9 +3212,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.0699999999999998
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3731,9 +3229,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.0699999999999998
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3750,9 +3246,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3769,9 +3263,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3788,9 +3280,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -3800,9 +3290,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 1750.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -3810,25 +3298,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3840,9 +3322,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             -0.9,
             1.15
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3851,16 +3331,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.05,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -3869,12 +3345,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "taillightsElevation": {
@@ -3882,12 +3354,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 1.15,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "taillightsHeight": {
@@ -3895,12 +3363,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.08000000000000002,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "taillightsOffset": {
@@ -3908,12 +3372,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "taillightsPlane": {
@@ -3925,34 +3385,26 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "x": 1750.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3977,9 +3429,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.0699999999999998
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3996,9 +3446,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.0699999999999998
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -4015,9 +3463,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -4034,9 +3480,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -4053,9 +3497,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -4065,9 +3507,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": 1750.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -4075,25 +3515,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -4105,9 +3539,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           -0.9,
           1.15
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -4116,9 +3548,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "taillightsSize": {
@@ -4126,12 +3556,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.32000000000000006,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "taillightsSketch": {
@@ -4143,34 +3569,26 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "x": 1750.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -4179,12 +3597,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 1.8,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "wheelBase": {
@@ -4192,12 +3606,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 2.3,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "wheelDiameter": {
@@ -4205,12 +3615,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.7,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "wheelFn": {
@@ -4267,9 +3673,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "innerPaths": [
@@ -4294,9 +3698,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "on": {
@@ -4306,9 +3708,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -4316,25 +3716,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -4346,9 +3740,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 0.35,
                 0.35
               ],
-              "units": {
-                "type": "M"
-              },
+              "units": "m",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4357,16 +3749,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "sectional": false
         }
       },
@@ -4410,9 +3798,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "on": {
@@ -4422,9 +3808,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -4432,25 +3816,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -4462,9 +3840,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 0.175,
                 0.35
               ],
-              "units": {
-                "type": "M"
-              },
+              "units": "m",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4473,16 +3849,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "sectional": false
         }
       }
@@ -4538,9 +3910,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "innerPaths": [
@@ -4565,9 +3935,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "on": {
@@ -4577,9 +3945,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -4587,25 +3953,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -4617,9 +3977,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 0.35,
                 0.35
               ],
-              "units": {
-                "type": "M"
-              },
+              "units": "m",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4628,16 +3986,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "sectional": false
         }
       },
@@ -4681,9 +4035,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "on": {
@@ -4693,9 +4045,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -4703,25 +4053,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -4733,9 +4077,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 0.175,
                 0.35
               ],
-              "units": {
-                "type": "M"
-              },
+              "units": "m",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4744,16 +4086,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "sectional": false
         }
       }
@@ -4809,9 +4147,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "innerPaths": [
@@ -4836,9 +4172,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "on": {
@@ -4848,9 +4182,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -4858,25 +4190,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -4888,9 +4214,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 0.35,
                 0.35
               ],
-              "units": {
-                "type": "M"
-              },
+              "units": "m",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4899,16 +4223,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "sectional": false
         }
       },
@@ -4952,9 +4272,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "on": {
@@ -4964,9 +4282,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -4974,25 +4290,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -5004,9 +4314,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 0.175,
                 0.35
               ],
-              "units": {
-                "type": "M"
-              },
+              "units": "m",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5015,16 +4323,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "sectional": false
         }
       }
@@ -5080,9 +4384,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "innerPaths": [
@@ -5107,9 +4409,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "on": {
@@ -5119,9 +4419,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -5129,25 +4427,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -5159,9 +4451,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 0.35,
                 0.35
               ],
-              "units": {
-                "type": "M"
-              },
+              "units": "m",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5170,16 +4460,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "sectional": false
         }
       },
@@ -5223,9 +4509,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   0.35
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "M"
-                }
+                "units": "m"
               }
             ],
             "on": {
@@ -5235,9 +4519,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -5245,25 +4527,19 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -5275,9 +4551,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 0.175,
                 0.35
               ],
-              "units": {
-                "type": "M"
-              },
+              "units": "m",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5286,16 +4560,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "sectional": false
         }
       }
@@ -5306,12 +4576,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 0.27,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "windPanelShift": {
@@ -5319,12 +4585,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": 1.4000000000000001,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   }
 }
