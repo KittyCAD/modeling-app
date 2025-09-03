@@ -10,7 +10,7 @@ import type {
   UnitLength_type,
 } from '@kittycad/lib/dist/types/src/models'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const uuidv4 = v4
 

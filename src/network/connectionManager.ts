@@ -214,7 +214,8 @@ export class ConnectionManager extends EventTarget {
         detail: this.connection,
       })
     )
-    // Gotcha: ^this is a race condigion with EngineAvailable but that is life.
+    // Gotcha: ^this is a race condition with EngineAvailable but that is life.
+    // TODO: this is called in createWebSocketConnection
     this.connection.dispatchEvent(
       new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
         detail: {

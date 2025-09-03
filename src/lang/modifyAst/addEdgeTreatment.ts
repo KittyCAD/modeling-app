@@ -45,7 +45,7 @@ import {
 } from '@src/lang/modifyAst/tagManagement'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import { deleteTopLevelStatement } from '@src/lang/modifyAst'
-import { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {

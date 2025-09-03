@@ -3,8 +3,8 @@ import type { ClientMetrics, IEventListenerTracked } from '@src/network/utils'
 
 const TEST_URL = 'nicenicenice'
 const TEST_TOKEN = 'mycooltoken'
-const HANDLE_NO_OP = () => { }
-const TEAR_DOWN_MANAGER_NO_OP = () => { }
+const HANDLE_NO_OP = () => {}
+const TEAR_DOWN_MANAGER_NO_OP = () => {}
 
 describe('connection.ts', () => {
   describe('initialize', () => {
@@ -13,7 +13,7 @@ describe('connection.ts', () => {
         url: TEST_URL,
         token: TEST_TOKEN,
         handleOnDataChannelMessage: HANDLE_NO_OP,
-        tearDownManager: TEAR_DOWN_MANAGER_NO_OP
+        tearDownManager: TEAR_DOWN_MANAGER_NO_OP,
       })
       expect(connection.url).toBe(TEST_URL)
       expect(connection.token).toBe(TEST_TOKEN)
@@ -35,7 +35,7 @@ describe('connection.ts', () => {
         url: TEST_URL,
         token: TEST_TOKEN,
         handleOnDataChannelMessage: HANDLE_NO_OP,
-        tearDownManager: TEAR_DOWN_MANAGER_NO_OP
+        tearDownManager: TEAR_DOWN_MANAGER_NO_OP,
       })
       expect(connection.pingIntervalId).toBe(undefined)
       connection.stopPingPong()
@@ -45,14 +45,13 @@ describe('connection.ts', () => {
   describe('trackListener', () => {
     it('should add one listener to the map', () => {
       const expected = new Map<string, IEventListenerTracked>()
-      const fn = () => { }
+      const fn = () => {}
       expected.set('open', { event: 'open', callback: fn, type: 'window' })
       const connection = new Connection({
         url: TEST_URL,
         token: TEST_TOKEN,
         handleOnDataChannelMessage: HANDLE_NO_OP,
-        tearDownManager: TEAR_DOWN_MANAGER_NO_OP
-
+        tearDownManager: TEAR_DOWN_MANAGER_NO_OP,
       })
       connection.trackListener('open', {
         event: 'open',
@@ -63,16 +62,15 @@ describe('connection.ts', () => {
     })
     it('should add two listeners to the map', () => {
       const expected = new Map<string, IEventListenerTracked>()
-      const fn = () => { }
-      const fn2 = () => { }
+      const fn = () => {}
+      const fn2 = () => {}
       expected.set('open', { event: 'open', callback: fn, type: 'window' })
       expected.set('close', { event: 'close', callback: fn2, type: 'window' })
       const connection = new Connection({
         url: TEST_URL,
         token: TEST_TOKEN,
         handleOnDataChannelMessage: HANDLE_NO_OP,
-        tearDownManager: TEAR_DOWN_MANAGER_NO_OP
-
+        tearDownManager: TEAR_DOWN_MANAGER_NO_OP,
       })
       connection.trackListener('open', {
         event: 'open',
@@ -88,13 +86,13 @@ describe('connection.ts', () => {
     })
     it('should error if you try to add the same key', () => {
       const expected = new Map<string, IEventListenerTracked>()
-      const fn = () => { }
+      const fn = () => {}
       expected.set('open', { event: 'open', callback: fn, type: 'window' })
       const connection = new Connection({
         url: TEST_URL,
         token: TEST_TOKEN,
         handleOnDataChannelMessage: HANDLE_NO_OP,
-        tearDownManager: TEAR_DOWN_MANAGER_NO_OP
+        tearDownManager: TEAR_DOWN_MANAGER_NO_OP,
       })
       connection.trackListener('open', {
         event: 'open',
@@ -104,7 +102,7 @@ describe('connection.ts', () => {
       expect(() =>
         connection.trackListener('open', {
           event: 'open',
-          callback: () => { },
+          callback: () => {},
           type: 'window',
         })
       ).toThrow(
@@ -118,8 +116,7 @@ describe('connection.ts', () => {
         url: TEST_URL,
         token: TEST_TOKEN,
         handleOnDataChannelMessage: HANDLE_NO_OP,
-        tearDownManager: TEAR_DOWN_MANAGER_NO_OP
-
+        tearDownManager: TEAR_DOWN_MANAGER_NO_OP,
       })
       const mediaStream = new MediaStream()
       connection.setMediaStream(mediaStream)
@@ -132,8 +129,7 @@ describe('connection.ts', () => {
         url: TEST_URL,
         token: TEST_TOKEN,
         handleOnDataChannelMessage: HANDLE_NO_OP,
-        tearDownManager: TEAR_DOWN_MANAGER_NO_OP
-
+        tearDownManager: TEAR_DOWN_MANAGER_NO_OP,
       })
       const expected = async () => {
         let metrics: ClientMetrics = {}
@@ -149,8 +145,7 @@ describe('connection.ts', () => {
         url: TEST_URL,
         token: TEST_TOKEN,
         handleOnDataChannelMessage: HANDLE_NO_OP,
-        tearDownManager: TEAR_DOWN_MANAGER_NO_OP
-
+        tearDownManager: TEAR_DOWN_MANAGER_NO_OP,
       })
       const peerConenction = new RTCPeerConnection()
       const dataChannel = peerConenction.createDataChannel('my channel')
@@ -164,8 +159,7 @@ describe('connection.ts', () => {
         url: TEST_URL,
         token: TEST_TOKEN,
         handleOnDataChannelMessage: HANDLE_NO_OP,
-        tearDownManager: TEAR_DOWN_MANAGER_NO_OP
-
+        tearDownManager: TEAR_DOWN_MANAGER_NO_OP,
       })
       connection.setPong(42)
       expect(connection.pingPongSpan.pong).toBe(42)
@@ -177,7 +171,7 @@ describe('connection.ts', () => {
         url: TEST_URL,
         token: TEST_TOKEN,
         handleOnDataChannelMessage: HANDLE_NO_OP,
-        tearDownManager: TEAR_DOWN_MANAGER_NO_OP
+        tearDownManager: TEAR_DOWN_MANAGER_NO_OP,
       })
       connection.setPing(10)
       expect(connection.pingPongSpan.ping).toBe(10)
