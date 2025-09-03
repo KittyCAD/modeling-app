@@ -3,7 +3,8 @@
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::notification::Notification;
 
-use crate::{parsing::ast::types::Node, settings::types::UnitLength};
+use crate::parsing::ast::types::Node;
+use kittycad_modeling_cmds::units::UnitLength;
 
 /// A notification that the AST has changed.
 #[derive(Debug)]
