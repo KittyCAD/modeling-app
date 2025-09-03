@@ -578,35 +578,6 @@ class UnitLength(Enum):
     Yards <https://en.wikipedia.org/wiki/Yard>
     """
 
-class UnitLength(Enum):
-    r"""
-    The valid types of length units.
-    """
-    Cm = ...
-    r"""
-    Centimeters <https://en.wikipedia.org/wiki/Centimeter>
-    """
-    Ft = ...
-    r"""
-    Feet <https://en.wikipedia.org/wiki/Foot_(unit)>
-    """
-    In = ...
-    r"""
-    Inches <https://en.wikipedia.org/wiki/Inch>
-    """
-    M = ...
-    r"""
-    Meters <https://en.wikipedia.org/wiki/Meter>
-    """
-    Mm = ...
-    r"""
-    Millimeters <https://en.wikipedia.org/wiki/Millimeter>
-    """
-    Yd = ...
-    r"""
-    Yards <https://en.wikipedia.org/wiki/Yard>
-    """
-
 class UnitMass(Enum):
     r"""
     The valid types of mass units.
