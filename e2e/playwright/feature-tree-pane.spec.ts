@@ -460,10 +460,10 @@ pattern001 = patternCircular3d(
       const possibleNames = [
         'Pattern',
         'Circular Pattern',
-        'Pattern Circular 3D', 
-        'patternCircular3d'
+        'Pattern Circular 3D',
+        'patternCircular3d',
       ]
-      
+
       let patternOperation = null
       for (const name of possibleNames) {
         try {
@@ -476,11 +476,11 @@ pattern001 = patternCircular3d(
           // Continue to next name if this one doesn't exist
         }
       }
-      
+
       if (!patternOperation) {
         throw new Error('Could not find pattern operation to click')
       }
-      
+
       await patternOperation.dblclick()
 
       // Should open the command bar in edit mode
@@ -502,7 +502,9 @@ pattern001 = patternCircular3d(
       await test.step('Edit center parameter', async () => {
         // Feature tree editing starts on the center parameter step
         // Update center from [0, 0, 0] to [5, 0, 0]
-        await cmdBar.currentArgumentInput.locator('.cm-content').fill('[5, 0, 0]')
+        await cmdBar.currentArgumentInput
+          .locator('.cm-content')
+          .fill('[5, 0, 0]')
         await cmdBar.progressCmdBar()
       })
 
@@ -599,10 +601,10 @@ pattern001 = patternCircular3d(
       const possibleNames = [
         'Pattern',
         'Circular Pattern',
-        'Pattern Circular 3D', 
-        'patternCircular3d'
+        'Pattern Circular 3D',
+        'patternCircular3d',
       ]
-      
+
       let patternOperation = null
       for (const name of possibleNames) {
         try {
@@ -615,11 +617,11 @@ pattern001 = patternCircular3d(
           // Continue to next name if this one doesn't exist
         }
       }
-      
+
       if (!patternOperation) {
         throw new Error('Could not find pattern operation to click')
       }
-      
+
       await patternOperation.dblclick()
 
       // Feature tree editing shows different header format for optional parameters
