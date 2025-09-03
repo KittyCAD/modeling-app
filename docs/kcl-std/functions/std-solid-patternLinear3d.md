@@ -55,7 +55,7 @@ example = extrude(exampleSketch, length = 1)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the patternLinear3d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternLinear3d0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -85,7 +85,7 @@ example = extrude(exampleSketch, length = 1)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the patternLinear3d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternLinear3d1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -129,7 +129,7 @@ patternLinear3d(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the patternLinear3d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternLinear3d2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -169,7 +169,7 @@ patternLinear3d(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the patternLinear3d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternLinear3d3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
