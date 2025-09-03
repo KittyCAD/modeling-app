@@ -24,9 +24,7 @@ export const KclCodeExamples = (props: { content: string }) => {
       }
     >
       <ThoughtContent>
-        <div>
-          <pre>{props.content}</pre>
-        </div>
+        <pre className="overflow-x-auto">{props.content}</pre>
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -53,9 +51,7 @@ export const GeneratedKclCode = (props: {
     >
       {props.code && (
         <ThoughtContent>
-          <div>
-            <pre>{props.code}</pre>
-          </div>
+          <pre className="overflow-x-auto">{props.code}</pre>
         </ThoughtContent>
       )}
     </ThoughtContainer>
@@ -74,7 +70,7 @@ export const ErroneousThing = (props: { content: string }) => {
       }
     >
       <ThoughtContent>
-        return <div>{props.content}</div>
+        <pre className="overflow-x-auto">{props.content}</pre>
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -206,7 +202,7 @@ export const ThoughtContent = (props: { children?: ReactNode }) => {
 
   return (
     props.children && (
-      <div className="pt-4 pb-4 border-l pl-5 ml-3 b-3 ">
+      <div className="pt-4 pb-4 border-l pl-5 ml-3 b-3">
         <div
           className="overflow-hidden"
           style={{

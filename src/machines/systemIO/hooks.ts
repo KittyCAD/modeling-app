@@ -57,7 +57,6 @@ export const useProjectIdToConversationId = (
     mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.ClearProjectSpecificState,
     })
-    debugger
 
     const subscription = mlEphantManagerActor.subscribe((next) => {
       if (settings2.meta.id.current === undefined) {
