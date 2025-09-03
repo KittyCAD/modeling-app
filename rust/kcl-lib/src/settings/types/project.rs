@@ -329,7 +329,7 @@ color = 1567.4"#;
                     ]),
                 },
                 modeling: ProjectModelingSettings {
-                    base_unit: UnitLength::Yd,
+                    base_unit: UnitLength::Yards,
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
                 },

@@ -599,7 +599,7 @@ text_wrapping = true"#;
                 },
                 modeling: ModelingSettings {
                     enable_ssao: false.into(),
-                    base_unit: UnitLength::In,
+                    base_unit: UnitLength::Inches,
                     mouse_controls: MouseControlType::Zoo,
                     camera_projection: CameraProjectionType::Perspective,
                     ..Default::default()
