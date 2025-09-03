@@ -4101,6 +4101,9 @@ function getGridScaleFactor(options: {
   if (!options.fixedSizeGrid) {
     // In non-fixed size mode, adjust major spacing based on current zoom level
     let majorPx = effectiveMajorSpacing * options.pixelsPerBaseUnit
+    if (majorPx <= 0) {
+      return 1 // just in case to avoid division by zero or negative grid spacing
+    }
 
     const minPx = 40
     const maxPx = minPx * 10
