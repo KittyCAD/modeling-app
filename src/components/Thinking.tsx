@@ -142,7 +142,7 @@ export const ThoughtHeader = (props: {
   children?: ReactNode
 }) => {
   return (
-    <div className="flex flex-row gap-2 text-chalkboard-70 font-bold items-center">
+    <div className="flex flex-row gap-2 text-2 font-bold items-center">
       <div className="flex justify-center items-center">{props.icon}</div>
       <div className="w-full">{props.children}</div>
     </div>
@@ -169,7 +169,7 @@ export const ThoughtContent = (props: { children?: ReactNode }) => {
 
   return (
     props.children && (
-      <div className="pt-4 pb-4 border-l pl-5 ml-3 border-chalkboard-50 ">
+      <div className="pt-4 pb-4 border-l pl-5 ml-3 b-3 ">
         <div
           className="overflow-hidden"
           style={{
@@ -196,9 +196,9 @@ export const ThoughtExpand = (props: {
   return (
     <div className="flex flex-row items-center">
       <div className="flex flex-row items-center w-full pt-4">
-        <div className="mr-2 w-full border-b border-chalkboard-40 border-dashed"></div>
+        <div className="mr-2 w-full border-b b-3 border-dashed"></div>
         <div
-          className="mr-1 flex flex-row items-center cursor-pointer text-chalkboard-90"
+          className="mr-1 flex flex-row items-center cursor-pointer text-2"
           role="feed"
           onClick={() => props.onClick()}
         >
@@ -369,7 +369,7 @@ export const Thinking = (props: {
   const ViewFull = (
     <div
       ref={refViewFull}
-      className="text-chalkboard-100 rounded-md bg-chalkboard-20 pl-2 pr-2 pt-4 pb-6 border border-chalkboard-30 shadow-md"
+      className="text-2 bg-2 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
     >
       {componentThoughts.length > 0 ? (
         componentThoughts
