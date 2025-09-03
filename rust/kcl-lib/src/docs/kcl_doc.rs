@@ -733,7 +733,7 @@ impl ArgData {
         let mut result = ArgData {
             snippet_array: Default::default(),
             name: arg.identifier.name.clone(),
-            ty: arg.type_.as_ref().map(|t| t.to_string()),
+            ty: arg.param_type.as_ref().map(|t| t.to_string()),
             docs: None,
             override_in_snippet: None,
             kind: if arg.labeled {

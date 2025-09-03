@@ -3330,8 +3330,8 @@ pub struct Parameter {
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
     /// This is optional if the user defines a type.
-    #[serde(skip)]
-    pub type_: Option<Node<Type>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub param_type: Option<Node<Type>>,
     /// Is the parameter optional?
     /// If so, what is its default value?
     /// If this is None, then the parameter is required.
@@ -3887,15 +3887,15 @@ cylinder = startSketchOn(-XZ)
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
         assert_eq!(
-            params[0].type_.as_ref().unwrap().inner,
+            params[0].param_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::Number(NumericSuffix::Mm))
         );
         assert_eq!(
-            params[1].type_.as_ref().unwrap().inner,
+            params[1].param_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::String)
         );
         assert_eq!(
-            params[2].type_.as_ref().unwrap().inner,
+            params[2].param_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::String)
         );
     }
@@ -3918,21 +3918,21 @@ cylinder = startSketchOn(-XZ)
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
         assert_eq!(
-            params[0].type_.as_ref().unwrap().inner,
+            params[0].param_type.as_ref().unwrap().inner,
             Type::Array {
                 ty: Box::new(Type::Primitive(PrimitiveType::Number(NumericSuffix::None))),
                 len: ArrayLen::None
             }
         );
         assert_eq!(
-            params[1].type_.as_ref().unwrap().inner,
+            params[1].param_type.as_ref().unwrap().inner,
             Type::Array {
                 ty: Box::new(Type::Primitive(PrimitiveType::String)),
                 len: ArrayLen::None
             }
         );
         assert_eq!(
-            params[2].type_.as_ref().unwrap().inner,
+            params[2].param_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::String)
         );
     }
@@ -3956,14 +3956,14 @@ cylinder = startSketchOn(-XZ)
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
         assert_eq!(
-            params[0].type_.as_ref().unwrap().inner,
+            params[0].param_type.as_ref().unwrap().inner,
             Type::Array {
                 ty: Box::new(Type::Primitive(PrimitiveType::Number(NumericSuffix::None))),
                 len: ArrayLen::None
             }
         );
         assert_eq!(
-            params[1].type_.as_ref().unwrap().inner,
+            params[1].param_type.as_ref().unwrap().inner,
             Type::Object {
                 properties: vec![
                     (
@@ -4019,7 +4019,7 @@ cylinder = startSketchOn(-XZ)
             }
         );
         assert_eq!(
-            params[2].type_.as_ref().unwrap().inner,
+            params[2].param_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::String)
         );
     }
@@ -4046,7 +4046,7 @@ cylinder = startSketchOn(-XZ)
                             name: "foo".to_owned(),
                             digest: None,
                         }),
-                        type_: None,
+                        param_type: None,
                         default_value: None,
                         labeled: true,
                         digest: None,
@@ -4065,7 +4065,7 @@ cylinder = startSketchOn(-XZ)
                             name: "foo".to_owned(),
                             digest: None,
                         }),
-                        type_: None,
+                        param_type: None,
                         default_value: Some(DefaultParamVal::none()),
                         labeled: true,
                         digest: None,
@@ -4085,7 +4085,7 @@ cylinder = startSketchOn(-XZ)
                                 name: "foo".to_owned(),
                                 digest: None,
                             }),
-                            type_: None,
+                            param_type: None,
                             default_value: None,
                             labeled: true,
                             digest: None,
@@ -4095,7 +4095,7 @@ cylinder = startSketchOn(-XZ)
                                 name: "bar".to_owned(),
                                 digest: None,
                             }),
-                            type_: None,
+                            param_type: None,
                             default_value: Some(DefaultParamVal::none()),
                             labeled: true,
                             digest: None,
