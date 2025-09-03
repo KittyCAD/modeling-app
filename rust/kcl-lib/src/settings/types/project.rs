@@ -7,8 +7,9 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
-    AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, UnitLength, is_default,
+    AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, is_default,
 };
+use kittycad_modeling_cmds::units::UnitLength;
 
 /// Project specific settings for the app.
 /// These live in `project.toml` in the base of the project directory.
