@@ -107,7 +107,7 @@ This setting has the following nested options:
 The default unit to use in modeling dimensions.
 
 
-**Default:** None
+**Default:** `mm`
 
 ##### camera_projection
 

@@ -1,19 +1,19 @@
 [workspace]
 resolver = "2"
 members = [
-    "kcl-api",
-    "kcl-bumper",
-    "kcl-derive-docs",
-    "kcl-directory-test-macro",
-    "kcl-error",
-    "kcl-language-server",
-    "kcl-language-server-release",
-    "kcl-lib",
-    "kcl-python-bindings",
-    "kcl-test-server",
-    "kcl-to-core",
-    "kcl-wasm-lib",
-    "ezpz",
+  "ezpz",
+  "kcl-api",
+  "kcl-bumper",
+  "kcl-derive-docs",
+  "kcl-directory-test-macro",
+  "kcl-error",
+  "kcl-language-server",
+  "kcl-language-server-release",
+  "kcl-lib",
+  "kcl-python-bindings",
+  "kcl-test-server",
+  "kcl-to-core",
+  "kcl-wasm-lib",
 ]
 
 [workspace.dependencies]
@@ -29,14 +29,15 @@ kittycad = { version = "0.3.37", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.131", features = [
+kittycad-modeling-cmds = { version = "0.2.133", features = [
   "ts-rs",
   "websocket",
 ] }
 lazy_static = "1.5.0"
 miette = "7.6.0"
 pyo3 = { version = "0.25.1" }
-pyo3-stub-gen = "0.12.2"
+# Build with Python >= 3.10 (set PYO3_PYTHON accordingly)
+pyo3-stub-gen = "0.13.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 slog = "2.7.0"
