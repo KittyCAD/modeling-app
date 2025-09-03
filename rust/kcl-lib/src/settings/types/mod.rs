@@ -318,6 +318,7 @@ impl Default for ModelingSettings {
             camera_orbit: Default::default(),
             mouse_controls: Default::default(),
             enable_touch_controls: Default::default(),
+            enable_copilot: Default::default(),
             use_new_sketch_mode: Default::default(),
             highlight_edges: Default::default(),
             enable_ssao: Default::default(),
