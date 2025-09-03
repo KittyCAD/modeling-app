@@ -228,6 +228,16 @@ export type ModelingCommandSchema = {
     objects: Selections
     variableName: string
   }
+  'Pattern Circular 3D': {
+    nodeToEdit?: PathToNode
+    solids: Selections
+    instances: KclCommandValue
+    axis: KclCommandValue | string
+    center: KclCommandValue
+    arcDegrees?: KclCommandValue
+    rotateDuplicates?: boolean
+    useOriginal?: boolean
+  }
   'Boolean Subtract': {
     solids: Selections
     tools: Selections
@@ -1223,6 +1233,66 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
 
           return true
         },
+      },
+    },
+  },
+  'Pattern Circular 3D': {
+    description: 'Create a circular pattern of 3D solids around an axis.',
+    icon: 'patternCircular3d',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      solids: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      instances: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '5',
+      },
+      axis: {
+        inputType: 'options',
+        required: true,
+        defaultValue: '[0, 0, 1]',
+        options: [
+          { name: 'X-axis', value: '[1, 0, 0]' },
+          { name: 'Y-axis', value: '[0, 1, 0]' },
+          { name: 'Z-axis', value: '[0, 0, 1]' },
+        ],
+      },
+      center: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '[0, 0, 0]',
+      },
+      arcDegrees: {
+        inputType: 'kcl',
+        required: false,
+        defaultValue: '360',
+      },
+      rotateDuplicates: {
+        inputType: 'options',
+        required: false,
+        defaultValue: true,
+        options: [
+          { name: 'True', value: true },
+          { name: 'False', value: false },
+        ],
+      },
+      useOriginal: {
+        inputType: 'options',
+        required: false,
+        defaultValue: false,
+        options: [
+          { name: 'False', value: false },
+          { name: 'True', value: true },
+        ],
       },
     },
   },
