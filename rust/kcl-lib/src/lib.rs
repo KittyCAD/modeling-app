@@ -102,7 +102,7 @@ pub use lsp::{
 pub use modules::ModuleId;
 pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
 pub use project::ProjectManager;
-pub use settings::types::{Configuration, project::ProjectConfiguration};
+pub use settings::types::{Configuration, UnitLength, project::ProjectConfiguration};
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::{recast_dir, walk_dir};
 
