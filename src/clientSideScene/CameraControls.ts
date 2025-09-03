@@ -71,19 +71,19 @@ interface ThreeCamValues {
 
 export type ReactCameraProperties =
   | {
-      type: 'perspective'
-      fov?: number
-      position: [number, number, number]
-      target: [number, number, number]
-      quaternion: [number, number, number, number]
-    }
+    type: 'perspective'
+    fov?: number
+    position: [number, number, number]
+    target: [number, number, number]
+    quaternion: [number, number, number, number]
+  }
   | {
-      type: 'orthographic'
-      zoom?: number
-      position: [number, number, number]
-      target: [number, number, number]
-      quaternion: [number, number, number, number]
-    }
+    type: 'orthographic'
+    zoom?: number
+    position: [number, number, number]
+    target: [number, number, number]
+    quaternion: [number, number, number, number]
+  }
 
 const lastCmdDelay = 50
 
@@ -318,11 +318,11 @@ export class CameraControls {
     type CallBackParam = Parameters<
       (
         | Subscription<
-            | 'default_camera_zoom'
-            | 'camera_drag_end'
-            | 'default_camera_get_settings'
-            | 'zoom_to_fit'
-          >
+          | 'default_camera_zoom'
+          | 'camera_drag_end'
+          | 'default_camera_get_settings'
+          | 'zoom_to_fit'
+        >
         | UnreliableSubscription<'camera_drag_move'>
       )['callback']
     >[0]
@@ -416,7 +416,7 @@ export class CameraControls {
   }
 
   private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
-    () => {}
+    () => { }
   setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
     this._isCamMovingCallback = cb
   }
@@ -535,14 +535,15 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
-        console.error('TODO: this.engineStreamActor')
-        const videoRef = this.engineStreamActor?.getSnapshot().context.videoRef
+        // You can use raw JS to fetch the element from the DOM. We do not need to proxy a ref of a ref element on the DOM element
+        // There will be only one of these in the page. 
+        const videoElement = <HTMLVideoElement>document.getElementById('video-stream')
         // Nonsense to do anything until the video stream is established.
-        if (!videoRef?.current) return
+        if (!videoElement) return
 
         const { x, y } = getNormalisedCoordinates(
           event,
-          videoRef.current,
+          videoElement,
           this.engineCommandManager.streamDimensions
         )
         this.throttledEngCmd({
@@ -675,7 +676,7 @@ export class CameraControls {
     this.camera = new PerspectiveCamera(
       this.lastPerspectiveFov,
       this.engineCommandManager.streamDimensions.width /
-        this.engineCommandManager.streamDimensions.height,
+      this.engineCommandManager.streamDimensions.height,
       z_near,
       z_far
     )
@@ -952,7 +953,7 @@ export class CameraControls {
       // zPosition should stay the same
       const xyRadius = Math.sqrt(
         (this.target.x - this.camera.position.x) ** 2 +
-          (this.target.y - this.camera.position.y) ** 2
+        (this.target.y - this.camera.position.y) ** 2
       )
       const xyAngle = Math.atan2(
         this.camera.position.y - this.target.y,
@@ -1227,27 +1228,27 @@ export class CameraControls {
       // and its response. Typically round-trip time is < 30ms. It seems safe
       // then to wait 1 magnitude of time before calling this request toasted.
       const timeoutId = setTimeout(reject, 300)
-      ;(async () => {
-        const cameraViewStateResponse =
-          await this.engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'default_camera_get_view' },
-          })
-        if (!cameraViewStateResponse) return
-        if (
-          'resp' in cameraViewStateResponse &&
-          'modeling_response' in cameraViewStateResponse.resp.data &&
-          'data' in cameraViewStateResponse.resp.data.modeling_response &&
-          'view' in cameraViewStateResponse.resp.data.modeling_response.data
-        ) {
-          this.oldCameraState =
-            cameraViewStateResponse.resp.data.modeling_response.data.view
-        }
+        ; (async () => {
+          const cameraViewStateResponse =
+            await this.engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'default_camera_get_view' },
+            })
+          if (!cameraViewStateResponse) return
+          if (
+            'resp' in cameraViewStateResponse &&
+            'modeling_response' in cameraViewStateResponse.resp.data &&
+            'data' in cameraViewStateResponse.resp.data.modeling_response &&
+            'view' in cameraViewStateResponse.resp.data.modeling_response.data
+          ) {
+            this.oldCameraState =
+              cameraViewStateResponse.resp.data.modeling_response.data.view
+          }
 
-        clearTimeout(timeoutId)
-        resolve()
-      })().catch(reject)
+          clearTimeout(timeoutId)
+          resolve()
+        })().catch(reject)
     })
   }
 
@@ -1475,7 +1476,7 @@ export class CameraControls {
       ],
     }
   }
-  reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => {}
+  reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => { }
   setReactCameraPropertiesCallback = (
     cb: (a: ReactCameraProperties) => void
   ) => {
@@ -1515,12 +1516,12 @@ export class CameraControls {
       'pointerType' in event && event.pointerType === 'touch'
         ? 'rotate'
         : _getInteractionType(
-            this.interactionGuards,
-            event,
-            this.enablePan,
-            this.enableRotate,
-            this.enableZoom
-          )
+          this.interactionGuards,
+          event,
+          this.enablePan,
+          this.enableRotate,
+          this.enableZoom
+        )
     if (
       initialInteractionType === 'rotate' &&
       this.getSettings?.().modeling.cameraOrbit.current === 'trackball'
