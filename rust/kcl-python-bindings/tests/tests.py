@@ -218,7 +218,7 @@ async def test_import_and_snapshots():
         kcl.SnapshotOptions(camera=None, padding=0),
     ]
     # Read from a file.
-    step_options = kcl.step_import.Options()
+    step_options = kcl.StepImportOptions()
     input_format = kcl.InputFormat3d.Step(step_options)
     print(cube_step_file)
     images = await kcl.import_and_snapshot_views(
@@ -234,7 +234,7 @@ async def test_import_and_snapshots():
 @pytest.mark.asyncio
 async def test_import_and_snapshots_single():
     # Read from a file.
-    step_options = kcl.step_import.Options()
+    step_options = kcl.StepImportOptions()
     input_format = kcl.InputFormat3d.Step(step_options)
     print(cube_step_file)
     image_bytes = await kcl.import_and_snapshot(
