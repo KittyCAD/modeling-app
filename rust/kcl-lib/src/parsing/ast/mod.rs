@@ -37,6 +37,7 @@ impl Expr {
             Expr::IfExpression(expr) => expr.module_id,
             Expr::LabelledExpression(expr) => expr.expr.module_id(),
             Expr::AscribedExpression(expr) => expr.expr.module_id(),
+            Expr::SketchBlock(expr) => expr.module_id,
             Expr::None(none) => none.module_id,
         }
     }
