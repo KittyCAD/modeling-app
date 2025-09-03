@@ -83,6 +83,13 @@ void main()
 	fragColor = vLineType > 0.5 ? uMajorColor : uMinorColor;
 }`
 
+/**
+ * Renders an infinite grid by rendering LINES with a custom shader that doesn't use geometry.
+ * This avoids recreating / uploading geometry buffers on each frame, or having a complicated pool/reuse logic of geometries,
+ * it's simpler to just calculate the line positions by vertexId.
+ * "ndc" here means native device coordinates, the range [-1, 1] which is easier to work with when covering
+ * the visible screen.
+ */
 export class InfiniteGridRenderer extends LineSegments<
   BufferGeometry,
   RawShaderMaterial
@@ -198,9 +205,6 @@ export class InfiniteGridRenderer extends LineSegments<
       effectiveMajorSpacing * baseUnitToNDC[0],
       effectiveMajorSpacing * baseUnitToNDC[1],
     ]
-
-    const ndc = new Vector3(-1, -1, 0)
-    ndc.unproject(camera)
 
     const originNDC = new Vector3(0, 0, 0)
     originNDC.project(camera)
