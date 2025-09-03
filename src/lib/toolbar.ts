@@ -504,7 +504,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         id: 'pattern',
         array: [
           {
-            id: 'pattern3d',
+            id: 'pattern-circular-3d',
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
