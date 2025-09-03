@@ -456,7 +456,10 @@ pattern001 = patternCircular3d(
       // Open the feature tree pane and find the pattern operation
       await toolbar.openPane('feature-tree')
 
-      const patternOperation = await toolbar.getFeatureTreeOperation('Circular Pattern', 0)
+      const patternOperation = await toolbar.getFeatureTreeOperation(
+        'Circular Pattern',
+        0
+      )
       await patternOperation.dblclick()
 
       // Should open the command bar in edit mode
@@ -574,7 +577,10 @@ pattern001 = patternCircular3d(
     await test.step('Find and click on pattern operation to edit it', async () => {
       await toolbar.openPane('feature-tree')
 
-      const patternOperation = await toolbar.getFeatureTreeOperation('Circular Pattern', 0)
+      const patternOperation = await toolbar.getFeatureTreeOperation(
+        'Circular Pattern',
+        0
+      )
       await patternOperation.dblclick()
 
       // Feature tree editing shows different header format for optional parameters
