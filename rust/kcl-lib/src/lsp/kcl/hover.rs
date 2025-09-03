@@ -333,7 +333,7 @@ impl FunctionExpression {
             return Some(h);
         }
         for arg in &self.params {
-            if let Some(ty) = &arg.type_
+            if let Some(ty) = &arg.param_type
                 && let Some(h) = ty.get_hover_value_for_position(pos, code, opts)
             {
                 return Some(h);
@@ -342,7 +342,7 @@ impl FunctionExpression {
         if let Some(value) = self.body.get_expr_for_position(pos) {
             let mut vars = opts.vars.clone().unwrap_or_default();
             for arg in &self.params {
-                let ty = arg.type_.as_ref().map(|ty| ty.to_string());
+                let ty = arg.param_type.as_ref().map(|ty| ty.to_string());
                 vars.insert(arg.identifier.inner.name.clone(), ty);
             }
             return value.get_hover_value_for_position(

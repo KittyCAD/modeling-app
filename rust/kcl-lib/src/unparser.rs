@@ -946,7 +946,7 @@ impl Parameter {
         if self.default_value.is_some() {
             buf.push('?');
         };
-        if let Some(ty) = &self.type_ {
+        if let Some(ty) = &self.param_type {
             buf.push_str(": ");
             write!(buf, "{ty}").no_fail();
         }

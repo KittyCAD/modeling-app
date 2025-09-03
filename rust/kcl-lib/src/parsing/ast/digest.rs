@@ -245,7 +245,7 @@ impl FunctionType {
 impl Parameter {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.identifier.compute_digest());
-        match &mut slf.type_ {
+        match &mut slf.param_type {
             Some(arg) => {
                 hasher.update(b"Parameter::type_::Some");
                 hasher.update(arg.compute_digest())

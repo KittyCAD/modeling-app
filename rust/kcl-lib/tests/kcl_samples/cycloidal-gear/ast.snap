@@ -1919,6 +1919,15 @@ description: Result of parsing cycloidal-gear.kcl
                   "name": "helixAngle",
                   "start": 0,
                   "type": "Identifier"
+                },
+                "param_type": {
+                  "Deg": null,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "p_type": "Number",
+                  "start": 0,
+                  "type": "Primitive"
                 }
               }
             ],
