@@ -7,8 +7,9 @@ mod generate_settings_docs;
 
 #[cfg(test)]
 mod tests {
-    use super::types::{Configuration, ModelingSettings};
     use kittycad_modeling_cmds::units::UnitLength;
+
+    use super::types::{Configuration, ModelingSettings};
 
     #[test]
     fn default_unit_length_is_millimeters() {
@@ -26,7 +27,7 @@ base_unit = "mm"
 
         let parsed = toml::from_str::<Configuration>(with_mm).unwrap();
         assert_eq!(parsed.settings.modeling.base_unit, UnitLength::Millimeters);
-        
+
         // Serializing defaults should omit modeling/base_unit entirely.
         let serialized = toml::to_string(&parsed).unwrap();
         assert_eq!(serialized, "");
