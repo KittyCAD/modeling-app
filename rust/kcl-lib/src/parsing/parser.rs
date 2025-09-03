@@ -3595,18 +3595,16 @@ mod tests {
     fn parse_sketch_block_no_args() {
         let tokens = crate::parsing::token::lex("sketch() {}", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        in_ctx(|| {
-            matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
-        });
+        let actual = in_ctx(|| fn_call_or_sketch_block.parse(tokens)).unwrap();
+        assert!(matches!(actual, Expr::SketchBlock { .. }));
     }
 
     #[test]
     fn parse_sketch_block_kw_args() {
         let tokens = crate::parsing::token::lex("sketch(on = XY) {}", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
-        in_ctx(|| {
-            matches!(fn_call_or_sketch_block.parse(tokens).unwrap(), Expr::SketchBlock { .. });
-        });
+        let actual = in_ctx(|| fn_call_or_sketch_block.parse(tokens)).unwrap();
+        assert!(matches!(actual, Expr::SketchBlock { .. }));
     }
 
     #[test]
