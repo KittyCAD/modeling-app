@@ -47,7 +47,7 @@ assert(count(newArr), isEqualTo = 6, tolerance = 0.00001)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the concat function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-array-concat0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -71,7 +71,7 @@ assert(count(newArr), isEqualTo = 3, tolerance = 0.00001)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the concat function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-array-concat1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

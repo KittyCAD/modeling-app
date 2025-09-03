@@ -20,7 +20,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, Geometries, Geometry, KclObjectFields, KclValue, Sketch, Solid,
-        fn_call::{Arg, Args, KwArgs},
+        fn_call::{Arg, Args},
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType},
     },
@@ -203,16 +203,12 @@ async fn make_transform<T: GeometryTrait>(
         ty: NumericType::count(),
         meta: vec![source_range.into()],
     };
-    let kw_args = KwArgs {
-        unlabeled: Some((None, Arg::new(repetition_num, source_range))),
-        labeled: Default::default(),
-        errors: Vec::new(),
-    };
-    let transform_fn_args = Args::new_kw(
-        kw_args,
+    let transform_fn_args = Args::new(
+        Default::default(),
+        vec![(None, Arg::new(repetition_num, source_range))],
         source_range,
+        exec_state,
         ctxt.clone(),
-        exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
     );
     let transform_fn_return = transform
         .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
