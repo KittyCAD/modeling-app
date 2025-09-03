@@ -3,7 +3,7 @@
 pub mod project;
 
 use anyhow::Result;
-pub use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};

@@ -948,35 +948,34 @@ impl TryFrom<NumericSuffix> for UnitLen {
     }
 }
 
-impl From<crate::UnitLength> for UnitLen {
-    fn from(unit: crate::UnitLength) -> Self {
+impl From<kittycad_modeling_cmds::units::UnitLength> for UnitLen {
+    fn from(unit: kittycad_modeling_cmds::units::UnitLength) -> Self {
         match unit {
-            crate::UnitLength::Centimeters => UnitLen::Cm,
-            crate::UnitLength::Feet => UnitLen::Feet,
-            crate::UnitLength::Inches => UnitLen::Inches,
-            crate::UnitLength::Meters => UnitLen::M,
-            crate::UnitLength::Millimeters => UnitLen::Mm,
-            crate::UnitLength::Yards => UnitLen::Yards,
+            kittycad_modeling_cmds::units::UnitLength::Centimeters => UnitLen::Cm,
+            kittycad_modeling_cmds::units::UnitLength::Feet => UnitLen::Feet,
+            kittycad_modeling_cmds::units::UnitLength::Inches => UnitLen::Inches,
+            kittycad_modeling_cmds::units::UnitLength::Meters => UnitLen::M,
+            kittycad_modeling_cmds::units::UnitLength::Millimeters => UnitLen::Mm,
+            kittycad_modeling_cmds::units::UnitLength::Yards => UnitLen::Yards,
         }
     }
 }
 
-impl From<UnitLen> for crate::UnitLength {
+impl From<UnitLen> for kittycad_modeling_cmds::units::UnitLength {
     fn from(unit: UnitLen) -> Self {
         match unit {
-            UnitLen::Cm => crate::UnitLength::Centimeters,
-            UnitLen::Feet => crate::UnitLength::Feet,
-            UnitLen::Inches => crate::UnitLength::Inches,
-            UnitLen::M => crate::UnitLength::Meters,
-            UnitLen::Mm => crate::UnitLength::Millimeters,
-            UnitLen::Yards => crate::UnitLength::Yards,
+            UnitLen::Cm => kittycad_modeling_cmds::units::UnitLength::Centimeters,
+            UnitLen::Feet => kittycad_modeling_cmds::units::UnitLength::Feet,
+            UnitLen::Inches => kittycad_modeling_cmds::units::UnitLength::Inches,
+            UnitLen::M => kittycad_modeling_cmds::units::UnitLength::Meters,
+            UnitLen::Mm => kittycad_modeling_cmds::units::UnitLength::Millimeters,
+            UnitLen::Yards => kittycad_modeling_cmds::units::UnitLength::Yards,
             UnitLen::Unknown => unreachable!(),
         }
     }
 }
 
-// Note: crate::UnitLength is re-exported from kittycad_modeling_cmds::units::UnitLength
-// so the above impl covers conversion to the external type as well.
+// Conversions are defined directly against kittycad_modeling_cmds::units::UnitLength.
 
 /// A unit of angle.
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
