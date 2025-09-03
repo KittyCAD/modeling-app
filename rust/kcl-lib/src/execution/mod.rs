@@ -606,7 +606,7 @@ impl ExecutorContext {
                     .ok()
                     .flatten()
                     .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
+                    .map(crate::UnitLength::from),
             )
         } else {
             GridScaleBehavior::ScaleWithZoom
@@ -1106,7 +1106,7 @@ impl ExecutorContext {
                     .ok()
                     .flatten()
                     .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
+                    .map(crate::UnitLength::from),
             )
         } else {
             GridScaleBehavior::ScaleWithZoom

@@ -36,6 +36,7 @@ kittycad-modeling-cmds = { version = "0.2.133", features = [
 lazy_static = "1.5.0"
 miette = "7.6.0"
 pyo3 = { version = "0.25.1" }
+# Build with Python >= 3.10 (set PYO3_PYTHON accordingly)
 pyo3-stub-gen = "0.13.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
