@@ -271,12 +271,12 @@ impl From<AppTheme> for kittycad::types::Color {
 }
 
 /// Settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default = "default_length_unit_millimeters", skip_serializing_if = "is_default")]
     pub base_unit: UnitLength,
     /// The projection mode the camera should use while modeling.
     #[serde(default, skip_serializing_if = "is_default")]
@@ -302,6 +302,26 @@ pub struct ModelingSettings {
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
+}
+
+fn default_length_unit_millimeters() -> UnitLength {
+    UnitLength::Millimeters
+}
+
+impl Default for ModelingSettings {
+    fn default() -> Self {
+        Self {
+            base_unit: UnitLength::Millimeters,
+            camera_projection: Default::default(),
+            camera_orbit: Default::default(),
+            mouse_controls: Default::default(),
+            enable_touch_controls: Default::default(),
+            use_new_sketch_mode: Default::default(),
+            highlight_edges: Default::default(),
+            enable_ssao: Default::default(),
+            show_scale_grid: Default::default(),
+        }
+    }
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
