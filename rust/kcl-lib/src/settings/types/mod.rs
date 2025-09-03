@@ -3,6 +3,7 @@
 pub mod project;
 
 use anyhow::Result;
+use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -252,12 +253,12 @@ impl From<AppTheme> for kittycad::types::Color {
 }
 
 /// Settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default = "default_length_unit_millimeters", skip_serializing_if = "is_default")]
     pub base_unit: UnitLength,
     /// The projection mode the camera should use while modeling.
     #[serde(default, skip_serializing_if = "is_default")]
@@ -302,6 +303,31 @@ pub struct ModelingSettings {
     pub snaps_per_minor: f64,
 }
 
+fn default_length_unit_millimeters() -> UnitLength {
+    UnitLength::Millimeters
+}
+
+impl Default for ModelingSettings {
+    fn default() -> Self {
+        Self {
+            base_unit: UnitLength::Millimeters,
+            camera_projection: Default::default(),
+            camera_orbit: Default::default(),
+            mouse_controls: Default::default(),
+            enable_touch_controls: Default::default(),
+            use_new_sketch_mode: Default::default(),
+            highlight_edges: Default::default(),
+            enable_ssao: Default::default(),
+            show_scale_grid: Default::default(),
+            fixed_size_grid: Default::default(),
+            snap_to_grid: Default::default(),
+            major_grid_spacing: Default::default(),
+            minor_grids_per_major: Default::default(),
+            snaps_per_minor: Default::default(),
+        }
+    }
+}
+
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
 #[ts(export)]
 #[serde(transparent)]
@@ -322,86 +348,6 @@ impl From<DefaultTrue> for bool {
 impl From<bool> for DefaultTrue {
     fn from(b: bool) -> Self {
         Self(b)
-    }
-}
-
-/// The valid types of length units.
-#[derive(
-    Debug, Default, Eq, PartialEq, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr,
-)]
-#[cfg_attr(
-    feature = "pyo3",
-    pyo3::pyclass(eq, eq_int),
-    pyo3_stub_gen::derive::gen_stub_pyclass_enum
-)]
-#[ts(export)]
-#[serde(rename_all = "lowercase")]
-#[display(style = "lowercase")]
-pub enum UnitLength {
-    /// Centimeters <https://en.wikipedia.org/wiki/Centimeter>
-    Cm,
-    /// Feet <https://en.wikipedia.org/wiki/Foot_(unit)>
-    Ft,
-    /// Inches <https://en.wikipedia.org/wiki/Inch>
-    In,
-    /// Meters <https://en.wikipedia.org/wiki/Meter>
-    M,
-    /// Millimeters <https://en.wikipedia.org/wiki/Millimeter>
-    #[default]
-    Mm,
-    /// Yards <https://en.wikipedia.org/wiki/Yard>
-    Yd,
-}
-
-impl From<kittycad::types::UnitLength> for UnitLength {
-    fn from(unit: kittycad::types::UnitLength) -> Self {
-        match unit {
-            kittycad::types::UnitLength::Cm => UnitLength::Cm,
-            kittycad::types::UnitLength::Ft => UnitLength::Ft,
-            kittycad::types::UnitLength::In => UnitLength::In,
-            kittycad::types::UnitLength::M => UnitLength::M,
-            kittycad::types::UnitLength::Mm => UnitLength::Mm,
-            kittycad::types::UnitLength::Yd => UnitLength::Yd,
-        }
-    }
-}
-
-impl From<UnitLength> for kittycad::types::UnitLength {
-    fn from(unit: UnitLength) -> Self {
-        match unit {
-            UnitLength::Cm => kittycad::types::UnitLength::Cm,
-            UnitLength::Ft => kittycad::types::UnitLength::Ft,
-            UnitLength::In => kittycad::types::UnitLength::In,
-            UnitLength::M => kittycad::types::UnitLength::M,
-            UnitLength::Mm => kittycad::types::UnitLength::Mm,
-            UnitLength::Yd => kittycad::types::UnitLength::Yd,
-        }
-    }
-}
-
-impl From<kittycad_modeling_cmds::units::UnitLength> for UnitLength {
-    fn from(unit: kittycad_modeling_cmds::units::UnitLength) -> Self {
-        match unit {
-            kittycad_modeling_cmds::units::UnitLength::Centimeters => UnitLength::Cm,
-            kittycad_modeling_cmds::units::UnitLength::Feet => UnitLength::Ft,
-            kittycad_modeling_cmds::units::UnitLength::Inches => UnitLength::In,
-            kittycad_modeling_cmds::units::UnitLength::Meters => UnitLength::M,
-            kittycad_modeling_cmds::units::UnitLength::Millimeters => UnitLength::Mm,
-            kittycad_modeling_cmds::units::UnitLength::Yards => UnitLength::Yd,
-        }
-    }
-}
-
-impl From<UnitLength> for kittycad_modeling_cmds::units::UnitLength {
-    fn from(unit: UnitLength) -> Self {
-        match unit {
-            UnitLength::Cm => kittycad_modeling_cmds::units::UnitLength::Centimeters,
-            UnitLength::Ft => kittycad_modeling_cmds::units::UnitLength::Feet,
-            UnitLength::In => kittycad_modeling_cmds::units::UnitLength::Inches,
-            UnitLength::M => kittycad_modeling_cmds::units::UnitLength::Meters,
-            UnitLength::Mm => kittycad_modeling_cmds::units::UnitLength::Millimeters,
-            UnitLength::Yd => kittycad_modeling_cmds::units::UnitLength::Yards,
-        }
     }
 }
 
@@ -677,7 +623,7 @@ text_wrapping = true"#;
                 },
                 modeling: ModelingSettings {
                     enable_ssao: false.into(),
-                    base_unit: UnitLength::In,
+                    base_unit: UnitLength::Inches,
                     mouse_controls: MouseControlType::Zoo,
                     camera_projection: CameraProjectionType::Perspective,
                     fixed_size_grid: true,

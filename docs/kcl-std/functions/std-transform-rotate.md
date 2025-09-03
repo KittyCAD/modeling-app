@@ -92,7 +92,7 @@ sweepSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the rotate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -130,7 +130,7 @@ sweepSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the rotate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -168,7 +168,7 @@ sweepSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the rotate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -193,7 +193,7 @@ cube
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the rotate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -231,7 +231,7 @@ sweepSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the rotate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -272,7 +272,7 @@ rotate(parts, axis = [0, 0, 1.0], angle = 90deg)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the rotate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -309,7 +309,7 @@ loft([profile001, profile002])
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the rotate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-rotate6_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
