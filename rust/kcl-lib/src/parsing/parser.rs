@@ -700,10 +700,10 @@ fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
     let literal = opt(preceded(require_whitespace, numeric_literal)).parse_next(i)?;
     let end = literal.as_ref().map(|t| t.end).unwrap_or(var_token.end);
     if !ParseContext::is_in_sketch_block() {
-        ParseContext::err(CompilationError::err(
+        ParseContext::experimental(
+            "sketch var",
             SourceRange::new(var_token.start, end, var_token.module_id),
-            "Sketch variables using `var` can only be used inside sketch blocks `sketch() {}`",
-        ));
+        );
     }
 
     Ok(Node::new(
@@ -3753,16 +3753,19 @@ mod tests {
     }
 
     #[test]
-    fn parse_sketch_var_outside_sketch_block_is_an_error() {
+    fn parse_sketch_var_outside_sketch_block_is_experimental() {
         let tokens = crate::parsing::token::lex("var 0", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         ParseContext::init();
         sketch_var.parse(tokens).unwrap();
         let ctxt = ParseContext::take();
-        assert_eq!(
-            ctxt.errors[0].message,
-            "Sketch variables using `var` can only be used inside sketch blocks `sketch() {}`"
+        let error = ctxt.errors.get(0).unwrap();
+        assert!(
+            error.message.contains("sketch var is experimental"),
+            "Actual: {}",
+            error.message
         );
+        assert_eq!(error.severity, Severity::Error);
     }
 
     #[test]
