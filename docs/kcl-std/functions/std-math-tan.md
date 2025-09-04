@@ -29,7 +29,7 @@ tan(@num: number(Angle)): number
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 50deg, length = 50 * tan((1 / 2): number(rad)))
+  |> angledLine(angle = 50deg, length = 50 * tan((1 / 2): rad))
   |> yLine(endAbsolute = 0)
   |> close()
 
@@ -40,7 +40,7 @@ example = extrude(exampleSketch, length = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the tan function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-math-tan0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

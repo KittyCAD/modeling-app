@@ -29,7 +29,7 @@ units::toDegrees(@num: number(Angle)): number(deg)
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = 50deg, length = 70 * cos(units::toDegrees((PI / 4): number(rad))))
+  |> angledLine(angle = 50deg, length = 70 * cos(units::toDegrees((PI / 4): rad)))
   |> yLine(endAbsolute = 0)
   |> close()
 
@@ -40,7 +40,7 @@ example = extrude(exampleSketch, length = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the units::toDegrees function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-units-toDegrees0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

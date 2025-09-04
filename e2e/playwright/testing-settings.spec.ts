@@ -554,6 +554,11 @@ test.describe(
                     color: parseFloat(color),
                   },
                 },
+                // TODO: make sure this isn't just working around a bug
+                // where the existing data wouldn't be preserved?
+                meta: {
+                  id: '9379bcda-e1e4-4613-851e-a5c4f5c7e83d',
+                },
               },
             })
           )
@@ -824,8 +829,8 @@ test.describe(
       const lineToolButton = page.getByTestId('line')
       const segmentOverlays = page.getByTestId('segment-overlay')
       const sketchOriginLocation = { x: 600, y: 250 }
-      const darkThemeSegmentColor: [number, number, number] = [215, 215, 215]
-      const lightThemeSegmentColor: [number, number, number] = [90, 90, 90]
+      const darkThemeSegmentColor: [number, number, number] = [249, 249, 249]
+      const lightThemeSegmentColor: [number, number, number] = [28, 28, 28]
 
       await test.step(`Get into sketch mode`, async () => {
         await page.mouse.click(700, 200)

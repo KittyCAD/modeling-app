@@ -53,6 +53,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   HELIX: 'helix',
   CLONE: 'clone',
   SOLID: 'solid',
+  PATTERN: 'pattern',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
@@ -61,7 +62,7 @@ export const KCL_DEFAULT_LENGTH = `5`
 export const KCL_DEFAULT_TRANSFORM = `0`
 
 /** The default KCL degree expression */
-export const KCL_DEFAULT_DEGREE = `360`
+export const KCL_DEFAULT_DEGREE = `360deg`
 
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
@@ -251,3 +252,5 @@ export const MAX_PROJECT_NAME_LENGTH = 240
 
 // It's so ugh that `uuid` package doesn't export this.
 export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
+
+export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'

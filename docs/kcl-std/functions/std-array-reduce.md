@@ -66,7 +66,7 @@ assert(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the reduce function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-array-reduce0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -104,7 +104,7 @@ assert(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the reduce function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-array-reduce1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -119,7 +119,7 @@ assert(
 // Declare a function that sketches a decagon.
 fn decagon(@radius) {
   // Each side of the decagon is turned this many radians from the previous angle.
-  stepAngle = (1 / 10 * TAU): number(rad)
+  stepAngle = (1 / 10 * TAU): rad
 
   // Start the decagon sketch at this point.
   startOfDecagonSketch = startSketchOn(XY)
@@ -144,7 +144,7 @@ fn decagon(@radius) {
 
 /* The `decagon` above is basically like this pseudo-code:
 fn decagon(radius):
-    stepAngle = ((1/10) * TAU): number(rad)
+    stepAngle = ((1/10) * TAU): rad
     plane = startSketchOn(XY)
     startOfDecagonSketch = startProfile(plane, at = [(cos(0)*radius), (sin(0) * radius)])
 
@@ -166,7 +166,7 @@ decagon(5.0)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the reduce function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-array-reduce2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

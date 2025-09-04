@@ -52,7 +52,7 @@ layout: manual
 {{#if this.gltf_path}}
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the {{name}} function"
+  alt="Example showing a rendered KCL program that uses the {{@root.name}} function"
   src="{{this.gltf_path}}"
   ar
   environment-image="/moon_1k.hdr"
@@ -63,8 +63,12 @@ layout: manual
 >
 </model-viewer>
 {{else}}
-	{{#if this.image_base64}}
+	{{#if this.image_path}}
+![Rendered example of {{@root.name}} {{@index}}]({{this.image_path}})
+	{{else}}
+		{{#if this.image_base64}}
 ![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{{this.image_base64}}})
+		{{/if}}
 	{{/if}}
 {{/if}}
 

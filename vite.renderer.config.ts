@@ -23,7 +23,7 @@ export default defineConfig((env) => {
     // Needed for electron-forge (in npm run tron:start)
     optimizeDeps: { esbuildOptions: { target: 'es2022' } },
     plugins: [
-      indexHtmlCsp(true),
+      indexHtmlCsp(mode !== 'development'),
       pluginExposeRenderer(name),
       viteTsconfigPaths(),
       lezer(),

@@ -1,6 +1,5 @@
 use std::{fmt, str::FromStr};
 
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::Node;
@@ -9,7 +8,7 @@ use crate::parsing::{
     token::NumericSuffix,
 };
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(untagged, rename_all = "snake_case")]
 pub enum LiteralValue {
