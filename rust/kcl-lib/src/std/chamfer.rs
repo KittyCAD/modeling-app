@@ -25,7 +25,8 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let ratio = args.get_kw_arg_opt("ratio", &RuntimeType::num_any(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     let swap = args.get_kw_arg_opt("swap", &RuntimeType::bool(), exec_state)?;
-    let custom_profile = args.get_kw_arg_opt("customProfile", &RuntimeType::sketch(), exec_state)?;
+    // TODO: custom profiles not ready yet
+    // let custom_profile = args.get_kw_arg_opt("customProfile", &RuntimeType::sketch(), exec_state)?;
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -38,7 +39,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         ratio,
         angle,
         swap,
-        custom_profile,
+        None,
         tag,
         exec_state,
         args,
@@ -68,6 +69,13 @@ async fn inner_chamfer(
         )));
     }
 
+    if angle.is_some() && ratio.is_some() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot specify both an angle and a ratio. Specify only one.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
     let ratio = ratio.map(|x| x.to_mm());
     let angle = angle.map(|x| Angle::from_degrees(x.to_degrees()));
 
@@ -78,8 +86,7 @@ async fn inner_chamfer(
     };
 
     let cut_type = if let Some(custom_profile) = custom_profile {
-        // Hide the custom profile since it's no longer its own profile,
-        // it's just used to modify some other profile.
+        // Hide the custom profile since it's no longer its own profile
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from(&args),
