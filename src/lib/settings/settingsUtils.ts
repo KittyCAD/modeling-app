@@ -209,10 +209,10 @@ export function projectConfigurationToSettingsPayload(
       namedViews: deepPartialNamedViewsToNamedViews(
         configuration?.settings?.app?.named_views
       ),
-      showDebugPanel: configuration?.settings?.app?.show_debug_panel,
+      showDebugPanel: configuration?.settings?.app?.show_debug_panel ?? undefined,
     },
     modeling: {
-      defaultUnit: configuration?.settings?.modeling?.base_unit,
+      defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       fixedSizeGrid: toUndefinedIfNull(
@@ -232,11 +232,11 @@ export function projectConfigurationToSettingsPayload(
       ),
     },
     textEditor: {
-      textWrapping: configuration?.settings?.text_editor?.text_wrapping,
-      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor,
+      textWrapping: configuration?.settings?.text_editor?.text_wrapping ?? undefined,
+      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor ?? undefined,
     },
     commandBar: {
-      includeSettings: configuration?.settings?.command_bar?.include_settings,
+      includeSettings: configuration?.settings?.command_bar?.include_settings ?? undefined,
     },
   }
 }
