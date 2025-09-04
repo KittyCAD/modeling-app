@@ -502,8 +502,10 @@ export fn ellipse(
 export fn extrude(
   /// Which sketch or sketches should be extruded.
   @sketches: [Sketch; 1+],
-  /// How far to extrude the given sketches.
-  length: number(Length),
+  /// How far to extrude the given sketches. Incompatible with `to`.
+  length?: number(Length),
+  /// Reference to extrude to. Incompatible with `length` and `twistAngle`.
+  to?: Point3d,
   /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
   symmetric?: bool,
   /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
@@ -512,7 +514,7 @@ export fn extrude(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
   tagEnd?: TagDecl,
-  /// If given, the sketch will be twisted around this angle while being extruded.
+  /// If given, the sketch will be twisted around this angle while being extruded. Incompatible with `to`.
   twistAngle?: number(Angle),
   /// The size of each intermediate angle as the sketch twists around.
   /// Must be between 4 and 90 degrees.

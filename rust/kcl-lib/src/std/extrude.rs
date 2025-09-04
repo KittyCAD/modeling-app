@@ -31,7 +31,8 @@ use crate::{
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
-    let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
+    let length: TyF64 = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
+    let to = args.get_kw_arg("to", &RuntimeType::point3d(), exec_state)?;
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
@@ -46,6 +47,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let result = inner_extrude(
         sketches,
         length,
+        to,
         symmetric,
         bidirectional_length,
         tag_start,
@@ -66,7 +68,8 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[allow(clippy::too_many_arguments)]
 async fn inner_extrude(
     sketches: Vec<Sketch>,
-    length: TyF64,
+    length: Option<TyF64>,
+    to: Option<[TyF64; 3]>,
     symmetric: Option<bool>,
     bidirectional_length: Option<TyF64>,
     tag_start: Option<TagNode>,
@@ -103,6 +106,13 @@ async fn inner_extrude(
         )));
     }
 
+    if (length.is_some() || twist_angle.is_some()) && to.is_some() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "You cannot give `length` or `twist` params with `to` params, you have to choose one or the other".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     let bidirection = bidirectional_length.map(|l| LengthUnit(l.to_mm()));
 
     let opposite = match (symmetric, bidirection) {
@@ -115,8 +125,8 @@ async fn inner_extrude(
 
     for sketch in &sketches {
         let id = exec_state.next_uuid();
-        let cmd = match (&twist_angle, &twist_angle_step, &twist_center) {
-            (Some(angle), angle_step, center) => {
+        let cmd = match (&twist_angle, &twist_angle_step, &twist_center, to) {
+            (Some(angle), angle_step, center, _) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
                 let total_rotation_angle = Angle::from_degrees(angle.to_degrees());
                 let angle_step_size = Angle::from_degrees(angle_step.clone().map(|a| a.to_degrees()).unwrap_or(15.0));
@@ -130,11 +140,21 @@ async fn inner_extrude(
                     tolerance,
                 })
             }
-            (None, _, _) => ModelingCmd::from(mcmd::Extrude {
+            (None, _, _, _) => ModelingCmd::from(mcmd::Extrude {
                 target: sketch.id.into(),
                 distance: LengthUnit(length.to_mm()),
                 faces: Default::default(),
                 opposite: opposite.clone(),
+                extrude_method,
+            }),
+            (_, _, _, Some(to)) => ModelingCmd::from(mcmd::ExtrudeToReference {
+                target: sketch.id.into(),
+                reference: ExtrudeReference::Point{point: Point3d {
+                    x: LengthUnit(to.x.to_mm()),
+                    y: LengthUnit(to.y.to_mm()),
+                    z: LengthUnit(to.z.to_mm()),
+                }},
+                faces: Default::default(),
                 extrude_method,
             }),
         };
