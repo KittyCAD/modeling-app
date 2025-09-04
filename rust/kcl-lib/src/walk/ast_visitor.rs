@@ -136,6 +136,15 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
                 .into_iter()
                 .chain(n.path.iter().map(|n| n.into()))
                 .collect(),
+            Node::SketchBlock(n) => {
+                let mut children: Vec<Node<'_>> = Vec::with_capacity(n.arguments.len() + 1);
+
+                // TODO: The label. See CallExpressionKw.
+                children.extend(n.arguments.iter().map(|a| Node::from(&a.arg)));
+                children.push((&n.body).into());
+                children
+            }
+            Node::Block(n) => n.items.iter().map(|node| node.into()).collect(),
             Node::PipeSubstitution(_)
             | Node::TagDeclarator(_)
             | Node::Identifier(_)

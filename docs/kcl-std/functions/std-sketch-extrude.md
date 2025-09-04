@@ -69,7 +69,7 @@ example = startSketchOn(XZ)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the extrude function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -98,7 +98,7 @@ example = extrude(exampleSketch, length = 10)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the extrude function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -127,7 +127,7 @@ example = extrude(exampleSketch, length = 20, symmetric = true)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the extrude function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -156,7 +156,7 @@ example = extrude(exampleSketch, length = 10, bidirectionalLength = 50)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the extrude function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -177,7 +177,7 @@ example = startSketchOn(XZ)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the extrude function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -213,7 +213,7 @@ translate(cylinder, x = 1)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the extrude function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

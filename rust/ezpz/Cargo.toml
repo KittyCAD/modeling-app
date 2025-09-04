@@ -9,7 +9,7 @@ faer = "0.22.6"
 indexmap.workspace = true
 kittycad-modeling-cmds = { workspace = true }
 libm = "0.2.15"
-newton_faer = { git = "https://github.com/adamchalmers/newton-faer", branch="achalmers/fallible" }
+newton_faer = { git = "https://github.com/adamchalmers/newton-faer", branch = "achalmers/fallible" }
 thiserror = "2.0.16"
 
 [dev-dependencies]
