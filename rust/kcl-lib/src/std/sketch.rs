@@ -82,6 +82,21 @@ impl FaceTag {
             }),
         }
     }
+
+    pub async fn get_face_id_from_tag(
+        &self,
+        exec_state: &mut ExecState,
+        args: &Args,
+        must_be_planar: bool,
+    ) -> Result<uuid::Uuid, KclError> {
+        match self {
+            FaceTag::Tag(t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
+            _ => Err(KclError::new_type(KclErrorDetails::new(
+                "Could not find the face corresponding to this tag".to_string(),
+                vec![args.source_range],
+            ))),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]

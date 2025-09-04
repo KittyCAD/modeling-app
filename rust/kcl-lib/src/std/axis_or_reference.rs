@@ -1,7 +1,10 @@
 //! Types for referencing an axis or edge.
 
 use super::args::TyF64;
-use crate::std::fillet::EdgeReference;
+use crate::{
+    execution::{Solid, TagIdentifier},
+    std::{fillet::EdgeReference, sketch::FaceTag},
+};
 
 /// A 2D axis or tagged edge.
 #[derive(Debug, Clone, PartialEq)]
@@ -65,4 +68,40 @@ impl Axis3dOrPoint3d {
             Axis3dOrPoint3d::Point(..) => None,
         }
     }
+}
+
+/// A raw point3d, 3D axis, Edge, Face, Solid or Tag.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Point3dAxis3dOrGeometryReference {
+    /// Raw point3d.
+    Point([TyF64; 3]),
+    /// 3D axis and origin.
+    Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
+    /// Edge Reference.
+    Edge(EdgeReference),
+    /// Face.
+    Face(FaceTag),
+    /// Solid.
+    Solid(Solid),
+    /// Edge Tag.
+    TaggedEdge(TagIdentifier),
+    /// Face Tag.
+    TaggedFace(TagIdentifier),
+}
+
+impl Point3dAxis3dOrGeometryReference {
+    // /// Convert to a 3D axis.
+    // pub fn to_point3d(&self) -> [TyF64; 3] {
+    //     match self {
+    //         Axis3dOrPoint3d::Axis { direction, origin: _ } => direction.clone(),
+    //         Axis3dOrPoint3d::Point(point) => point.clone(),
+    //     }
+    // }
+
+    // pub fn axis_origin(&self) -> Option<[TyF64; 3]> {
+    //     match self {
+    //         Axis3dOrPoint3d::Axis { origin, .. } => Some(origin.clone()),
+    //         Axis3dOrPoint3d::Point(..) => None,
+    //     }
+    // }
 }

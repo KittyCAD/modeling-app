@@ -22,17 +22,29 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
-        types::RuntimeType,
+        types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::Args,
+    std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
 };
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
-    let to = args.get_kw_arg_opt("to", &RuntimeType::point3d(), exec_state)?;
+    let to = args.get_kw_arg_opt(
+        "to",
+        &RuntimeType::Union(vec![
+            RuntimeType::point3d(),
+            RuntimeType::Primitive(PrimitiveType::Axis3d),
+            RuntimeType::Primitive(PrimitiveType::Edge),
+            RuntimeType::Primitive(PrimitiveType::Face),
+            RuntimeType::Primitive(PrimitiveType::Solid),
+            RuntimeType::tagged_edge(),
+            RuntimeType::tagged_face(),
+        ]),
+        exec_state,
+    )?;
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
@@ -69,7 +81,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 async fn inner_extrude(
     sketches: Vec<Sketch>,
     length: Option<TyF64>,
-    to: Option<[TyF64; 3]>,
+    to: Option<Point3dAxis3dOrGeometryReference>,
     symmetric: Option<bool>,
     bidirectional_length: Option<TyF64>,
     tag_start: Option<TagNode>,
@@ -148,18 +160,87 @@ async fn inner_extrude(
                 opposite: opposite.clone(),
                 extrude_method,
             }),
-            (_, _, _, _, Some(to)) => ModelingCmd::from(mcmd::ExtrudeToReference {
-                target: sketch.id.into(),
-                reference: ExtrudeReference::Point {
-                    point: Point3d {
-                        x: LengthUnit(to[0].to_mm()),
-                        y: LengthUnit(to[1].to_mm()),
-                        z: LengthUnit(to[2].to_mm()),
+            (_, _, _, _, Some(to)) => match to {
+                Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(mcmd::ExtrudeToReference {
+                    target: sketch.id.into(),
+                    reference: ExtrudeReference::Point {
+                        point: Point3d {
+                            x: LengthUnit(point[0].to_mm()),
+                            y: LengthUnit(point[1].to_mm()),
+                            z: LengthUnit(point[2].to_mm()),
+                        },
                     },
-                },
-                faces: Default::default(),
-                extrude_method,
-            }),
+                    faces: Default::default(),
+                    extrude_method,
+                }),
+                Point3dAxis3dOrGeometryReference::Axis { direction, origin } => {
+                    ModelingCmd::from(mcmd::ExtrudeToReference {
+                        target: sketch.id.into(),
+                        reference: ExtrudeReference::Axis {
+                            axis: Point3d {
+                                x: direction[0].to_mm(),
+                                y: direction[1].to_mm(),
+                                z: direction[2].to_mm(),
+                            },
+                            point: Point3d {
+                                x: LengthUnit(origin[0].to_mm()),
+                                y: LengthUnit(origin[1].to_mm()),
+                                z: LengthUnit(origin[2].to_mm()),
+                            },
+                        },
+                        faces: Default::default(),
+                        extrude_method,
+                    })
+                }
+                Point3dAxis3dOrGeometryReference::Edge(edge_ref) => {
+                    let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
+                    ModelingCmd::from(mcmd::ExtrudeToReference {
+                        target: sketch.id.into(),
+                        reference: ExtrudeReference::EntityReference { entity_id: edge_id },
+                        faces: Default::default(),
+                        extrude_method,
+                    })
+                }
+                Point3dAxis3dOrGeometryReference::Face(face_tag) => {
+                    let face_id = face_tag.get_face_id_from_tag(exec_state, &args, false).await?;
+                    ModelingCmd::from(mcmd::ExtrudeToReference {
+                        target: sketch.id.into(),
+                        reference: ExtrudeReference::EntityReference { entity_id: face_id },
+                        faces: Default::default(),
+                        extrude_method,
+                    })
+                }
+                Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(mcmd::ExtrudeToReference {
+                    target: sketch.id.into(),
+                    reference: ExtrudeReference::EntityReference { entity_id: solid.id },
+                    faces: Default::default(),
+                    extrude_method,
+                }),
+                Point3dAxis3dOrGeometryReference::TaggedEdge(tag) => {
+                    let tagged_edge = args.get_tag_engine_info(exec_state, &tag)?;
+                    let tagged_edge_id = tagged_edge.id;
+                    ModelingCmd::from(mcmd::ExtrudeToReference {
+                        target: sketch.id.into(),
+                        reference: ExtrudeReference::EntityReference {
+                            entity_id: tagged_edge_id,
+                        },
+                        faces: Default::default(),
+                        extrude_method,
+                    })
+                }
+                Point3dAxis3dOrGeometryReference::TaggedFace(tag) => {
+                    let tagged_face = args.get_tag_engine_info(exec_state, &tag)?;
+                    let tagged_face_id = tagged_face.id;
+                    ModelingCmd::from(mcmd::ExtrudeToReference {
+                        target: sketch.id.into(),
+                        reference: ExtrudeReference::EntityReference {
+                            entity_id: tagged_face_id,
+                        },
+                        faces: Default::default(),
+                        extrude_method,
+                    })
+                }
+            },
             (_, _, _, None, None) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "You cannot give `length` or `twist` params with `to` params, you have to choose one or the other"
