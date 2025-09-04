@@ -873,7 +873,7 @@ test.describe(
 
         await settingsSwitchTab(page)('proj')
         unitSelect = page.getByTestId('modeling-defaultUnit')
-        await expect(unitSelect).toHaveValue('mm')
+        await expect(unitSelect).toHaveValue('m')
       })
 
       // Close settings
