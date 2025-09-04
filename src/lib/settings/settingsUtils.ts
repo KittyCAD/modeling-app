@@ -194,15 +194,14 @@ function deepPartialNamedViewsToNamedViews(
 export function projectConfigurationToSettingsPayload(
   configuration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<SaveSettingsPayload> {
+  const color = configuration?.settings?.app?.appearance?.color
   return {
     meta: {
       id: configuration?.settings?.meta?.id,
     },
     app: {
       // do not read in `theme`, because it is blocked on the project level
-      themeColor: configuration?.settings?.app?.appearance?.color
-        ? configuration?.settings?.app?.appearance?.color.toString()
-        : undefined,
+      themeColor: color !== undefined ? color.toString() : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
       allowOrbitInSketchMode:
