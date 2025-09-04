@@ -84,11 +84,12 @@ export const MlEphantConversationInput = (
           data-testid="ml-ephant-conversation-input"
           ref={refDiv}
           onKeyDown={(e) => {
-            if (e.key !== 'Enter') {
-              return
+            const isOnlyEnter =
+              e.key === 'Enter' && !(e.shiftKey || e.metaKey || e.ctrlKey)
+            if (isOnlyEnter) {
+              e.preventDefault()
+              onClick()
             }
-            e.preventDefault()
-            onClick()
           }}
           className={`outline-none w-full overflow-auto ${isAnimating ? 'hidden' : ''}`}
           style={{ height: '2lh' }}
