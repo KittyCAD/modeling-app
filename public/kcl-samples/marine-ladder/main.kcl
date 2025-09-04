@@ -1,0 +1,61 @@
+// Marine Ladder
+// A parametric vertical or steep-access ladder commonly used on ships, in engine rooms, or in industrial environments. It features two bent side rails and evenly spaced cylindrical rungs for compact, reinforced access.
+
+
+
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Ladder Dimensions
+ladderHeight = 2000 // vertical height from bottom to top
+ladderWidth = 450 // total width from outer edge to outer edge
+ladderReach = 450 // horizontal projection of top arc (hook portion)
+
+
+// Rail Geometry
+railDiameter = 30 // outer diameter of the round rails (cylindrical tubes)
+
+
+// Rung Geometry
+rungDiameter = 30 // diameter of each rung (cylindrical)
+rungDepth = ladderWidth // span of each rung (same as inner rail spacing)
+rungCount = 4 // number of rungs
+rungSpacing = (ladderHeight - (ladderReach / 2)) / (rungCount + 1) // vertical step pitch
+
+
+// Side Rails (swept arcs)
+railPath = startSketchOn(YZ)
+  |> startProfile(at = [0, 0])
+  |> yLine(length = ladderHeight - (ladderReach / 2))
+  |> tangentialArc(endAbsolute = [
+       ladderReach,
+       ladderHeight - (ladderReach / 2)
+     ])
+  |> yLine(length = -ladderReach / 2) // vertical tip-down
+
+railSection = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = railDiameter / 2)
+
+singleRail = sweep(railSection, path = railPath)
+
+rails = translate(singleRail, x = -ladderWidth / 2)
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = ladderWidth,
+       axis = [1, 0, 0],
+     )
+
+// Rungs
+rungProfile = offsetPlane(YZ, offset = -ladderWidth / 2)
+  |> circle(center = [0, 0], radius = rungDiameter / 2)
+
+singleRung = extrude(rungProfile, length = ladderWidth)
+
+rungs = translate(singleRung, z = rungSpacing)
+  |> patternLinear3d(
+       %,
+       instances = rungCount,
+       distance = rungSpacing,
+       axis = [0, 0, 1],
+     )
