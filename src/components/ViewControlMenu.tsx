@@ -9,7 +9,7 @@ import {
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
-import { kclManager, sceneInfra } from '@src/lib/singletons'
+import { kclManager, sceneInfra, settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { useSettings } from '@src/lib/singletons'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -18,6 +18,7 @@ import {
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import { getSelectedPlaneId } from '@src/lang/queryAst'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
@@ -30,6 +31,9 @@ export function useViewControlMenuItems() {
   const shouldLockView =
     modelingState.matches('Sketch') &&
     !settings.app.allowOrbitInSketchMode.current
+
+  const sketching = modelingState.matches('Sketch')
+  const snapToGrid = settings.modeling.snapToGrid.current
 
   // Check if there's a valid selection with source range for "View KCL source code"
   const firstValidSelection = useMemo(() => {
@@ -139,6 +143,26 @@ export function useViewControlMenuItems() {
       >
         Start sketch on selection
       </ContextMenuItem>,
+      ...(sketching
+        ? [
+            <ContextMenuDivider />,
+            <ContextMenuItem
+              icon={snapToGrid ? 'checkmark' : undefined}
+              hotkey={SNAP_TO_GRID_HOTKEY}
+              onClick={() => {
+                settingsActor.send({
+                  type: 'set.modeling.snapToGrid',
+                  data: {
+                    level: 'project',
+                    value: !snapToGrid,
+                  },
+                })
+              }}
+            >
+              Snap to Grid
+            </ContextMenuItem>,
+          ]
+        : []),
     ],
     [
       shouldLockView,
@@ -146,6 +170,8 @@ export function useViewControlMenuItems() {
       firstValidSelection,
       modelingSend,
       modelingState.context.store.openPanes,
+      sketching,
+      snapToGrid,
     ]
   )
   return menuItems
