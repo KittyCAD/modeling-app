@@ -356,10 +356,10 @@ color = 1567.4"#;
                     fixed_size_grid: None,
                 },
                 text_editor: ProjectTextEditorSettings {
-                    text_wrapping: None,
-                    blinking_cursor: None,
+                    text_wrapping: Some(false),
+                    blinking_cursor: Some(false),
                 },
-                command_bar: ProjectCommandBarSettings { include_settings: None },
+                command_bar: ProjectCommandBarSettings { include_settings: Some(false) },
             },
         };
         let serialized = toml::to_string(&conf).unwrap();
