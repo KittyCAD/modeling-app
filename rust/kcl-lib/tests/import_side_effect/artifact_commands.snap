@@ -112,6 +112,7 @@ description: Artifact commands import_side_effect.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

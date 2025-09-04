@@ -36,6 +36,7 @@ Types can (optionally) be used to describe a function's arguments and returned v
 * [`in`](/docs/kcl-std/types/std-types-in)
 * [`m`](/docs/kcl-std/types/std-types-m)
 * [`mm`](/docs/kcl-std/types/std-types-mm)
+* [`none`](/docs/kcl-std/types/std-types-none)
 * [`number`](/docs/kcl-std/types/std-types-number)
 * [`rad`](/docs/kcl-std/types/std-types-rad)
 * [`string`](/docs/kcl-std/types/std-types-string)

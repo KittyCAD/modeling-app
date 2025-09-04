@@ -1622,7 +1622,8 @@ description: Variables in memory after executing subtract_regression10.kcl
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "connectingRodProfile": {
     "type": "Solid",

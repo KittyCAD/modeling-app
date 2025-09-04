@@ -147,6 +147,7 @@ description: Operations executed invalid_member_object.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

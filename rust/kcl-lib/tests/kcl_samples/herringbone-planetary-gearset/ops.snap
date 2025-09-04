@@ -6471,6 +6471,7 @@ description: Operations executed herringbone-planetary-gearset.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

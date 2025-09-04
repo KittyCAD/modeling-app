@@ -561,6 +561,7 @@ description: Operations executed import_mesh_clone.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

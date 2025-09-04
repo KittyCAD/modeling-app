@@ -401,6 +401,7 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

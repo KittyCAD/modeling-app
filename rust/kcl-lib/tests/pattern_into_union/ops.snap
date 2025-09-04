@@ -1251,6 +1251,7 @@ description: Operations executed pattern_into_union.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

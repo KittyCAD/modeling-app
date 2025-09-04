@@ -295,6 +295,7 @@ description: Operations executed error_revolve_on_edge_get_edge.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

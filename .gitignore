@@ -30,6 +30,8 @@ result
 
 # rust
 rust/target
+rust/kcl-api/bindings
+rust/kcl-error/bindings
 rust/kcl-lib/bindings
 rust/kcl-language-server/server
 public/kcl_wasm_lib_bg.wasm

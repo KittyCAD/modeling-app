@@ -262,6 +262,7 @@ description: Operations executed basic_fillet_cube_end.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

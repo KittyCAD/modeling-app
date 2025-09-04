@@ -9,6 +9,7 @@ description: Artifact commands complex_expr_as_array_index.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -196,6 +196,7 @@ description: Operations executed execute_engine_error_return.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

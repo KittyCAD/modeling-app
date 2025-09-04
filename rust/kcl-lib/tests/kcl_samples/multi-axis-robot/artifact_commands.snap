@@ -5943,6 +5943,7 @@ description: Artifact commands multi-axis-robot.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -18,6 +18,8 @@ export import "std::units"
 export import * from "std::array"
 export import * from "std::math"
 export import * from "std::sketch"
+@(experimental = true)
+export import "std::sketch2"
 export import * from "std::solid"
 export import * from "std::transform"
 export import "std::turns"

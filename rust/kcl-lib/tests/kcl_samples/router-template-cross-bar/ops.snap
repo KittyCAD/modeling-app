@@ -737,6 +737,7 @@ description: Operations executed router-template-cross-bar.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -1045,6 +1045,7 @@ description: Artifact commands sketch_on_face_union.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

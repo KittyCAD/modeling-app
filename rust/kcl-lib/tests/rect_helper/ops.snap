@@ -145,6 +145,7 @@ description: Operations executed rect_helper.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -3069,6 +3069,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

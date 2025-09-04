@@ -141,6 +141,7 @@ description: Operations executed tangent_to_3_point_arc.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

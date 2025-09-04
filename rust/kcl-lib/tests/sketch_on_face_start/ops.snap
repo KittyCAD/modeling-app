@@ -385,6 +385,7 @@ description: Operations executed sketch_on_face_start.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

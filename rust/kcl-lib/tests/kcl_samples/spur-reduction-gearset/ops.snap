@@ -1902,6 +1902,7 @@ description: Operations executed spur-reduction-gearset.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

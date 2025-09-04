@@ -4617,6 +4617,7 @@ description: Operations executed car-wheel-assembly.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

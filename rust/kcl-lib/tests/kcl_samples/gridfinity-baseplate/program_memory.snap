@@ -68,7 +68,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "basePlateCorners": {
     "type": "HomArray",

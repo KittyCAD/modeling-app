@@ -560,7 +560,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "xAxis": {
         "type": "Object",
@@ -604,7 +605,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "yAxis": {
         "type": "Object",
@@ -648,7 +650,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "zAxis": {
         "type": "Object",
@@ -692,9 +695,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
   },
   "bracketSketch": {
     "type": "Function",
@@ -1539,7 +1544,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "xAxis": {
         "type": "Object",
@@ -1583,7 +1589,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "yAxis": {
         "type": "Object",
@@ -1627,7 +1634,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "zAxis": {
         "type": "Object",
@@ -1671,9 +1679,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
   },
   "tabLength": {
     "type": "Number",
@@ -1733,7 +1743,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "xAxis": {
         "type": "Object",
@@ -1777,7 +1788,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "yAxis": {
         "type": "Object",
@@ -1821,7 +1833,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "zAxis": {
         "type": "Object",
@@ -1865,9 +1878,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             }
           }
-        }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
   },
   "tabThk": {
     "type": "Number",

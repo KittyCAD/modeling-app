@@ -567,6 +567,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

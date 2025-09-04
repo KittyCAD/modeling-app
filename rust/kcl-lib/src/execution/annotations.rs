@@ -33,9 +33,11 @@ pub(super) const IMPORT_LENGTH_UNIT: &str = "lengthUnit";
 
 pub(crate) const IMPL: &str = "impl";
 pub(crate) const IMPL_RUST: &str = "std_rust";
+pub(crate) const IMPL_CONSTRAINT: &str = "std_rust_constraint";
+pub(crate) const IMPL_CONSTRAINABLE: &str = "std_constrainable";
 pub(crate) const IMPL_KCL: &str = "kcl";
 pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
-pub(super) const IMPL_VALUES: [&str; 3] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE];
+pub(super) const IMPL_VALUES: [&str; 5] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE, IMPL_CONSTRAINT, IMPL_CONSTRAINABLE];
 
 pub(crate) const WARNINGS: &str = "warnings";
 pub(crate) const WARN_ALLOW: &str = "allow";
@@ -91,7 +93,9 @@ impl FromStr for WarningLevel {
 pub enum Impl {
     #[default]
     Kcl,
+    KclConstrainable,
     Rust,
+    RustConstraint,
     Primitive,
 }
 
@@ -101,6 +105,8 @@ impl FromStr for Impl {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             IMPL_RUST => Ok(Self::Rust),
+            IMPL_CONSTRAINT => Ok(Self::RustConstraint),
+            IMPL_CONSTRAINABLE => Ok(Self::KclConstrainable),
             IMPL_KCL => Ok(Self::Kcl),
             IMPL_PRIMITIVE => Ok(Self::Primitive),
             _ => Err(()),

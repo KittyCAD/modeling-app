@@ -577,6 +577,7 @@ description: Artifact commands subtract_with_pattern_cut_thru.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

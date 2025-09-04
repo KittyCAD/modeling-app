@@ -3653,6 +3653,7 @@ description: Operations executed spinning-highrise-tower.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

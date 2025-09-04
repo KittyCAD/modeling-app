@@ -111,6 +111,7 @@ description: Artifact commands coerce_from_trig_to_point.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

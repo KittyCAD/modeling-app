@@ -222,6 +222,7 @@ description: Operations executed out_of_band_sketches.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -228,7 +228,8 @@ description: Variables in memory after executing keyboard.kcl
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "plane002": {
     "type": "Object",
@@ -409,7 +410,8 @@ description: Variables in memory after executing keyboard.kcl
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "profile001": {
     "type": "Sketch",

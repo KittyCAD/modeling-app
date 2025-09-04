@@ -990,7 +990,7 @@ impl<'a> FromKclValue<'a> for &'a str {
 
 impl<'a> FromKclValue<'a> for &'a KclObjectFields {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Object { value, meta: _ } = arg else {
+        let KclValue::Object { value, .. } = arg else {
             return None;
         };
         Some(value)
