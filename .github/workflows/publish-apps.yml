@@ -135,6 +135,7 @@ jobs:
           files: 'out/Zoo*'
 
   release-web:
+    permissions: {}
     steps:
       - name: Deploy to Vercel Production
         run: curl --request POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
