@@ -359,9 +359,7 @@ color = 1567.4"#;
                     text_wrapping: None,
                     blinking_cursor: None,
                 },
-                command_bar: ProjectCommandBarSettings {
-                    include_settings: None,
-                },
+                command_bar: ProjectCommandBarSettings { include_settings: None },
             },
         };
         let serialized = toml::to_string(&conf).unwrap();
