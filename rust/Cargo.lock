@@ -2824,8 +2824,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.131"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#7426c82db3a9156c6976e1a649379ba708861ecb"
+version = "0.2.133"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#3e93ab82c1d169c7d91dcb475a460ae836a1a757"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2852,7 +2852,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#7426c82db3a9156c6976e1a649379ba708861ecb"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#3e93ab82c1d169c7d91dcb475a460ae836a1a757"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2863,7 +2863,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#7426c82db3a9156c6976e1a649379ba708861ecb"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#3e93ab82c1d169c7d91dcb475a460ae836a1a757"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -6724,4 +6724,4 @@ dependencies = [
 [[patch.unused]]
 name = "kittycad-modeling-session"
 version = "0.1.5"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#7426c82db3a9156c6976e1a649379ba708861ecb"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#3e93ab82c1d169c7d91dcb475a460ae836a1a757"

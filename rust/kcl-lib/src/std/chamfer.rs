@@ -24,13 +24,26 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tags = args.kw_arg_edge_array_and_source("tags")?;
     let ratio = args.get_kw_arg_opt("ratio", &RuntimeType::num_any(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
+    let swap = args.get_kw_arg_opt("swap", &RuntimeType::bool(), exec_state)?;
     let custom_profile = args.get_kw_arg_opt("customProfile", &RuntimeType::sketch(), exec_state)?;
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     super::fillet::validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_chamfer(solid, length, tags, ratio, angle, custom_profile, tag, exec_state, args).await?;
+    let value = inner_chamfer(
+        solid,
+        length,
+        tags,
+        ratio,
+        angle,
+        swap,
+        custom_profile,
+        tag,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -40,6 +53,7 @@ async fn inner_chamfer(
     tags: Vec<EdgeReference>,
     ratio: Option<TyF64>,
     angle: Option<TyF64>,
+    swap: Option<bool>,
     custom_profile: Option<Sketch>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -79,7 +93,11 @@ async fn inner_chamfer(
             path: custom_profile.id,
         }
     } else {
-        CutType::Chamfer { ratio, angle }
+        CutType::Chamfer {
+            ratio,
+            angle,
+            swap: swap.unwrap_or_default(),
+        }
     };
 
     let mut solid = solid.clone();
