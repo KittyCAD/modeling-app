@@ -3759,7 +3759,7 @@ mod tests {
         ParseContext::init();
         sketch_var.parse(tokens).unwrap();
         let ctxt = ParseContext::take();
-        let error = ctxt.errors.get(0).unwrap();
+        let error = ctxt.errors.first().unwrap();
         assert!(
             error.message.contains("sketch var is experimental"),
             "Actual: {}",
