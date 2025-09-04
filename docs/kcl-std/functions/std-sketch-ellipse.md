@@ -67,6 +67,8 @@ exampleSketch = startSketchOn(XY)
 </model-viewer>
 
 ```kcl
+@settings(experimentalFeatures = allow)
+
 exampleSketch = startSketchOn(YZ)
   |> ellipse(center = [10, 10], majorDiameter = 40, minorRadius = 10)
 
