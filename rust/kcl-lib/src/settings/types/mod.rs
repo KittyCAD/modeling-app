@@ -319,7 +319,7 @@ impl Default for ModelingSettings {
             highlight_edges: Default::default(),
             enable_ssao: Default::default(),
             show_scale_grid: Default::default(),
-            fixed_size_grid: Default::default(),
+            fixed_size_grid: true,
             snap_to_grid: Default::default(),
             major_grid_spacing: Default::default(),
             minor_grids_per_major: Default::default(),
