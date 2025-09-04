@@ -195,8 +195,8 @@ export const PromptCard = (props: PromptCardProps) => {
 
   const cssPrompt =
     props.status !== 'failed'
-      ? 'select-text break-all shadow-sm bg-2 text-default border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
-      : 'select-text break-all shadow-sm bg-2 text-2 border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
+      ? 'select-text whitespace-pre-line hyphens-auto shadow-sm bg-2 text-default border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
+      : 'select-text whitespace-pre-line hyphens-auto shadow-sm bg-2 text-2 border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
 
   return (
     <div className={cssCard}>
@@ -208,7 +208,9 @@ export const PromptCard = (props: PromptCardProps) => {
             disabled={props.disabled}
             onFeedback={(...args) => props.onFeedback?.(...args)}
           />
-          <div className={cssPrompt}>{props.prompt}</div>
+          <div style={{ wordBreak: 'break-word' }} className={cssPrompt}>
+            {props.prompt}
+          </div>
         </div>
         <div className="w-fit-content">
           <AvatarUser src={props.userAvatar} />
