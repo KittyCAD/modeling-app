@@ -108,7 +108,7 @@ export type SidebarAction = {
 const textToCadPane: SidebarPane = {
   id: 'text-to-cad',
   icon: 'sparkles',
-  keybinding: 'Shift + E',
+  keybinding: 'Ctrl + T',
   sidebarName: 'Text-to-CAD',
   Content: (props) => {
     const settings = useSettings()
