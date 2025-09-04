@@ -140,6 +140,7 @@ import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraCont
 import { addShell, addOffsetPlane } from '@src/lang/modifyAst/faces'
 import { intersectInfo } from '@src/components/Toolbar/Intersect'
 import { addHelix } from '@src/lang/modifyAst/geometry'
+import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
 
 export type SetSelections =
   | {
@@ -941,7 +942,11 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
+          sceneEntitiesManager.removeDraftPoint()
           if (!args) return
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
@@ -978,14 +983,22 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
+          sceneEntitiesManager.removeDraftPoint()
           if (!args) return
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
             sceneInfra.modelingSend({
               type: 'Add center rectangle origin',
-              data: [twoD.x, twoD.y],
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             })
           } else {
             console.error('No intersection point found')
@@ -1011,6 +1024,9 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1020,7 +1036,11 @@ export const modelingMachine = setup({
           if (twoD) {
             sceneInfra.modelingSend({
               type: 'Add circle origin',
-              data: [twoD.x, twoD.y],
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             })
           } else {
             console.error('No intersection point found')
@@ -1045,6 +1065,9 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1054,7 +1077,11 @@ export const modelingMachine = setup({
           if (twoD) {
             sceneInfra.modelingSend({
               type: 'Add first point',
-              data: [twoD.x, twoD.y],
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             })
           } else {
             console.error('No intersection point found')
@@ -1091,12 +1118,15 @@ export const modelingMachine = setup({
         isDraft: true,
         from: event.data,
         scale,
-        theme: sceneInfra._theme,
+        theme: sceneInfra.theme,
       })
       draftPoint.position.copy(position)
       sceneInfra.scene.add(draftPoint)
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1108,7 +1138,11 @@ export const modelingMachine = setup({
               type: 'Add second point',
               data: {
                 p1: event.data,
-                p2: [twoD.x, twoD.y],
+                p2: sceneEntitiesManager.getSnappedDragPoint(
+                  twoD,
+                  args.intersects,
+                  args.mouseEvent
+                ).snappedPoint,
               },
             })
           } else {
@@ -1321,11 +1355,7 @@ export const modelingMachine = setup({
           } else {
             sceneEntitiesManager.removeDraftPoint()
           }
-          updater(
-            group,
-            [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-            orthoFactor
-          )
+          updater(group, snappedPoint, orthoFactor)
         },
       })
     },
@@ -2209,7 +2239,7 @@ export const modelingMachine = setup({
           zAxis: info.sketchDetails.zAxis || null,
           yAxis: info.sketchDetails.yAxis || null,
           origin: info.sketchDetails.origin.map(
-            (a) => a / sceneInfra._baseUnitMultiplier
+            (a) => a / sceneInfra.baseUnitMultiplier
           ) as [number, number, number],
           animateTargetId: info?.sketchDetails?.faceId || '',
         }
@@ -5113,6 +5143,30 @@ export const modelingMachine = setup({
     },
   },
 })
+
+function listenForOriginMove(
+  args: OnMoveCallbackArgs,
+  sketchDetails: SketchDetails
+) {
+  if (!args) return
+  const { intersectionPoint } = args
+  if (!intersectionPoint?.twoD) return
+  const { snappedPoint, isSnapped } = sceneEntitiesManager.getSnappedDragPoint(
+    intersectionPoint.twoD,
+    args.intersects,
+    args.mouseEvent
+  )
+  if (isSnapped) {
+    sceneEntitiesManager.positionDraftPoint({
+      snappedPoint: new Vector2(...snappedPoint),
+      origin: sketchDetails.origin,
+      yAxis: sketchDetails.yAxis,
+      zAxis: sketchDetails.zAxis,
+    })
+  } else {
+    sceneEntitiesManager.removeDraftPoint()
+  }
+}
 
 export function isEditingExistingSketch({
   sketchDetails,

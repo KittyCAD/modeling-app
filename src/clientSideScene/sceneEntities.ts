@@ -38,7 +38,6 @@ import type { SafeArray } from '@src/lib/utils'
 import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
 
 import {
-  createGridHelper,
   isQuaternionVertical,
   orthoScale,
   perspScale,
@@ -87,7 +86,6 @@ import {
   SKETCH_LAYER,
   X_AXIS,
   Y_AXIS,
-  getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { SegmentUtils } from '@src/clientSideScene/segments'
 import { createLineShape } from '@src/clientSideScene/segments'
@@ -162,7 +160,7 @@ import type RustContext from '@src/lib/rustContext'
 import { updateExtraSegments } from '@src/lib/selections'
 import type { Selections } from '@src/lib/selections'
 import { getEventForSegmentSelection } from '@src/lib/selections'
-import type { Themes } from '@src/lib/theme'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
@@ -179,6 +177,8 @@ import type {
   SketchTool,
 } from '@src/machines/modelingMachine'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -200,6 +200,10 @@ export class SceneEntities {
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
 
+  getSettings: (() => SettingsType) | null = null
+
+  private canvasResizeObserver: ResizeObserver
+
   constructor(
     engineCommandManager: EngineCommandManager,
     sceneInfra: SceneInfra,
@@ -217,13 +221,17 @@ export class SceneEntities {
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
-    this.sceneInfra.camControls.subscribeToCamChange(this.onCamChange)
-    window.addEventListener('resize', this.onWindowResize)
+
+    this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
+    this.sceneInfra.baseUnitChange.add(this.onCamChange)
+
+    const canvas = this.sceneInfra.renderer.domElement
+    this.canvasResizeObserver = new ResizeObserver(() => {
+      this.onCamChange()
+    })
+    this.canvasResizeObserver.observe(canvas)
   }
 
-  onWindowResize = () => {
-    this.onCamChange()
-  }
   onCamChange = () => {
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
@@ -232,7 +240,7 @@ export class SceneEntities {
         (this.sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
           : perspScale(this.sceneInfra.camControls.camera, segment)) /
-        this.sceneInfra._baseUnitMultiplier
+        this.sceneInfra.baseUnitMultiplier
       let input: SegmentInputs = {
         type: 'straight-segment',
         from: segment.userData.from,
@@ -350,9 +358,15 @@ export class SceneEntities {
           ? orthoFactor
           : perspScale(this.sceneInfra.camControls.camera, this.axisGroup)
       const x = this.axisGroup.getObjectByName(X_AXIS)
-      x?.scale.set(1, factor / this.sceneInfra._baseUnitMultiplier, 1)
+      x?.scale.set(1, factor / this.sceneInfra.baseUnitMultiplier, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
-      y?.scale.set(factor / this.sceneInfra._baseUnitMultiplier, 1, 1)
+      y?.scale.set(factor / this.sceneInfra.baseUnitMultiplier, 1, 1)
+      this.updateInfiniteGrid()
+    }
+    const draftPoint = this.getDraftPoint()
+    if (draftPoint) {
+      const scale = orthoFactor / this.sceneInfra.baseUnitMultiplier
+      draftPoint.scale.set(scale, scale, scale)
     }
     this.sceneInfra.overlayCallbacks(callbacks)
   }
@@ -416,24 +430,16 @@ export class SceneEntities {
     yAxisMesh.name = Y_AXIS
 
     this.axisGroup = new Group()
-    const gridHelper = createGridHelper({ size: 100, divisions: 10 })
-    gridHelper.position.z = -0.01
-    gridHelper.renderOrder = -3 // is this working?
-    gridHelper.name = 'gridHelper'
-    const sceneScale = getSceneScale(
-      this.sceneInfra.camControls.camera,
-      this.sceneInfra.camControls.target
-    )
-    gridHelper.scale.set(sceneScale, sceneScale, sceneScale)
+    const gridRenderer = new InfiniteGridRenderer()
 
     const factor =
       this.sceneInfra.camControls.camera instanceof OrthographicCamera
         ? orthoFactor
         : perspScale(this.sceneInfra.camControls.camera, this.axisGroup)
-    xAxisMesh?.scale.set(1, factor / this.sceneInfra._baseUnitMultiplier, 1)
-    yAxisMesh?.scale.set(factor / this.sceneInfra._baseUnitMultiplier, 1, 1)
+    xAxisMesh?.scale.set(1, factor / this.sceneInfra.baseUnitMultiplier, 1)
+    yAxisMesh?.scale.set(factor / this.sceneInfra.baseUnitMultiplier, 1, 1)
 
-    this.axisGroup.add(xAxisMesh, yAxisMesh, gridHelper)
+    this.axisGroup.add(xAxisMesh, yAxisMesh, gridRenderer)
     this.currentSketchQuaternion &&
       this.axisGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
 
@@ -449,8 +455,66 @@ export class SceneEntities {
       new Vector3(...forward)
     )
     this.axisGroup.setRotationFromQuaternion(quat)
-    sketchPosition && this.axisGroup.position.set(...sketchPosition)
+    if (sketchPosition) {
+      this.axisGroup.position.set(...sketchPosition)
+    }
     this.sceneInfra.scene.add(this.axisGroup)
+
+    this.updateInfiniteGrid()
+  }
+
+  private updateInfiniteGrid() {
+    const camera = this.sceneInfra.camControls.camera
+    if (camera instanceof OrthographicCamera) {
+      const settings = this.getSettings?.()
+      if (settings) {
+        const gridRenderer = this.sceneInfra.scene
+          .getObjectByName(AXIS_GROUP)
+          ?.children.find((child) => child instanceof InfiniteGridRenderer)
+        if (gridRenderer) {
+          const majorGridSpacing =
+            settings.modeling.majorGridSpacing.current ?? 1
+          const minorGridsPerMajor =
+            settings.modeling.minorGridsPerMajor.current ?? 4
+
+          const viewportSize = this.sceneInfra.renderer.getDrawingBufferSize(
+            new Vector2()
+          )
+          // Choose grid colors based on app theme: dark = existing colors, light = subtle gray
+          const isLight =
+            getResolvedTheme(this.sceneInfra.theme) === Themes.Light
+          const majorColor: [number, number, number, number] = isLight
+            ? [0.3, 0.3, 0.3, 1.0]
+            : [0.7, 0.7, 0.7, 1.0]
+          const minorColor: [number, number, number, number] = isLight
+            ? [0.2, 0.2, 0.2, 1.0]
+            : [0.9, 0.9, 0.9, 1.0]
+
+          const pixelsPerBaseUnit = this.sceneInfra.getPixelsPerBaseUnit(camera)
+          const fixedSizeGrid = settings.modeling.fixedSizeGrid.current
+          const gridScaleFactor = getGridScaleFactor({
+            majorGridSpacing,
+            pixelsPerBaseUnit,
+            fixedSizeGrid,
+          })
+          gridRenderer.update(
+            camera,
+            [viewportSize.x, viewportSize.y],
+            pixelsPerBaseUnit,
+            gridScaleFactor,
+            {
+              majorGridSpacing,
+              minorGridsPerMajor,
+              majorColor,
+              minorColor,
+              fixedSizeGrid,
+            }
+          )
+        }
+      } else {
+        console.error('Settings not available for grid update')
+      }
+    }
   }
 
   getDraftPoint() {
@@ -490,7 +554,7 @@ export class SceneEntities {
       isDraft: true,
       from: [point.x, point.y],
       scale,
-      theme: this.sceneInfra._theme,
+      theme: this.sceneInfra.theme,
       // default is 12, this makes the draft point pop a bit more,
       // especially when snapping to the startProfile handle as it's it was the exact same size
       size: 16,
@@ -501,7 +565,55 @@ export class SceneEntities {
 
   removeDraftPoint() {
     const draftPoint = this.getDraftPoint()
-    if (draftPoint) draftPoint.removeFromParent()
+    if (draftPoint) {
+      draftPoint.removeFromParent()
+    }
+  }
+
+  private snapToGrid(
+    point: Coords2d,
+    event: MouseEvent
+  ): { point: Coords2d; snapped: boolean } {
+    if (event.ctrlKey || event.metaKey) {
+      // disable snapping with ctrl
+      return { point, snapped: false }
+    }
+
+    const settings = this.getSettings?.()
+    if (!settings) {
+      console.error('getSettings not injected!')
+      return { point, snapped: false }
+    }
+    if (!settings.modeling.snapToGrid.current) {
+      return { point, snapped: false }
+    }
+
+    const minorsPerMajor = settings.modeling.minorGridsPerMajor.current
+    const snapsPerMinor = settings.modeling.snapsPerMinor.current
+
+    let gridScaleFactor = 1
+    if (this.sceneInfra.camControls.camera instanceof OrthographicCamera) {
+      const pixelsPerBaseUnit = this.sceneInfra.getPixelsPerBaseUnit(
+        this.sceneInfra.camControls.camera
+      )
+      const fixedSizeGrid = settings.modeling.fixedSizeGrid.current
+      gridScaleFactor = getGridScaleFactor({
+        majorGridSpacing: settings.modeling.majorGridSpacing.current,
+        pixelsPerBaseUnit,
+        fixedSizeGrid,
+      })
+    } else {
+      console.error("Camera is not orthographic, can't snap to grid")
+    }
+
+    const multiplier = (minorsPerMajor * snapsPerMinor) / gridScaleFactor
+    return {
+      point: [
+        Math.round(point[0] * multiplier) / multiplier,
+        Math.round(point[1] * multiplier) / multiplier,
+      ],
+      snapped: true,
+    }
   }
 
   setupNoPointsListener({
@@ -539,33 +651,39 @@ export class SceneEntities {
     )
     this.sceneInfra.setCallbacks({
       onMove: (args) => {
-        if (!args.intersects.length) return
+        const { intersectionPoint } = args
+        const snappedPoint = intersectionPoint.twoD.clone()
+        const snapToGrid = this.getSettings?.().modeling.snapToGrid.current
+        if (!args.intersects.length && !snapToGrid) {
+          return
+        }
         const axisIntersection = args.intersects.find(
           (sceneObject) =>
             sceneObject.object.name === X_AXIS ||
             sceneObject.object.name === Y_AXIS
         )
 
-        const arrowHead = getParentGroup(args.intersects[0].object, [
+        const arrowHead = getParentGroup(args.intersects[0]?.object, [
           ARROWHEAD,
           ARC_ANGLE_END,
           THREE_POINT_ARC_HANDLE3,
         ])
         const parent = getParentGroup(
-          args.intersects[0].object,
+          args.intersects[0]?.object,
           SEGMENT_BODIES_PLUS_PROFILE_START
         )
+
         if (
           !axisIntersection &&
           !(
             parent?.userData?.isLastInProfile &&
             (arrowHead || parent?.name === PROFILE_START)
-          )
-        )
+          ) &&
+          !snapToGrid
+        ) {
           return
-        const { intersectionPoint } = args
-        // We're hovering over an axis, so we should show a draft point
-        const snappedPoint = intersectionPoint.twoD.clone()
+        }
+        // We're hovering over an axis, so we should show a draft point (or snapToGrid is enabled)
         let intersectsXY = { x: false, y: false }
         args.intersects.forEach((intersect) => {
           const parent = getParentGroup(intersect.object, [X_AXIS, Y_AXIS])
@@ -586,6 +704,18 @@ export class SceneEntities {
           snappedPoint.set(arrowHead.position.x, arrowHead.position.y)
         } else if (parent?.name === PROFILE_START) {
           snappedPoint.set(parent.position.x, parent.position.y)
+        } else if (snapToGrid) {
+          const snappedToGrid = this.snapToGrid(
+            [snappedPoint.x, snappedPoint.y],
+            args.mouseEvent
+          ).point
+          snappedPoint.set(snappedToGrid[0], snappedToGrid[1])
+          this.positionDraftPoint({
+            snappedPoint,
+            origin: sketchDetails.origin,
+            yAxis: sketchDetails.yAxis,
+            zAxis: sketchDetails.zAxis,
+          })
         }
 
         this.positionDraftPoint({
@@ -636,16 +766,19 @@ export class SceneEntities {
           (sceneObject) => sceneObject.object.name === X_AXIS
         )
 
-        const snappedClickPoint = {
-          x: yAxisIntersection ? 0 : intersectionPoint.twoD.x,
-          y: xAxisIntersection ? 0 : intersectionPoint.twoD.y,
+        let startPoint: Coords2d = [
+          yAxisIntersection ? 0 : intersectionPoint.twoD.x,
+          xAxisIntersection ? 0 : intersectionPoint.twoD.y,
+        ]
+        if (!xAxisIntersection && !yAxisIntersection) {
+          startPoint = this.snapToGrid(startPoint, args.mouseEvent).point
         }
 
         const inserted = insertNewStartProfileAt(
           this.kclManager.ast,
           sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
-          [snappedClickPoint.x, snappedClickPoint.y],
+          startPoint,
           'end'
         )
 
@@ -729,7 +862,7 @@ export class SceneEntities {
           id: sketch.start.__geoMeta.id,
           pathToNode: segPathToNode,
           scale,
-          theme: this.sceneInfra._theme,
+          theme: this.sceneInfra.theme,
           isDraft: false,
         })
         _profileStart.layers.set(SKETCH_LAYER)
@@ -863,7 +996,7 @@ export class SceneEntities {
           pathToNode: segPathToNode,
           isDraftSegment,
           scale,
-          theme: this.sceneInfra._theme,
+          theme: this.sceneInfra.theme,
           isSelected,
           sceneInfra: this.sceneInfra,
           selection,
@@ -1320,8 +1453,14 @@ export class SceneEntities {
         if (trap(_node)) return Promise.reject(_node)
         const sketchInit = _node.node?.declaration.init
 
-        const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
-        const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
+        const snapRes = this.getSnappedDragPoint(
+          args.intersectionPoint.twoD,
+          args.intersects,
+          args.mouseEvent
+        )
+        const { snappedPoint } = snapRes
+        const x = snappedPoint[0] - rectangleOrigin[0]
+        const y = snappedPoint[1] - rectangleOrigin[1]
 
         if (sketchInit.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tag)
@@ -1349,24 +1488,6 @@ export class SceneEntities {
         sgPaths.forEach((seg, index) =>
           this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
         )
-
-        const { intersectionPoint } = args
-        if (!intersectionPoint?.twoD) return
-        const { snappedPoint, isSnapped } = this.getSnappedDragPoint(
-          intersectionPoint.twoD,
-          args.intersects,
-          args.mouseEvent
-        )
-        if (isSnapped) {
-          this.positionDraftPoint({
-            snappedPoint: new Vector2(...snappedPoint),
-            origin: sketchOrigin,
-            yAxis: forward,
-            zAxis: up,
-          })
-        } else {
-          this.removeDraftPoint()
-        }
       },
       onClick: async (args) => {
         // If there is a valid camera interaction that matches, do that instead
@@ -1375,11 +1496,16 @@ export class SceneEntities {
         )
         if (interaction !== 'none') return
         // Commit the rectangle to the full AST/code and return to sketch.idle
-        const cornerPoint = args.intersectionPoint?.twoD
-        if (!cornerPoint || args.mouseEvent.button !== 0) return
+        const twoD = args.intersectionPoint?.twoD
+        if (!twoD || args.mouseEvent.button !== 0) return
 
-        const x = roundOff((cornerPoint.x || 0) - rectangleOrigin[0])
-        const y = roundOff((cornerPoint.y || 0) - rectangleOrigin[1])
+        const { snappedPoint } = this.getSnappedDragPoint(
+          twoD,
+          args.intersects,
+          args.mouseEvent
+        )
+        const x = roundOff(snappedPoint[0] - rectangleOrigin[0])
+        const y = roundOff(snappedPoint[1] - rectangleOrigin[1])
 
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
@@ -1526,8 +1652,13 @@ export class SceneEntities {
         if (trap(_node)) return Promise.reject(_node)
         const sketchInit = _node.node?.declaration.init
 
-        const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
-        const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
+        const { snappedPoint } = this.getSnappedDragPoint(
+          args.intersectionPoint.twoD,
+          args.intersects,
+          args.mouseEvent
+        )
+        const x = snappedPoint[0] - rectangleOrigin[0]
+        const y = snappedPoint[1] - rectangleOrigin[1]
 
         if (sketchInit.type === 'PipeExpression') {
           const maybeError = updateCenterRectangleSketch(
@@ -1573,11 +1704,16 @@ export class SceneEntities {
         )
         if (interaction !== 'none') return
         // Commit the rectangle to the full AST/code and return to sketch.idle
-        const cornerPoint = args.intersectionPoint?.twoD
-        if (!cornerPoint || args.mouseEvent.button !== 0) return
+        const twoD = args.intersectionPoint?.twoD
+        if (!twoD || args.mouseEvent.button !== 0) return
 
-        const x = roundOff((cornerPoint.x || 0) - rectangleOrigin[0])
-        const y = roundOff((cornerPoint.y || 0) - rectangleOrigin[1])
+        const { snappedPoint } = this.getSnappedDragPoint(
+          twoD,
+          args.intersects,
+          args.mouseEvent
+        )
+        const x = roundOff(snappedPoint[0] - rectangleOrigin[0])
+        const y = roundOff(snappedPoint[1] - rectangleOrigin[1])
 
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
@@ -1714,10 +1850,11 @@ export class SceneEntities {
               type: 'circle-three-point-segment',
               p1: [point1[0], point1[1]],
               p2: [point2[0], point2[1]],
-              p3: [
-                args.intersectionPoint.twoD.x,
-                args.intersectionPoint.twoD.y,
-              ],
+              p3: this.getSnappedDragPoint(
+                args.intersectionPoint.twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             }
           )
           if (err(moddedResult)) return
@@ -1778,7 +1915,11 @@ export class SceneEntities {
               type: 'circle-three-point-segment',
               p1: [point1[0], point1[1]],
               p2: [point2[0], point2[1]],
-              p3: [cornerPoint.x || 0, cornerPoint.y || 0],
+              p3: this.getSnappedDragPoint(
+                cornerPoint,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             }
           )
           if (err(moddedResult)) return
@@ -2657,6 +2798,7 @@ export class SceneEntities {
     // Snap to previous segment's tangent direction when drawing a straight segment
     let snappedToTangent = false
     let negativeTangentDirection = false
+    let snappedToGrid = false
 
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
     const forceDirectionSnapping = mouseEvent.shiftKey
@@ -2746,16 +2888,28 @@ export class SceneEntities {
       }
     }
 
-    // Snap to the main axes if there was no snapping to tangent direction
     if (!snappedToTangent) {
+      // Snap to the main axes if there was no snapping to tangent direction
       snappedPoint = [
         intersectsYAxis ? 0 : snappedPoint[0],
         intersectsXAxis ? 0 : snappedPoint[1],
-      ]
+      ] as const
+
+      if (!intersectsXAxis && !intersectsYAxis) {
+        ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
+          snappedPoint,
+          mouseEvent
+        ))
+      }
     }
 
     return {
-      isSnapped: !!(intersectsYAxis || intersectsXAxis || snappedToTangent),
+      isSnapped: !!(
+        intersectsYAxis ||
+        intersectsXAxis ||
+        snappedToTangent ||
+        snappedToGrid
+      ),
       snappedToTangent,
       negativeTangentDirection,
       snappedPoint,
@@ -3183,7 +3337,7 @@ export class SceneEntities {
       (this.sceneInfra.camControls.camera instanceof OrthographicCamera
         ? orthoFactor
         : perspScale(this.sceneInfra.camControls.camera, group)) /
-      this.sceneInfra._baseUnitMultiplier
+      this.sceneInfra.baseUnitMultiplier
     let input: SegmentInputs = {
       type: 'straight-segment',
       from: segment.from,
@@ -3363,7 +3517,7 @@ export class SceneEntities {
             (this.sceneInfra.camControls.camera instanceof OrthographicCamera
               ? orthoFactor
               : perspScale(this.sceneInfra.camControls.camera, parent)) /
-            this.sceneInfra._baseUnitMultiplier
+            this.sceneInfra.baseUnitMultiplier
           let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
@@ -3440,7 +3594,7 @@ export class SceneEntities {
             (this.sceneInfra.camControls.camera instanceof OrthographicCamera
               ? orthoFactor
               : perspScale(this.sceneInfra.camControls.camera, parent)) /
-            this.sceneInfra._baseUnitMultiplier
+            this.sceneInfra.baseUnitMultiplier
           let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
             update = segmentUtils.straight.update
@@ -3502,7 +3656,7 @@ export class SceneEntities {
           isSelected
             ? SEGMENT_BLUE
             : parent?.userData?.baseColor ||
-                getThemeColorForThreeJs(this.sceneInfra._theme)
+                getThemeColorForThreeJs(this.sceneInfra.theme)
         )
         updateExtraSegments(parent, 'hoveringLine', false)
         updateExtraSegments(parent, 'selected', isSelected)
@@ -3618,7 +3772,7 @@ export class SceneEntities {
   }
 
   drawDashedLine({ from, to }: { from: Coords2d; to: Coords2d }) {
-    const baseColor = getThemeColorForThreeJs(this.sceneInfra._theme)
+    const baseColor = getThemeColorForThreeJs(this.sceneInfra.theme)
     const color = baseColor
     const meshType = STRAIGHT_SEGMENT_DASH
 
@@ -3662,7 +3816,7 @@ export class SceneEntities {
           (this.sceneInfra.camControls.camera instanceof OrthographicCamera
             ? orthoFactor
             : perspScale(this.sceneInfra.camControls.camera, group)) /
-          this.sceneInfra._baseUnitMultiplier
+          this.sceneInfra.baseUnitMultiplier
         const from = group.userData.from
 
         const straightSegmentBodyDashed = group.children.find(
@@ -3934,6 +4088,34 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
       groupExpressionIndex === sketchEntryNodePath[1][0]
     return isProfileStartOfCurrentExpr
   }
+}
+
+// returns the factor by which to multiply the grid depending on zoom level in non-fixed size mode
+function getGridScaleFactor(options: {
+  majorGridSpacing: number
+  pixelsPerBaseUnit: number
+  fixedSizeGrid: boolean
+}) {
+  let effectiveMajorSpacing = options.majorGridSpacing
+  let gridScaleFactor = 1
+  if (!options.fixedSizeGrid) {
+    // In non-fixed size mode, adjust major spacing based on current zoom level
+    let majorPx = effectiveMajorSpacing * options.pixelsPerBaseUnit
+    if (majorPx <= 0) {
+      return 1 // just in case to avoid division by zero or negative grid spacing
+    }
+
+    const minPx = 40
+    const maxPx = minPx * 10
+
+    // Multiply / divide by 10 until majorPx falls within [minPx, maxPx]
+    if (majorPx < minPx) {
+      gridScaleFactor = 10 ** Math.ceil(Math.log10(minPx / majorPx))
+    } else if (majorPx > maxPx) {
+      gridScaleFactor = 1 / 10 ** Math.ceil(Math.log10(majorPx / maxPx))
+    }
+  }
+  return gridScaleFactor
 }
 
 // Returns the 2D tangent direction vector at the end of the segmentGroup

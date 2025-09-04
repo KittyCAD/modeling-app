@@ -947,10 +947,6 @@ export async function setup(
             },
             ...TEST_SETTINGS.project,
             onboarding_status: 'dismissed',
-            // Tests were written before this setting existed.
-            // It's true by default because it's a good user experience, but
-            // these tests require it to be false.
-            fixed_size_grid: false,
           },
           project: {
             ...TEST_SETTINGS.project,
@@ -1172,7 +1168,10 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
     .toBe(lines)
 }
 
-export function settingsToToml(settings: DeepPartial<Configuration>) {
+// TODO: fix type to allow for meta.id in configuration
+export function settingsToToml(
+  settings: DeepPartial<Configuration | { settings: { meta: { id: string } } }>
+) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
 }

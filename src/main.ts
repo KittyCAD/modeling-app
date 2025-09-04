@@ -236,6 +236,13 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
+  // Disable refresh shortcut globally for the desktop application
+  newWindow.webContents.on('before-input-event', (event, input) => {
+    if ((input.control || input.meta) && input.key.toLowerCase() === 'r') {
+      event.preventDefault()
+    }
+  })
+
   if (!process.env.HEADLESS) newWindow.show()
 
   return newWindow

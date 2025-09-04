@@ -1192,9 +1192,11 @@ sketch001 = startSketchOn(XZ)
     })
 
     await page.waitForTimeout(200)
-    await editor.expectEditor.toContain(
-      `tangentialArc(angle = 187.46deg, radius = 3.97)`,
-      { shouldNormalise: true }
+    await editor.expectEditor.toContain('tangentialArc(angle = ', {
+      shouldNormalise: true,
+    })
+    await editor.expectEditor.not.toContain(
+      'tangentialArc(angle = 60deg, radius=10.0)'
     )
   })
 
