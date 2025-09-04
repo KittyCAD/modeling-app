@@ -118,12 +118,12 @@ function FileExplorerRowContextMenu({
         <ContextMenuItem data-testid="context-menu-delete" onClick={onDelete}>
           Delete
         </ContextMenuItem>,
-        <ContextMenuItem data-testid="context-menu-delete" onClick={onCopy}>
+        <ContextMenuItem data-testid="context-menu-copy" onClick={onCopy}>
           Copy
         </ContextMenuItem>,
         <ContextMenuItem
           disabled={!isCopying}
-          data-testid="context-menu-delete"
+          data-testid="context-menu-paste"
           onClick={onPaste}
         >
           Paste
