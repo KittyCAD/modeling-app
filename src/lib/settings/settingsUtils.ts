@@ -76,7 +76,6 @@ export function configurationToSettingsPayload(
       ),
       enableTouchControls:
         configuration?.settings?.modeling?.enable_touch_controls,
-      enableCopilot: configuration?.settings?.modeling?.enable_copilot,
       useNewSketchMode: configuration?.settings?.modeling?.use_new_sketch_mode,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
@@ -128,7 +127,6 @@ export function settingsPayloadToConfiguration(
           ? cameraSystemToMouseControl(configuration?.modeling?.mouseControls)
           : undefined,
         enable_touch_controls: configuration?.modeling?.enableTouchControls,
-        enable_copilot: configuration?.modeling?.enableCopilot,
         use_new_sketch_mode: configuration?.modeling?.useNewSketchMode,
         highlight_edges: configuration?.modeling?.highlightEdges,
         enable_ssao: configuration?.modeling?.enableSSAO,
@@ -365,7 +363,7 @@ export async function loadAndValidateSettings(
   let settingsNext = createSettings()
 
   // Because getting the default directory is async, we need to set it after
-  if (window.electron) {
+  if (isDesktop() && window.electron) {
     settingsNext.app.projectDirectory.default = await getInitialDefaultDir(
       window.electron
     )
@@ -383,8 +381,72 @@ export async function loadAndValidateSettings(
       ? await readProjectSettingsFile(window.electron, projectPath)
       : readLocalStorageProjectSettingsFile()
 
+    // An id was missing. Create one and write it to disk immediately.
+    if (!err(projectSettings) && !projectSettings.settings?.meta?.id) {
+      projectSettings = {
+        settings: {
+          meta: {
+            id: v4(),
+          },
+        },
+      }
+      // Duplicated from settingsUtils.ts
+      const projectTomlString = serializeProjectConfiguration(projectSettings)
+      if (err(projectTomlString))
+        return Promise.reject(new Error('Failed to serialize project settings'))
+      if (window.electron) {
+        await writeProjectSettingsFile(
+          window.electron,
+          projectPath,
+          projectTomlString
+        )
+      } else {
+        localStorage.setItem(
+          localStorageProjectSettingsPath(),
+          projectTomlString
+        )
+      }
+    }
+
     if (err(projectSettings))
       return Promise.reject(new Error('Invalid project settings'))
+
+    // An id was missing. Create one and write it to disk immediately.
+    if (
+      !projectSettings.settings?.meta?.id ||
+      projectSettings.settings.meta.id === uuidNIL
+    ) {
+      const projectSettingsNew = {
+        meta: {
+          id: v4(),
+        },
+      }
+
+      // Duplicated from settingsUtils.ts
+      const projectTomlString = serializeProjectConfiguration(
+        settingsPayloadToProjectConfiguration(projectSettingsNew)
+      )
+      if (err(projectTomlString))
+        return Promise.reject(
+          new Error('Could not serialize project configuration')
+        )
+      if (isDesktop() && window.electron) {
+        await writeProjectSettingsFile(
+          window.electron,
+          projectPath,
+          projectTomlString
+        )
+      } else {
+        localStorage.setItem(
+          localStorageProjectSettingsPath(),
+          projectTomlString
+        )
+      }
+
+      projectSettings = {
+        settings: projectSettingsNew,
+      }
+    }
 
     // An id was missing. Create one and write it to disk immediately.
     if (

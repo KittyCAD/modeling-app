@@ -233,6 +233,23 @@ pub struct Program {
     pub digest: Option<Digest>,
 }
 
+impl From<Node<Block>> for Node<Program> {
+    fn from(block: Node<Block>) -> Self {
+        Node::new(
+            Program {
+                body: block.inner.items,
+                non_code_meta: block.inner.non_code_meta,
+                shebang: None,
+                inner_attrs: block.inner.inner_attrs,
+                digest: None,
+            },
+            block.start,
+            block.end,
+            block.module_id,
+        )
+    }
+}
+
 impl Node<Program> {
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self, position: usize) -> Result<Vec<CompletionItem>> {
@@ -536,12 +553,7 @@ impl Program {
         let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
-        match item {
-            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => None,
-            BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
-            BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
-        }
+        item.get_expr_for_position(pos)
     }
 
     /// Checks if the ast has any import statements.    
@@ -692,21 +704,7 @@ impl Program {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for item in &mut self.body {
-            match item {
-                BodyItem::ImportStatement(stmt) => {
-                    stmt.rename_identifiers(old_name, new_name);
-                }
-                BodyItem::ExpressionStatement(expression_statement) => {
-                    expression_statement.expression.rename_identifiers(old_name, new_name);
-                }
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    variable_declaration.rename_identifiers(old_name, new_name);
-                }
-                BodyItem::TypeDeclaration(_) => {}
-                BodyItem::ReturnStatement(return_statement) => {
-                    return_statement.argument.rename_identifiers(old_name, new_name);
-                }
-            }
+            item.rename_identifiers(old_name, new_name);
         }
     }
 
@@ -737,19 +735,7 @@ impl Program {
     /// Replace a value with the new value, use the source range for matching the exact value.
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for item in &mut self.body {
-            match item {
-                BodyItem::ImportStatement(_) => {} // TODO
-                BodyItem::ExpressionStatement(expression_statement) => expression_statement
-                    .expression
-                    .replace_value(source_range, new_value.clone()),
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    variable_declaration.replace_value(source_range, new_value.clone())
-                }
-                BodyItem::TypeDeclaration(_) => {}
-                BodyItem::ReturnStatement(return_statement) => {
-                    return_statement.argument.replace_value(source_range, new_value.clone())
-                }
-            }
+            item.replace_value(source_range, new_value.clone());
         }
     }
 
@@ -906,6 +892,49 @@ impl BodyItem {
             BodyItem::ExpressionStatement(_) | BodyItem::ReturnStatement(_) => ItemVisibility::Default,
         }
     }
+
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        match self {
+            BodyItem::ImportStatement(stmt) => {
+                stmt.rename_identifiers(old_name, new_name);
+            }
+            BodyItem::ExpressionStatement(expression_statement) => {
+                expression_statement.expression.rename_identifiers(old_name, new_name);
+            }
+            BodyItem::VariableDeclaration(variable_declaration) => {
+                variable_declaration.rename_identifiers(old_name, new_name);
+            }
+            BodyItem::TypeDeclaration(_) => {}
+            BodyItem::ReturnStatement(return_statement) => {
+                return_statement.argument.rename_identifiers(old_name, new_name);
+            }
+        }
+    }
+
+    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        match self {
+            BodyItem::ImportStatement(_) => {} // TODO
+            BodyItem::ExpressionStatement(expression_statement) => {
+                expression_statement.expression.replace_value(source_range, new_value)
+            }
+            BodyItem::VariableDeclaration(variable_declaration) => {
+                variable_declaration.replace_value(source_range, new_value)
+            }
+            BodyItem::TypeDeclaration(_) => {}
+            BodyItem::ReturnStatement(return_statement) => {
+                return_statement.argument.replace_value(source_range, new_value)
+            }
+        }
+    }
+
+    fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
+        match self {
+            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => None,
+            BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
+            BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
+        }
+    }
 }
 
 impl From<BodyItem> for SourceRange {
@@ -942,6 +971,7 @@ pub enum Expr {
     IfExpression(BoxNode<IfExpression>),
     LabelledExpression(BoxNode<LabelledExpression>),
     AscribedExpression(BoxNode<AscribedExpression>),
+    SketchBlock(BoxNode<SketchBlock>),
     None(Node<KclNone>),
 }
 
@@ -991,6 +1021,7 @@ impl Expr {
             Expr::IfExpression(_) => None,
             Expr::LabelledExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::AscribedExpression(expr) => expr.expr.get_non_code_meta(),
+            Expr::SketchBlock(expr) => Some(&expr.non_code_meta),
             Expr::None(_none) => None,
         }
     }
@@ -1018,6 +1049,7 @@ impl Expr {
             Expr::PipeSubstitution(_) => {}
             Expr::LabelledExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::AscribedExpression(expr) => expr.expr.replace_value(source_range, new_value),
+            Expr::SketchBlock(e) => e.replace_value(source_range, new_value),
             Expr::None(_) => {}
         }
     }
@@ -1040,6 +1072,7 @@ impl Expr {
             Expr::IfExpression(expr) => expr.start,
             Expr::LabelledExpression(expr) => expr.start,
             Expr::AscribedExpression(expr) => expr.start,
+            Expr::SketchBlock(sketch_block) => sketch_block.start,
             Expr::None(none) => none.start,
         }
     }
@@ -1062,6 +1095,7 @@ impl Expr {
             Expr::IfExpression(expr) => expr.end,
             Expr::LabelledExpression(expr) => expr.end,
             Expr::AscribedExpression(expr) => expr.end,
+            Expr::SketchBlock(expr) => expr.end,
             Expr::None(none) => none.end,
         }
     }
@@ -1090,6 +1124,7 @@ impl Expr {
             Expr::IfExpression(expr) => expr.rename_identifiers(old_name, new_name),
             Expr::LabelledExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
             Expr::AscribedExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
+            Expr::SketchBlock(expr) => expr.rename_identifiers(old_name, new_name),
             Expr::None(_) => {}
         }
     }
@@ -1116,6 +1151,9 @@ impl Expr {
             Expr::IfExpression(expr) => expr.get_constraint_level(),
             Expr::LabelledExpression(expr) => expr.expr.get_constraint_level(),
             Expr::AscribedExpression(expr) => expr.expr.get_constraint_level(),
+            Expr::SketchBlock(expr) => ConstraintLevel::Ignore {
+                source_ranges: vec![expr.into()],
+            },
             Expr::None(none) => none.get_constraint_level(),
         }
     }
@@ -1236,6 +1274,105 @@ impl AscribedExpression {
         let end = ty.end;
         let module_id = expr.module_id();
         Node::new(AscribedExpression { expr, ty, digest: None }, start, end, module_id)
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct SketchBlock {
+    pub arguments: Vec<LabeledArg>,
+    pub body: Node<Block>,
+
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl SketchBlock {
+    pub(crate) const CALLEE_NAME: &str = "sketch";
+
+    /// Iterate over all arguments.
+    pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
+        self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg))
+    }
+
+    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for arg in &mut self.arguments {
+            arg.arg.replace_value(source_range, new_value.clone());
+        }
+
+        self.body.replace_value(source_range, new_value);
+    }
+
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for arg in &mut self.arguments {
+            arg.arg.rename_identifiers(old_name, new_name);
+        }
+
+        self.body.rename_identifiers(old_name, new_name);
+    }
+}
+
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct Block {
+    pub items: Vec<BodyItem>,
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub inner_attrs: NodeList<Annotation>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl From<Program> for Block {
+    fn from(program: Program) -> Self {
+        Block {
+            items: program.body,
+            non_code_meta: program.non_code_meta,
+            inner_attrs: program.inner_attrs,
+            digest: None,
+        }
+    }
+}
+
+impl Block {
+    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for item in &mut self.items {
+            item.replace_value(source_range, new_value.clone());
+        }
+    }
+
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for item in &mut self.items {
+            item.rename_identifiers(old_name, new_name);
+        }
+    }
+
+    /// Returns the body item that includes the given character position.
+    fn get_body_item_for_position(&self, pos: usize) -> Option<&BodyItem> {
+        for item in &self.items {
+            let source_range = SourceRange::from(item);
+            if source_range.contains(pos) {
+                return Some(item);
+            }
+        }
+
+        None
+    }
+
+    /// Returns an Expr that includes the given character position.
+    pub fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
+        let item = self.get_body_item_for_position(pos)?;
+
+        item.get_expr_for_position(pos)
     }
 }
 
