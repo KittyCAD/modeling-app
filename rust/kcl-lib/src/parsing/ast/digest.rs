@@ -1,12 +1,12 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
 use crate::parsing::ast::types::{
-    Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, BodyItem,
-    CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType, Identifier,
-    IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression, Literal,
-    LiteralValue, MemberExpression, Name, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-    PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type, TypeDeclaration, UnaryExpression,
-    VariableDeclaration, VariableDeclarator, VariableKind,
+    Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, Block,
+    BodyItem, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType,
+    Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
+    Literal, LiteralValue, MemberExpression, Name, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
+    PipeSubstitution, PrimitiveType, Program, ReturnStatement, SketchBlock, TagDeclarator, Type, TypeDeclaration,
+    UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.
@@ -143,6 +143,7 @@ impl Expr {
             Expr::IfExpression(e) => e.compute_digest(),
             Expr::LabelledExpression(e) => e.compute_digest(),
             Expr::AscribedExpression(e) => e.compute_digest(),
+            Expr::SketchBlock(e) => e.compute_digest(),
             Expr::None(_) => {
                 let mut hasher = Sha256::new();
                 hasher.update(b"Value::None");
@@ -245,7 +246,7 @@ impl FunctionType {
 impl Parameter {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.identifier.compute_digest());
-        match &mut slf.type_ {
+        match &mut slf.param_type {
             Some(arg) => {
                 hasher.update(b"Parameter::type_::Some");
                 hasher.update(arg.compute_digest())
@@ -517,6 +518,26 @@ impl ElseIf {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.cond.compute_digest());
         hasher.update(slf.then_val.compute_digest());
+    });
+}
+
+impl SketchBlock {
+    compute_digest!(|slf, hasher| {
+        for argument in &mut slf.arguments {
+            if let Some(l) = &mut argument.label {
+                hasher.update(l.compute_digest());
+            }
+            hasher.update(argument.arg.compute_digest());
+        }
+        hasher.update(slf.body.compute_digest());
+    });
+}
+
+impl Block {
+    compute_digest!(|slf, hasher| {
+        for item in &mut slf.items {
+            hasher.update(item.compute_digest());
+        }
     });
 }
 

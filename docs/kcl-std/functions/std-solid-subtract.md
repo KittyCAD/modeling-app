@@ -61,7 +61,7 @@ subtractedPart = subtract([part001], tools = [part002])
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the subtract function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-subtract0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -100,7 +100,7 @@ subtractedPart = part001 - part002
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the subtract function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-subtract1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

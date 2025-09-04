@@ -42,7 +42,7 @@ point = hyperbolicPoint(x = 5, semiMajor = 2, semiMinor = 1)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the hyperbolicPoint function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-hyperbolicPoint0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
