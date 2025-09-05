@@ -3,6 +3,7 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{
     ModelingCmd, each_cmd as mcmd,
     length_unit::LengthUnit,
@@ -13,19 +14,22 @@ use kcmc::{
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
-    shared::{Angle, ExtrudeMethod, Point2d, Point3d},
+    shared::{Angle, ExtrudeMethod, Point2d},
 };
 use uuid::Uuid;
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
+use crate::UnitLen;
 use crate::{
     errors::{KclError, KclErrorDetails},
+    exec::PlaneType,
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, PlaneInfo, Point3d, Sketch,
+        SketchSurface, Solid,
         types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
+    std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference, sketch::PlaneData},
 };
 
 /// Extrudes by a given amount.
@@ -40,6 +44,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             RuntimeType::Primitive(PrimitiveType::Edge),
             RuntimeType::plane(),
             RuntimeType::Primitive(PrimitiveType::Face),
+            RuntimeType::sketch(),
             RuntimeType::Primitive(PrimitiveType::Solid),
             RuntimeType::tagged_edge(),
             RuntimeType::tagged_face(),
@@ -165,7 +170,7 @@ async fn inner_extrude(
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(mcmd::ExtrudeToReference {
                     target: sketch.id.into(),
                     reference: ExtrudeReference::Point {
-                        point: Point3d {
+                        point: KPoint3d {
                             x: LengthUnit(point[0].to_mm()),
                             y: LengthUnit(point[1].to_mm()),
                             z: LengthUnit(point[2].to_mm()),
@@ -178,12 +183,12 @@ async fn inner_extrude(
                     ModelingCmd::from(mcmd::ExtrudeToReference {
                         target: sketch.id.into(),
                         reference: ExtrudeReference::Axis {
-                            axis: Point3d {
+                            axis: KPoint3d {
                                 x: direction[0].to_mm(),
                                 y: direction[1].to_mm(),
                                 z: direction[2].to_mm(),
                             },
-                            point: Point3d {
+                            point: KPoint3d {
                                 x: LengthUnit(origin[0].to_mm()),
                                 y: LengthUnit(origin[1].to_mm()),
                                 z: LengthUnit(origin[2].to_mm()),
@@ -193,12 +198,30 @@ async fn inner_extrude(
                         extrude_method,
                     })
                 }
-                Point3dAxis3dOrGeometryReference::Plane(plane) => ModelingCmd::from(mcmd::ExtrudeToReference {
-                    target: sketch.id.into(),
-                    reference: ExtrudeReference::EntityReference { entity_id: plane.id },
-                    faces: Default::default(),
-                    extrude_method,
-                }),
+                Point3dAxis3dOrGeometryReference::Plane(plane) => {
+                    let plane = if plane.value == crate::exec::PlaneType::Uninit {
+                        if plane.info.origin.units == UnitLen::Unknown {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Origin of plane has unknown units".to_string(),
+                                vec![args.source_range],
+                            )));
+                        }
+                        crate::std::sketch::make_sketch_plane_from_orientation(
+                            plane.clone().info.into_plane_data(),
+                            exec_state,
+                            &args,
+                        )
+                        .await?
+                    } else {
+                        plane.clone()
+                    };
+                    ModelingCmd::from(mcmd::ExtrudeToReference {
+                        target: sketch.id.into(),
+                        reference: ExtrudeReference::EntityReference { entity_id: plane.id },
+                        faces: Default::default(),
+                        extrude_method,
+                    })
+                }
                 Point3dAxis3dOrGeometryReference::Edge(edge_ref) => {
                     let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
                     ModelingCmd::from(mcmd::ExtrudeToReference {
@@ -217,6 +240,12 @@ async fn inner_extrude(
                         extrude_method,
                     })
                 }
+                Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(mcmd::ExtrudeToReference {
+                    target: sketch.id.into(),
+                    reference: ExtrudeReference::EntityReference { entity_id: sketch_ref.id },
+                    faces: Default::default(),
+                    extrude_method,
+                }),
                 Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(mcmd::ExtrudeToReference {
                     target: sketch.id.into(),
                     reference: ExtrudeReference::EntityReference { entity_id: solid.id },

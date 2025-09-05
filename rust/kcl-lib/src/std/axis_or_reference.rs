@@ -2,7 +2,7 @@
 
 use super::args::TyF64;
 use crate::{
-    execution::{Plane, Solid, TagIdentifier},
+    execution::{Plane, Sketch, Solid, TagIdentifier},
     std::{fillet::EdgeReference, sketch::FaceTag},
 };
 
@@ -84,6 +84,8 @@ pub enum Point3dAxis3dOrGeometryReference {
     Edge(EdgeReference),
     /// Face.
     Face(FaceTag),
+    /// Sketch.
+    Sketch(Box<Sketch>),
     /// Solid.
     Solid(Box<Solid>),
     /// Edge Tag.

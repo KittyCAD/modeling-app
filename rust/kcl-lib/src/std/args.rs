@@ -985,6 +985,7 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
         let case6 = TagIdentifier::from_kcl_val;
         let case7 = TagIdentifier::from_kcl_val;
         let case8 = Box::<Plane>::from_kcl_val;
+        let case9 = Box::<Sketch>::from_kcl_val;
 
         case2(arg)
             .or_else(|| case1(arg).map(Self::Point))
@@ -994,6 +995,7 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
             .or_else(|| case6(arg).map(Self::TaggedEdge))
             .or_else(|| case7(arg).map(Self::TaggedFace))
             .or_else(|| case8(arg).map(Self::Plane))
+            .or_else(|| case9(arg).map(Self::Sketch))
     }
 }
 
@@ -1195,6 +1197,15 @@ impl<'a> FromKclValue<'a> for Box<Solid> {
 impl<'a> FromKclValue<'a> for Box<Plane> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Plane { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Box<Sketch> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Sketch { value } = arg else {
             return None;
         };
         Some(value.to_owned())

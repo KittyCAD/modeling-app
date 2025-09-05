@@ -1027,7 +1027,7 @@ async fn start_sketch_on_face(
     }))
 }
 
-async fn make_sketch_plane_from_orientation(
+pub async fn make_sketch_plane_from_orientation(
     data: PlaneData,
     exec_state: &mut ExecState,
     args: &Args,
