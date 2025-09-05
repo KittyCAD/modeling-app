@@ -217,7 +217,7 @@ async fn inner_extrude(
                     extrude_method,
                 }),
                 Point3dAxis3dOrGeometryReference::TaggedEdge(tag) => {
-                    let tagged_edge = args.get_tag_engine_info(exec_state, &tag)?;
+                    let tagged_edge = args.get_tag_engine_info(exec_state, tag)?;
                     let tagged_edge_id = tagged_edge.id;
                     ModelingCmd::from(mcmd::ExtrudeToReference {
                         target: sketch.id.into(),
@@ -229,7 +229,7 @@ async fn inner_extrude(
                     })
                 }
                 Point3dAxis3dOrGeometryReference::TaggedFace(tag) => {
-                    let tagged_face = args.get_tag_engine_info(exec_state, &tag)?;
+                    let tagged_face = args.get_tag_engine_info(exec_state, tag)?;
                     let tagged_face_id = tagged_face.id;
                     ModelingCmd::from(mcmd::ExtrudeToReference {
                         target: sketch.id.into(),

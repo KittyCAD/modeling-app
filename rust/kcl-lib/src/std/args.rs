@@ -1,7 +1,6 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use kittycad_modeling_cmds::coord::Axis;
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
@@ -982,7 +981,7 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
         };
         let case3 = super::fillet::EdgeReference::from_kcl_val;
         let case4 = FaceTag::from_kcl_val;
-        let case5 = Solid::from_kcl_val;
+        let case5 = Box::<Solid>::from_kcl_val;
         let case6 = TagIdentifier::from_kcl_val;
         let case7 = TagIdentifier::from_kcl_val;
 

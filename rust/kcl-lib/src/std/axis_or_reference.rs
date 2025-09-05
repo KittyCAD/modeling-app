@@ -71,6 +71,7 @@ impl Axis3dOrPoint3d {
 }
 
 /// A raw point3d, 3D axis, Edge, Face, Solid or Tag.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Point3dAxis3dOrGeometryReference {
     /// Raw point3d.
@@ -82,7 +83,7 @@ pub enum Point3dAxis3dOrGeometryReference {
     /// Face.
     Face(FaceTag),
     /// Solid.
-    Solid(Solid),
+    Solid(Box<Solid>),
     /// Edge Tag.
     TaggedEdge(TagIdentifier),
     /// Face Tag.
