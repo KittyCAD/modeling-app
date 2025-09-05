@@ -2,7 +2,8 @@
   "version": 2,
   "git": {
     "deploymentEnabled": {
-      "main": false
+      "main": false,
+      "staging": true
     }
   },
   "headers": [
