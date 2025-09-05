@@ -1,9 +1,10 @@
 import type { MlEphantManagerContext } from '@src/machines/mlEphantManagerMachine'
 import type { ReactNode } from 'react'
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, Fragment } from 'react'
 import type { Prompt } from '@src/lib/prompt'
 import { PromptCard } from '@src/components/PromptCard'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { Popover, Transition } from '@headlessui/react'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
@@ -119,6 +120,32 @@ export const MlEphantConversationInput = (
   )
 }
 
+const MLEphantConversationStarter = () => {
+  return (
+    <div className="p-8 text-sm">
+      <h2 className="text-lg font-bold">
+        Welcome to{' '}
+        <span className="dark:text-ml-green light:underline decoration-ml-green underline-offset-4">
+          Text-to-CAD
+        </span>
+      </h2>
+      <p className="my-4">Here are some tips for effective prompts:</p>
+      <ul className="list-disc pl-4">
+        <li className="my-4">
+          Be as explicit as possible when describing geometry. Use dimensions,
+          use spatial relationships.
+        </li>
+        <li className="my-4">
+          Try using Text-to-CAD to make a model parametric, it's cool.
+        </li>
+        <li className="my-4">
+          Text-to-CAD treats every prompt as a separate instruction.
+        </li>
+      </ul>
+    </div>
+  )
+}
+
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
@@ -199,9 +226,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                     See more history
                   </div>
                 ) : (
-                  <div className="text-center p-4 text-chalkboard-60 text-md">
-                    The beginning of this project's Text-to-CAD history.
-                  </div>
+                  <MLEphantConversationStarter />
                 )
               ) : (
                 <div className="text-center p-4 text-chalkboard-60 text-md animate-pulse">
@@ -222,3 +247,38 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     </div>
   )
 }
+
+export const MLEphantConversationPaneMenu = () => (
+  <Popover className="relative">
+    <Popover.Button className="p-0 !bg-transparent border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 ui-open:!border-primary dark:ui-open:!border-chalkboard-70 !outline-none">
+      <CustomIcon name="questionMark" className="w-5 h-5" />
+    </Popover.Button>
+
+    <Transition
+      enter="duration-100 ease-out"
+      enterFrom="opacity-0 -translate-y-2"
+      enterTo="opacity-100 translate-y-0"
+      as={Fragment}
+    >
+      <Popover.Panel className="w-max max-w-md z-10 bg-default flex flex-col gap-4 absolute top-full left-auto right-0 mt-1 p-4 border border-solid b-5 rounded shadow-lg">
+        <div className="flex gap-2 items-center">
+          <CustomIcon
+            name="beaker"
+            className="w-5 h-5 bg-ml-green dark:text-chalkboard-100 rounded-sm"
+          />
+          <p className="text-base font-bold">
+            <span className="dark:text-ml-green light:underline decoration-ml-green underline-offset-4">
+              Text-to-CAD
+            </span>{' '}
+            is experimental
+          </p>
+        </div>
+        <p className="text-sm">
+          Text-to-CAD treats every prompt as separate. Full copilot mode with
+          conversational memory is coming soon. Conversations are not currently
+          shared between computers.
+        </p>
+      </Popover.Panel>
+    </Transition>
+  </Popover>
+)
