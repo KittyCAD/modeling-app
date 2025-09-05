@@ -135,6 +135,7 @@ jobs:
           files: 'out/Zoo*'
 
   release-web:
+    runs-on: namespace-profile-ubuntu-2-cores
     permissions: {}
     steps:
       - name: Deploy to Vercel Production
