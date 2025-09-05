@@ -103,8 +103,13 @@ export const MlEphantConversationPane = (props: {
       console.warn('Unexpected conversationId is undefined!')
     }
 
+    if (props.theProject === undefined) {
+      return
+    }
+
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
+      project: props.theProject,
       conversationId,
       nextPage:
         mlEphantManagerActorSnapshot.context
