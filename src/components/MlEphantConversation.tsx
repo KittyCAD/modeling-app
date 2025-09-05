@@ -109,7 +109,7 @@ export const MlEphantConversationInput = (
             data-testid="ml-ephant-conversation-input-button"
             disabled={props.disabled}
             onClick={onClick}
-            className="w-10 m-0 bg-ml-green text-chalkboard-100 hover:text-default p-2 flex justify-center"
+            className="w-10 m-0 bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
           >
             <CustomIcon name="arrowUp" className="w-5 h-5 animate-bounce" />
           </button>
