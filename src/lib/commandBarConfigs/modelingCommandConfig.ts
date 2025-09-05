@@ -139,6 +139,9 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     selection: Selections
     length: KclCommandValue
+    angle?: KclCommandValue
+    secondLength?: KclCommandValue
+    swap?: KclCommandValue
   }
   'Offset plane': {
     // Enables editing workflow
@@ -828,6 +831,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+      angle: {
+        inputType: 'kcl',
+        defaultValue: '45deg',
+        required: false,
+      },
+      secondLength: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: false,
+      },
+      swap: {
+        inputType: 'boolean',
+        defaultValue: false,
+        required: false,
       },
     },
   },

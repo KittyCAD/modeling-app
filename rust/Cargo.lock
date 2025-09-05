@@ -584,7 +584,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "117725a109d387c937a1533ce01b450cbde6b88abceea8473c4d7a85853cda3c"
 dependencies = [
  "lazy_static",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -1112,7 +1112,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "33d852cb9b869c2a9b3df2f71a3074817f01e1844f839a144f5fcef059a4eb5d"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2459,7 +2459,7 @@ checksum = "e04d7f318608d35d4b61ddd75cbdaee86b023ebe2bd5a66ee0915f0bf93095a9"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2825,7 +2825,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.133"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#3e93ab82c1d169c7d91dcb475a460ae836a1a757"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#9520f660a9e0edf8edae3e76f80717098f28896c"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2852,7 +2852,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#3e93ab82c1d169c7d91dcb475a460ae836a1a757"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#9520f660a9e0edf8edae3e76f80717098f28896c"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2863,7 +2863,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#3e93ab82c1d169c7d91dcb475a460ae836a1a757"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#9520f660a9e0edf8edae3e76f80717098f28896c"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4109,7 +4109,7 @@ dependencies = [
  "once_cell",
  "socket2 0.5.10",
  "tracing",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4549,7 +4549,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.4.15",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4562,7 +4562,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.9.2",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5255,7 +5255,7 @@ dependencies = [
  "getrandom 0.3.1",
  "once_cell",
  "rustix 1.0.2",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -6202,7 +6202,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -6724,4 +6724,4 @@ dependencies = [
 [[patch.unused]]
 name = "kittycad-modeling-session"
 version = "0.1.5"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#3e93ab82c1d169c7d91dcb475a460ae836a1a757"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#9520f660a9e0edf8edae3e76f80717098f28896c"

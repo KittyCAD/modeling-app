@@ -147,11 +147,11 @@ export fn chamfer(
   length: number(Length),
   /// The paths you want to chamfer
   tags: [Edge; 1+],
-  /// The ratio of the edge lengths. Incompatible with `angle`
-  ratio?: number,
-  /// The angle between the edges. Incompatible with `ratio`
+  /// Use a second length for the second face. Incompatible with `angle`
+  secondLength?: number,
+  /// The angle between the edges. Incompatible with `secondLength`
   angle?: number(Angle),
-  /// Swap the ratio or angle to be relative to the second face
+  /// Swap the `secondLength` or `angle` to be relative to the second face
   swap?: bool,
   /// Create a new tag which refers to this chamfer
   tag?: TagDecl,

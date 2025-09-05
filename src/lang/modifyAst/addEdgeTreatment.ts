@@ -56,6 +56,9 @@ export enum EdgeTreatmentType {
 export interface ChamferParameters {
   type: EdgeTreatmentType.Chamfer
   length: KclCommandValue
+  angle?: KclCommandValue
+  secondLength?: KclCommandValue
+  swap?: KclCommandValue
 }
 export interface FilletParameters {
   type: EdgeTreatmentType.Fillet
@@ -253,6 +256,50 @@ function insertParametersIntoAst(
       )
     }
 
+    // TODO: (ben) doesn't seem to do anything?
+    // handle angle? parameter
+    if (
+      parameters.type === EdgeTreatmentType.Chamfer &&
+      parameters.angle !== undefined &&
+      'variableName' in parameters.angle &&
+      parameters.angle?.variableName &&
+      parameters.angle?.insertIndex !== undefined
+    ) {
+      newAst.body.splice(
+        parameters.angle?.insertIndex,
+        0,
+        parameters.angle?.variableDeclarationAst
+      )
+    }
+
+    if (
+      parameters.type === EdgeTreatmentType.Chamfer &&
+      parameters.secondLength !== undefined &&
+      'variableName' in parameters.secondLength &&
+      parameters.secondLength?.variableName &&
+      parameters.secondLength?.insertIndex !== undefined
+    ) {
+      newAst.body.splice(
+        parameters.secondLength?.insertIndex,
+        0,
+        parameters.secondLength?.variableDeclarationAst
+      )
+    }
+
+    if (
+      parameters.type === EdgeTreatmentType.Chamfer &&
+      parameters.swap !== undefined &&
+      'variableName' in parameters.swap &&
+      parameters.swap?.variableName &&
+      parameters.swap?.insertIndex !== undefined
+    ) {
+      newAst.body.splice(
+        parameters.swap?.insertIndex,
+        0,
+        parameters.swap?.variableDeclarationAst
+      )
+    }
+
     // handle upcoming parameters here (for blend, bevel, etc.)
     return { ast: newAst }
   } catch (error) {
@@ -433,6 +480,7 @@ function getPathToEdgeTreatmentParameterLiteral(
   return pathToEdgeTreatmentObj
 }
 
+//TODO: (we need the optionals here?)
 function getParameterNameAndValue(
   parameters: EdgeTreatmentParameters
 ): { parameterName: string; parameterValue: Expr } | Error {
@@ -444,10 +492,10 @@ function getParameterNameAndValue(
     return { parameterName: 'radius', parameterValue }
   } else if (parameters.type === EdgeTreatmentType.Chamfer) {
     const parameterValue =
-      'variableName' in parameters.length
-        ? parameters.length.variableIdentifierAst
-        : parameters.length.valueAst
-    return { parameterName: 'length', parameterValue }
+      'variableName' in parameters.angle
+        ? parameters.angle?.variableIdentifierAst
+        : parameters.angle?.valueAst
+    return { parameterName: 'angle', parameterValue }
   } else {
     return new Error('Unsupported edge treatment type')
   }

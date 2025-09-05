@@ -22,7 +22,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
     let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source("tags")?;
-    let ratio = args.get_kw_arg_opt("ratio", &RuntimeType::num_any(), exec_state)?;
+    let second_length = args.get_kw_arg_opt("secondLength", &RuntimeType::num_any(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     let swap = args.get_kw_arg_opt("swap", &RuntimeType::bool(), exec_state)?;
     // TODO: custom profiles not ready yet
@@ -36,7 +36,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         solid,
         length,
         tags,
-        ratio,
+        second_length,
         angle,
         swap,
         None,
@@ -52,7 +52,7 @@ async fn inner_chamfer(
     solid: Box<Solid>,
     length: TyF64,
     tags: Vec<EdgeReference>,
-    ratio: Option<TyF64>,
+    second_length: Option<TyF64>,
     angle: Option<TyF64>,
     swap: Option<bool>,
     custom_profile: Option<Sketch>,
@@ -69,17 +69,17 @@ async fn inner_chamfer(
         )));
     }
 
-    if angle.is_some() && ratio.is_some() {
+    if angle.is_some() && second_length.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Cannot specify both an angle and a ratio. Specify only one.".to_string(),
+            "Cannot specify both an angle and a second length. Specify only one.".to_string(),
             vec![args.source_range],
         )));
     }
 
-    let ratio = ratio.map(|x| x.to_mm());
+    let second_length = second_length.map(|x| LengthUnit(x.to_mm()));
     let angle = angle.map(|x| Angle::from_degrees(x.to_degrees()));
 
-    let strategy = if ratio.is_some() || angle.is_some() || custom_profile.is_some() {
+    let strategy = if second_length.is_some() || angle.is_some() || custom_profile.is_some() {
         CutStrategy::Csg
     } else {
         Default::default()
@@ -101,7 +101,7 @@ async fn inner_chamfer(
         }
     } else {
         CutType::Chamfer {
-            ratio,
+            second_length,
             angle,
             swap: swap.unwrap_or_default(),
         }
