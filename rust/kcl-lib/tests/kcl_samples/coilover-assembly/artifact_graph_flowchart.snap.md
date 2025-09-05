@@ -50,8 +50,8 @@ flowchart LR
     109[Solid2d]
   end
   subgraph path116 [Path]
-    116["Path<br>[491, 551, 3]"]
-    117["Segment<br>[491, 551, 3]"]
+    116["Path<br>[491, 553, 3]"]
+    117["Segment<br>[491, 553, 3]"]
     118[Solid2d]
   end
   subgraph path126 [Path]
@@ -199,7 +199,7 @@ flowchart LR
   113["SweepEdge Adjacent"]
   114["Helix<br>[311, 451, 3]"]
   115["Plane<br>[468, 485, 3]"]
-  119["Sweep Sweep<br>[557, 580, 3]"]
+  119["Sweep Sweep<br>[559, 582, 3]"]
   120[Wall]
     %% face_code_ref=Missing NodePath
   121["Cap Start"]

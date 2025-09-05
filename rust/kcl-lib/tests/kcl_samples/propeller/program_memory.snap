@@ -104,10 +104,10 @@ description: Variables in memory after executing propeller.kcl
             10.10362971081845
           ],
           "tag": {
-            "commentStart": 1335,
-            "end": 1348,
+            "commentStart": 1343,
+            "end": 1356,
             "moduleId": 0,
-            "start": 1335,
+            "start": 1343,
             "type": "TagDeclarator",
             "value": "segUpperNeck"
           },
@@ -130,10 +130,10 @@ description: Variables in memory after executing propeller.kcl
             25.259074277046132
           ],
           "tag": {
-            "commentStart": 1393,
-            "end": 1404,
+            "commentStart": 1401,
+            "end": 1412,
             "moduleId": 0,
-            "start": 1393,
+            "start": 1401,
             "type": "TagDeclarator",
             "value": "segSpanTop"
           },
@@ -156,10 +156,10 @@ description: Variables in memory after executing propeller.kcl
             125.25907427704612
           ],
           "tag": {
-            "commentStart": 1445,
-            "end": 1451,
+            "commentStart": 1453,
+            "end": 1459,
             "moduleId": 0,
-            "start": 1445,
+            "start": 1453,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -182,10 +182,10 @@ description: Variables in memory after executing propeller.kcl
             125.25907427704612
           ],
           "tag": {
-            "commentStart": 1497,
-            "end": 1511,
+            "commentStart": 1505,
+            "end": 1519,
             "moduleId": 0,
-            "start": 1497,
+            "start": 1505,
             "type": "TagDeclarator",
             "value": "segSpanBottom"
           },
@@ -208,10 +208,10 @@ description: Variables in memory after executing propeller.kcl
             25.259074277046125
           ],
           "tag": {
-            "commentStart": 1574,
-            "end": 1587,
+            "commentStart": 1582,
+            "end": 1595,
             "moduleId": 0,
-            "start": 1574,
+            "start": 1582,
             "type": "TagDeclarator",
             "value": "segLowerNeck"
           },
@@ -433,10 +433,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1335,
-            "end": 1348,
+            "commentStart": 1343,
+            "end": 1356,
             "moduleId": 0,
-            "start": 1335,
+            "start": 1343,
             "type": "TagDeclarator",
             "value": "segUpperNeck"
           },
@@ -447,10 +447,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1393,
-            "end": 1404,
+            "commentStart": 1401,
+            "end": 1412,
             "moduleId": 0,
-            "start": 1393,
+            "start": 1401,
             "type": "TagDeclarator",
             "value": "segSpanTop"
           },
@@ -461,10 +461,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1445,
-            "end": 1451,
+            "commentStart": 1453,
+            "end": 1459,
             "moduleId": 0,
-            "start": 1445,
+            "start": 1453,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -475,10 +475,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1497,
-            "end": 1511,
+            "commentStart": 1505,
+            "end": 1519,
             "moduleId": 0,
-            "start": 1497,
+            "start": 1505,
             "type": "TagDeclarator",
             "value": "segSpanBottom"
           },
@@ -489,10 +489,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1574,
-            "end": 1587,
+            "commentStart": 1582,
+            "end": 1595,
             "moduleId": 0,
-            "start": 1574,
+            "start": 1582,
             "type": "TagDeclarator",
             "value": "segLowerNeck"
           },
@@ -539,10 +539,10 @@ description: Variables in memory after executing propeller.kcl
               10.10362971081845
             ],
             "tag": {
-              "commentStart": 1335,
-              "end": 1348,
+              "commentStart": 1343,
+              "end": 1356,
               "moduleId": 0,
-              "start": 1335,
+              "start": 1343,
               "type": "TagDeclarator",
               "value": "segUpperNeck"
             },
@@ -565,10 +565,10 @@ description: Variables in memory after executing propeller.kcl
               25.259074277046132
             ],
             "tag": {
-              "commentStart": 1393,
-              "end": 1404,
+              "commentStart": 1401,
+              "end": 1412,
               "moduleId": 0,
-              "start": 1393,
+              "start": 1401,
               "type": "TagDeclarator",
               "value": "segSpanTop"
             },
@@ -591,10 +591,10 @@ description: Variables in memory after executing propeller.kcl
               125.25907427704612
             ],
             "tag": {
-              "commentStart": 1445,
-              "end": 1451,
+              "commentStart": 1453,
+              "end": 1459,
               "moduleId": 0,
-              "start": 1445,
+              "start": 1453,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -617,10 +617,10 @@ description: Variables in memory after executing propeller.kcl
               125.25907427704612
             ],
             "tag": {
-              "commentStart": 1497,
-              "end": 1511,
+              "commentStart": 1505,
+              "end": 1519,
               "moduleId": 0,
-              "start": 1497,
+              "start": 1505,
               "type": "TagDeclarator",
               "value": "segSpanBottom"
             },
@@ -643,10 +643,10 @@ description: Variables in memory after executing propeller.kcl
               25.259074277046125
             ],
             "tag": {
-              "commentStart": 1574,
-              "end": 1587,
+              "commentStart": 1582,
+              "end": 1595,
               "moduleId": 0,
-              "start": 1574,
+              "start": 1582,
               "type": "TagDeclarator",
               "value": "segLowerNeck"
             },
@@ -936,10 +936,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1335,
-            "end": 1348,
+            "commentStart": 1343,
+            "end": 1356,
             "moduleId": 0,
-            "start": 1335,
+            "start": 1343,
             "type": "TagDeclarator",
             "value": "segUpperNeck"
           },
@@ -950,10 +950,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1393,
-            "end": 1404,
+            "commentStart": 1401,
+            "end": 1412,
             "moduleId": 0,
-            "start": 1393,
+            "start": 1401,
             "type": "TagDeclarator",
             "value": "segSpanTop"
           },
@@ -964,10 +964,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1445,
-            "end": 1451,
+            "commentStart": 1453,
+            "end": 1459,
             "moduleId": 0,
-            "start": 1445,
+            "start": 1453,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -978,10 +978,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1497,
-            "end": 1511,
+            "commentStart": 1505,
+            "end": 1519,
             "moduleId": 0,
-            "start": 1497,
+            "start": 1505,
             "type": "TagDeclarator",
             "value": "segSpanBottom"
           },
@@ -992,10 +992,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1574,
-            "end": 1587,
+            "commentStart": 1582,
+            "end": 1595,
             "moduleId": 0,
-            "start": 1574,
+            "start": 1582,
             "type": "TagDeclarator",
             "value": "segLowerNeck"
           },
@@ -1042,10 +1042,10 @@ description: Variables in memory after executing propeller.kcl
               10.10362971081845
             ],
             "tag": {
-              "commentStart": 1335,
-              "end": 1348,
+              "commentStart": 1343,
+              "end": 1356,
               "moduleId": 0,
-              "start": 1335,
+              "start": 1343,
               "type": "TagDeclarator",
               "value": "segUpperNeck"
             },
@@ -1068,10 +1068,10 @@ description: Variables in memory after executing propeller.kcl
               25.259074277046132
             ],
             "tag": {
-              "commentStart": 1393,
-              "end": 1404,
+              "commentStart": 1401,
+              "end": 1412,
               "moduleId": 0,
-              "start": 1393,
+              "start": 1401,
               "type": "TagDeclarator",
               "value": "segSpanTop"
             },
@@ -1094,10 +1094,10 @@ description: Variables in memory after executing propeller.kcl
               125.25907427704612
             ],
             "tag": {
-              "commentStart": 1445,
-              "end": 1451,
+              "commentStart": 1453,
+              "end": 1459,
               "moduleId": 0,
-              "start": 1445,
+              "start": 1453,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1120,10 +1120,10 @@ description: Variables in memory after executing propeller.kcl
               125.25907427704612
             ],
             "tag": {
-              "commentStart": 1497,
-              "end": 1511,
+              "commentStart": 1505,
+              "end": 1519,
               "moduleId": 0,
-              "start": 1497,
+              "start": 1505,
               "type": "TagDeclarator",
               "value": "segSpanBottom"
             },
@@ -1146,10 +1146,10 @@ description: Variables in memory after executing propeller.kcl
               25.259074277046125
             ],
             "tag": {
-              "commentStart": 1574,
-              "end": 1587,
+              "commentStart": 1582,
+              "end": 1595,
               "moduleId": 0,
-              "start": 1574,
+              "start": 1582,
               "type": "TagDeclarator",
               "value": "segLowerNeck"
             },
@@ -1387,10 +1387,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1335,
-            "end": 1348,
+            "commentStart": 1343,
+            "end": 1356,
             "moduleId": 0,
-            "start": 1335,
+            "start": 1343,
             "type": "TagDeclarator",
             "value": "segUpperNeck"
           },
@@ -1401,10 +1401,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1393,
-            "end": 1404,
+            "commentStart": 1401,
+            "end": 1412,
             "moduleId": 0,
-            "start": 1393,
+            "start": 1401,
             "type": "TagDeclarator",
             "value": "segSpanTop"
           },
@@ -1415,10 +1415,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1445,
-            "end": 1451,
+            "commentStart": 1453,
+            "end": 1459,
             "moduleId": 0,
-            "start": 1445,
+            "start": 1453,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1429,10 +1429,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1497,
-            "end": 1511,
+            "commentStart": 1505,
+            "end": 1519,
             "moduleId": 0,
-            "start": 1497,
+            "start": 1505,
             "type": "TagDeclarator",
             "value": "segSpanBottom"
           },
@@ -1443,10 +1443,10 @@ description: Variables in memory after executing propeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1574,
-            "end": 1587,
+            "commentStart": 1582,
+            "end": 1595,
             "moduleId": 0,
-            "start": 1574,
+            "start": 1582,
             "type": "TagDeclarator",
             "value": "segLowerNeck"
           },
@@ -1493,10 +1493,10 @@ description: Variables in memory after executing propeller.kcl
               10.10362971081845
             ],
             "tag": {
-              "commentStart": 1335,
-              "end": 1348,
+              "commentStart": 1343,
+              "end": 1356,
               "moduleId": 0,
-              "start": 1335,
+              "start": 1343,
               "type": "TagDeclarator",
               "value": "segUpperNeck"
             },
@@ -1519,10 +1519,10 @@ description: Variables in memory after executing propeller.kcl
               25.259074277046132
             ],
             "tag": {
-              "commentStart": 1393,
-              "end": 1404,
+              "commentStart": 1401,
+              "end": 1412,
               "moduleId": 0,
-              "start": 1393,
+              "start": 1401,
               "type": "TagDeclarator",
               "value": "segSpanTop"
             },
@@ -1545,10 +1545,10 @@ description: Variables in memory after executing propeller.kcl
               125.25907427704612
             ],
             "tag": {
-              "commentStart": 1445,
-              "end": 1451,
+              "commentStart": 1453,
+              "end": 1459,
               "moduleId": 0,
-              "start": 1445,
+              "start": 1453,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1571,10 +1571,10 @@ description: Variables in memory after executing propeller.kcl
               125.25907427704612
             ],
             "tag": {
-              "commentStart": 1497,
-              "end": 1511,
+              "commentStart": 1505,
+              "end": 1519,
               "moduleId": 0,
-              "start": 1497,
+              "start": 1505,
               "type": "TagDeclarator",
               "value": "segSpanBottom"
             },
@@ -1597,10 +1597,10 @@ description: Variables in memory after executing propeller.kcl
               25.259074277046125
             ],
             "tag": {
-              "commentStart": 1574,
-              "end": 1587,
+              "commentStart": 1582,
+              "end": 1595,
               "moduleId": 0,
-              "start": 1574,
+              "start": 1582,
               "type": "TagDeclarator",
               "value": "segLowerNeck"
             },
@@ -1841,10 +1841,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1335,
-                "end": 1348,
+                "commentStart": 1343,
+                "end": 1356,
                 "moduleId": 0,
-                "start": 1335,
+                "start": 1343,
                 "type": "TagDeclarator",
                 "value": "segUpperNeck"
               },
@@ -1855,10 +1855,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1393,
-                "end": 1404,
+                "commentStart": 1401,
+                "end": 1412,
                 "moduleId": 0,
-                "start": 1393,
+                "start": 1401,
                 "type": "TagDeclarator",
                 "value": "segSpanTop"
               },
@@ -1869,10 +1869,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1445,
-                "end": 1451,
+                "commentStart": 1453,
+                "end": 1459,
                 "moduleId": 0,
-                "start": 1445,
+                "start": 1453,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1883,10 +1883,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1497,
-                "end": 1511,
+                "commentStart": 1505,
+                "end": 1519,
                 "moduleId": 0,
-                "start": 1497,
+                "start": 1505,
                 "type": "TagDeclarator",
                 "value": "segSpanBottom"
               },
@@ -1897,10 +1897,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1574,
-                "end": 1587,
+                "commentStart": 1582,
+                "end": 1595,
                 "moduleId": 0,
-                "start": 1574,
+                "start": 1582,
                 "type": "TagDeclarator",
                 "value": "segLowerNeck"
               },
@@ -1947,10 +1947,10 @@ description: Variables in memory after executing propeller.kcl
                   10.10362971081845
                 ],
                 "tag": {
-                  "commentStart": 1335,
-                  "end": 1348,
+                  "commentStart": 1343,
+                  "end": 1356,
                   "moduleId": 0,
-                  "start": 1335,
+                  "start": 1343,
                   "type": "TagDeclarator",
                   "value": "segUpperNeck"
                 },
@@ -1973,10 +1973,10 @@ description: Variables in memory after executing propeller.kcl
                   25.259074277046132
                 ],
                 "tag": {
-                  "commentStart": 1393,
-                  "end": 1404,
+                  "commentStart": 1401,
+                  "end": 1412,
                   "moduleId": 0,
-                  "start": 1393,
+                  "start": 1401,
                   "type": "TagDeclarator",
                   "value": "segSpanTop"
                 },
@@ -1999,10 +1999,10 @@ description: Variables in memory after executing propeller.kcl
                   125.25907427704612
                 ],
                 "tag": {
-                  "commentStart": 1445,
-                  "end": 1451,
+                  "commentStart": 1453,
+                  "end": 1459,
                   "moduleId": 0,
-                  "start": 1445,
+                  "start": 1453,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2025,10 +2025,10 @@ description: Variables in memory after executing propeller.kcl
                   125.25907427704612
                 ],
                 "tag": {
-                  "commentStart": 1497,
-                  "end": 1511,
+                  "commentStart": 1505,
+                  "end": 1519,
                   "moduleId": 0,
-                  "start": 1497,
+                  "start": 1505,
                   "type": "TagDeclarator",
                   "value": "segSpanBottom"
                 },
@@ -2051,10 +2051,10 @@ description: Variables in memory after executing propeller.kcl
                   25.259074277046125
                 ],
                 "tag": {
-                  "commentStart": 1574,
-                  "end": 1587,
+                  "commentStart": 1582,
+                  "end": 1595,
                   "moduleId": 0,
-                  "start": 1574,
+                  "start": 1582,
                   "type": "TagDeclarator",
                   "value": "segLowerNeck"
                 },
@@ -2292,10 +2292,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1335,
-                "end": 1348,
+                "commentStart": 1343,
+                "end": 1356,
                 "moduleId": 0,
-                "start": 1335,
+                "start": 1343,
                 "type": "TagDeclarator",
                 "value": "segUpperNeck"
               },
@@ -2306,10 +2306,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1393,
-                "end": 1404,
+                "commentStart": 1401,
+                "end": 1412,
                 "moduleId": 0,
-                "start": 1393,
+                "start": 1401,
                 "type": "TagDeclarator",
                 "value": "segSpanTop"
               },
@@ -2320,10 +2320,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1445,
-                "end": 1451,
+                "commentStart": 1453,
+                "end": 1459,
                 "moduleId": 0,
-                "start": 1445,
+                "start": 1453,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2334,10 +2334,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1497,
-                "end": 1511,
+                "commentStart": 1505,
+                "end": 1519,
                 "moduleId": 0,
-                "start": 1497,
+                "start": 1505,
                 "type": "TagDeclarator",
                 "value": "segSpanBottom"
               },
@@ -2348,10 +2348,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1574,
-                "end": 1587,
+                "commentStart": 1582,
+                "end": 1595,
                 "moduleId": 0,
-                "start": 1574,
+                "start": 1582,
                 "type": "TagDeclarator",
                 "value": "segLowerNeck"
               },
@@ -2398,10 +2398,10 @@ description: Variables in memory after executing propeller.kcl
                   10.10362971081845
                 ],
                 "tag": {
-                  "commentStart": 1335,
-                  "end": 1348,
+                  "commentStart": 1343,
+                  "end": 1356,
                   "moduleId": 0,
-                  "start": 1335,
+                  "start": 1343,
                   "type": "TagDeclarator",
                   "value": "segUpperNeck"
                 },
@@ -2424,10 +2424,10 @@ description: Variables in memory after executing propeller.kcl
                   25.259074277046132
                 ],
                 "tag": {
-                  "commentStart": 1393,
-                  "end": 1404,
+                  "commentStart": 1401,
+                  "end": 1412,
                   "moduleId": 0,
-                  "start": 1393,
+                  "start": 1401,
                   "type": "TagDeclarator",
                   "value": "segSpanTop"
                 },
@@ -2450,10 +2450,10 @@ description: Variables in memory after executing propeller.kcl
                   125.25907427704612
                 ],
                 "tag": {
-                  "commentStart": 1445,
-                  "end": 1451,
+                  "commentStart": 1453,
+                  "end": 1459,
                   "moduleId": 0,
-                  "start": 1445,
+                  "start": 1453,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2476,10 +2476,10 @@ description: Variables in memory after executing propeller.kcl
                   125.25907427704612
                 ],
                 "tag": {
-                  "commentStart": 1497,
-                  "end": 1511,
+                  "commentStart": 1505,
+                  "end": 1519,
                   "moduleId": 0,
-                  "start": 1497,
+                  "start": 1505,
                   "type": "TagDeclarator",
                   "value": "segSpanBottom"
                 },
@@ -2502,10 +2502,10 @@ description: Variables in memory after executing propeller.kcl
                   25.259074277046125
                 ],
                 "tag": {
-                  "commentStart": 1574,
-                  "end": 1587,
+                  "commentStart": 1582,
+                  "end": 1595,
                   "moduleId": 0,
-                  "start": 1574,
+                  "start": 1582,
                   "type": "TagDeclarator",
                   "value": "segLowerNeck"
                 },
@@ -2743,10 +2743,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1335,
-                "end": 1348,
+                "commentStart": 1343,
+                "end": 1356,
                 "moduleId": 0,
-                "start": 1335,
+                "start": 1343,
                 "type": "TagDeclarator",
                 "value": "segUpperNeck"
               },
@@ -2757,10 +2757,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1393,
-                "end": 1404,
+                "commentStart": 1401,
+                "end": 1412,
                 "moduleId": 0,
-                "start": 1393,
+                "start": 1401,
                 "type": "TagDeclarator",
                 "value": "segSpanTop"
               },
@@ -2771,10 +2771,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1445,
-                "end": 1451,
+                "commentStart": 1453,
+                "end": 1459,
                 "moduleId": 0,
-                "start": 1445,
+                "start": 1453,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2785,10 +2785,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1497,
-                "end": 1511,
+                "commentStart": 1505,
+                "end": 1519,
                 "moduleId": 0,
-                "start": 1497,
+                "start": 1505,
                 "type": "TagDeclarator",
                 "value": "segSpanBottom"
               },
@@ -2799,10 +2799,10 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1574,
-                "end": 1587,
+                "commentStart": 1582,
+                "end": 1595,
                 "moduleId": 0,
-                "start": 1574,
+                "start": 1582,
                 "type": "TagDeclarator",
                 "value": "segLowerNeck"
               },
@@ -2849,10 +2849,10 @@ description: Variables in memory after executing propeller.kcl
                   10.10362971081845
                 ],
                 "tag": {
-                  "commentStart": 1335,
-                  "end": 1348,
+                  "commentStart": 1343,
+                  "end": 1356,
                   "moduleId": 0,
-                  "start": 1335,
+                  "start": 1343,
                   "type": "TagDeclarator",
                   "value": "segUpperNeck"
                 },
@@ -2875,10 +2875,10 @@ description: Variables in memory after executing propeller.kcl
                   25.259074277046132
                 ],
                 "tag": {
-                  "commentStart": 1393,
-                  "end": 1404,
+                  "commentStart": 1401,
+                  "end": 1412,
                   "moduleId": 0,
-                  "start": 1393,
+                  "start": 1401,
                   "type": "TagDeclarator",
                   "value": "segSpanTop"
                 },
@@ -2901,10 +2901,10 @@ description: Variables in memory after executing propeller.kcl
                   125.25907427704612
                 ],
                 "tag": {
-                  "commentStart": 1445,
-                  "end": 1451,
+                  "commentStart": 1453,
+                  "end": 1459,
                   "moduleId": 0,
-                  "start": 1445,
+                  "start": 1453,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2927,10 +2927,10 @@ description: Variables in memory after executing propeller.kcl
                   125.25907427704612
                 ],
                 "tag": {
-                  "commentStart": 1497,
-                  "end": 1511,
+                  "commentStart": 1505,
+                  "end": 1519,
                   "moduleId": 0,
-                  "start": 1497,
+                  "start": 1505,
                   "type": "TagDeclarator",
                   "value": "segSpanBottom"
                 },
@@ -2953,10 +2953,10 @@ description: Variables in memory after executing propeller.kcl
                   25.259074277046125
                 ],
                 "tag": {
-                  "commentStart": 1574,
-                  "end": 1587,
+                  "commentStart": 1582,
+                  "end": 1595,
                   "moduleId": 0,
-                  "start": 1574,
+                  "start": 1582,
                   "type": "TagDeclarator",
                   "value": "segLowerNeck"
                 },

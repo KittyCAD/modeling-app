@@ -92,10 +92,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3268,
-                  "end": 3275,
+                  "commentStart": 3242,
+                  "end": 3249,
                   "moduleId": 0,
-                  "start": 3268,
+                  "start": 3242,
                   "type": "TagDeclarator",
                   "value": "seg003"
                 },
@@ -113,10 +113,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3383,
-                  "end": 3390,
+                  "commentStart": 3357,
+                  "end": 3364,
                   "moduleId": 0,
-                  "start": 3383,
+                  "start": 3357,
                   "type": "TagDeclarator",
                   "value": "seg004"
                 },
@@ -127,10 +127,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3430,
-                  "end": 3437,
+                  "commentStart": 3404,
+                  "end": 3411,
                   "moduleId": 0,
-                  "start": 3430,
+                  "start": 3404,
                   "type": "TagDeclarator",
                   "value": "seg005"
                 },
@@ -162,10 +162,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3743,
-                  "end": 3750,
+                  "commentStart": 3717,
+                  "end": 3724,
                   "moduleId": 0,
-                  "start": 3743,
+                  "start": 3717,
                   "type": "TagDeclarator",
                   "value": "seg006"
                 },
@@ -176,10 +176,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3876,
-                  "end": 3888,
+                  "commentStart": 3850,
+                  "end": 3862,
                   "moduleId": 0,
-                  "start": 3876,
+                  "start": 3850,
                   "type": "TagDeclarator",
                   "value": "capStart002"
                 },
@@ -190,10 +190,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3846,
-                  "end": 3856,
+                  "commentStart": 3820,
+                  "end": 3830,
                   "moduleId": 0,
-                  "start": 3846,
+                  "start": 3820,
                   "type": "TagDeclarator",
                   "value": "capEnd002"
                 },
@@ -214,10 +214,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 3268,
-                    "end": 3275,
+                    "commentStart": 3242,
+                    "end": 3249,
                     "moduleId": 0,
-                    "start": 3268,
+                    "start": 3242,
                     "type": "TagDeclarator",
                     "value": "seg003"
                   },
@@ -264,10 +264,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.43750000000000006
                   ],
                   "tag": {
-                    "commentStart": 3383,
-                    "end": 3390,
+                    "commentStart": 3357,
+                    "end": 3364,
                     "moduleId": 0,
-                    "start": 3383,
+                    "start": 3357,
                     "type": "TagDeclarator",
                     "value": "seg004"
                   },
@@ -290,10 +290,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.43750000000000006
                   ],
                   "tag": {
-                    "commentStart": 3430,
-                    "end": 3437,
+                    "commentStart": 3404,
+                    "end": 3411,
                     "moduleId": 0,
-                    "start": 3430,
+                    "start": 3404,
                     "type": "TagDeclarator",
                     "value": "seg005"
                   },
@@ -385,10 +385,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.125
                   ],
                   "tag": {
-                    "commentStart": 3743,
-                    "end": 3750,
+                    "commentStart": 3717,
+                    "end": 3724,
                     "moduleId": 0,
-                    "start": 3743,
+                    "start": 3717,
                     "type": "TagDeclarator",
                     "value": "seg006"
                   },
@@ -4463,10 +4463,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3268,
-            "end": 3275,
+            "commentStart": 3242,
+            "end": 3249,
             "moduleId": 0,
-            "start": 3268,
+            "start": 3242,
             "type": "TagDeclarator",
             "value": "seg003"
           },
@@ -4484,10 +4484,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3383,
-            "end": 3390,
+            "commentStart": 3357,
+            "end": 3364,
             "moduleId": 0,
-            "start": 3383,
+            "start": 3357,
             "type": "TagDeclarator",
             "value": "seg004"
           },
@@ -4498,10 +4498,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3430,
-            "end": 3437,
+            "commentStart": 3404,
+            "end": 3411,
             "moduleId": 0,
-            "start": 3430,
+            "start": 3404,
             "type": "TagDeclarator",
             "value": "seg005"
           },
@@ -4533,10 +4533,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3743,
-            "end": 3750,
+            "commentStart": 3717,
+            "end": 3724,
             "moduleId": 0,
-            "start": 3743,
+            "start": 3717,
             "type": "TagDeclarator",
             "value": "seg006"
           },
@@ -4547,10 +4547,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3876,
-            "end": 3888,
+            "commentStart": 3850,
+            "end": 3862,
             "moduleId": 0,
-            "start": 3876,
+            "start": 3850,
             "type": "TagDeclarator",
             "value": "capStart002"
           },
@@ -4561,10 +4561,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3846,
-            "end": 3856,
+            "commentStart": 3820,
+            "end": 3830,
             "moduleId": 0,
-            "start": 3846,
+            "start": 3820,
             "type": "TagDeclarator",
             "value": "capEnd002"
           },
@@ -4585,10 +4585,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3268,
-              "end": 3275,
+              "commentStart": 3242,
+              "end": 3249,
               "moduleId": 0,
-              "start": 3268,
+              "start": 3242,
               "type": "TagDeclarator",
               "value": "seg003"
             },
@@ -4635,10 +4635,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.43750000000000006
             ],
             "tag": {
-              "commentStart": 3383,
-              "end": 3390,
+              "commentStart": 3357,
+              "end": 3364,
               "moduleId": 0,
-              "start": 3383,
+              "start": 3357,
               "type": "TagDeclarator",
               "value": "seg004"
             },
@@ -4661,10 +4661,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.43750000000000006
             ],
             "tag": {
-              "commentStart": 3430,
-              "end": 3437,
+              "commentStart": 3404,
+              "end": 3411,
               "moduleId": 0,
-              "start": 3430,
+              "start": 3404,
               "type": "TagDeclarator",
               "value": "seg005"
             },
@@ -4756,10 +4756,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.125
             ],
             "tag": {
-              "commentStart": 3743,
-              "end": 3750,
+              "commentStart": 3717,
+              "end": 3724,
               "moduleId": 0,
-              "start": 3743,
+              "start": 3717,
               "type": "TagDeclarator",
               "value": "seg006"
             },
@@ -8268,10 +8268,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3268,
-            "end": 3275,
+            "commentStart": 3242,
+            "end": 3249,
             "moduleId": 0,
-            "start": 3268,
+            "start": 3242,
             "type": "TagDeclarator",
             "value": "seg003"
           },
@@ -8318,10 +8318,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.43750000000000006
           ],
           "tag": {
-            "commentStart": 3383,
-            "end": 3390,
+            "commentStart": 3357,
+            "end": 3364,
             "moduleId": 0,
-            "start": 3383,
+            "start": 3357,
             "type": "TagDeclarator",
             "value": "seg004"
           },
@@ -8344,10 +8344,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.43750000000000006
           ],
           "tag": {
-            "commentStart": 3430,
-            "end": 3437,
+            "commentStart": 3404,
+            "end": 3411,
             "moduleId": 0,
-            "start": 3430,
+            "start": 3404,
             "type": "TagDeclarator",
             "value": "seg005"
           },
@@ -8439,10 +8439,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.125
           ],
           "tag": {
-            "commentStart": 3743,
-            "end": 3750,
+            "commentStart": 3717,
+            "end": 3724,
             "moduleId": 0,
-            "start": 3743,
+            "start": 3717,
             "type": "TagDeclarator",
             "value": "seg006"
           },
@@ -8627,10 +8627,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3268,
-                "end": 3275,
+                "commentStart": 3242,
+                "end": 3249,
                 "moduleId": 0,
-                "start": 3268,
+                "start": 3242,
                 "type": "TagDeclarator",
                 "value": "seg003"
               },
@@ -8648,10 +8648,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3383,
-                "end": 3390,
+                "commentStart": 3357,
+                "end": 3364,
                 "moduleId": 0,
-                "start": 3383,
+                "start": 3357,
                 "type": "TagDeclarator",
                 "value": "seg004"
               },
@@ -8662,10 +8662,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3430,
-                "end": 3437,
+                "commentStart": 3404,
+                "end": 3411,
                 "moduleId": 0,
-                "start": 3430,
+                "start": 3404,
                 "type": "TagDeclarator",
                 "value": "seg005"
               },
@@ -8697,10 +8697,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3743,
-                "end": 3750,
+                "commentStart": 3717,
+                "end": 3724,
                 "moduleId": 0,
-                "start": 3743,
+                "start": 3717,
                 "type": "TagDeclarator",
                 "value": "seg006"
               },
@@ -8711,10 +8711,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3876,
-                "end": 3888,
+                "commentStart": 3850,
+                "end": 3862,
                 "moduleId": 0,
-                "start": 3876,
+                "start": 3850,
                 "type": "TagDeclarator",
                 "value": "capStart002"
               },
@@ -8725,10 +8725,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3846,
-                "end": 3856,
+                "commentStart": 3820,
+                "end": 3830,
                 "moduleId": 0,
-                "start": 3846,
+                "start": 3820,
                 "type": "TagDeclarator",
                 "value": "capEnd002"
               },
@@ -8749,10 +8749,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 3268,
-                  "end": 3275,
+                  "commentStart": 3242,
+                  "end": 3249,
                   "moduleId": 0,
-                  "start": 3268,
+                  "start": 3242,
                   "type": "TagDeclarator",
                   "value": "seg003"
                 },
@@ -8799,10 +8799,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.43750000000000006
                 ],
                 "tag": {
-                  "commentStart": 3383,
-                  "end": 3390,
+                  "commentStart": 3357,
+                  "end": 3364,
                   "moduleId": 0,
-                  "start": 3383,
+                  "start": 3357,
                   "type": "TagDeclarator",
                   "value": "seg004"
                 },
@@ -8825,10 +8825,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.43750000000000006
                 ],
                 "tag": {
-                  "commentStart": 3430,
-                  "end": 3437,
+                  "commentStart": 3404,
+                  "end": 3411,
                   "moduleId": 0,
-                  "start": 3430,
+                  "start": 3404,
                   "type": "TagDeclarator",
                   "value": "seg005"
                 },
@@ -8920,10 +8920,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.125
                 ],
                 "tag": {
-                  "commentStart": 3743,
-                  "end": 3750,
+                  "commentStart": 3717,
+                  "end": 3724,
                   "moduleId": 0,
-                  "start": 3743,
+                  "start": 3717,
                   "type": "TagDeclarator",
                   "value": "seg006"
                 },
@@ -9218,10 +9218,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3268,
-                "end": 3275,
+                "commentStart": 3242,
+                "end": 3249,
                 "moduleId": 0,
-                "start": 3268,
+                "start": 3242,
                 "type": "TagDeclarator",
                 "value": "seg003"
               },
@@ -9239,10 +9239,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3383,
-                "end": 3390,
+                "commentStart": 3357,
+                "end": 3364,
                 "moduleId": 0,
-                "start": 3383,
+                "start": 3357,
                 "type": "TagDeclarator",
                 "value": "seg004"
               },
@@ -9253,10 +9253,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3430,
-                "end": 3437,
+                "commentStart": 3404,
+                "end": 3411,
                 "moduleId": 0,
-                "start": 3430,
+                "start": 3404,
                 "type": "TagDeclarator",
                 "value": "seg005"
               },
@@ -9288,10 +9288,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3743,
-                "end": 3750,
+                "commentStart": 3717,
+                "end": 3724,
                 "moduleId": 0,
-                "start": 3743,
+                "start": 3717,
                 "type": "TagDeclarator",
                 "value": "seg006"
               },
@@ -9302,10 +9302,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3876,
-                "end": 3888,
+                "commentStart": 3850,
+                "end": 3862,
                 "moduleId": 0,
-                "start": 3876,
+                "start": 3850,
                 "type": "TagDeclarator",
                 "value": "capStart002"
               },
@@ -9316,10 +9316,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3846,
-                "end": 3856,
+                "commentStart": 3820,
+                "end": 3830,
                 "moduleId": 0,
-                "start": 3846,
+                "start": 3820,
                 "type": "TagDeclarator",
                 "value": "capEnd002"
               },
@@ -9340,10 +9340,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 3268,
-                  "end": 3275,
+                  "commentStart": 3242,
+                  "end": 3249,
                   "moduleId": 0,
-                  "start": 3268,
+                  "start": 3242,
                   "type": "TagDeclarator",
                   "value": "seg003"
                 },
@@ -9390,10 +9390,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.43750000000000006
                 ],
                 "tag": {
-                  "commentStart": 3383,
-                  "end": 3390,
+                  "commentStart": 3357,
+                  "end": 3364,
                   "moduleId": 0,
-                  "start": 3383,
+                  "start": 3357,
                   "type": "TagDeclarator",
                   "value": "seg004"
                 },
@@ -9416,10 +9416,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.43750000000000006
                 ],
                 "tag": {
-                  "commentStart": 3430,
-                  "end": 3437,
+                  "commentStart": 3404,
+                  "end": 3411,
                   "moduleId": 0,
-                  "start": 3430,
+                  "start": 3404,
                   "type": "TagDeclarator",
                   "value": "seg005"
                 },
@@ -9511,10 +9511,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.125
                 ],
                 "tag": {
-                  "commentStart": 3743,
-                  "end": 3750,
+                  "commentStart": 3717,
+                  "end": 3724,
                   "moduleId": 0,
-                  "start": 3743,
+                  "start": 3717,
                   "type": "TagDeclarator",
                   "value": "seg006"
                 },
@@ -10906,10 +10906,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3268,
-              "end": 3275,
+              "commentStart": 3242,
+              "end": 3249,
               "moduleId": 0,
-              "start": 3268,
+              "start": 3242,
               "type": "TagDeclarator",
               "value": "seg003"
             },
@@ -10927,10 +10927,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3383,
-              "end": 3390,
+              "commentStart": 3357,
+              "end": 3364,
               "moduleId": 0,
-              "start": 3383,
+              "start": 3357,
               "type": "TagDeclarator",
               "value": "seg004"
             },
@@ -10941,10 +10941,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3430,
-              "end": 3437,
+              "commentStart": 3404,
+              "end": 3411,
               "moduleId": 0,
-              "start": 3430,
+              "start": 3404,
               "type": "TagDeclarator",
               "value": "seg005"
             },
@@ -10976,10 +10976,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3743,
-              "end": 3750,
+              "commentStart": 3717,
+              "end": 3724,
               "moduleId": 0,
-              "start": 3743,
+              "start": 3717,
               "type": "TagDeclarator",
               "value": "seg006"
             },
@@ -10990,10 +10990,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3876,
-              "end": 3888,
+              "commentStart": 3850,
+              "end": 3862,
               "moduleId": 0,
-              "start": 3876,
+              "start": 3850,
               "type": "TagDeclarator",
               "value": "capStart002"
             },
@@ -11004,10 +11004,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3846,
-              "end": 3856,
+              "commentStart": 3820,
+              "end": 3830,
               "moduleId": 0,
-              "start": 3846,
+              "start": 3820,
               "type": "TagDeclarator",
               "value": "capEnd002"
             },
@@ -11028,10 +11028,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 3268,
-                "end": 3275,
+                "commentStart": 3242,
+                "end": 3249,
                 "moduleId": 0,
-                "start": 3268,
+                "start": 3242,
                 "type": "TagDeclarator",
                 "value": "seg003"
               },
@@ -11078,10 +11078,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.43750000000000006
               ],
               "tag": {
-                "commentStart": 3383,
-                "end": 3390,
+                "commentStart": 3357,
+                "end": 3364,
                 "moduleId": 0,
-                "start": 3383,
+                "start": 3357,
                 "type": "TagDeclarator",
                 "value": "seg004"
               },
@@ -11104,10 +11104,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.43750000000000006
               ],
               "tag": {
-                "commentStart": 3430,
-                "end": 3437,
+                "commentStart": 3404,
+                "end": 3411,
                 "moduleId": 0,
-                "start": 3430,
+                "start": 3404,
                 "type": "TagDeclarator",
                 "value": "seg005"
               },
@@ -11199,10 +11199,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.125
               ],
               "tag": {
-                "commentStart": 3743,
-                "end": 3750,
+                "commentStart": 3717,
+                "end": 3724,
                 "moduleId": 0,
-                "start": 3743,
+                "start": 3717,
                 "type": "TagDeclarator",
                 "value": "seg006"
               },
@@ -11442,10 +11442,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3268,
-              "end": 3275,
+              "commentStart": 3242,
+              "end": 3249,
               "moduleId": 0,
-              "start": 3268,
+              "start": 3242,
               "type": "TagDeclarator",
               "value": "seg003"
             },
@@ -11463,10 +11463,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3383,
-              "end": 3390,
+              "commentStart": 3357,
+              "end": 3364,
               "moduleId": 0,
-              "start": 3383,
+              "start": 3357,
               "type": "TagDeclarator",
               "value": "seg004"
             },
@@ -11477,10 +11477,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3430,
-              "end": 3437,
+              "commentStart": 3404,
+              "end": 3411,
               "moduleId": 0,
-              "start": 3430,
+              "start": 3404,
               "type": "TagDeclarator",
               "value": "seg005"
             },
@@ -11512,10 +11512,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3743,
-              "end": 3750,
+              "commentStart": 3717,
+              "end": 3724,
               "moduleId": 0,
-              "start": 3743,
+              "start": 3717,
               "type": "TagDeclarator",
               "value": "seg006"
             },
@@ -11526,10 +11526,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3876,
-              "end": 3888,
+              "commentStart": 3850,
+              "end": 3862,
               "moduleId": 0,
-              "start": 3876,
+              "start": 3850,
               "type": "TagDeclarator",
               "value": "capStart002"
             },
@@ -11540,10 +11540,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 3846,
-              "end": 3856,
+              "commentStart": 3820,
+              "end": 3830,
               "moduleId": 0,
-              "start": 3846,
+              "start": 3820,
               "type": "TagDeclarator",
               "value": "capEnd002"
             },
@@ -11564,10 +11564,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 3268,
-                "end": 3275,
+                "commentStart": 3242,
+                "end": 3249,
                 "moduleId": 0,
-                "start": 3268,
+                "start": 3242,
                 "type": "TagDeclarator",
                 "value": "seg003"
               },
@@ -11614,10 +11614,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.43750000000000006
               ],
               "tag": {
-                "commentStart": 3383,
-                "end": 3390,
+                "commentStart": 3357,
+                "end": 3364,
                 "moduleId": 0,
-                "start": 3383,
+                "start": 3357,
                 "type": "TagDeclarator",
                 "value": "seg004"
               },
@@ -11640,10 +11640,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.43750000000000006
               ],
               "tag": {
-                "commentStart": 3430,
-                "end": 3437,
+                "commentStart": 3404,
+                "end": 3411,
                 "moduleId": 0,
-                "start": 3430,
+                "start": 3404,
                 "type": "TagDeclarator",
                 "value": "seg005"
               },
@@ -11735,10 +11735,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.125
               ],
               "tag": {
-                "commentStart": 3743,
-                "end": 3750,
+                "commentStart": 3717,
+                "end": 3724,
                 "moduleId": 0,
-                "start": 3743,
+                "start": 3717,
                 "type": "TagDeclarator",
                 "value": "seg006"
               },
@@ -12035,10 +12035,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3268,
-                  "end": 3275,
+                  "commentStart": 3242,
+                  "end": 3249,
                   "moduleId": 0,
-                  "start": 3268,
+                  "start": 3242,
                   "type": "TagDeclarator",
                   "value": "seg003"
                 },
@@ -12056,10 +12056,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3383,
-                  "end": 3390,
+                  "commentStart": 3357,
+                  "end": 3364,
                   "moduleId": 0,
-                  "start": 3383,
+                  "start": 3357,
                   "type": "TagDeclarator",
                   "value": "seg004"
                 },
@@ -12070,10 +12070,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3430,
-                  "end": 3437,
+                  "commentStart": 3404,
+                  "end": 3411,
                   "moduleId": 0,
-                  "start": 3430,
+                  "start": 3404,
                   "type": "TagDeclarator",
                   "value": "seg005"
                 },
@@ -12105,10 +12105,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3743,
-                  "end": 3750,
+                  "commentStart": 3717,
+                  "end": 3724,
                   "moduleId": 0,
-                  "start": 3743,
+                  "start": 3717,
                   "type": "TagDeclarator",
                   "value": "seg006"
                 },
@@ -12119,10 +12119,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3876,
-                  "end": 3888,
+                  "commentStart": 3850,
+                  "end": 3862,
                   "moduleId": 0,
-                  "start": 3876,
+                  "start": 3850,
                   "type": "TagDeclarator",
                   "value": "capStart002"
                 },
@@ -12133,10 +12133,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3846,
-                  "end": 3856,
+                  "commentStart": 3820,
+                  "end": 3830,
                   "moduleId": 0,
-                  "start": 3846,
+                  "start": 3820,
                   "type": "TagDeclarator",
                   "value": "capEnd002"
                 },
@@ -12157,10 +12157,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 3268,
-                    "end": 3275,
+                    "commentStart": 3242,
+                    "end": 3249,
                     "moduleId": 0,
-                    "start": 3268,
+                    "start": 3242,
                     "type": "TagDeclarator",
                     "value": "seg003"
                   },
@@ -12207,10 +12207,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.43750000000000006
                   ],
                   "tag": {
-                    "commentStart": 3383,
-                    "end": 3390,
+                    "commentStart": 3357,
+                    "end": 3364,
                     "moduleId": 0,
-                    "start": 3383,
+                    "start": 3357,
                     "type": "TagDeclarator",
                     "value": "seg004"
                   },
@@ -12233,10 +12233,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.43750000000000006
                   ],
                   "tag": {
-                    "commentStart": 3430,
-                    "end": 3437,
+                    "commentStart": 3404,
+                    "end": 3411,
                     "moduleId": 0,
-                    "start": 3430,
+                    "start": 3404,
                     "type": "TagDeclarator",
                     "value": "seg005"
                   },
@@ -12328,10 +12328,10 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.125
                   ],
                   "tag": {
-                    "commentStart": 3743,
-                    "end": 3750,
+                    "commentStart": 3717,
+                    "end": 3724,
                     "moduleId": 0,
-                    "start": 3743,
+                    "start": 3717,
                     "type": "TagDeclarator",
                     "value": "seg006"
                   },
