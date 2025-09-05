@@ -89,20 +89,3 @@ pub enum Point3dAxis3dOrGeometryReference {
     /// Face Tag.
     TaggedFace(TagIdentifier),
 }
-
-impl Point3dAxis3dOrGeometryReference {
-    // /// Convert to a 3D axis.
-    // pub fn to_point3d(&self) -> [TyF64; 3] {
-    //     match self {
-    //         Axis3dOrPoint3d::Axis { direction, origin: _ } => direction.clone(),
-    //         Axis3dOrPoint3d::Point(point) => point.clone(),
-    //     }
-    // }
-
-    // pub fn axis_origin(&self) -> Option<[TyF64; 3]> {
-    //     match self {
-    //         Axis3dOrPoint3d::Axis { origin, .. } => Some(origin.clone()),
-    //         Axis3dOrPoint3d::Point(..) => None,
-    //     }
-    // }
-}
