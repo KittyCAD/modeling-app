@@ -181,6 +181,7 @@ async fn inner_involute_circular(
                     angle: Angle::from_degrees(angle.to_degrees()),
                     reverse: reverse.unwrap_or_default(),
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
@@ -331,6 +332,7 @@ async fn straight_line(
                     end: KPoint2d::from(point_to_mm(point.clone())).with_z(0.0).map(LengthUnit),
                     relative: !is_absolute,
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
@@ -557,6 +559,7 @@ async fn inner_angled_line_length(
                         .map(LengthUnit),
                     relative,
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
@@ -1373,6 +1376,7 @@ pub async fn absolute_arc(
                     },
                     relative: false,
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
@@ -1442,6 +1446,7 @@ pub async fn relative_arc(
                     radius: LengthUnit(from.units.adjust_to(radius, UnitLen::Mm).0),
                     relative: false,
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
@@ -1609,6 +1614,7 @@ async fn inner_tangential_arc_radius_angle(
                             radius: LengthUnit(radius.to_mm()),
                             offset,
                         },
+                        label: tag.as_ref().map(|node| node.name.clone()),
                     }),
                 )
                 .await?;
@@ -1642,7 +1648,7 @@ async fn inner_tangential_arc_radius_angle(
 }
 
 // `to` must be in sketch.units
-fn tan_arc_to(sketch: &Sketch, to: [f64; 2]) -> ModelingCmd {
+fn tan_arc_to(sketch: &Sketch, to: [f64; 2], label: Option<String>) -> ModelingCmd {
     ModelingCmd::from(mcmd::ExtendPath {
         path: sketch.id.into(),
         segment: PathSegment::TangentialArcTo {
@@ -1651,6 +1657,7 @@ fn tan_arc_to(sketch: &Sketch, to: [f64; 2]) -> ModelingCmd {
                 .with_z(0.0)
                 .map(LengthUnit),
         },
+        label,
     })
 }
 
@@ -1702,7 +1709,10 @@ async fn inner_tangential_arc_to_point(
     };
     let id = exec_state.next_uuid();
     exec_state
-        .batch_modeling_cmd(ModelingCmdMeta::from_args_id(&args, id), tan_arc_to(&sketch, delta))
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(&args, id),
+            tan_arc_to(&sketch, delta, tag.as_ref().map(|node| node.name.clone())),
+        )
         .await?;
 
     let current_path = Path::TangentialArcTo {
@@ -1802,6 +1812,7 @@ async fn inner_bezier_curve(
                             end: KPoint2d::from(point_to_mm(delta)).with_z(0.0).map(LengthUnit),
                             relative: true,
                         },
+                        label: tag.as_ref().map(|node| node.name.clone()),
                     }),
                 )
                 .await?;
@@ -1821,6 +1832,7 @@ async fn inner_bezier_curve(
                             end: KPoint2d::from(point_to_mm(end)).with_z(0.0).map(LengthUnit),
                             relative: false,
                         },
+                        label: tag.as_ref().map(|node| node.name.clone()),
                     }),
                 )
                 .await?;
@@ -2079,6 +2091,7 @@ pub(crate) async fn inner_elliptic(
                     start_angle,
                     end_angle,
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
@@ -2246,6 +2259,7 @@ pub(crate) async fn inner_hyperbolic(
                     interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
                     relative,
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
@@ -2459,6 +2473,7 @@ pub(crate) async fn inner_parabolic(
                     interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
                     relative,
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
@@ -2613,6 +2628,7 @@ pub(crate) async fn inner_conic(
                     interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
                     relative,
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;

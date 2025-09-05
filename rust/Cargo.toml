@@ -27,7 +27,7 @@ kittycad = { version = "0.3.37", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.131", features = [
+kittycad-modeling-cmds = { git = "https://github.com/alteous/modeling-api.git", rev = "48be0bca23805a05936fb10af760ad26162467a3", features = [
   "ts-rs",
   "websocket",
 ] }

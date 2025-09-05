@@ -46,8 +46,9 @@ pub async fn rectangle(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     let corner = args.get_kw_arg_opt("corner", &RuntimeType::point2d(), exec_state)?;
     let width: TyF64 = args.get_kw_arg("width", &RuntimeType::length(), exec_state)?;
     let height: TyF64 = args.get_kw_arg("height", &RuntimeType::length(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
-    inner_rectangle(sketch_or_surface, center, corner, width, height, exec_state, args)
+    inner_rectangle(sketch_or_surface, center, corner, width, height, tag, exec_state, args)
         .await
         .map(Box::new)
         .map(|value| KclValue::Sketch { value })
@@ -59,6 +60,7 @@ async fn inner_rectangle(
     corner: Option<[TyF64; 2]>,
     width: TyF64,
     height: TyF64,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -113,6 +115,7 @@ async fn inner_rectangle(
                             .map(LengthUnit),
                         relative: true,
                     },
+                    label: tag.as_ref().map(|node| node.name.clone()),
                 }),
             )
             .await?;
@@ -207,6 +210,7 @@ async fn inner_circle(
                     radius: LengthUnit(radius.to_mm()),
                     relative: false,
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
@@ -308,6 +312,7 @@ async fn inner_circle_three_point(
                     radius: units.adjust_to(radius, UnitLen::Mm).0.into(),
                     relative: false,
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
@@ -365,6 +370,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let num_sides: TyF64 = args.get_kw_arg("numSides", &RuntimeType::count(), exec_state)?;
     let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
     let inscribed = args.get_kw_arg_opt("inscribed", &RuntimeType::bool(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let sketch = inner_polygon(
         sketch_or_surface,
@@ -372,6 +378,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         num_sides.n as u64,
         center,
         inscribed,
+        tag,
         exec_state,
         args,
     )
@@ -388,6 +395,7 @@ async fn inner_polygon(
     num_sides: u64,
     center: [TyF64; 2],
     inscribed: Option<bool>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -459,6 +467,7 @@ async fn inner_polygon(
                             .map(LengthUnit),
                         relative: false,
                     },
+                    label: tag.as_ref().map(|node| node.name.clone()),
                 }),
             )
             .await?;
@@ -494,6 +503,7 @@ async fn inner_polygon(
                         .map(LengthUnit),
                     relative: false,
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
@@ -611,6 +621,7 @@ async fn inner_ellipse(
                     start_angle: Angle::from_degrees(angle_start.to_degrees()),
                     end_angle: Angle::from_degrees(angle_end.to_degrees()),
                 },
+                label: tag.as_ref().map(|node| node.name.clone()),
             }),
         )
         .await?;
