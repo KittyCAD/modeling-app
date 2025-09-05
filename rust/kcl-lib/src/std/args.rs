@@ -9,8 +9,8 @@ use crate::{
     ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
-        TagIdentifier,
+        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchSurface,
+        Solid, TagIdentifier,
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
     },
@@ -984,6 +984,7 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
         let case5 = Box::<Solid>::from_kcl_val;
         let case6 = TagIdentifier::from_kcl_val;
         let case7 = TagIdentifier::from_kcl_val;
+        let case8 = Box::<Plane>::from_kcl_val;
 
         case2(arg)
             .or_else(|| case1(arg).map(Self::Point))
@@ -992,6 +993,7 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
             .or_else(|| case5(arg).map(Self::Solid))
             .or_else(|| case6(arg).map(Self::TaggedEdge))
             .or_else(|| case7(arg).map(Self::TaggedFace))
+            .or_else(|| case8(arg).map(Self::Plane))
     }
 }
 
@@ -1184,6 +1186,15 @@ impl<'a> FromKclValue<'a> for bool {
 impl<'a> FromKclValue<'a> for Box<Solid> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Solid { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Box<Plane> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Plane { value } = arg else {
             return None;
         };
         Some(value.to_owned())

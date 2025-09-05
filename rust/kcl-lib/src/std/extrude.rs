@@ -38,6 +38,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             RuntimeType::point3d(),
             RuntimeType::Primitive(PrimitiveType::Axis3d),
             RuntimeType::Primitive(PrimitiveType::Edge),
+            RuntimeType::plane(),
             RuntimeType::Primitive(PrimitiveType::Face),
             RuntimeType::Primitive(PrimitiveType::Solid),
             RuntimeType::tagged_edge(),
@@ -192,6 +193,12 @@ async fn inner_extrude(
                         extrude_method,
                     })
                 }
+                Point3dAxis3dOrGeometryReference::Plane(plane) => ModelingCmd::from(mcmd::ExtrudeToReference {
+                    target: sketch.id.into(),
+                    reference: ExtrudeReference::EntityReference { entity_id: plane.id },
+                    faces: Default::default(),
+                    extrude_method,
+                }),
                 Point3dAxis3dOrGeometryReference::Edge(edge_ref) => {
                     let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
                     ModelingCmd::from(mcmd::ExtrudeToReference {

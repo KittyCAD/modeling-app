@@ -505,7 +505,7 @@ export fn extrude(
   /// How far to extrude the given sketches. Incompatible with `to`.
   length?: number(Length),
   /// Reference to extrude to. Incompatible with `length` and `twistAngle`.
-  to?: Point3d | Axis | Edge | Face | Solid | TaggedEdge | TaggedFace,
+  to?: Point3d | Axis3d | Plane | Edge | Face | Solid | TaggedEdge | TaggedFace,
   /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
   symmetric?: bool,
   /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
