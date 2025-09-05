@@ -1,0 +1,36 @@
+// Impeller Blade (Single)
+// A solid impeller blade created by lofting a root and a twisted tip profile. Useful for analyzing blade geometry, airflow shaping, or preparing for radial array placement.
+
+
+
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// parameters
+bladeHeight = 60 // height from base (root) to top (tip)
+bladeChord = 40 // axial blade length
+bladeThickness = 5 // thickness (profile width)
+twistAngle = 30 // twist applied to tip (yaw)
+
+
+// root profile (base of blade)
+rootPlane = XY
+rootSketch = startSketchOn(rootPlane)
+rootProfile = startProfile(rootSketch, at = [0, 0])
+  |> xLine(length = bladeThickness)
+  |> yLine(length = bladeChord)
+  |> xLine(length = -bladeThickness)
+  |> close()
+
+// tip profile (top of blade, twisted)
+tipPlane = offsetPlane(XY, offset = bladeHeight)
+tipSketch = startSketchOn(tipPlane)
+tipProfile = startProfile(tipSketch, at = [0, 0])
+  |> xLine(length = bladeThickness)
+  |> yLine(length = bladeChord)
+  |> xLine(length = -bladeThickness)
+  |> close()
+  |> rotate(yaw = twistAngle)
+
+// create blade solid
+twistedBlade = loft([rootProfile, tipProfile])

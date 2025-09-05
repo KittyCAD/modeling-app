@@ -1,0 +1,33 @@
+// Gingerbread Man Cookie Cutter
+// A gingerbread man cookie cutter is a charming kitchen tool designed in the iconic silhouette of a little person. Typically crafted from metal (often tin or stainless steel) or durable plastic, this cookie cutter features the distinctive outline of a stylized human figure with a round head, a simple torso, and extended arms and legs. The cutter's edges are sharp enough to cleanly slice through cookie dough but blunt enough to be handled safely.
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+origin2D = [0, 0]
+thickness = 100
+wallThickness = 10
+
+// create a sketch for the body of the gingerbread man
+sketch = startSketchOn(XY)
+
+// create the body
+cutter = startProfile(sketch, at = origin2D)
+  |> line(end = [-88, -112])
+  |> tangentialArc(endAbsolute = [-170, -53])
+  |> line(end = [93, 110])
+  |> yLine(length = 156)
+  |> line(end = [-110, -83])
+  |> tangentialArc(endAbsolute = [-232, 195])
+  |> line(end = [124, 95])
+  |> tangentialArc(endAbsolute = [-59, 312])
+  |> yLine(length = 23)
+  |> arc(interiorAbsolute = [-114, 421], endAbsolute = [0, 549])
+  |> mirror2d(axis = Y)
+  |> close()
+  |> scale(x = 1.2, y = 1.2, z = 1)
+  |> extrude(length = thickness)
+  |> shell(thickness = wallThickness, faces = [START, END])
