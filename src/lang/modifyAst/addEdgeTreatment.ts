@@ -480,7 +480,7 @@ function getPathToEdgeTreatmentParameterLiteral(
   return pathToEdgeTreatmentObj
 }
 
-//TODO: (we need the optionals here?)
+//TODO: (ben) we need the optionals
 function getParameterNameAndValue(
   parameters: EdgeTreatmentParameters
 ): { parameterName: string; parameterValue: Expr } | Error {
