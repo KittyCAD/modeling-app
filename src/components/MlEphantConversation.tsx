@@ -187,6 +187,13 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     <div className="relative">
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
+          <div className="bg-ml-green dark:text-chalkboard-100 p-2 flex items-center gap-4">
+            <CustomIcon name="beaker" className="w-5 h-5 flex-none" />
+            <p className="text-xs">
+              Text-to-CAD treats every prompt as separate. Full copilot mode
+              with conversational memory is coming soon.
+            </p>
+          </div>
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
               {props.isLoading === false ? (
