@@ -1,9 +1,10 @@
 import type { MlEphantManagerContext } from '@src/machines/mlEphantManagerMachine'
 import type { ReactNode } from 'react'
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, Fragment } from 'react'
 import type { Prompt } from '@src/lib/prompt'
 import { PromptCard } from '@src/components/PromptCard'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { Popover, Transition } from '@headlessui/react'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
@@ -187,13 +188,6 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     <div className="relative">
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
-          <div className="bg-ml-green dark:text-chalkboard-100 p-2 flex items-center gap-4">
-            <CustomIcon name="beaker" className="w-5 h-5 flex-none" />
-            <p className="text-xs">
-              Text-to-CAD treats every prompt as separate. Full copilot mode
-              with conversational memory is coming soon.
-            </p>
-          </div>
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
               {props.isLoading === false ? (
@@ -229,3 +223,33 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     </div>
   )
 }
+
+export const MLEphantConversationPaneMenu = () => (
+  <Popover className="relative">
+    <Popover.Button className="p-1 !bg-transparent border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 ui-open:!border-primary dark:ui-open:!border-chalkboard-70 !outline-none">
+      <CustomIcon name="beaker" className="w-4 h-4" />
+    </Popover.Button>
+
+    <Transition
+      enter="duration-100 ease-out"
+      enterFrom="opacity-0 -translate-y-2"
+      enterTo="opacity-100 translate-y-0"
+      as={Fragment}
+    >
+      <Popover.Panel className="w-max max-w-md z-10 bg-default flex flex-col gap-4 absolute top-full left-auto right-0 mt-1 p-4 border border-solid b-5 rounded shadow-lg">
+        <div className="flex gap-4 items-center">
+          <CustomIcon
+            name="beaker"
+            className="w-5 h-5 bg-ml-green dark:text-chalkboard-100 rounded-sm"
+          />
+          <p className="text-base ">Text-to-CAD is experimental</p>
+        </div>
+        <p className="text-sm">
+          Text-to-CAD treats every prompt as separate. Full copilot mode with
+          conversational memory is coming soon. Conversations are not currently
+          shared between computers.
+        </p>
+      </Popover.Panel>
+    </Transition>
+  </Popover>
+)
