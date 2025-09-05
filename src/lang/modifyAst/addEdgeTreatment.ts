@@ -9,6 +9,7 @@ import {
   createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
+  createLiteral,
   createLocalName,
   createPipeExpression,
 } from '@src/lang/create'
@@ -58,7 +59,7 @@ export interface ChamferParameters {
   length: KclCommandValue
   angle?: KclCommandValue
   secondLength?: KclCommandValue
-  swap?: KclCommandValue
+  swap?: boolean
 }
 export interface FilletParameters {
   type: EdgeTreatmentType.Fillet
@@ -140,9 +141,8 @@ export async function modifyAstWithEdgeTreatmentAndTag(
     // Create an edge treatment expression with multiple tags
 
     // edge treatment parameter
-    const parameterResult = getParameterNameAndValue(parameters)
-    if (err(parameterResult)) return parameterResult
-    const { parameterName, parameterValue } = parameterResult
+    const parametersResult = getParameterNamesAndValues(parameters)
+    if (err(parametersResult)) return parametersResult
 
     // tag calls
     const tagCalls = tagInfos.map(({ tags, artifact }) => {
@@ -162,7 +162,9 @@ export async function modifyAstWithEdgeTreatmentAndTag(
       parameters.type,
       null,
       [
-        createLabeledArg(parameterName, parameterValue),
+        ...parametersResult.map(p =>
+          createLabeledArg(p.parameterName, p.parameterValue),
+        ),
         createLabeledArg('tags', createArrayExpression(tagExpressions)),
       ]
     )
@@ -222,6 +224,9 @@ export async function modifyAstWithEdgeTreatmentAndTag(
   }
 }
 
+/**
+ * Insert variables for labeled KCL expression-type arguments if provided
+ */
 function insertParametersIntoAst(
   ast: Program,
   parameters: EdgeTreatmentParameters
@@ -286,19 +291,6 @@ function insertParametersIntoAst(
       )
     }
 
-    if (
-      parameters.type === EdgeTreatmentType.Chamfer &&
-      parameters.swap !== undefined &&
-      'variableName' in parameters.swap &&
-      parameters.swap?.variableName &&
-      parameters.swap?.insertIndex !== undefined
-    ) {
-      newAst.body.splice(
-        parameters.swap?.insertIndex,
-        0,
-        parameters.swap?.variableDeclarationAst
-      )
-    }
 
     // handle upcoming parameters here (for blend, bevel, etc.)
     return { ast: newAst }
@@ -464,12 +456,12 @@ function getPathToEdgeTreatmentParameterLiteral(
   parameters: EdgeTreatmentParameters
 ): PathToNode {
   let pathToEdgeTreatmentObj = path
-  const parameterResult = getParameterNameAndValue(parameters)
-  if (err(parameterResult)) return pathToEdgeTreatmentObj
-  const { parameterName } = parameterResult
+  const parametersResult = getParameterNamesAndValues(parameters)
+  if (err(parametersResult)) return pathToEdgeTreatmentObj
 
   node.properties.forEach((prop, index) => {
-    if (prop.key.name === parameterName) {
+    const matchingParameter = parametersResult.find(p => p.parameterName === prop.key.name)
+    if (matchingParameter) {
       pathToEdgeTreatmentObj.push(
         ['properties', 'ObjectExpression'],
         [index, 'index'],
@@ -480,22 +472,45 @@ function getPathToEdgeTreatmentParameterLiteral(
   return pathToEdgeTreatmentObj
 }
 
-//TODO: (ben) we need the optionals
-function getParameterNameAndValue(
+type EdgeTreatmentNameAndValue = { parameterName: string; parameterValue: Expr }
+
+/**
+ * Transform the EdgeTreatmentType parameters into a name and value for use
+ * in later AST transformations, switching on the `type` of edge treatment.
+ */
+function getParameterNamesAndValues(
   parameters: EdgeTreatmentParameters
-): { parameterName: string; parameterValue: Expr } | Error {
+): EdgeTreatmentNameAndValue[] | Error {
   if (parameters.type === EdgeTreatmentType.Fillet) {
-    const parameterValue =
+    const radiusValue =
       'variableName' in parameters.radius
         ? parameters.radius.variableIdentifierAst
         : parameters.radius.valueAst
-    return { parameterName: 'radius', parameterValue }
+    return [{ parameterName: 'radius', parameterValue: radiusValue }]
   } else if (parameters.type === EdgeTreatmentType.Chamfer) {
-    const parameterValue =
-      'variableName' in parameters.angle
-        ? parameters.angle?.variableIdentifierAst
-        : parameters.angle?.valueAst
-    return { parameterName: 'angle', parameterValue }
+    const namesAndValues: EdgeTreatmentNameAndValue[] = []
+    // TODO: this should be defined somewhere else more centrally
+    const paramNames = ['length', 'angle', 'secondLength', 'swap'] as const
+
+    paramNames.forEach((name) => {
+      let parameterValue: Expr | undefined = undefined
+
+      // Parameters like `swap` are not KCL expressions, but literals
+      if (parameters[name] && typeof parameters[name] !== 'object') {
+        parameterValue = createLiteral(parameters[name])
+      } else if (parameters[name]) {
+        parameterValue =
+          ('variableName' in parameters[name] && parameters[name].variableName)
+            ? parameters[name]?.variableIdentifierAst
+            : parameters[name]?.valueAst
+      }
+
+      if (parameterValue) {
+        namesAndValues.push({ parameterName: 'length', parameterValue })
+      }
+    })
+
+    return namesAndValues
   } else {
     return new Error('Unsupported edge treatment type')
   }
@@ -706,25 +721,26 @@ export async function editEdgeTreatment(
   )
   if (err(edgeTreatmentCall)) return edgeTreatmentCall
 
-  // edge treatment parameter
-  const parameterResult = getParameterNameAndValue(parameters)
-  if (err(parameterResult)) return parameterResult
-  const { parameterName, parameterValue } = parameterResult
+  // edge treatment parameter(s)
+  const parametersResult = getParameterNamesAndValues(parameters)
+  if (err(parametersResult)) return parametersResult
 
-  // find the index of an argument to update
-  const index = edgeTreatmentCall.node.arguments.findIndex(
-    (arg) => arg.label?.name === parameterName
-  )
+  parametersResult.forEach(({ parameterName, parameterValue }) => {
+    // find the index of an argument to update
+    const index = edgeTreatmentCall.node.arguments.findIndex(
+      (arg) => arg.label?.name === parameterName
+    )
 
-  // create a new argument with the updated value
-  const newArg = createLabeledArg(parameterName, parameterValue)
+    // create a new argument with the updated value
+    const newArg = createLabeledArg(parameterName, parameterValue)
 
-  // if the parameter doesn't exist, add it; otherwise replace it
-  if (index === -1) {
-    edgeTreatmentCall.node.arguments.push(newArg)
-  } else {
-    edgeTreatmentCall.node.arguments[index] = newArg
-  }
+    // if the parameter doesn't exist, add it; otherwise replace it
+    if (index === -1) {
+      edgeTreatmentCall.node.arguments.push(newArg)
+    } else {
+      edgeTreatmentCall.node.arguments[index] = newArg
+    }
+  })
 
   const pathToEdgeTreatmentNode = selection?.codeRef?.pathToNode
 
