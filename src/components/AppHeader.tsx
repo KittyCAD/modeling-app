@@ -45,7 +45,7 @@ export const AppHeader = ({
       >
         {projectMenuChildren}
       </ProjectSidebarMenu>
-      <div className="flex items-center gap-2 py-1 ml-auto">
+      <div className="flex items-center gap-2 py-1.5 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}
         {children || <CommandBarOpenButton />}
         <UserSidebarMenu user={user} />

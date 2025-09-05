@@ -3,11 +3,11 @@ import type { Location } from 'react-router-dom'
 import { PATHS } from '@src/lib/paths'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import {
-  BillingDialog,
   BillingRemaining,
   BillingRemainingMode,
-} from '@kittycad/react-shared'
+} from '@src/components/BillingRemaining'
 import { billingActor } from '@src/lib/singletons'
+import { BillingDialog } from '@src/components/BillingDialog'
 import { Popover } from '@headlessui/react'
 import Tooltip from '@src/components/Tooltip'
 import { HelpMenu } from '@src/components/HelpMenu'
@@ -19,8 +19,6 @@ import {
   EnvironmentChip,
   EnvironmentDescription,
 } from '@src/components/environment/Environment'
-import { useSelector } from '@xstate/react'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
 export const defaultGlobalStatusBarItems = ({
   location,
@@ -85,7 +83,6 @@ export const defaultGlobalStatusBarItems = ({
 ]
 
 function BillingStatusBarItem() {
-  const billingContext = useSelector(billingActor, ({ context }) => context)
   return (
     <Popover className="relative flex items-stretch">
       <Popover.Button
@@ -94,9 +91,7 @@ function BillingStatusBarItem() {
       >
         <BillingRemaining
           mode={BillingRemainingMode.ProgressBarFixed}
-          error={billingContext.error}
-          credits={billingContext.credits}
-          allowance={billingContext.allowance}
+          billingActor={billingActor}
         />
         <Tooltip
           position="top"
@@ -108,13 +103,7 @@ function BillingStatusBarItem() {
         </Tooltip>
       </Popover.Button>
       <Popover.Panel className="absolute left-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
-        <BillingDialog
-          upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-          upgradeClick={openExternalBrowserIfDesktop()}
-          error={billingContext.error}
-          credits={billingContext.credits}
-          allowance={billingContext.allowance}
-        />
+        <BillingDialog billingActor={billingActor} />
       </Popover.Panel>
     </Popover>
   )
