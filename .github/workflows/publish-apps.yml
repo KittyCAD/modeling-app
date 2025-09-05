@@ -1,4 +1,4 @@
-name: publish-apps-release
+name: publish-apps
 
 on:
   release:
@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  publish-apps-release:
+  release-desktop:
     runs-on: namespace-profile-ubuntu-2-cores
     permissions:
       contents: write
@@ -21,7 +21,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: Find tag workflow id
+      - name: Find tag workflow ID
         id: tag_workflow_id
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -134,8 +134,15 @@ jobs:
         with:
           files: 'out/Zoo*'
 
-  announce_release:
-    needs: [publish-apps-release]
+  release-web:
+    runs-on: namespace-profile-ubuntu-2-cores
+    permissions: {}
+    steps:
+      - name: Deploy to Vercel Production
+        run: curl --request POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
+
+  announce-release:
+    needs: [release-desktop, release-web]
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - name: Check out code
