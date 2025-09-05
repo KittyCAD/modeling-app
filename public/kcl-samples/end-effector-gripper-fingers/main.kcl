@@ -128,7 +128,7 @@ gripBaseBracket = startSketchOn(offsetPlane(XY, offset = 129 + linkLength * sin(
   |> close()
   |> extrude(%, length = 80)
 
-  // Use subtract operations to remove excess material from the gripper, as well as model the mounting holes
+// Use subtract operations to remove excess material from the gripper, as well as model the mounting holes
 gripperCuts = startSketchOn(XZ)
 cutOuter = circle(
        gripperCuts,

@@ -1,6 +1,9 @@
 // Bench for kids.
 // Shaped like a friendly animal and sturdy enough for climbing.
 
+
+
+
 @settings(defaultLengthUnit = cm)
 
 // Define primary parameters for the bench geometry.
@@ -29,6 +32,7 @@ seatBody = extrude(seatProfile, length = benchLength)
 
 // LEGS (four chunky, rounded cylinders)
 legRadius = benchWidth * 0.12 // scale with bench width so model stays parametric
+
 
 // Build one leg, then pattern-copy it to make the full set.
 legSketch = startSketchOn(XY)
@@ -118,6 +122,7 @@ ears = patternCircular3d(
 )
 
 // TAIL (single cylinder at the rear, slightly rotated downward)
+
 
 tailPlane = offsetPlane(XZ, offset = -benchLength * 0.45)
 tailLength = earHeight * 1.2

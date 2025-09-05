@@ -1,6 +1,9 @@
 // Rectangle Table
 // Simple metal table with rectangular tabletop and four legs with a square section
 
+
+
+
 @settings(defaultLengthUnit = mm)
 
 // Parameters

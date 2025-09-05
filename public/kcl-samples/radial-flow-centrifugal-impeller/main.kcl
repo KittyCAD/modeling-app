@@ -1,6 +1,9 @@
 // Impeller (Radial-flow)
 // Radial-flow impeller for centrifugal pumps—designed as a parametric base for blade and housing experiments.
 
+
+
+
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // parameters
@@ -57,7 +60,7 @@ blades = patternCircular3d(
 
 // back-plate disk
 diskSketch = startSketchOn(XY)
-diskCircle = circle(diskSketch, center = [0, 0], radius = od/2)
+diskCircle = circle(diskSketch, center = [0, 0], radius = od / 2)
 backPlate = extrude(diskCircle, length = -baseThick)
 
 // hub solid
@@ -66,10 +69,9 @@ hubCircle = circle(hubSketch, center = [0, 0], radius = hubOd / 2)
 hub = extrude(hubCircle, length = hubHeight)
 
 // bore hole
-boreSketch = startSketchOn(offsetPlane(XY, offset = -baseThick*2))
+boreSketch = startSketchOn(offsetPlane(XY, offset = -baseThick * 2))
 boreCircle = circle(boreSketch, center = [0, 0], radius = boreDia / 2)
-bore = extrude(boreCircle, length = baseThick*2 + hubHeight + 5)
+bore = extrude(boreCircle, length = baseThick * 2 + hubHeight + 5)
 
 // final impeller
 impeller = subtract(hub, tools = [bore])
-

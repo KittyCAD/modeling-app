@@ -1,6 +1,9 @@
 // C-Shape Solid (Abstract Geometry Demo)
 // This is a simplified geometry study that demonstrates how to create a "C" shape by subtracting a rectangular wedge from a circular ring. This base logic is foundational to models like split washers and other circular parts with a gap.
 
+
+
+
 @settings(defaultLengthUnit = mm)
 
 // ──────────
@@ -22,7 +25,6 @@ cutGapWidth = 2
 // ───────────────────────
 // STEP 1: CREATE THE RING
 // ───────────────────────
-
 
 // We begin by sketching two concentric circles: the outer boundary and the hole. Then we subtract the inner one to get a donut-like profile.
 ringSketch = startSketchOn(XY)
@@ -64,6 +66,8 @@ wedgeBody = extrude(wedgeProfile, length = wedgeHeight)
 // STEP 3: SUBTRACT WEDGE
 // ──────────────────────
 
+
 // Finally, we subtract the wedge body from the solid ring. The result is a simple C-shape: a ring with a single clean gap.
+
 
 cShape = subtract([solidRing], tools = [wedgeBody])

@@ -1,6 +1,9 @@
 // Split Washer (Spring Version)
 // A spring lock washer is a small metal ring with a gap. Unlike flat washers, this one is twisted into a spiral shape, like a slice of a spring. It’s designed to stay slightly compressed, which helps hold bolts and nuts in place — even when things vibrate. This version shows how to model that twist using a helical sweep.
 
+
+
+
 @settings(defaultLengthUnit = mm)
 
 // ──────────
@@ -25,7 +28,9 @@ washerSplitHeight = 1
 // STEP 1: DEFINE THE HELIX GUIDE
 // ──────────────────────────────
 
+
 // To make a 3D spring-like shape, we need a *path* for the geometry to follow. We'll use a helix (like a spiral staircase) as this path. The sweep will twist the washer’s cross-section along the helix, giving it the spring form.
+
 
 // The helix:
 // - Starts at the origin
@@ -33,7 +38,8 @@ washerSplitHeight = 1
 // - Has a radius equal to the bolt hole (so it wraps around the center)
 // - Rises by `washerSplitHeight` over the revolution
 // - We set revolutions to 0.95 (just under one full circle) to leave a realistic gap
-//   If we set it to exactly 1.0, the washer would be fully closed.
+// If we set it to exactly 1.0, the washer would be fully closed.
+
 
 helixGuide = helix(
   axis = Z,
@@ -58,19 +64,20 @@ washerSectionSketch = startSketchOn(XZ)
 
 // We position the start of the rectangle at the washerHoleRadius, so it aligns with the helix guide.
 
+
 washerSectionProfile = startProfile(washerSectionSketch, at = [washerHoleRadius, 0])
-  |> yLine(length = washerThickness)                         // Go up to define thickness
-  |> xLine(length = washerSectionWidth)                     // Go outward toward the outer radius
-  |> yLine(length = -washerThickness)                       // Go back down to complete the rectangle
+  |> yLine(length = washerThickness) // Go up to define thickness
+  |> xLine(length = washerSectionWidth) // Go outward toward the outer radius
+  |> yLine(length = -washerThickness) // Go back down to complete the rectangle
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-// ──────────────────────────────
-// STEP 3: SWEEP TO FORM THE BODY
-// ──────────────────────────────
+  // ──────────────────────────────
+  // STEP 3: SWEEP TO FORM THE BODY
+  // ──────────────────────────────
 
-// Now that we have a path (helix) and a shape (rectangle), we sweep the shape along the helix.
-// This creates a ring that’s slightly twisted — like a slice of a spring.
+  // Now that we have a path (helix) and a shape (rectangle), we sweep the shape along the helix.
+  // This creates a ring that’s slightly twisted — like a slice of a spring.
 // The result is a true spring lock washer in 3D.
 
 splitWasherBody = sweep(washerSectionProfile, path = helixGuide)

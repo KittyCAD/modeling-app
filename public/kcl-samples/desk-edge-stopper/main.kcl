@@ -1,6 +1,9 @@
 // Desk-Edge Stopper
 // 3-D–printable U-shaped guard that slides onto a desk edge and raises a vertical wall to keep pens, phones, cables, etc. from slipping off the tabletop.
 
+
+
+
 @settings(defaultLengthUnit = mm)
 
 // ──────────────────
@@ -54,7 +57,6 @@ holeOffsetFromGuardEdge = guardLengthAlongDesk / 6
 // The spacing between the first and last screw holes equals the total guard length minus two side offsets.
 holeSpan = guardLengthAlongDesk - (holeOffsetFromGuardEdge * 2)
 
-
 // Spacing between holes is calculated by dividing the span (first to last hole) by the number of gaps between them, which is one less than the total hole count.
 holeSpacing = holeSpan / (holeCount - 1)
 
@@ -62,7 +64,9 @@ holeSpacing = holeSpan / (holeCount - 1)
 // 3D GEOMETRY
 // ───────────
 
+
 // Begin with a 2D sketch of the cross-section. The internal shape comes first, since it must adapt precisely to desk thickness — the rest builds around it. This keeps the model parametric and resilient to design changes.
+
 
 guardSketch = startSketchOn(YZ)
 guardProfile = startProfile(guardSketch, at = [0, 0])
@@ -123,11 +127,21 @@ applyHoleCutouts = extrude(holeArray, length = -materialThickness)
 // ───────
 
 // To reinforce the connection between intersecting walls, we add fillets to all interior corners. This U-profile has three walls, resulting in two internal corners, and the stopper wall adds a third junction to round.
-fillets = fillet(guardBody,
+fillets = fillet(
+  guardBody,
   radius = 1,
   tags = [
-    getCommonEdge(faces = [innerFaceOfTheUprofileBottom, innerFaceOfTheUProfileLeftSide]),
-    getCommonEdge(faces = [innerFaceOfTheUprofileRightSide, innerFaceOfTheUprofileBottom]),
-    getCommonEdge(faces = [innerFaceOfTheWall, upperFaceOfTheUprofile])
+    getCommonEdge(faces = [
+  innerFaceOfTheUprofileBottom,
+  innerFaceOfTheUProfileLeftSide
+]),
+    getCommonEdge(faces = [
+  innerFaceOfTheUprofileRightSide,
+  innerFaceOfTheUprofileBottom
+]),
+    getCommonEdge(faces = [
+  innerFaceOfTheWall,
+  upperFaceOfTheUprofile
+])
   ],
 )

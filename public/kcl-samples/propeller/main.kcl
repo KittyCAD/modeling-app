@@ -1,6 +1,9 @@
 // Ceiling Propeller
 // A twisted 3-blade ceiling fan geometry made using boolean cutouts
 
+
+
+
 @settings(defaultLengthUnit = mm)
 
 // Main Parameters
@@ -10,14 +13,17 @@ bladeWidth = 17.5 // Half-width of the blade at its widest point
 bladeBaseThickness = 10 // Total thickness of the extruded root/base
 bladeThickness = 2 // Thickness of the profile at void section
 
+
 // Root geometry
 bladeRootWidth = bladeWidth * 2
 bladeSeamLength = bladeRootWidth / 2 / cos(30) // Angled base segment (30°)
-bladeNeckLength = (bladeRootWidth / 2 - bladeWidth / 2) / sin(30) // Neck connects to span
+bladeNeckLength = (bladeRootWidth / 2 - (bladeWidth / 2)) / sin(30) // Neck connects to span
+
 
 // Fillet radii
 rootFillet = bladeNeckLength / tan(30) * 0.5 // Rounded base root
 tipFillet = bladeWidth * 0.49 // Rounded blade tip
+
 
 // Void cutout dimensions
 voidCutoutLength = bladeSpanLength + 30 // Longitudinal length of the void

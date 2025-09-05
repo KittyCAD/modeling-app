@@ -49,21 +49,9 @@ bracketExtrude = extrude(
 
 // Create mounting holes on the bottom face of the bracket.
 sketch002 = startSketchOn(bracketExtrude, face = seg01)
-profile002 = circle(
-  sketch002,
-  center = [holeXy[0][0], holeXy[0][1]],
-  radius = holeDiameter / 2
-)
-profile003 = circle(
-  sketch002,
-  center = [holeXy[1][0], holeXy[1][1]],
-  radius = holeDiameter / 2
-  )
-profile004 = circle(
-  sketch002,
-  center = [holeXy[2][0], holeXy[2][1]],
-  radius = holeDiameter / 2
-)
+profile002 = circle(sketch002, center = [holeXy[0][0], holeXy[0][1]], radius = holeDiameter / 2)
+profile003 = circle(sketch002, center = [holeXy[1][0], holeXy[1][1]], radius = holeDiameter / 2)
+profile004 = circle(sketch002, center = [holeXy[2][0], holeXy[2][1]], radius = holeDiameter / 2)
 bottomHoles = extrude([profile002, profile003, profile004], length = -.25)
 
 // Create the mounting holes on the side face of the bracket.
@@ -129,4 +117,10 @@ bottomHole = extrude(profile009, length = -.125)
   |> rotate(yaw = 90)
 
 // Move the p clamp so that the mounting hole on the bracket and the p clamp align.
-translate(bottomHole, x = bracketLength/2 + width/2, y= bracketWidth/2, z = bracketThickness, global = true)
+translate(
+  bottomHole,
+  x = bracketLength / 2 + width / 2,
+  y = bracketWidth / 2,
+  z = bracketThickness,
+  global = true,
+)

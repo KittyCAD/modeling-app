@@ -10,7 +10,6 @@
 // - Flat slab roof
 // - Front circular headlights and rear rectangular taillights
 
-
 // Set units and version
 @settings(defaultLengthUnit = m, kclVersion = 1.0)
 
@@ -49,6 +48,7 @@ dumpBedLength = chassisLength - windPanelShift - cabinLength
 roofElevation = cabinElevation + cabinHeight // roof base height
 roofHeight = 0.1 // thickness of the roof block
 
+
 // Front lights
 headlightsElevation = chassisElevation + chassisHeight / 2
 headlightsDistance = chassisWidth * 0.75
@@ -82,7 +82,7 @@ fenderProfile = startProfile(fenderPlane, at = [-fenderLength / 2, groundClearan
 fenderBody = extrude([fenderProfile], length = -chassisWidth - (fenderInset * 2))
   |> appearance(%, color = "#e0e0e0")
 
-// Wheel Cutouts
+  // Wheel Cutouts
 // Hexagonal recesses subtracted from the fenders to make space for the wheels.
 fn makeWheelCutout(size) {
   wheelSketch = startSketchOn(XZ)
@@ -126,8 +126,8 @@ fenderWithCutouts = subtract(
      )
   |> appearance(%, color = "#e3e3e3")
 
-// Chassis
-// The main structural body of the vehicle, sitting above the fenders.
+  // Chassis
+  // The main structural body of the vehicle, sitting above the fenders.
 // Defines the base frame on which the cabin and roof are mounted.
 chassisProfile = startProfile(chassisPlane, at = [-chassisLength / 2, chassisElevation])
   |> yLine(length = chassisHeight)
@@ -139,7 +139,7 @@ chassisProfile = startProfile(chassisPlane, at = [-chassisLength / 2, chassisEle
 chassis = extrude([chassisProfile], length = -chassisWidth)
   |> appearance(%, color = "#ffdd00") // bright yellow body
 
-// Cabin (front operator area)
+  // Cabin (front operator area)
 // Represents the front driver's cab with a sloped windshield
 cabinSideProfile = startProfile(chassisPlane, at = [-chassisLength / 2, cabinElevation])
   |> line(end = [windPanelShift, cabinHeight])
@@ -163,15 +163,15 @@ dumpBedProfile = startProfile(
   |> xLine(length = -cabinLength)
   |> yLine(length = roofHeight)
   |> xLine(length = cabinLength + dumpBedLength)
-  |> yLine(length = -cabinHeight-roofHeight)
+  |> yLine(length = -cabinHeight - roofHeight)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
 dumpBed = extrude([dumpBedProfile], length = -chassisWidth)
   |> appearance(%, color = "#ffdd00")
 
-// Roof
-// Flat rectangular panel capping the top of the cabin.
+  // Roof
+  // Flat rectangular panel capping the top of the cabin.
 // Simplified to a thin block for a toy-like appearance.
 roofProfile = startProfile(
        chassisPlane,
@@ -189,9 +189,8 @@ roofProfile = startProfile(
 roof = extrude([roofProfile], length = -chassisWidth)
   |> appearance(%, color = "#ffdd00") // bright yellow body
 
-
-// Wheels
-// Cylindrical wheels with a central hubcap detail.
+  // Wheels
+  // Cylindrical wheels with a central hubcap detail.
 // Created as separate parts and positioned under the fender cutouts.
 fn wheelFn(diameter, width) {
   wheelSketch = startSketchOn(XZ)
@@ -225,7 +224,7 @@ wheelRearRight = wheelFn(diameter = wheelDiameter, width = wheelWidth)
      )
   |> translate(x = -wheelBase / 2, y = -fenderWidth / 2, z = 0)
 
-// Headlights
+  // Headlights
 // Two circular front lights mounted on the front face of the chassis.
 headlightsPlane = offsetPlane(YZ, offset = -chassisLength / 2)
 headlightsSketch = startSketchOn(headlightsPlane)
@@ -246,7 +245,7 @@ headlightsProfile = circle(
 headlightsBody = extrude(headlightsProfile, length = -lightDepth)
   |> appearance(%, color = "#ededed")
 
-// Taillights
+  // Taillights
 // Two rectangular rear lights mounted on the back face of the chassis.
 taillightsPlane = offsetPlane(YZ, offset = chassisLength / 2)
 taillightsSketch = startSketchOn(taillightsPlane)

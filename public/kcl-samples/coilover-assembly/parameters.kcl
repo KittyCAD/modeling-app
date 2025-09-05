@@ -23,6 +23,7 @@ export lengthBelowRetainerPlate = baseSeatingLength + lowerMountLength + eyeEndM
 export lowerMountOverallLength = lengthBelowRetainerPlate + retainerPlateLength
 export pointOffset = 20 // Used to help build profile for subtraction
 
+
 // Coilover Spring (spring.kcl)
 export springRadius = 22
 export springLength = 200

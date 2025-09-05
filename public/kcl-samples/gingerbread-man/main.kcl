@@ -1,6 +1,9 @@
 // Gingerbread Man
 // A gingerbread man is a classic holiday cookie shaped like a stylized human figure. Typically made from gingerbread dough - a sweet, spiced mixture containing ginger, cinnamon, nutmeg, cloves, molasses, and brown sugar - these charming cookies are flat with a distinctive form featuring a round head, torso, arms, and legs. The traditional gingerbread man is decorated with icing to create facial features (eyes, mouth, sometimes a nose) and details like buttons down the front, cuffs at the wrists and ankles, and sometimes a bow tie. Candies like raisins, chocolate chips, or colorful gumdrops might be used for embellishments.
 
+
+
+
 @settings(defaultLengthUnit = mm)
 
 // Define parameters
@@ -75,7 +78,11 @@ eyebrow = startProfile(decorationSketch, at = [-73.02, 483.5])
   |> patternCircular3d(
        instances = 2,
        axis = [0, 1, 0],
-       center = [0, 0, thickness + decorationThickness / 2],
+       center = [
+         0,
+         0,
+         thickness + decorationThickness / 2
+       ],
        arcDegrees = 360,
        rotateDuplicates = true,
      )
@@ -110,7 +117,11 @@ cuffs = startProfile(decorationSketch, at = [-224.97, 184.88])
   |> patternCircular3d(
        instances = 2,
        axis = [0, 1, 0],
-       center = [0, 0, thickness + decorationThickness / 2],
+       center = [
+         0,
+         0,
+         thickness + decorationThickness / 2
+       ],
        arcDegrees = 360,
        rotateDuplicates = true,
      )

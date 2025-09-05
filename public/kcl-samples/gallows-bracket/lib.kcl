@@ -1,6 +1,7 @@
 // Gallows Bracket lib
 // Supporting library for the gallows bracket
 
+
 export fn angleIron(length, thickness, width, miterStart, miterEnd) {
   assert(miterStart, isGreaterThan = -90, isLessThan = 90)
   assert(miterEnd, isGreaterThanOrEqual = -90, isLessThan = 90)
@@ -98,7 +99,7 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
   // Recommendations from drawings
   bottomBoltOffset = 75
   distanceBetweenBolts = 450
-  assert(height, isGreaterThan = bottomBoltOffset + distanceBetweenBolts, error="You must have at least 525mm of height to get sufficient bolt spacing")
+  assert(height, isGreaterThan = bottomBoltOffset + distanceBetweenBolts, error = "You must have at least 525mm of height to get sufficient bolt spacing")
 
   vertical = angleIron(
          length = height,
@@ -110,15 +111,18 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
     |> rotate(roll = 90, yaw = 180)
   verticalHolesNeeded = ceil((height - bottomBoltOffset) / distanceBetweenBolts)
   verticalHolesSketch = offsetPlane(YZ, offset = -1)
-  verticalHoles = circle(verticalHolesSketch, center=[-ironWidth / 2, 75], radius=boltRadius + 0.5)
+  verticalHoles = circle(verticalHolesSketch, center = [-ironWidth / 2, 75], radius = boltRadius + 0.5)
     |> patternLinear2d(instances = verticalHolesNeeded, distance = (height - bottomBoltOffset) / verticalHolesNeeded, axis = [0, 1])
     |> extrude(length = ironThickness + 2)
 
-  verticalWithHoles = reduce(verticalHoles, initial = vertical, f = fn(@hole, accum) {
-    return subtract(accum, tools=hole)
-  })
+  verticalWithHoles = reduce(
+    verticalHoles,
+    initial = vertical,
+    f = fn(@hole, accum) {
+      return subtract(accum, tools = hole)
+    },
+  )
 
-  
   horizontal = angleIron(
          length = depth,
          width = ironWidth,
@@ -128,10 +132,17 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
        )
     |> rotate(pitch = 270, yaw = -90)
     |> translate(z = height + 1, global = true)
-    horizontalHolesSketch = offsetPlane(XY, offset = height - ironThickness)
-  horizontalHoles = circle(horizontalHolesSketch, center=[depth - ironWidth / 2, -ironWidth / 2], radius=boltRadius + 0.5)
+  horizontalHolesSketch = offsetPlane(XY, offset = height - ironThickness)
+  horizontalHoles = circle(
+         horizontalHolesSketch,
+         center = [
+           depth - (ironWidth / 2),
+           -ironWidth / 2
+         ],
+         radius = boltRadius + 0.5,
+       )
     |> extrude(length = ironThickness + 2)
-  horizontalWithHoles = subtract(horizontal, tools=horizontalHoles)
+  horizontalWithHoles = subtract(horizontal, tools = horizontalHoles)
 
   strutLength = sqrt(2 * (min([height, depth]) - ironThickness) ^ 2)
   strut = angleIron(
@@ -142,7 +153,7 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
          miterEnd = -45,
        )
     |> rotate(pitch = 270, yaw = -90)
-    |> translate(x= -strutLength - 1, z=ironWidth - ironThickness, global=true)
+    |> translate(x = -strutLength - 1, z = ironWidth - ironThickness, global = true)
     |> rotate(pitch = -45, global = true)
     |> translate(
          y = -ironThickness,
@@ -160,7 +171,12 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
     |> close()
     |> extrude(length = 100)
     |> translate(z = height - ironWidth, global = true)
-  
+
   // Leg to insert into party wall
-  return [verticalWithHoles, horizontalWithHoles, strut, leg]
+  return [
+    verticalWithHoles,
+    horizontalWithHoles,
+    strut,
+    leg
+  ]
 }

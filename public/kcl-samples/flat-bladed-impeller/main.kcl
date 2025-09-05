@@ -1,6 +1,9 @@
 // Impeller (Flat-bladed)
 // A parametric impeller with straight, flat blades used in centrifugal fans or pumps. Moves air or fluid radially outward from the center. Useful for mechanical design and prototyping.
 
+
+
+
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // parameters
@@ -13,6 +16,7 @@ hubHeight = 35 // height of cylindrical hub
 bladeLength = 80 // radial length of blade (root to tip)
 bladeHeight = 40 // vertical height of each blade
 bladeThickness = 3 // width (thickness) of each blade
+
 
 // derived
 outerRadius = outerDiameter / 2

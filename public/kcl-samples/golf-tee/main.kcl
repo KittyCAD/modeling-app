@@ -1,6 +1,9 @@
 // Golf Tee
 // A parametric model of a golf tee with realistic proportions, including a pointed tip, cylindrical shaft, and flared cup to hold the ball. Designed for prototyping, printing, or sports equipment simulations.
 
+
+
+
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // --- Main Dimensions ---
@@ -10,8 +13,10 @@ cupHeight = 14.6 // height of the flared cup section
 shaftHeight = teeHeight - tipHeight - cupHeight // derived height of the cylindrical shaft
 cupDepth = 2 // depth of the inner cup (how far the ball sits in)
 
+
 shaftDiameter = 4.5 // diameter of the shaft
 cupDiameter = 14.6 // outer diameter of the cup (typically wider than the shaft)
+
 
 shaftRadius = shaftDiameter / 2
 cupRadius = cupDiameter / 2
