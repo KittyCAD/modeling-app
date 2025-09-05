@@ -129,10 +129,7 @@ const MLEphantConversationStarter = () => {
           Text-to-CAD
         </span>
       </h2>
-      <p className="my-4">
-        Type in prompts to create and edit parts in your project. Here are some
-        tips:
-      </p>
+      <p className="my-4">Here are some tips for effective prompts:</p>
       <ul className="list-disc pl-4">
         <li className="my-4">
           Be as explicit as possible when describing geometry. Use dimensions,
