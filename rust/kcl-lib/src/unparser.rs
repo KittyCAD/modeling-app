@@ -9,8 +9,8 @@ use crate::{
             BinaryOperator, BinaryPart, Block, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr,
             FormatOptions, FunctionExpression, Identifier, IfExpression, ImportSelector, ImportStatement,
             ItemVisibility, LabeledArg, Literal, LiteralValue, MemberExpression, Name, Node, NodeList, NonCodeMeta,
-            NonCodeNode, NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program, SketchBlock,
-            TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
+            NonCodeNode, NonCodeValue, NumericLiteral, ObjectExpression, Parameter, PipeExpression, Program,
+            SketchBlock, SketchVar, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
         },
         deprecation,
     },
@@ -335,6 +335,7 @@ impl Expr {
             }
             Expr::AscribedExpression(e) => e.recast(buf, options, indentation_level, ctxt),
             Expr::SketchBlock(e) => e.recast(buf, options, indentation_level, ctxt),
+            Expr::SketchVar(e) => e.recast(buf),
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
             }
@@ -386,6 +387,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.recast(buf, options, indentation_level, ctxt),
             BinaryPart::IfExpression(e) => e.recast(buf, options, indentation_level, ExprContext::Other),
             BinaryPart::AscribedExpression(e) => e.recast(buf, options, indentation_level, ExprContext::Other),
+            BinaryPart::SketchVar(e) => e.recast(buf),
         }
     }
 }
@@ -559,6 +561,17 @@ fn write<W: std::fmt::Write>(f: &mut W, s: impl std::fmt::Display) {
 fn write_dbg<W: std::fmt::Write>(f: &mut W, s: impl std::fmt::Debug) {
     f.write_fmt(format_args!("{s:?}"))
         .expect("writing to a string should always succeed")
+}
+
+impl NumericLiteral {
+    fn recast(&self, buf: &mut String) {
+        if self.raw.contains('.') && self.value.fract() == 0.0 {
+            write_dbg(buf, self.value);
+            write(buf, self.suffix);
+        } else {
+            write(buf, &self.raw);
+        }
+    }
 }
 
 impl Literal {
@@ -863,7 +876,7 @@ impl UnaryExpression {
                 write!(buf, "{}", self.operator).no_fail();
                 self.argument.recast(buf, options, 0, ctxt)
             }
-            BinaryPart::BinaryExpression(_) | BinaryPart::UnaryExpression(_) => {
+            BinaryPart::BinaryExpression(_) | BinaryPart::UnaryExpression(_) | BinaryPart::SketchVar(_) => {
                 write!(buf, "{}", self.operator).no_fail();
                 buf.push('(');
                 self.argument.recast(buf, options, 0, ctxt);
@@ -1051,6 +1064,17 @@ impl Block {
             options,
             indentation_level,
         );
+    }
+}
+
+impl SketchVar {
+    fn recast(&self, buf: &mut String) {
+        if let Some(initial) = &self.initial {
+            write!(buf, "var ").no_fail();
+            initial.recast(buf);
+        } else {
+            write!(buf, "var").no_fail();
+        }
     }
 }
 

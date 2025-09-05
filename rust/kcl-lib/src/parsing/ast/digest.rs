@@ -4,9 +4,9 @@ use crate::parsing::ast::types::{
     Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, Block,
     BodyItem, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType,
     Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
-    Literal, LiteralValue, MemberExpression, Name, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-    PipeSubstitution, PrimitiveType, Program, ReturnStatement, SketchBlock, TagDeclarator, Type, TypeDeclaration,
-    UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
+    Literal, LiteralValue, MemberExpression, Name, NumericLiteral, ObjectExpression, ObjectProperty, Parameter,
+    PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, SketchBlock, SketchVar, TagDeclarator,
+    Type, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.
@@ -144,6 +144,7 @@ impl Expr {
             Expr::LabelledExpression(e) => e.compute_digest(),
             Expr::AscribedExpression(e) => e.compute_digest(),
             Expr::SketchBlock(e) => e.compute_digest(),
+            Expr::SketchVar(e) => e.compute_digest(),
             Expr::None(_) => {
                 let mut hasher = Sha256::new();
                 hasher.update(b"Value::None");
@@ -167,6 +168,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.compute_digest(),
             BinaryPart::IfExpression(e) => e.compute_digest(),
             BinaryPart::AscribedExpression(e) => e.compute_digest(),
+            BinaryPart::SketchVar(e) => e.compute_digest(),
         }
     }
 }
@@ -346,6 +348,14 @@ impl VariableDeclarator {
         hasher.update(slf.id.compute_digest());
         hasher.update(slf.init.compute_digest());
     });
+}
+
+impl NumericLiteral {
+    fn digestable_id(&self) -> Vec<u8> {
+        let mut result: Vec<u8> = self.value.to_ne_bytes().into();
+        result.extend((self.suffix as u32).to_ne_bytes());
+        result
+    }
 }
 
 impl Literal {
@@ -537,6 +547,16 @@ impl Block {
     compute_digest!(|slf, hasher| {
         for item in &mut slf.items {
             hasher.update(item.compute_digest());
+        }
+    });
+}
+
+impl SketchVar {
+    compute_digest!(|slf, hasher| {
+        if let Some(initial) = &slf.initial {
+            hasher.update(initial.digestable_id());
+        } else {
+            hasher.update("no_initial");
         }
     });
 }

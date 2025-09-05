@@ -13,7 +13,8 @@ use crate::{
         types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::{
-        DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
+        DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, NumericLiteral, TagDeclarator,
+        TagNode,
     },
     std::{StdFnProps, args::TyF64},
 };
@@ -348,6 +349,16 @@ impl KclValue {
                     result
                 }
             }
+        }
+    }
+
+    pub(crate) fn from_numeric_literal(literal: &Node<NumericLiteral>, exec_state: &mut ExecState) -> Self {
+        let meta = vec![literal.metadata()];
+        let ty = NumericType::from_parsed(literal.suffix, &exec_state.mod_local.settings);
+        KclValue::Number {
+            value: literal.value,
+            meta,
+            ty,
         }
     }
 

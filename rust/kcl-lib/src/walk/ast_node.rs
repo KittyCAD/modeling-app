@@ -17,6 +17,7 @@ pub enum Node<'a> {
 
     VariableDeclarator(NodeRef<'a, types::VariableDeclarator>),
 
+    NumericLiteral(NodeRef<'a, types::NumericLiteral>),
     Literal(NodeRef<'a, types::Literal>),
     TagDeclarator(NodeRef<'a, types::TagDeclarator>),
     Identifier(NodeRef<'a, types::Identifier>),
@@ -37,6 +38,7 @@ pub enum Node<'a> {
     AscribedExpression(NodeRef<'a, types::AscribedExpression>),
     SketchBlock(NodeRef<'a, types::SketchBlock>),
     Block(NodeRef<'a, types::Block>),
+    SketchVar(NodeRef<'a, types::SketchVar>),
 
     Parameter(&'a types::Parameter),
 
@@ -59,6 +61,7 @@ impl Node<'_> {
             Node::TypeDeclaration(n) => n.digest,
             Node::ReturnStatement(n) => n.digest,
             Node::VariableDeclarator(n) => n.digest,
+            Node::NumericLiteral(n) => n.digest,
             Node::Literal(n) => n.digest,
             Node::TagDeclarator(n) => n.digest,
             Node::Identifier(n) => n.digest,
@@ -82,6 +85,7 @@ impl Node<'_> {
             Node::AscribedExpression(n) => n.digest,
             Node::SketchBlock(n) => n.digest,
             Node::Block(n) => n.digest,
+            Node::SketchVar(n) => n.digest,
         }
     }
 
@@ -105,6 +109,7 @@ impl Node<'_> {
             Node::TypeDeclaration(n) => *n as *const _ as *const (),
             Node::ReturnStatement(n) => *n as *const _ as *const (),
             Node::VariableDeclarator(n) => *n as *const _ as *const (),
+            Node::NumericLiteral(n) => *n as *const _ as *const (),
             Node::Literal(n) => *n as *const _ as *const (),
             Node::TagDeclarator(n) => *n as *const _ as *const (),
             Node::Identifier(n) => *n as *const _ as *const (),
@@ -128,6 +133,7 @@ impl Node<'_> {
             Node::AscribedExpression(n) => *n as *const _ as *const (),
             Node::SketchBlock(n) => *n as *const _ as *const (),
             Node::Block(n) => *n as *const _ as *const (),
+            Node::SketchVar(n) => *n as *const _ as *const (),
         }
     }
 }
@@ -151,6 +157,7 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::TypeDeclaration(n) => SourceRange::from(*n),
             Node::ReturnStatement(n) => SourceRange::from(*n),
             Node::VariableDeclarator(n) => SourceRange::from(*n),
+            Node::NumericLiteral(n) => SourceRange::from(*n),
             Node::Literal(n) => SourceRange::from(*n),
             Node::TagDeclarator(n) => SourceRange::from(*n),
             Node::Identifier(n) => SourceRange::from(*n),
@@ -172,6 +179,7 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::AscribedExpression(n) => SourceRange::from(*n),
             Node::SketchBlock(n) => SourceRange::from(*n),
             Node::Block(n) => SourceRange::from(*n),
+            Node::SketchVar(n) => SourceRange::from(*n),
 
             // This is broken too
             Node::ElseIf(n) => SourceRange::new(n.cond.start(), n.cond.end(), n.cond.module_id()),
@@ -215,6 +223,7 @@ impl<'tree> From<&'tree types::Expr> for Node<'tree> {
             types::Expr::LabelledExpression(e) => e.as_ref().into(),
             types::Expr::AscribedExpression(e) => e.as_ref().into(),
             types::Expr::SketchBlock(e) => e.as_ref().into(),
+            types::Expr::SketchVar(e) => e.as_ref().into(),
             types::Expr::None(n) => n.into(),
         }
     }
@@ -234,6 +243,7 @@ impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
             types::BinaryPart::ObjectExpression(e) => e.as_ref().into(),
             types::BinaryPart::IfExpression(e) => e.as_ref().into(),
             types::BinaryPart::AscribedExpression(e) => e.as_ref().into(),
+            types::BinaryPart::SketchVar(e) => e.as_ref().into(),
         }
     }
 }
@@ -265,6 +275,7 @@ impl_from!(Node, VariableDeclaration);
 impl_from!(Node, TypeDeclaration);
 impl_from!(Node, ReturnStatement);
 impl_from!(Node, VariableDeclarator);
+impl_from!(Node, NumericLiteral);
 impl_from!(Node, Literal);
 impl_from!(Node, TagDeclarator);
 impl_from!(Node, Identifier);
@@ -287,6 +298,7 @@ impl_from!(Node, LabelledExpression);
 impl_from!(Node, AscribedExpression);
 impl_from!(Node, SketchBlock);
 impl_from!(Node, Block);
+impl_from!(Node, SketchVar);
 impl_from!(Node, KclNone);
 
 #[cfg(test)]
