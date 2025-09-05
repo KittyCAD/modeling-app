@@ -64,6 +64,7 @@ export type MlEphantManagerEvents =
     }
   | {
       type: MlEphantManagerTransitions.GetPromptsBelongingToConversation
+      project: Project
       conversationId?: string
       nextPage?: string
     }
@@ -243,14 +244,22 @@ export const mlEphantManagerMachine = setup({
           return Promise.reject(result)
         }
 
-        // Clear the prompts pool and what prompts we were tracking.
         const promptsPoolNext = new Map(context.promptsPool)
+
+        // Clear what prompts we were tracking.
         let promptsBelongingToConversationNext: MlEphantManagerContext['promptsBelongingToConversation'] =
           []
+        const promptsMetaNext = new Map<Prompt['id'], PromptMeta>()
 
         result.items.reverse().forEach((prompt) => {
           promptsPoolNext.set(prompt.id, { ...prompt, source_ranges: [] })
           promptsBelongingToConversationNext?.push(prompt.id)
+          promptsMetaNext.set(prompt.id, {
+            // Fake Edit type, because there's no way to tell from the API
+            // what type of prompt this was.
+            type: PromptType.Edit,
+            project: args.input.event.project,
+          })
         })
 
         promptsBelongingToConversationNext =
@@ -262,6 +271,7 @@ export const mlEphantManagerMachine = setup({
           conversationId: args.input.event.conversationId,
           promptsPool: promptsPoolNext,
           promptsBelongingToConversation: promptsBelongingToConversationNext,
+          promptsMeta: promptsMetaNext,
           pageTokenPromptsBelongingToConversation: result.next_page,
         }
       }

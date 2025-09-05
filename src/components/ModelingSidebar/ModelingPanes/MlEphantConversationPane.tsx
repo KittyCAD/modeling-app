@@ -22,7 +22,7 @@ import type { Models } from '@kittycad/lib'
 
 const hasPromptsPending = (promptsPool: Prompt[]) => {
   return (
-    promptsPool.filter((prompt) => prompt.status === 'in_progress').length > 0
+    promptsPool.filter((prompt) => ['queued', 'uploaded', 'in_progress'].includes(prompt.status)).length > 0
   )
 }
 
@@ -164,9 +164,11 @@ export const MlEphantConversationPane = (props: {
     if (
       props.mlEphantManagerActor.getSnapshot().context
         .promptsBelongingToConversation === undefined
+        && props.theProject !== undefined
     ) {
       props.mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
+        project: props.theProject,
         conversationId,
       })
     }
