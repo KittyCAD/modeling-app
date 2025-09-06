@@ -99,7 +99,14 @@ test.describe('Sketch tests', () => {
     ).toBeVisible()
   })
 
-  test('delete startProfile removes profile statement', async ({ page, context, homePage, scene, cmdBar, editor }) => {
+  test('delete startProfile removes profile statement', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+  }) => {
     await page.setBodyDimensions({ width: 1200, height: 600 })
 
     await context.addInitScript(() => {
