@@ -74,9 +74,6 @@ export const TELEMETRY_FILE_NAME = 'boot.txt'
 export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
 export const ENVIRONMENT_FILE_NAME = 'environment.txt'
 
-/** localStorage key to determine if we're in Playwright tests */
-export const PLAYWRIGHT_KEY = 'playwright'
-
 /** Custom error message to match when rejectAllModelCommands is called
  * allows us to match if the execution of executeAst was interrupted
  * This needs to be of type WebsocketResponse, so that we can parse it back out

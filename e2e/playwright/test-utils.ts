@@ -911,7 +911,6 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(
   context: BrowserContext,
   page: Page,
-  testDir: string,
   testInfo?: TestInfo
 ) {
   await page.addInitScript(
@@ -920,7 +919,6 @@ export async function setup(
       settingsKey,
       settings,
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR,
       PERSIST_MODELING_CONTEXT,
     }) => {
       localStorage.clear()
@@ -932,7 +930,9 @@ export async function setup(
       )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
-      localStorage.setItem('PLAYWRIGHT_TEST_DIR', PLAYWRIGHT_TEST_DIR)
+      window.addEventListener('beforeunload', () => {
+        localStorage.removeItem(IS_PLAYWRIGHT_KEY)
+      })
     },
     {
       token,
@@ -955,7 +955,6 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: testDir,
       PERSIST_MODELING_CONTEXT,
     }
   )
