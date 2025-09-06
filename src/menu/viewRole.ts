@@ -43,6 +43,7 @@ export const projectViewRole = (
       { type: 'separator' },
       { role: 'minimize' },
       { role: 'zoom' },
+      { role: 'toggleDevTools' },
       ...extraBits,
     ],
   }
@@ -169,15 +170,6 @@ export const modelingViewRole = (
               })
             },
           },
-          {
-            label: 'Refresh',
-            id: 'View.Standard views.Refresh',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Standard views.Refresh',
-              })
-            },
-          },
         ],
       },
       {
@@ -277,6 +269,7 @@ export const modelingViewRole = (
       { type: 'separator' },
       { role: 'minimize' },
       { role: 'zoom' },
+      { role: 'toggleDevTools' },
       ...extraBits,
     ],
   }
