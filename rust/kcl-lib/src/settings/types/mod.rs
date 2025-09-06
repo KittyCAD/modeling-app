@@ -418,6 +418,19 @@ pub struct TextEditorSettings {
     pub blinking_cursor: DefaultTrue,
 }
 
+/// Same as TextEditorSettings but applies to a per-project basis.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[serde(rename_all = "snake_case")]
+#[ts(export)]
+pub struct ProjectTextEditorSettings {
+    /// Whether to wrap text in the editor or overflow with scroll.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_wrapping: Option<bool>,
+    /// Whether to make the cursor blink in the editor.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub blinking_cursor: Option<bool>,
+}
+
 /// Settings that affect the behavior of project management.
 #[derive(Debug, Clone, Default, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
 #[serde(rename_all = "snake_case")]
@@ -462,6 +475,16 @@ pub struct CommandBarSettings {
     /// Whether to include settings in the command bar.
     #[serde(default, skip_serializing_if = "is_default")]
     pub include_settings: DefaultTrue,
+}
+
+/// Same as CommandBarSettings but applies to a per-project basis.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[serde(rename_all = "snake_case")]
+#[ts(export)]
+pub struct ProjectCommandBarSettings {
+    /// Whether to include settings in the command bar.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub include_settings: Option<bool>,
 }
 
 /// The types of onboarding status.
