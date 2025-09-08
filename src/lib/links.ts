@@ -1,14 +1,14 @@
 import env from '@src/env'
 import toast from 'react-hot-toast'
 
+import { users } from '@kittycad/lib'
 import { stringToBase64 } from '@src/lib/base64'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
 } from '@src/lib/constants'
-import { err } from '@src/lib/trap'
-import { users } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { err } from '@src/lib/trap'
 
 export interface FileLinkParams {
   code: string

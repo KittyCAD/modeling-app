@@ -1,8 +1,8 @@
 import Loading from '@src/components/Loading'
 import {
+  mlEphantManagerActor,
   useAuthState,
   useToken,
-  mlEphantManagerActor,
 } from '@src/lib/singletons'
 import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
 

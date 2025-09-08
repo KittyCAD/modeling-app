@@ -1,4 +1,32 @@
 import type { TextToCad, TextToCadMultiFileIteration } from '@kittycad/lib'
+import { ActionButton } from '@src/components/ActionButton'
+import { fsManager } from '@src/lang/std/fileSystemManager'
+import { base64Decode } from '@src/lang/wasm'
+import { isDesktop } from '@src/lib/isDesktop'
+import { SafeRenderer } from '@src/lib/markdown'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
+import { sendTelemetry } from '@src/lib/textToCadTelemetry'
+import { reportRejection } from '@src/lib/trap'
+import type { FileMeta } from '@src/lib/types'
+import {
+  useProjectDirectoryPath,
+  useRequestedFileName,
+  useRequestedProjectName,
+} from '@src/machines/systemIO/hooks'
+import {
+  SystemIOMachineEvents,
+  waitForIdleState,
+} from '@src/machines/systemIO/utils'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
+import {
+  Marked,
+  type MarkedOptions,
+  escape,
+  unescape,
+} from '@ts-stack/markdown'
 import { useCallback, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import type { Mesh } from 'three'
@@ -18,34 +46,6 @@ import {
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { ActionButton } from '@src/components/ActionButton'
-import { base64Decode } from '@src/lang/wasm'
-import { isDesktop } from '@src/lib/isDesktop'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS } from '@src/lib/paths'
-import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
-import { sendTelemetry } from '@src/lib/textToCadTelemetry'
-import { reportRejection } from '@src/lib/trap'
-import {
-  SystemIOMachineEvents,
-  waitForIdleState,
-} from '@src/machines/systemIO/utils'
-import {
-  useProjectDirectoryPath,
-  useRequestedFileName,
-  useRequestedProjectName,
-} from '@src/machines/systemIO/hooks'
-import { commandBarActor } from '@src/lib/singletons'
-import type { FileMeta } from '@src/lib/types'
-import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import {
-  Marked,
-  type MarkedOptions,
-  escape,
-  unescape,
-} from '@ts-stack/markdown'
-import { SafeRenderer } from '@src/lib/markdown'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128

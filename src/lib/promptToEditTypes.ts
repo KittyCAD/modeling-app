@@ -9,8 +9,6 @@ export type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
 }
 
-// Deprecated error shape no longer used (SDK provides ApiError)
-
 export interface PromptToEditRequest {
   body: {
     prompt: string

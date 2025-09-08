@@ -1,4 +1,4 @@
-import type { WebSocketRequest, OkWebSocketResponseData } from '@kittycad/lib'
+import type { OkWebSocketResponseData, WebSocketRequest } from '@kittycad/lib'
 
 import type {
   Cap,

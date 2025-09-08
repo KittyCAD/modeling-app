@@ -25,7 +25,6 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { radToDeg } from 'three/src/math/MathUtils'
 
 import type { GetSketchModePlane } from '@kittycad/lib'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Path } from '@rust/kcl-lib/bindings/Path'
@@ -35,6 +34,7 @@ import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
 import type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { SafeArray } from '@src/lib/utils'
 import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
 
@@ -57,8 +57,10 @@ import {
   DRAFT_DASHED_LINE,
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
+  SEGMENT_BLUE,
   SEGMENT_BODIES,
   SEGMENT_BODIES_PLUS_PROFILE_START,
+  SEGMENT_YELLOW,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_DASH,
   TANGENTIAL_ARC_TO_SEGMENT,
@@ -66,8 +68,6 @@ import {
   THREE_POINT_ARC_HANDLE3,
   THREE_POINT_ARC_SEGMENT,
   getParentGroup,
-  SEGMENT_BLUE,
-  SEGMENT_YELLOW,
 } from '@src/clientSideScene/sceneConstants'
 import type {
   OnClickCallbackArgs,
@@ -75,6 +75,7 @@ import type {
   SceneInfra,
 } from '@src/clientSideScene/sceneInfra'
 
+import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
 import {
   ANGLE_SNAP_THRESHOLD_DEGREES,
   ARROWHEAD,
@@ -99,7 +100,7 @@ import {
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
-import { ARG_END, ARG_AT, ARG_END_ABSOLUTE } from '@src/lang/constants'
+import { ARG_AT, ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
@@ -127,6 +128,7 @@ import {
   getPathNormalisedForTruncatedAst,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   codeRefFromRange,
   getArtifactFromRange,
@@ -150,7 +152,6 @@ import {
   resultIsOk,
   sketchFromKclValue,
 } from '@src/lang/wasm'
-import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
 import { EXECUTION_TYPE_MOCK } from '@src/lib/constants'
 import {
   getRectangleCallExpressions,
@@ -161,7 +162,8 @@ import type RustContext from '@src/lib/rustContext'
 import { updateExtraSegments } from '@src/lib/selections'
 import type { Selections } from '@src/lib/selections'
 import { getEventForSegmentSelection } from '@src/lib/selections'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
@@ -178,8 +180,6 @@ import type {
   SketchTool,
 } from '@src/machines/modelingMachine'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
 
 type DraftSegment = 'line' | 'tangentialArc'
 

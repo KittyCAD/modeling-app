@@ -1,10 +1,10 @@
-import ms from 'ms'
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { Thinking } from '@src/components/Thinking'
 import type { Prompt } from '@src/lib/prompt'
 import type { IResponseMlConversation } from '@src/lib/textToCad'
+import ms from 'ms'
 import { useState } from 'react'
-import type { MlCopilotServerMessage } from '@kittycad/lib'
-import { Thinking } from '@src/components/Thinking'
 
 // In the future we can split this out but the code is 99% the same as
 // the PromptCard, which came first.

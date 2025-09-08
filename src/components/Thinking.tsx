@@ -3,10 +3,10 @@ import ms from 'ms'
 import { SafeRenderer } from '@src/lib/markdown'
 import { Marked, escape, unescape } from '@ts-stack/markdown'
 
-import { CustomIcon } from '@src/components/CustomIcon'
-import { useEffect, useState, useRef, type ReactNode } from 'react'
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 import type { PlanStep } from '@kittycad/lib'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 export const Generic = (props: {
   content: string

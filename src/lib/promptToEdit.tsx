@@ -1,20 +1,20 @@
 import type {
-  TextToCadMultiFileIteration,
   SourceRange as ApiSourceRange,
   SourceRangePrompt,
+  TextToCadMultiFileIteration,
 } from '@kittycad/lib'
+import { ml } from '@kittycad/lib'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
-import { ml } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
-import { err } from '@src/lib/trap'
+import { parentPathRelativeToProject } from '@src/lib/paths'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import type {
   ConstructRequestArgs,
   KclFileMetaMap,
   PromptToEditRequest,
 } from '@src/lib/promptToEditTypes'
-import { parentPathRelativeToProject } from '@src/lib/paths'
+import { err } from '@src/lib/trap'
 
 function sourceIndexToLineColumn(
   code: string,

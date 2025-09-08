@@ -21,7 +21,7 @@ import {
 } from 'electron'
 import { Issuer } from 'openid-client'
 
-import { getAutoUpdater } from '@src/updater'
+import fs from 'fs'
 import {
   argvFromYargs,
   getPathOrUrlFromArgs,
@@ -29,8 +29,8 @@ import {
 } from '@src/commandLineArgs'
 import { initPromiseNode } from '@src/lang/wasmUtilsNode'
 import {
-  ZOO_STUDIO_PROTOCOL,
   OAUTH2_DEVICE_CLIENT_ID,
+  ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
@@ -41,7 +41,7 @@ import {
   disableMenu,
   enableMenu,
 } from '@src/menu'
-import fs from 'fs'
+import { getAutoUpdater } from '@src/updater'
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')

@@ -7,18 +7,18 @@ import {
   ASK_TO_OPEN_QUERY_PARAM,
   CMD_GROUP_QUERY_PARAM,
   CMD_NAME_QUERY_PARAM,
-  CREATE_FILE_URL_PARAM,
-  FILE_NAME_QUERY_PARAM,
   CODE_QUERY_PARAM,
+  CREATE_FILE_URL_PARAM,
   DEFAULT_FILE_NAME,
+  FILE_NAME_QUERY_PARAM,
   POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { FileLinkParams } from '@src/lib/links'
-import { codeManager, commandBarActor, useAuthState } from '@src/lib/singletons'
 import { findKclSample } from '@src/lib/kclSamples'
+import type { FileLinkParams } from '@src/lib/links'
 import { webSafePathSplit } from '@src/lib/paths'
+import { codeManager, commandBarActor, useAuthState } from '@src/lib/singletons'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.

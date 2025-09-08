@@ -1,5 +1,5 @@
-import { isDesktop } from '@src/lib/isDesktop'
 import type { EnvironmentConfigurationRuntime } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
 
 export function generateDomainsFromBaseDomain(baseDomain: string) {
   return {

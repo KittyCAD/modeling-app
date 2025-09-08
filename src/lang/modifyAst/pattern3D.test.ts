@@ -1,14 +1,14 @@
+import { addPatternCircular3D } from '@src/lang/modifyAst/pattern3D'
 import {
   type Artifact,
-  assertParse,
   type CodeRef,
+  assertParse,
   recast,
 } from '@src/lang/wasm'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { Selection, Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { addPatternCircular3D } from '@src/lang/modifyAst/pattern3D'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
 
 async function getAstAndArtifactGraph(code: string) {
   const ast = assertParse(code)

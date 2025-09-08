@@ -1,33 +1,33 @@
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { connectReasoningStream } from '@src/lib/reasoningWs'
-import { assertEvent, assign, setup, fromPromise } from 'xstate'
+import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 
-import { S, transitions } from '@src/machines/utils'
-import { err } from '@src/lib/trap'
 import { getKclVersion } from '@src/lib/kclVersion'
+import { err } from '@src/lib/trap'
+import { S, transitions } from '@src/machines/utils'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
 import type { FileEntry, Project } from '@src/lib/project'
+import type { Selections } from '@src/lib/selections'
 import type { FileMeta } from '@src/lib/types'
 
 import type { Prompt } from '@src/lib/prompt'
 import { PromptType } from '@src/lib/prompt'
 
+import { textToCadPromptFeedback } from '@src/lib/textToCad'
 import {
-  textToCadMlConversations,
-  textToCadMlPromptsBelongingToConversation,
   getTextToCadCreateResult,
   submitTextToCadCreateRequest,
+  textToCadMlConversations,
+  textToCadMlPromptsBelongingToConversation,
 } from '@src/lib/textToCadCore'
-import { textToCadPromptFeedback } from '@src/lib/textToCad'
 import type { IResponseMlConversations } from '@src/lib/textToCadTypes'
 
 import {
+  constructMultiFileIterationRequestWithPromptHelpers,
   getPromptToEditResult,
   submitTextToCadMultiFileIterationRequest,
-  constructMultiFileIterationRequestWithPromptHelpers,
 } from '@src/lib/promptToEdit'
 import toast from 'react-hot-toast'
 

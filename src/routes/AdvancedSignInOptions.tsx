@@ -1,8 +1,8 @@
-import { Popover, Transition, Combobox, RadioGroup } from '@headlessui/react'
-import { CustomIcon } from '@src/components/CustomIcon'
-import { Fragment, useState } from 'react'
-import { isDesktop } from '@src/lib/isDesktop'
+import { Combobox, Popover, RadioGroup, Transition } from '@headlessui/react'
 import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { isDesktop } from '@src/lib/isDesktop'
+import { Fragment, useState } from 'react'
 
 interface Domain {
   name: string

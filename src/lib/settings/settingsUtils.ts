@@ -1,8 +1,8 @@
-import { v4, NIL as uuidNIL } from 'uuid'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import { default_app_settings } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { NIL as uuidNIL, v4 } from 'uuid'
 
 import {
   defaultAppSettings,

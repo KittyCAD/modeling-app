@@ -4,10 +4,10 @@ import { defaultSourceRange } from '@src/lang/sourceRange'
 import { topLevelRange } from '@src/lang/util'
 
 import {
+  type SourceRange,
   assertParse,
   defaultNodePath,
   nodePathFromRange,
-  type SourceRange,
 } from '@src/lang/wasm'
 import { filterOperations, getOperationVariableName } from '@src/lib/operations'
 

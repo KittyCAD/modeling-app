@@ -1,8 +1,8 @@
 import type { Page } from '@playwright/test'
 
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 
 test.describe('Text-to-CAD tests', () => {
   test('basic lego happy case', async ({

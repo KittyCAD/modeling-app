@@ -10,9 +10,9 @@ import {
 } from '@src/lang/create'
 import { deleteEdgeTreatment } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
+  findPipesWithImportAlias,
   getNodeFromPath,
   traverse,
-  findPipesWithImportAlias,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {

@@ -1,9 +1,9 @@
 import env from '@src/env'
-import { isDesktop } from '@src/lib/isDesktop'
 import {
-  IS_PLAYWRIGHT_KEY,
   IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
+  IS_PLAYWRIGHT_KEY,
 } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 

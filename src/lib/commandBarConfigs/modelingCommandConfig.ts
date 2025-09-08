@@ -1,4 +1,4 @@
-import type { OutputFormat3d, EntityType } from '@kittycad/lib'
+import type { EntityType, OutputFormat3d } from '@kittycad/lib'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'

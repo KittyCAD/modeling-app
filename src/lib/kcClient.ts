@@ -1,8 +1,8 @@
+import { Client } from '@kittycad/lib'
+import type { ApiError } from '@kittycad/lib'
 import env from '@src/env'
 import { isDesktop } from '@src/lib/isDesktop'
 import isomorphicFetch from 'isomorphic-fetch'
-import { Client } from '@kittycad/lib'
-import type { ApiError } from '@kittycad/lib'
 
 export function createKCClient(token?: string): Client {
   const baseUrl = env().VITE_KITTYCAD_API_BASE_URL

@@ -17,16 +17,16 @@ import type {
   Org,
   ZooProductSubscriptions,
 } from '@kittycad/lib'
-import { createActor } from 'xstate'
 import {
   BillingRemaining,
   BillingRemainingMode,
 } from '@src/components/BillingRemaining'
 import {
   BILLING_CONTEXT_DEFAULTS,
-  billingMachine,
   BillingTransition,
+  billingMachine,
 } from '@src/machines/billingMachine'
+import { createActor } from 'xstate'
 
 // Setup basic request mocking
 const server = setupServer()

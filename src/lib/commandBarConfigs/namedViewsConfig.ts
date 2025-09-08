@@ -12,9 +12,9 @@ import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { engineCommandManager } from '@src/lib/singletons'
+import { getSettings, settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { getSettings, settingsActor } from '@src/lib/singletons'
 
 function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem {
   return x === 'right_handed_up_z' || x === 'right_handed_up_y'

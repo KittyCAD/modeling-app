@@ -1,9 +1,9 @@
 import type { CustomerBalance, ZooProductSubscriptions } from '@kittycad/lib'
-import { payments, orgs } from '@kittycad/lib'
+import { orgs, payments } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { isErr } from '@src/lib/trap'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
-import { isErr } from '@src/lib/trap'
 
 const _TIME_1_SECOND = 1000
 

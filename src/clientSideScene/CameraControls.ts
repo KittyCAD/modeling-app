@@ -36,6 +36,7 @@ import type {
 import type { MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { Signal } from '@src/lib/signal'
 import { reportRejection } from '@src/lib/trap'
 import { err } from '@src/lib/trap'
 import {
@@ -48,7 +49,6 @@ import {
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
 import { degToRad } from 'three/src/math/MathUtils'
-import { Signal } from '@src/lib/signal'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30

@@ -9,11 +9,11 @@ import { COOKIE_NAME, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
+import dotenv from 'dotenv'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
-import dotenv from 'dotenv'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
@@ -24,8 +24,8 @@ export const NUMBER_REGEXP = '((-)?\\d+(\\.\\d+)?)'
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
-import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'

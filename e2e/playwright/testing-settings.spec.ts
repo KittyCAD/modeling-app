@@ -19,10 +19,10 @@ import {
   createProject,
   executorInputPath,
   getUtils,
+  inputRangeSlideFromCurrentTo,
   lowerRightMasks,
   settingsToToml,
   tomlToSettings,
-  inputRangeSlideFromCurrentTo,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'

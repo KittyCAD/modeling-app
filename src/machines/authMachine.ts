@@ -1,12 +1,10 @@
 import type { User } from '@kittycad/lib'
+import { users } from '@kittycad/lib'
 import env, {
   updateEnvironment,
   updateEnvironmentPool,
   generateDomainsFromBaseDomain,
 } from '@src/env'
-import { users } from '@kittycad/lib'
-import { createKCClient, kcCall } from '@src/lib/kcClient'
-import { assign, fromPromise, setup } from 'xstate'
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
 import {
   listAllEnvironments,
@@ -17,9 +15,11 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
+import { assign, fromPromise, setup } from 'xstate'
 
 export interface UserContext {
   user?: User

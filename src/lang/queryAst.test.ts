@@ -2,6 +2,7 @@ import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
+import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import { ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -16,8 +17,8 @@ import {
   findOperationPlaneArtifact,
   findUsesOfTagInPipe,
   getNodeFromPath,
-  getSelectedPlaneId,
   getSelectedPlaneAsNode,
+  getSelectedPlaneId,
   getVariableExprsFromSelection,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
@@ -33,10 +34,9 @@ import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
-import type { Selections, Selection } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 
 beforeAll(async () => {
   await initPromise

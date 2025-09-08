@@ -5,14 +5,15 @@ import { createKCClient, kcCall } from '@src/lib/kcClient'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
+import type { IElectronAPI } from '@root/interface'
 import { newKclFile } from '@src/lang/project'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   defaultAppSettings,
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
 import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -31,7 +32,6 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import type { IElectronAPI } from '@root/interface'
 
 export async function renameProjectDirectory(
   electron: IElectronAPI,
