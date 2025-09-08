@@ -277,13 +277,15 @@ async fn inner_extrude(
                     })
                 }
             },
+
             (_, _, _, None, None) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "You cannot give `length` or `twist` params with `to` params, you have to choose one or the other"
+                    "Either `length` or `to` parameter must be provided for extrusion."
                         .to_owned(),
                     vec![args.source_range],
                 )));
             }
+
         };
         let cmds = sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });
         exec_state
