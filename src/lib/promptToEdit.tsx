@@ -5,15 +5,14 @@ import type {
 } from '@kittycad/lib'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
-import crossPlatformFetch from '@src/lib/crossPlatformFetch'
+import { ml } from '@kittycad/lib'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { err } from '@src/lib/trap'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type {
   ConstructRequestArgs,
   KclFileMetaMap,
   PromptToEditRequest,
-  TextToCadErrorResponse,
 } from '@src/lib/promptToEditTypes'
 import { parentPathRelativeToProject } from '@src/lib/paths'
 
@@ -42,42 +41,15 @@ export async function submitTextToCadMultiFileIterationRequest(
   request: PromptToEditRequest,
   token: string
 ): Promise<TextToCadMultiFileIteration | Error> {
-  const formData = new FormData()
-  formData.append('body', JSON.stringify(request.body))
-
-  request.files.forEach((file) => {
-    formData.append('files', file.data, file.name)
-  })
-
-  const response = await fetch(
-    withAPIBaseURL('/ml/text-to-cad/multi-file/iteration'),
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    }
+  const client = createKCClient(token)
+  const data = await kcCall(() =>
+    ml.create_text_to_cad_multi_file_iteration({
+      client,
+      files: request.files as any,
+      body: request.body as any,
+    })
   )
-
-  if (!response.ok) {
-    const errorBody = await response.json()
-    if ('message' in errorBody) {
-      return new Error(errorBody.message)
-    }
-
-    return new Error(
-      `HTTP error! status: ${response.status}, error: ${JSON.stringify(errorBody)}`
-    )
-  }
-
-  const data = await response.json()
-  if ('error_code' in data) {
-    const errorData = data as TextToCadErrorResponse
-    return new Error(errorData.message || 'Unknown error')
-  }
-
-  return data as TextToCadMultiFileIteration
+  return data
 }
 
 // The ML service should know enough about caps, edges, faces, etc when doing
@@ -309,14 +281,7 @@ export async function getPromptToEditResult(
   id: string,
   token?: string
 ): Promise<TextToCadMultiFileIteration | Error> {
-  const url = withAPIBaseURL(`/user/text-to-cad/${id}`)
-  const data: TextToCadMultiFileIteration | Error = await crossPlatformFetch(
-    url,
-    {
-      method: 'GET',
-    },
-    token
-  )
-
-  return data
+  const client = createKCClient(token)
+  const data = await kcCall(() => ml.get_text_to_cad_model_for_user({ client, id }))
+  return data as TextToCadMultiFileIteration | Error
 }

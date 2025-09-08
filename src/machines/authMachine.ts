@@ -1,9 +1,10 @@
 import type { User } from '@kittycad/lib'
 import env, { updateEnvironment, updateEnvironmentPool } from '@src/env'
+import { users } from '@kittycad/lib'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { assign, fromPromise, setup } from 'xstate'
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
 import {
-  getUser as getUserDesktop,
   listAllEnvironments,
   readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
@@ -183,10 +184,7 @@ async function getUser(input: { token?: string }) {
   } catch (e) {
     console.error(e)
   }
-  const url = withAPIBaseURL('/user')
-  const headers: { [key: string]: string } = {
-    'Content-Type': 'application/json',
-  }
+  const client = createKCClient(token)
 
   /**
    * We do not want to store a token or a user since the developer is running
@@ -200,30 +198,18 @@ async function getUser(input: { token?: string }) {
   }
 
   if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
-  if (token) headers['Authorization'] = `Bearer ${token}`
 
-  const userPromise = isDesktop()
-    ? getUserDesktop(token)
-    : fetch(url, {
-        method: 'GET',
-        credentials: 'include',
-        headers,
-      })
-        .then((res) => res.json())
-        .catch((err) => console.error('error from Browser getUser', err))
-
-  const user = await userPromise
+  const me = await kcCall(() => users.get_user_self({ client }))
+  if (me instanceof Error) return Promise.reject(me)
 
   // Necessary here because we use Kurt's API key in CI
   if (localStorage.getItem('FORCE_NO_IMAGE')) {
-    user.image = ''
+    me.image = ''
   }
-
-  if ('error_code' in user) return Promise.reject(new Error(user.message))
 
   markOnce('code/didAuth')
   return {
-    user: user as User,
+    user: me,
     token,
   }
 }

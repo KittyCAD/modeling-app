@@ -7,7 +7,8 @@ import {
   CREATE_FILE_URL_PARAM,
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { users } from '@kittycad/lib'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 export interface FileLinkParams {
   code: string
@@ -97,18 +98,8 @@ export async function createShortlink(
   if (password) {
     body.password = password
   }
-  const response = await fetch(withAPIBaseURL('/user/shortlinks'), {
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(body),
-  })
-  if (!response.ok) {
-    const error = await response.json()
-    return new Error(`Failed to create shortlink: ${error.message}`)
-  } else {
-    return response.json()
-  }
+  const client = createKCClient(token)
+  const resp = await kcCall(() => users.create_user_shortlink({ client, body }))
+  if (resp instanceof Error) return resp
+  return resp
 }

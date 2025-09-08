@@ -1,9 +1,6 @@
-import type {
-  CustomerBalance,
-  Org,
-  ZooProductSubscriptions,
-} from '@kittycad/lib'
-import crossPlatformFetch from '@src/lib/crossPlatformFetch'
+import type { CustomerBalance, ZooProductSubscriptions } from '@kittycad/lib'
+import { payments, orgs } from '@kittycad/lib'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 import { isErr } from '@src/lib/trap'
@@ -31,7 +28,7 @@ export enum Tier {
   Unknown = 'unknown',
 }
 
-export type OrgOrError = Org | number | Error
+export type OrgOrError = object | number | Error
 export type SubscriptionsOrError = ZooProductSubscriptions | number | Error
 export type TierBasedOn = {
   orgOrError: OrgOrError
@@ -100,29 +97,21 @@ export const billingMachine = setup({
           return input.context
         }
 
-        const billingOrError: CustomerBalance | number | Error =
-          await crossPlatformFetch(
-            `${input.context.urlUserService()}/user/payment/balance`,
-            { method: 'GET' },
-            input.event.apiToken
-          )
+        const client = createKCClient(input.event.apiToken)
+        const billingOrError: CustomerBalance | Error = await kcCall(() =>
+          payments.get_payment_balance_for_user({ client, include_total_due: true })
+        )
 
         if (typeof billingOrError === 'number' || isErr(billingOrError)) {
           return Promise.reject(billingOrError)
         }
         const billing: CustomerBalance = billingOrError
 
-        const subscriptionsOrError: ZooProductSubscriptions | number | Error =
-          await crossPlatformFetch(
-            `${input.context.urlUserService()}/user/payment/subscriptions`,
-            { method: 'GET' },
-            input.event.apiToken
-          )
+        const subscriptionsOrError: ZooProductSubscriptions | Error =
+          await kcCall(() => payments.get_user_subscription({ client }))
 
-        const orgOrError: Org | number | Error = await crossPlatformFetch(
-          `${input.context.urlUserService()}/org`,
-          { method: 'GET' },
-          input.event.apiToken
+        const orgOrError: object | Error = await kcCall(() =>
+          orgs.get_user_org({ client })
         )
 
         const tier = toTierFrom({

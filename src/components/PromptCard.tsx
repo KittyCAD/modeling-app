@@ -39,7 +39,7 @@ export const ConvoCard = (props: ConvoCardProps) => {
   )
 }
 
-export interface PromptCardProps extends Prompt {
+export type PromptCardProps = Prompt & {
   disabled?: boolean
   thoughts?: MlCopilotServerMessage[]
   userAvatar?: string

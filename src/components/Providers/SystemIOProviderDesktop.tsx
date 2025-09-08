@@ -273,7 +273,9 @@ export function SystemIOMachineLogicListenerDesktop() {
           },
         })
       } else {
-        const outputsRecord = (prompt.outputs ?? {}) as Record<string, string>
+        const outputsRecord: Record<string, string> = {
+          ...(prompt.outputs ?? {}),
+        }
         const requestedFiles: RequestedKCLFile[] = Object.entries(
           outputsRecord
         ).map(([relativePath, fileContents]) => {

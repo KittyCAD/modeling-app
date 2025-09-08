@@ -1,6 +1,7 @@
 import type { TextToCad } from '@kittycad/lib'
-import crossPlatformFetch from '@src/lib/crossPlatformFetch'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { ml } from '@kittycad/lib'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+// migrated to SDK; keep file minimal
 import type {
   IResponseMlConversation,
   IResponseMlConversations,
@@ -17,15 +18,15 @@ export async function textToCadPromptFeedback(
     feedback: TextToCad['feedback']
   }
 ): Promise<void | Error> {
-  const url = withAPIBaseURL(
-    `/user/text-to-cad/${args.id}?feedback=${args.feedback}`
-  )
-  const data: void | Error = await crossPlatformFetch(
-    url,
-    {
-      method: 'POST',
-    },
-    token
+  if (!args.feedback) return
+  const client = createKCClient(token)
+  const fb = args.feedback
+  const data = await kcCall(() =>
+    ml.create_text_to_cad_model_feedback({
+      client,
+      id: args.id,
+      feedback: fb,
+    })
   )
 
   return data

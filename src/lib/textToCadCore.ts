@@ -1,6 +1,7 @@
 import type { TextToCad, TextToCadCreateBody } from '@kittycad/lib'
-import crossPlatformFetch from '@src/lib/crossPlatformFetch'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { ml } from '@kittycad/lib'
+import type { TextToCadResponse } from '@kittycad/lib'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 import type {
   IResponseMlConversations,
   PromptsPaged,
@@ -18,15 +19,9 @@ export async function submitTextToCadCreateRequest(
       projectName !== '' && projectName !== 'browser' ? projectName : undefined,
     kcl_version: kclVersion,
   }
-  // Glb has a smaller footprint than gltf, should we want to render it.
-  const url = withAPIBaseURL('/ai/text-to-cad/glb?kcl=true')
-  const data: TextToCad | Error = await crossPlatformFetch(
-    url,
-    {
-      method: 'POST',
-      body: JSON.stringify(body),
-    },
-    token
+  const client = createKCClient(token)
+  const data = await kcCall(() =>
+    ml.create_text_to_cad({ client, output_format: 'glb', kcl: true, body })
   )
 
   // Make sure we have an id.
@@ -44,15 +39,9 @@ export async function submitTextToCadCreateRequest(
 export async function getTextToCadCreateResult(
   id: string,
   token?: string
-): Promise<TextToCad | Error> {
-  const url = withAPIBaseURL(`/user/text-to-cad/${id}`)
-  const data: TextToCad | Error = await crossPlatformFetch(
-    url,
-    {
-      method: 'GET',
-    },
-    token
-  )
+): Promise<TextToCadResponse | Error> {
+  const client = createKCClient(token)
+  const data = await kcCall(() => ml.get_text_to_cad_model_for_user({ client, id }))
 
   return data
 }
@@ -65,15 +54,14 @@ export async function textToCadMlConversations(
     sortBy: 'created_at_descending'
   }
 ): Promise<IResponseMlConversations | Error> {
-  const url = withAPIBaseURL(
-    `/ml/conversations?limit=${args.limit ?? '20'}&sort_by=${args.sortBy ?? 'created_at_descending'}${args.pageToken ? '&page_token=' + args.pageToken : ''}`
-  )
-  const data: IResponseMlConversations | Error = await crossPlatformFetch(
-    url,
-    {
-      method: 'GET',
-    },
-    token
+  const client = createKCClient(token)
+  const data = await kcCall(() =>
+    ml.list_conversations_for_user({
+      client,
+      limit: args.limit ?? 20,
+      page_token: args.pageToken ?? '',
+      sort_by: args.sortBy,
+    })
   )
 
   return data
@@ -88,16 +76,17 @@ export async function textToCadMlPromptsBelongingToConversation(
     sortBy: 'created_at_ascending' | 'created_at_descending'
   }
 ): Promise<PromptsPaged | Error> {
-  const url = withAPIBaseURL(
-    `/user/text-to-cad?conversation_id=${args.conversationId}&no_models=true&limit=${args.limit ?? '20'}&sort_by=${args.sortBy ?? 'created_at_ascending'}${args.pageToken ? '&page_token=' + args.pageToken : ''}`
+  const client = createKCClient(token)
+  const data = await kcCall(() =>
+    ml.list_text_to_cad_models_for_user({
+      client,
+      conversation_id: args.conversationId as any,
+      no_models: true,
+      limit: args.limit ?? 20,
+      page_token: args.pageToken ?? '',
+      sort_by: args.sortBy,
+    })
   )
-  const data: PromptsPaged | Error = await crossPlatformFetch(
-    url,
-    {
-      method: 'GET',
-    },
-    token
-  )
-
-  return data
+  if (data instanceof Error) return data
+  return { items: data.items as any, next_page: data.next_page }
 }

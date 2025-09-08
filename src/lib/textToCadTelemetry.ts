@@ -1,18 +1,16 @@
 import type { MlFeedback } from '@kittycad/lib'
-import crossPlatformFetch from '@src/lib/crossPlatformFetch'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { ml } from '@kittycad/lib'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+// migrated to SDK
 
 export async function sendTelemetry(
   id: string,
   feedback: MlFeedback,
   token?: string
-): Promise<void> {
-  const url = withAPIBaseURL(`/user/text-to-cad/${id}?feedback=${feedback}`)
-  await crossPlatformFetch(
-    url,
-    {
-      method: 'POST',
-    },
-    token
+): Promise<void | Error> {
+  const client = createKCClient(token)
+  const res = await kcCall(() =>
+    ml.create_text_to_cad_model_feedback({ client, id, feedback })
   )
+  if (res instanceof Error) return res
 }
