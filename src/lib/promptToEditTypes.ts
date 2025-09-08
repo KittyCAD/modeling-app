@@ -9,10 +9,7 @@ export type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
 }
 
-export type TextToCadErrorResponse = {
-  error_code: string
-  message: string
-}
+// Deprecated error shape no longer used (SDK provides ApiError)
 
 export interface PromptToEditRequest {
   body: {
