@@ -1,7 +1,6 @@
-import type { Models } from '@kittycad/lib'
+import type { TextToCad, TextToCadMultiFileIteration } from '@kittycad/lib'
 
-export type Prompt = Models['TextToCad_type'] &
-  Models['TextToCadMultiFileIteration_type']
+export type Prompt = TextToCad & TextToCadMultiFileIteration
 
 export enum PromptType {
   Create = 'create',

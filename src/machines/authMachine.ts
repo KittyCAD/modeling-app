@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { User } from '@kittycad/lib'
 import env, { updateEnvironment, updateEnvironmentPool } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
@@ -17,7 +17,7 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 
 export interface UserContext {
-  user?: Models['User_type']
+  user?: User
   token: string
 }
 
@@ -55,7 +55,7 @@ export const authMachine = setup({
       | {
           type: 'xstate.done.actor.check-logged-in'
           output: {
-            user: Models['User_type']
+            user: User
             token: string
           }
         }
@@ -223,7 +223,7 @@ async function getUser(input: { token?: string }) {
 
   markOnce('code/didAuth')
   return {
-    user: user as Models['User_type'],
+    user: user as User,
     token,
   }
 }

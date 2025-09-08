@@ -1,4 +1,4 @@
-import type { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
+import type { UnitLength } from '@kittycad/lib'
 import toast from 'react-hot-toast'
 
 import { updateModelingState } from '@src/lang/modelingWorkflows'
@@ -26,7 +26,7 @@ interface KclCommandConfig {
   projectData: IndexLoaderData
   authToken: string
   settings: {
-    defaultUnit: UnitLength_type
+    defaultUnit: UnitLength
   }
   isRestrictedToOrg?: boolean
   password?: string

@@ -1,6 +1,6 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
-import type { Models } from '@kittycad/lib'
+import type { WebSocketRequest, OkModelingCmdResponse } from '@kittycad/lib'
 import type { Object3D, Object3DEventMap } from 'three'
 import { Mesh } from 'three'
 
@@ -73,7 +73,7 @@ export type Selections = {
 export async function getEventForSelectWithPoint({
   data,
 }: Extract<
-  Models['OkModelingCmdResponse_type'],
+  OkModelingCmdResponse,
   { type: 'select_with_point' }
 >): Promise<ModelingMachineEvent | null> {
   if (!data?.entity_id) {
@@ -217,7 +217,7 @@ export function handleSelectionBatch({
 }: {
   selections: Selections
 }): {
-  engineEvents: Models['WebSocketRequest_type'][]
+  engineEvents: WebSocketRequest[]
   codeMirrorSelection: EditorSelection
   updateSceneObjectColors: () => void
 } {
@@ -233,7 +233,7 @@ export function handleSelectionBatch({
             .range || defaultSourceRange(),
       })
   })
-  const engineEvents: Models['WebSocketRequest_type'][] =
+  const engineEvents: WebSocketRequest[] =
     resetAndSetEngineEntitySelectionCmds(selectionToEngine)
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
@@ -282,7 +282,7 @@ export function processCodeMirrorRanges({
   artifactGraph: ArtifactGraph
 }): null | {
   modelingEvent: ModelingMachineEvent
-  engineEvents: Models['WebSocketRequest_type'][]
+  engineEvents: WebSocketRequest[]
 } {
   const isChange =
     codeMirrorRanges.length !== selectionRanges?.graphSelections?.length ||
@@ -406,7 +406,7 @@ export function updateExtraSegments(
 
 function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[]
-): Models['WebSocketRequest_type'][] {
+): WebSocketRequest[] {
   if (!engineCommandManager.engineConnection?.isReady()) {
     return []
   }
@@ -734,11 +734,11 @@ export async function sendSelectEventToEngine(
     res = res[0]
   }
   if (
-    res?.success &&
-    res?.resp?.type === 'modeling' &&
-    res?.resp?.data?.modeling_response.type === 'select_with_point'
+    'resp' in res &&
+    res.resp.type === 'modeling' &&
+    res.resp.data.modeling_response.type === 'select_with_point'
   )
-    return res?.resp?.data?.modeling_response?.data
+    return res.resp.data.modeling_response.data
   return { entity_id: '' }
 }
 

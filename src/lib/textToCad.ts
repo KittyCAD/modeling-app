@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { TextToCad } from '@kittycad/lib'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type {
@@ -13,8 +13,8 @@ export type { IResponseMlConversation, IResponseMlConversations, PromptsPaged }
 export async function textToCadPromptFeedback(
   token: string,
   args: {
-    id: Models['TextToCad_type']['id']
-    feedback: Models['TextToCad_type']['feedback']
+    id: TextToCad['id']
+    feedback: TextToCad['feedback']
   }
 ): Promise<void | Error> {
   const url = withAPIBaseURL(

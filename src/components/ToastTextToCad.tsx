@@ -1,7 +1,4 @@
-import type {
-  TextToCad_type,
-  TextToCadMultiFileIteration_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { TextToCad, TextToCadMultiFileIteration } from '@kittycad/lib'
 import { useCallback, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import type { Mesh } from 'three'
@@ -183,7 +180,7 @@ export function ToastTextToCadSuccess({
   rootProjectName,
 }: {
   toastId: string
-  data: TextToCad_type & { fileName: string }
+  data: TextToCad & { fileName: string }
   navigate: (to: string) => void
   token?: string
   settings?: {
@@ -254,7 +251,7 @@ export function ToastTextToCadSuccess({
     scene.add(camera)
 
     // Get the base64 encoded GLB file
-    const buffer = base64Decode(data.outputs[OUTPUT_KEY])
+    const buffer = base64Decode(data.outputs?.[OUTPUT_KEY] || '')
 
     if (buffer instanceof Error) {
       toast.error('Error loading GLB file: ' + buffer.message)
@@ -517,7 +514,7 @@ export function ToastPromptToEditCadSuccess({
   toastId: string
   oldCodeWebAppOnly: string
   oldFiles: FileMeta[]
-  data: TextToCadMultiFileIteration_type
+  data: TextToCadMultiFileIteration
   token?: string
 }) {
   const modelId = data.id

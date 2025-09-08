@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { User } from '@kittycad/lib'
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
@@ -924,7 +924,7 @@ export const setState = async (state: Project | undefined): Promise<void> => {
   appStateStore = state
 }
 
-export const getUser = async (token: string): Promise<Models['User_type']> => {
+export const getUser = async (token: string): Promise<User> => {
   try {
     const user = await fetch(withAPIBaseURL('/users/me'), {
       headers: new Headers({

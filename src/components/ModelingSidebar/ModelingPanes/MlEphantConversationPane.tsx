@@ -18,7 +18,7 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingMachine'
 import type { FileEntry, Project } from '@src/lib/project'
-import type { Models } from '@kittycad/lib'
+import type { User } from '@kittycad/lib'
 
 const hasPromptsPending = (promptsPool: Prompt[]) => {
   return (
@@ -37,7 +37,7 @@ export const MlEphantConversationPane = (props: {
   contextModeling: ModelingMachineContext
   loaderFile: FileEntry | undefined
   settings: typeof settings
-  user?: Models['User_type']
+  user?: User
 }) => {
   const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
   const promptsBelongingToConversation = useSelector(

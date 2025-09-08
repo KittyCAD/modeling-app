@@ -273,8 +273,9 @@ export function SystemIOMachineLogicListenerDesktop() {
           },
         })
       } else {
+        const outputsRecord = (prompt.outputs ?? {}) as Record<string, string>
         const requestedFiles: RequestedKCLFile[] = Object.entries(
-          prompt.outputs
+          outputsRecord
         ).map(([relativePath, fileContents]) => {
           const lastSep = relativePath.lastIndexOf(window.electron?.sep ?? '')
           let pathPart = relativePath.slice(0, lastSep)

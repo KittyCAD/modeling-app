@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { FaceIsPlanar } from '@kittycad/lib'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -42,8 +42,7 @@ export async function deleteFromSelection(
   selection: Selection,
   variables: VariableMap,
   artifactGraph: ArtifactGraph,
-  getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
-    ({}) as any
+  getFaceDetails: (id: string) => Promise<FaceIsPlanar> = () => ({}) as any
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
   let deletionArtifact = selection.artifact
@@ -235,7 +234,7 @@ export async function deleteFromSelection(
           const modificationDetails: {
             parentPipe: PipeExpression['body']
             parentInit: VariableDeclarator
-            faceDetails: Models['FaceIsPlanar_type']
+            faceDetails: FaceIsPlanar
             lastKey: number | string
           }[] = []
           const wallArtifact =

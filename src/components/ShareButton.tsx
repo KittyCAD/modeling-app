@@ -19,7 +19,7 @@ const canPasswordProtectShareLinks = (
 ): boolean => {
   if (subOrErr === undefined || typeof subOrErr === 'number' || isErr(subOrErr))
     return false
-  return subOrErr.modeling_app.share_links[0] === 'password_protected'
+  return subOrErr.modeling_app?.share_links?.[0] === 'password_protected'
 }
 
 /** Share Zoo link button shown in the upper-right of the modeling view */

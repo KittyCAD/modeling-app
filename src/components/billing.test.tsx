@@ -12,7 +12,11 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
 // React and XState code to test
-import type { Models } from '@kittycad/lib'
+import type {
+  CustomerBalance,
+  Org,
+  ZooProductSubscriptions,
+} from '@kittycad/lib'
 import { createActor } from 'xstate'
 import {
   BillingRemaining,
@@ -34,7 +38,7 @@ afterAll(() => server.close())
 const createUserPaymentBalanceResponse = (opts: {
   monthlyApiCreditsRemaining
   stableApiCreditsRemaining
-}): Models['CustomerBalance_type'] => ({
+}): CustomerBalance => ({
   created_at: '2025-05-05T16:05:47.317Z',
   id: 'de607b7e-90ba-4977-8561-16e8a9ea0e50',
   map_id: 'd7f7de34-9bc3-4b8b-9951-cdee03fc792d',
@@ -51,7 +55,7 @@ const createUserPaymentBalanceResponse = (opts: {
   updated_at: '2025-05-05T16:05:47.317Z',
 })
 
-const createOrgResponse = (): Models['Org_type'] => ({
+const createOrgResponse = (): Org => ({
   allow_users_in_domain_to_auto_join: true,
   billing_email: 'm@dN9MCH.com',
   billing_email_verified: '2025-05-05T18:52:02.021Z',
@@ -70,7 +74,7 @@ const createOrgResponse = (): Models['Org_type'] => ({
 const createUserPaymentSubscriptionsResponse = (opts: {
   monthlyPayAsYouGoApiCreditsTotal
   name
-}): Models['ZooProductSubscriptions_type'] => ({
+}): ZooProductSubscriptions => ({
   modeling_app: {
     annual_discount: 10,
     description: '1ztERftrU3L3yOnv5epTLcM',

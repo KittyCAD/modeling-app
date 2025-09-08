@@ -1,8 +1,4 @@
-import { type Models } from '@kittycad/lib'
-import type {
-  UnitAngle_type,
-  UnitLength_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { UnitAngle, UnitLength } from '@kittycad/lib'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -27,7 +23,7 @@ export const baseUnits = {
   metric: ['mm', 'cm', 'm'],
 } as const
 
-export type BaseUnit = Models['UnitLength_type']
+export type BaseUnit = UnitLength
 
 export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 export const baseUnitLabels = {
@@ -147,6 +143,6 @@ export type SaveSettingsPayload = RecursiveSettingsPayloads<typeof settings>
  * rust/kcl-lib/src/execution/annotations.rs
  */
 export interface KclSettingsAnnotation {
-  defaultLengthUnit?: UnitLength_type
-  defaultAngleUnit?: UnitAngle_type
+  defaultLengthUnit?: UnitLength
+  defaultAngleUnit?: UnitAngle
 }

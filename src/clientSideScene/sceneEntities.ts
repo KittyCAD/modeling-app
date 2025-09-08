@@ -24,7 +24,7 @@ import {
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { radToDeg } from 'three/src/math/MathUtils'
 
-import type { Models } from '@kittycad/lib/dist/types/src'
+import type { GetSketchModePlane } from '@kittycad/lib'
 import type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Path } from '@rust/kcl-lib/bindings/Path'
@@ -3727,9 +3727,7 @@ export class SceneEntities {
    * @param  entityId - The ID of the entity for which orientation details are being fetched.
    * @returns A promise that resolves with the orientation details of the face.
    */
-  async getFaceDetails(
-    entityId: string
-  ): Promise<Models['GetSketchModePlane_type']> {
+  async getFaceDetails(entityId: string): Promise<GetSketchModePlane> {
     // TODO mode engine connection to allow batching returns and batch the following
     await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -3750,7 +3748,7 @@ export class SceneEntities {
 
     if (!resp) {
       console.warn('No response')
-      return {} as Models['GetSketchModePlane_type']
+      return {} as GetSketchModePlane
     }
 
     if (isArray(resp)) {
@@ -3758,11 +3756,11 @@ export class SceneEntities {
     }
 
     const faceInfo =
-      resp?.success &&
-      resp?.resp.type === 'modeling' &&
-      resp?.resp?.data?.modeling_response?.type === 'get_sketch_mode_plane'
-        ? resp?.resp?.data?.modeling_response.data
-        : ({} as Models['GetSketchModePlane_type'])
+      'resp' in resp &&
+      resp.resp.type === 'modeling' &&
+      resp.resp.data.modeling_response?.type === 'get_sketch_mode_plane'
+        ? (resp.resp.data.modeling_response.data as GetSketchModePlane)
+        : ({} as GetSketchModePlane)
     await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

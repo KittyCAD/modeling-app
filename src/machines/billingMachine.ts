@@ -1,4 +1,8 @@
-import type { Models } from '@kittycad/lib'
+import type {
+  CustomerBalance,
+  Org,
+  ZooProductSubscriptions,
+} from '@kittycad/lib'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
@@ -27,11 +31,8 @@ export enum Tier {
   Unknown = 'unknown',
 }
 
-export type OrgOrError = Models['Org_type'] | number | Error
-export type SubscriptionsOrError =
-  | Models['ZooProductSubscriptions_type']
-  | number
-  | Error
+export type OrgOrError = Org | number | Error
+export type SubscriptionsOrError = ZooProductSubscriptions | number | Error
 export type TierBasedOn = {
   orgOrError: OrgOrError
   subscriptionsOrError: SubscriptionsOrError
@@ -69,8 +70,7 @@ const toTierFrom = (args: TierBasedOn): Tier => {
     typeof args.subscriptionsOrError !== 'number' &&
     !isErr(args.subscriptionsOrError)
   ) {
-    const subscriptions: Models['ZooProductSubscriptions_type'] =
-      args.subscriptionsOrError
+    const subscriptions: ZooProductSubscriptions = args.subscriptionsOrError
     if (subscriptions.modeling_app.name === 'pro') {
       return Tier.Pro
     } else {
@@ -100,7 +100,7 @@ export const billingMachine = setup({
           return input.context
         }
 
-        const billingOrError: Models['CustomerBalance_type'] | number | Error =
+        const billingOrError: CustomerBalance | number | Error =
           await crossPlatformFetch(
             `${input.context.urlUserService()}/user/payment/balance`,
             { method: 'GET' },
@@ -110,23 +110,20 @@ export const billingMachine = setup({
         if (typeof billingOrError === 'number' || isErr(billingOrError)) {
           return Promise.reject(billingOrError)
         }
-        const billing: Models['CustomerBalance_type'] = billingOrError
+        const billing: CustomerBalance = billingOrError
 
-        const subscriptionsOrError:
-          | Models['ZooProductSubscriptions_type']
-          | number
-          | Error = await crossPlatformFetch(
-          `${input.context.urlUserService()}/user/payment/subscriptions`,
-          { method: 'GET' },
-          input.event.apiToken
-        )
-
-        const orgOrError: Models['Org_type'] | number | Error =
+        const subscriptionsOrError: ZooProductSubscriptions | number | Error =
           await crossPlatformFetch(
-            `${input.context.urlUserService()}/org`,
+            `${input.context.urlUserService()}/user/payment/subscriptions`,
             { method: 'GET' },
             input.event.apiToken
           )
+
+        const orgOrError: Org | number | Error = await crossPlatformFetch(
+          `${input.context.urlUserService()}/org`,
+          { method: 'GET' },
+          input.event.apiToken
+        )
 
         const tier = toTierFrom({
           orgOrError,

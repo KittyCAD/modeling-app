@@ -53,7 +53,7 @@ export function SystemIOMachineLogicListenerWeb() {
         type: SystemIOMachineEvents.createKCLFile,
         data: {
           requestedProjectName: promptMeta.project.name,
-          requestedCode: prompt.outputs['main.kcl'] ?? prompt.code ?? '',
+          requestedCode: prompt.outputs?.['main.kcl'] ?? prompt.code ?? '',
           requestedFileNameWithExtension:
             promptMeta.targetFile?.name ?? DEFAULT_PROJECT_KCL_FILE,
         },

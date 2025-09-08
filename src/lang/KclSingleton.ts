@@ -1,8 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type {
-  EntityType_type,
-  ModelingCmdReq_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { EntityType, ModelingCmdReq } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
@@ -791,7 +788,7 @@ export class KclManager extends EventTarget {
     setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)
   }
   /** TODO: this function is hiding unawaited asynchronous work */
-  setSelectionFilter(filter: EntityType_type[]) {
+  setSelectionFilter(filter: EntityType[]) {
     setSelectionFilter(filter, this.engineCommandManager)
   }
 
@@ -824,7 +821,7 @@ export class KclManager extends EventTarget {
   }
 }
 
-const defaultSelectionFilter: EntityType_type[] = [
+const defaultSelectionFilter: EntityType[] = [
   'face',
   'edge',
   'solid2d',
@@ -847,7 +844,7 @@ function setSelectionFilterToDefault(
 
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilter(
-  filter: EntityType_type[],
+  filter: EntityType[],
   engineCommandManager: EngineCommandManager,
   selectionsToRestore?: Selections
 ) {
@@ -868,7 +865,7 @@ function setSelectionFilter(
     })
     return
   }
-  const modelingCmd: ModelingCmdReq_type[] = []
+  const modelingCmd: ModelingCmdReq[] = []
   engineEvents.forEach((event) => {
     if (event.type === 'modeling_cmd_req') {
       modelingCmd.push({

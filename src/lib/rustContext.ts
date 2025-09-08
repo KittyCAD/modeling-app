@@ -10,7 +10,7 @@ import type { ApiFile } from '@rust/kcl-lib/bindings/ApiFile'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { BSON } from 'bson'
 
-import type { Models } from '@kittycad/lib/dist/types/src'
+import type { WebSocketResponse } from '@kittycad/lib'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
@@ -227,9 +227,7 @@ export default class RustContext {
   }
 
   /** Send a response back to the rust side, that we got back from the engine. */
-  async sendResponse(
-    response: Models['WebSocketResponse_type']
-  ): Promise<void> {
+  async sendResponse(response: WebSocketResponse): Promise<void> {
     const instance = await this._checkInstance()
 
     try {

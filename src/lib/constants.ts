@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib/dist/types/src'
+import type { WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
@@ -81,7 +81,7 @@ export const ENVIRONMENT_FILE_NAME = 'environment.txt'
  * */
 export const EXECUTE_AST_INTERRUPT_ERROR_STRING =
   'Force interrupt, executionIsStale, new AST requested'
-const EXECUTE_AST_INTERRUPT_ERROR: Models['WebSocketResponse_type'] = {
+const EXECUTE_AST_INTERRUPT_ERROR: WebSocketResponse = {
   success: false,
   errors: [
     {

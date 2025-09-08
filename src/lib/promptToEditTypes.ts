@@ -1,8 +1,8 @@
-import type { Models } from '@kittycad/lib'
+import type { SourceRangePrompt } from '@kittycad/lib'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
 import type { FileMeta } from '@src/lib/types'
-import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
+export type KittyCadLibFile = { name: string; data: Blob }
 import type { FileEntry } from '@src/lib/project'
 
 export type KclFileMetaMap = {
@@ -17,7 +17,7 @@ export type TextToCadErrorResponse = {
 export interface PromptToEditRequest {
   body: {
     prompt: string
-    source_ranges: Models['SourceRangePrompt_type'][]
+    source_ranges: SourceRangePrompt[]
     project_name?: string
     kcl_version: string
   }

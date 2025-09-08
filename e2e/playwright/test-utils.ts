@@ -1,6 +1,6 @@
 import path from 'path'
 import * as TOML from '@iarna/toml'
-import type { Models } from '@kittycad/lib'
+import type { OutputFormat3d } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
@@ -802,7 +802,7 @@ export interface Paths {
 }
 
 export const doExport = async (
-  output: Models['OutputFormat3d_type'],
+  output: OutputFormat3d,
   rootDir: string,
   page: Page,
   cmdBar: CmdBarFixture,

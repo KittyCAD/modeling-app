@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { TextToCad, TextToCadCreateBody } from '@kittycad/lib'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type {
@@ -11,8 +11,8 @@ export async function submitTextToCadCreateRequest(
   projectName: string,
   token?: string,
   kclVersion?: string
-): Promise<Models['TextToCad_type'] | Error> {
-  const body: Models['TextToCadCreateBody_type'] = {
+): Promise<TextToCad | Error> {
+  const body: TextToCadCreateBody = {
     prompt,
     project_name:
       projectName !== '' && projectName !== 'browser' ? projectName : undefined,
@@ -20,7 +20,7 @@ export async function submitTextToCadCreateRequest(
   }
   // Glb has a smaller footprint than gltf, should we want to render it.
   const url = withAPIBaseURL('/ai/text-to-cad/glb?kcl=true')
-  const data: Models['TextToCad_type'] | Error = await crossPlatformFetch(
+  const data: TextToCad | Error = await crossPlatformFetch(
     url,
     {
       method: 'POST',
@@ -44,9 +44,9 @@ export async function submitTextToCadCreateRequest(
 export async function getTextToCadCreateResult(
   id: string,
   token?: string
-): Promise<Models['TextToCad_type'] | Error> {
+): Promise<TextToCad | Error> {
   const url = withAPIBaseURL(`/user/text-to-cad/${id}`)
-  const data: Models['TextToCad_type'] | Error = await crossPlatformFetch(
+  const data: TextToCad | Error = await crossPlatformFetch(
     url,
     {
       method: 'GET',

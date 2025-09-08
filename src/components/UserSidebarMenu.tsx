@@ -1,5 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
-import type { Models } from '@kittycad/lib'
+import type { User } from '@kittycad/lib'
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -17,8 +17,6 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import env from '@src/env'
 import { commandBarActor } from '@src/lib/singletons'
 import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
-
-type User = Models['User_type']
 
 let didListEnvironments = false
 

@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { connectReasoningStream } from '@src/lib/reasoningWs'
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
@@ -101,7 +101,7 @@ export type MlEphantManagerEvents =
   | {
       type: MlEphantManagerTransitions.AppendThoughtForPrompt
       promptId: string
-      thought: Models['MlCopilotServerMessage_type']
+      thought: MlCopilotServerMessage
     }
 
 // Used to specify a specific event in input properties
@@ -145,7 +145,7 @@ export interface MlEphantManagerContext {
   promptsMeta: Map<Prompt['id'], PromptMeta>
 
   // Thoughts for each prompt
-  promptsThoughts: Map<Prompt['id'], Models['MlCopilotServerMessage_type'][]>
+  promptsThoughts: Map<Prompt['id'], MlCopilotServerMessage[]>
 }
 
 export const mlEphantDefaultContext = () => ({

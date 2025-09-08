@@ -1,7 +1,8 @@
 import type {
-  CameraDragInteractionType_type,
-  CameraViewState_type,
-} from '@kittycad/lib/dist/types/src/models'
+  CameraDragInteractionType,
+  CameraViewState,
+  OkModelingCmdResponse,
+} from '@kittycad/lib'
 import { isArray } from '@src/lib/utils'
 
 import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
@@ -127,7 +128,7 @@ export class CameraControls {
   mouseNewPosition: Vector2
   worldDownPosition: Vector3
   cameraDown: Camera
-  oldCameraState: undefined | CameraViewState_type
+  oldCameraState: undefined | CameraViewState
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
@@ -261,7 +262,7 @@ export class CameraControls {
   }
 
   doMove = (
-    interaction: CameraDragInteractionType_type,
+    interaction: CameraDragInteractionType,
     coordinates: [number, number]
   ) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -992,7 +993,7 @@ export class CameraControls {
     })
   }
 
-  async getCameraView(): Promise<CameraViewState_type | Error> {
+  async getCameraView(): Promise<CameraViewState | Error> {
     const response = await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -1008,7 +1009,10 @@ export class CameraControls {
       return new Error('Failed to get camera view state: no valid response.')
     }
 
-    // Check we actually have the 'modeling_response' field.
+    // Ensure we have a modeling response variant
+    if (singleResponse.resp.type !== 'modeling') {
+      return new Error('Failed to get camera view state: wrong response type.')
+    }
     const data = singleResponse.resp.data
     const noModelingResponse = !('modeling_response' in data)
 
@@ -1019,7 +1023,7 @@ export class CameraControls {
     }
 
     // Check that we have the expected response type and the nested data.
-    const modelingResponse = data.modeling_response
+    const modelingResponse = data.modeling_response as OkModelingCmdResponse
     const noData = !('data' in modelingResponse)
     const wrongResponseType =
       modelingResponse.type !== 'default_camera_get_view'
@@ -1056,7 +1060,7 @@ export class CameraControls {
       )
     }
 
-    const cameraViewTarget: CameraViewState_type = {
+    const cameraViewTarget: CameraViewState = {
       ...cameraView,
       pivot_rotation: Z_AXIS_QUATERNIONS[direction],
       pivot_position: {
@@ -1236,12 +1240,13 @@ export class CameraControls {
         if (!cameraViewStateResponse) return
         if (
           'resp' in cameraViewStateResponse &&
-          'modeling_response' in cameraViewStateResponse.resp.data &&
-          'data' in cameraViewStateResponse.resp.data.modeling_response &&
-          'view' in cameraViewStateResponse.resp.data.modeling_response.data
+          cameraViewStateResponse.resp.type === 'modeling'
         ) {
-          this.oldCameraState =
-            cameraViewStateResponse.resp.data.modeling_response.data.view
+          const mr = cameraViewStateResponse.resp.data
+            .modeling_response as OkModelingCmdResponse
+          if ('data' in mr && 'view' in mr.data) {
+            this.oldCameraState = mr.data.view
+          }
         }
 
         clearTimeout(timeoutId)
@@ -1507,7 +1512,7 @@ export class CameraControls {
   }
   getInteractionType = (
     event: PointerEvent | WheelEvent | MouseEvent
-  ): CameraDragInteractionType_type | 'none' => {
+  ): CameraDragInteractionType | 'none' => {
     // We just need to send any start value to the engine for touch.
     // I chose "rotate" because it's the 1-finger gesture
     const initialInteractionType =

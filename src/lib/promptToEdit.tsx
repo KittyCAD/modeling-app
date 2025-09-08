@@ -1,10 +1,13 @@
-import type { Models } from '@kittycad/lib'
-import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
+import type {
+  TextToCadMultiFileIteration,
+  SourceRange as ApiSourceRange,
+  SourceRangePrompt,
+} from '@kittycad/lib'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import { err } from '@src/lib/trap'
-import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
+import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type {
   ConstructRequestArgs,
@@ -28,7 +31,7 @@ function sourceIndexToLineColumn(
 function convertAppRangeToApiRange(
   range: SourceRange,
   code: string
-): Models['SourceRange_type'] {
+): ApiSourceRange {
   return {
     start: sourceIndexToLineColumn(code, range[0]),
     end: sourceIndexToLineColumn(code, range[1]),
@@ -38,7 +41,7 @@ function convertAppRangeToApiRange(
 export async function submitTextToCadMultiFileIterationRequest(
   request: PromptToEditRequest,
   token: string
-): Promise<TextToCadMultiFileIteration_type | Error> {
+): Promise<TextToCadMultiFileIteration | Error> {
   const formData = new FormData()
   formData.append('body', JSON.stringify(request.body))
 
@@ -74,7 +77,7 @@ export async function submitTextToCadMultiFileIterationRequest(
     return new Error(errorData.message || 'Unknown error')
   }
 
-  return data as TextToCadMultiFileIteration_type
+  return data as TextToCadMultiFileIteration
 }
 
 // The ML service should know enough about caps, edges, faces, etc when doing
@@ -111,24 +114,23 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
 
   // Way to patch in supplying the currently-opened file without updating the API.
   // TODO: update the API to support currently-opened files as other parts of the payload
-  const currentFilePrompt: Models['SourceRangePrompt_type'] | null =
-    currentFile.entry
-      ? {
-          prompt: 'This is the active file',
-          range: convertAppRangeToApiRange(
-            [0, currentFile.content.length, 0],
-            currentFile.content
-          ),
-          file: parentPathRelativeToProject(
-            currentFile.entry?.path,
-            applicationProjectDirectory
-          ),
-        }
-      : null
+  const currentFilePrompt: SourceRangePrompt | null = currentFile.entry
+    ? {
+        prompt: 'This is the active file',
+        range: convertAppRangeToApiRange(
+          [0, currentFile.content.length, 0],
+          currentFile.content
+        ),
+        file: parentPathRelativeToProject(
+          currentFile.entry?.path,
+          applicationProjectDirectory
+        ),
+      }
+    : null
 
   // If no selection, use whole file
   if (selections === null) {
-    const rangePrompts: Models['SourceRangePrompt_type'][] = []
+    const rangePrompts: SourceRangePrompt[] = []
     if (currentFilePrompt !== null) {
       rangePrompts.push(currentFilePrompt)
     }
@@ -147,8 +149,8 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   }
 
   // Handle manual code selections and artifact selections differently
-  const ranges: Models['SourceRangePrompt_type'][] =
-    selections.graphSelections.flatMap((selection) => {
+  const ranges: SourceRangePrompt[] = selections.graphSelections.flatMap(
+    (selection) => {
       const artifact = selection.artifact
       const execStateFileNamesIndex = selection?.codeRef?.range?.[2]
       const file = kclFilesMap?.[execStateFileNamesIndex]
@@ -156,7 +158,7 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
       const filePath = file?.relPath || ''
 
       // For artifact selections, add context
-      const prompts: Models['SourceRangePrompt_type'][] = []
+      const prompts: SourceRangePrompt[] = []
 
       if (artifact?.type === 'cap') {
         prompts.push({
@@ -276,7 +278,8 @@ See later source ranges for more context. about the sweep`,
         })
       }
       return prompts
-    })
+    }
+  )
   // Push the current file prompt alongside the selection-based prompts
   if (currentFilePrompt !== null) {
     ranges.push(currentFilePrompt)
@@ -305,16 +308,15 @@ See later source ranges for more context. about the sweep`,
 export async function getPromptToEditResult(
   id: string,
   token?: string
-): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
+): Promise<TextToCadMultiFileIteration | Error> {
   const url = withAPIBaseURL(`/user/text-to-cad/${id}`)
-  const data: Models['TextToCadMultiFileIteration_type'] | Error =
-    await crossPlatformFetch(
-      url,
-      {
-        method: 'GET',
-      },
-      token
-    )
+  const data: TextToCadMultiFileIteration | Error = await crossPlatformFetch(
+    url,
+    {
+      method: 'GET',
+    },
+    token
+  )
 
   return data
 }
