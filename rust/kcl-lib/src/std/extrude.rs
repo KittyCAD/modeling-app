@@ -295,7 +295,7 @@ async fn inner_extrude(
                 sketch,
                 id.into(),
                 length.clone().unwrap_or(TyF64 {
-                    n: 10.0,
+                    n: 0.0,
                     ty: Default::default(),
                 }),
                 false,
