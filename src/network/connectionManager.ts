@@ -52,7 +52,7 @@ import { a } from 'vitest/dist/chunks/suite.d.FvehnV49'
 export class ConnectionManager extends EventTarget {
   started: boolean
   inSequence = 1
-  _camControlsCameraChange = () => { }
+  _camControlsCameraChange = () => {}
   id: string
 
   /**
@@ -108,10 +108,10 @@ export class ConnectionManager extends EventTarget {
       [localUnsubscribeId: string]: (a: any) => void
     }
   } = {} as any
-  _commandLogCallBack: (command: CommandLog[]) => void = () => { }
+  _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Rogue runtime dependency from the modeling machine. hope it is there!
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
-    (() => { }) as any
+    (() => {}) as any
   // Any event listener into this map to be cleaned up later
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
@@ -467,7 +467,7 @@ export class ConnectionManager extends EventTarget {
       this.connection.unreliableDataChannel &&
       !forceWebsocket
     ) {
-      ; (cmd as any).sequence = this.outSequence
+      ;(cmd as any).sequence = this.outSequence
       this.outSequence++
       this.connection.unreliableSend(command)
       return Promise.resolve(null)
@@ -492,7 +492,7 @@ export class ConnectionManager extends EventTarget {
       command.cmd.type === 'default_camera_look_at' ||
       command.cmd.type === ('default_camera_perspective_settings' as any)
     ) {
-      ; (cmd as any).sequence = this.outSequence++
+      ;(cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
     return this.sendCommand(
@@ -532,7 +532,9 @@ export class ConnectionManager extends EventTarget {
   ): Promise<[Models['WebSocketResponse_type']]> {
     if (!this.connection) {
       return Promise.reject(
-        new Error(`sendCommand - this.connection is undefined. id: ${id}, message:${message}, isSceneCommand:${isSceneCommand}`)
+        new Error(
+          `sendCommand - this.connection is undefined. id: ${id}, message:${message}, isSceneCommand:${isSceneCommand}`
+        )
       )
     }
 
@@ -803,15 +805,20 @@ export class ConnectionManager extends EventTarget {
     if (!this.connection) {
       EngineDebugger.addLog({
         label: 'connectionManager',
-        message:
-          'unable to tear down this.connection, connection is missing',
+        message: 'unable to tear down this.connection, connection is missing',
       })
     }
 
     if (this.connection) {
-      this.connection.deferredConnection?.reject('tearingDown connectionManager')
-      this.connection.deferredMediaStreamAndWebrtcStatsCollector?.reject('tearingDown connectionManager')
-      this.connection.deferredPeerConnection?.reject('tearingDown connectionManager')
+      this.connection.deferredConnection?.reject(
+        'tearingDown connectionManager'
+      )
+      this.connection.deferredMediaStreamAndWebrtcStatsCollector?.reject(
+        'tearingDown connectionManager'
+      )
+      this.connection.deferredPeerConnection?.reject(
+        'tearingDown connectionManager'
+      )
       this.connection.deferredSdpAnswer?.reject('tearingDown connectionManager')
       for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
         pending.reject([
@@ -896,7 +903,8 @@ export class ConnectionManager extends EventTarget {
           if (!this.connection) {
             EngineDebugger.addLog({
               label: 'connectionManager',
-              message: 'removeAllEventListeners - connection event listener unable to be removed.',
+              message:
+                'removeAllEventListeners - connection event listener unable to be removed.',
             })
           }
           this.connection?.removeEventListener(
@@ -907,7 +915,8 @@ export class ConnectionManager extends EventTarget {
           if (!darkModeMatcher) {
             EngineDebugger.addLog({
               label: 'connectionManager',
-              message: 'removeAllEventListeners - darkModeMatcher event listener unable to be removed.',
+              message:
+                'removeAllEventListeners - darkModeMatcher event listener unable to be removed.',
             })
           }
           darkModeMatcher?.removeEventListener(
@@ -918,7 +927,8 @@ export class ConnectionManager extends EventTarget {
           if (!this.connection?.peerConnection) {
             EngineDebugger.addLog({
               label: 'connectionManager',
-              message: 'removeAllEventListeners - peerConnection event listener unable to be removed.',
+              message:
+                'removeAllEventListeners - peerConnection event listener unable to be removed.',
             })
           }
           this.connection?.peerConnection?.removeEventListener(
@@ -929,7 +939,8 @@ export class ConnectionManager extends EventTarget {
           if (!this.connection?.websocket) {
             EngineDebugger.addLog({
               label: 'connectionManager',
-              message: 'removeAllEventListeners - websocket event listener unable to be removed.',
+              message:
+                'removeAllEventListeners - websocket event listener unable to be removed.',
             })
           }
           this.connection?.websocket?.removeEventListener(

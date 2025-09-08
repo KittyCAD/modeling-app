@@ -64,8 +64,7 @@ const onEngineConnectionReadyForRequests = ({
           if (!videoRef.current) {
             EngineDebugger.addLog({
               label: 'ConnectionStream.tsx',
-              message:
-                'Unable to reference the video',
+              message: 'Unable to reference the video',
             })
             engineCommandManager.tearDown()
             return
@@ -104,8 +103,7 @@ const onEngineConnectionReadyForRequests = ({
                   animated: false, // don't animate the zoom for now
                 },
               })
-            }
-            )
+            })
             .catch(trap)
         })
         .catch((error) => {
@@ -226,17 +224,22 @@ export const ConnectionStream = (props: {
       if (engineCommandManager.started) return
       // Trick the executor to cache bust scene.
 
-      jsAppSettings().then((result) => {
-        rustContext.clearSceneAndBustCache(result, codeManager.currentFilePath || undefined)
-      }).then(() => {
-        onEngineConnectionReadyForRequests({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
+      jsAppSettings()
+        .then((result) => {
+          rustContext.clearSceneAndBustCache(
+            result,
+            codeManager.currentFilePath || undefined
+          )
         })
-      })
+        .then(() => {
+          onEngineConnectionReadyForRequests({
+            authToken: props.authToken || '',
+            videoWrapperRef,
+            setAppState,
+            videoRef,
+            setIsSceneReady,
+          })
+        })
     },
   })
 

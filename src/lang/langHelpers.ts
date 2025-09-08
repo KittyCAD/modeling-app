@@ -120,7 +120,13 @@ function handleExecuteError(e: any): ExecutionResult {
 
   if (e instanceof KCLError) {
     // Detect if it is a force interrupt error which is not a KCL processing error.
-    if (e.msg.includes(EXECUTE_AST_INTERRUPT_ERROR_STRING) || e.msg.includes('Failed to wait for promise from send modeling command') || e.msg.includes('no connection to send on, connection manager called tearDown()')) {
+    if (
+      e.msg.includes(EXECUTE_AST_INTERRUPT_ERROR_STRING) ||
+      e.msg.includes('Failed to wait for promise from send modeling command') ||
+      e.msg.includes(
+        'no connection to send on, connection manager called tearDown()'
+      )
+    ) {
       isInterrupted = true
     }
     const execState = emptyExecState()
@@ -132,9 +138,15 @@ function handleExecuteError(e: any): ExecutionResult {
       isInterrupted,
     }
   } else {
-
     if (e && e.length > 0 && e[0].errors && e[0].errors.length > 0) {
-      if (e[0].errors[0].message.includes('no connection to send on, connection manager called tearDown()') || e[0].errors[0].message.includes('Failed to wait for promise from send modeling command')) {
+      if (
+        e[0].errors[0].message.includes(
+          'no connection to send on, connection manager called tearDown()'
+        ) ||
+        e[0].errors[0].message.includes(
+          'Failed to wait for promise from send modeling command'
+        )
+      ) {
         isInterrupted = true
       }
     }
