@@ -1,5 +1,5 @@
 import type { User } from '@kittycad/lib'
-import env, { updateEnvironment, updateEnvironmentPool } from '@src/env'
+import env, { updateEnvironment, updateEnvironmentPool, generateDomainsFromBaseDomain } from '@src/env'
 import { users } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { assign, fromPromise, setup } from 'xstate'
@@ -316,7 +316,17 @@ async function logoutEnvironment(requestedDomain?: string) {
 
       if (token) {
         try {
-          await fetch(domain + '/oauth2/token/revoke', {
+          const apiUrlBase = (() => {
+            // If domain looks like a full URL, use it directly; otherwise compute API URL
+            try {
+              const u = new URL(domain)
+              return u.origin
+            } catch {
+              const d = generateDomainsFromBaseDomain(domain)
+              return d.API_URL
+            }
+          })()
+          await fetch(apiUrlBase + '/oauth2/token/revoke', {
             method: 'POST',
             credentials: 'include',
             headers: {

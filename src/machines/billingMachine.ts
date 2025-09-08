@@ -99,7 +99,10 @@ export const billingMachine = setup({
 
         const client = createKCClient(input.event.apiToken)
         const billingOrError: CustomerBalance | Error = await kcCall(() =>
-          payments.get_payment_balance_for_user({ client, include_total_due: true })
+          payments.get_payment_balance_for_user({
+            client,
+            include_total_due: true,
+          })
         )
 
         if (typeof billingOrError === 'number' || isErr(billingOrError)) {

@@ -7,7 +7,10 @@ import type { ApiError } from '@kittycad/lib'
 export function createKCClient(token?: string): Client {
   const baseUrl = env().VITE_KITTYCAD_API_BASE_URL
   const injectedFetch = ((input: any, init?: any) => {
-    const impl = (typeof fetch !== 'undefined' ? fetch : (isomorphicFetch as unknown as typeof fetch))
+    const impl =
+      typeof fetch !== 'undefined'
+        ? fetch
+        : (isomorphicFetch as unknown as typeof fetch)
     const opts: RequestInit = { ...(init || {}) }
     if (!isDesktop()) {
       opts.credentials = 'include'

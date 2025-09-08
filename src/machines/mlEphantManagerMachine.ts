@@ -252,7 +252,10 @@ export const mlEphantManagerMachine = setup({
         const promptsMetaNext = new Map<Prompt['id'], PromptMeta>()
 
         result.items.reverse().forEach((prompt) => {
-          promptsPoolNext.set(prompt.id, { ...prompt, source_ranges: [] } as any)
+          promptsPoolNext.set(prompt.id, {
+            ...prompt,
+            source_ranges: [],
+          } as any)
           promptsBelongingToConversationNext?.push(prompt.id)
           promptsMetaNext.set(prompt.id, {
             // Fake Edit type, because there's no way to tell from the API
