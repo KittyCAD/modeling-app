@@ -1,0 +1,22 @@
+// Sphere
+// A sphere is a primitive shape defined by its diameter.
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+diameter = 10
+
+// create a sketch for the sphere profile on the XY plane
+sketch = startSketchOn(XY)
+
+// create the profile centered at the origin
+profile = startProfile(sketch, at = [-diameter / 2, 0])
+  |> xLine(length = diameter)
+  |> arc(angleStart = 0.0, angleEnd = 180.0, radius = diameter / 2)
+  |> close()
+
+// revolve the profile to create the sphere
+wedge = revolve(profile, axis = X, angle = 360.0)

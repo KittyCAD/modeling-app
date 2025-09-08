@@ -51,6 +51,7 @@ import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import toast from 'react-hot-toast'
 import { ToastInsert } from '@src/components/ToastInsert'
 import { isPlaywright } from '@src/lib/isPlaywright'
+import { MLEphantConversationPaneMenu } from '@src/components/MlEphantConversation'
 
 export type SidebarType =
   | 'code'
@@ -80,6 +81,11 @@ interface PaneCallbackProps {
   platform: 'web' | 'desktop'
 }
 
+export type SidebarCssOverrides = Partial<{
+  button: string
+  // Could add pane, etc here
+}>
+
 export type SidebarPane = {
   id: SidebarType
   sidebarName: string
@@ -88,6 +94,7 @@ export type SidebarPane = {
   Content: React.FC<{ id: SidebarType; onClose: () => void }>
   hide?: boolean | ((props: PaneCallbackProps) => boolean)
   showBadge?: BadgeInfo
+  cssClassOverrides?: SidebarCssOverrides
 }
 
 export type SidebarAction = {
@@ -100,6 +107,7 @@ export type SidebarAction = {
   action: () => void
   hide?: boolean | ((props: PaneCallbackProps) => boolean)
   disable?: () => string | undefined
+  cssClassOverrides?: SidebarCssOverrides
 }
 
 // For now a lot of icons are the same but the reality is they could totally
@@ -108,8 +116,12 @@ export type SidebarAction = {
 const textToCadPane: SidebarPane = {
   id: 'text-to-cad',
   icon: 'sparkles',
-  keybinding: 'Shift + E',
+  keybinding: 'Ctrl + T',
   sidebarName: 'Text-to-CAD',
+  cssClassOverrides: {
+    button:
+      'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
+  },
   Content: (props) => {
     const settings = useSettings()
     const user = useUser()
@@ -122,7 +134,7 @@ const textToCadPane: SidebarPane = {
           id={props.id}
           icon="sparkles"
           title="Text-to-CAD"
-          Menu={null}
+          Menu={MLEphantConversationPaneMenu}
           onClose={props.onClose}
         />
         <MlEphantConversationPane

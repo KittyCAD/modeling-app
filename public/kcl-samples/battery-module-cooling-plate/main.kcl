@@ -1,0 +1,226 @@
+// Battery Module Cooling Plates
+// A battery module cooling plate is a thermal management component used in battery packs—particularly in electric vehicles (EVs), energy storage systems, and other high-power applications—to regulate the temperature of individual battery cells or entire modules.
+
+// Define units
+@settings(defaultLengthUnit = mm)
+
+// Define number of coolings per side
+numberOfCoolingsPerSide = 5
+
+// Define at least 3 coolings per side
+assert(
+  numberOfCoolingsPerSide,
+  isGreaterThanOrEqual = 3,
+  isLessThan = 100,
+  error = "Number of coolings should be between 3 and 100",
+)
+
+// thickness of the channels
+thickness = 17
+thickness2 = thickness * 2
+
+// depth of the channels
+csgCuttingDepthThicknessOfChannel = 5
+
+// connector dimensions
+connectorLength = thickness + 10
+
+// widths for the cooling sketch channels
+w1 = 30
+w2 = w1 * 2
+w5 = w1 * 5
+totalWidth = w1 * 5
+legLength = w2
+overLap = w1 - thickness
+
+// compute the width of the sketches side by side
+widthOfCoolingSketches = (w5 + thickness + overLap) * numberOfCoolingsPerSide
+
+offsetX = thickness2
+
+// compute the offset to the edge of the base plate
+heightOfCoolingSketch = w1 + overLap + thickness
+
+// dimensions of the plate
+plateWidth = widthOfCoolingSketches + w2 + thickness + overLap + offsetX + connectorLength
+plateHeight = 200
+plateThickness = 10
+
+// initial sketch positions
+startX = plateWidth / 2 - offsetX - connectorLength
+startY = (thickness + w1) / 2
+
+// compute the offset to the edge of the base plate
+edgeOfBasePlate = -(plateWidth / 2)
+startHeadOfCoolingY = -startX - heightOfCoolingSketch + widthOfCoolingSketches - overLap + heightOfCoolingSketch
+
+sketchXy = startSketchOn(XY)
+
+fn getOverlap(@id) {
+  return overLap
+}
+
+// index the margins for the lengths of the cooling sketches
+overlapMargins = map([0 .. numberOfCoolingsPerSide - 2], f = getOverlap)
+margins = push(overlapMargins, item = -thickness)
+
+// Dimensions for the mounting holes
+mountingRadius = 6
+mountingBuffer = 5 + mountingRadius
+
+// Create the base plate to be cut
+basePlateExtruded = startProfile(sketchXy, at = [-plateWidth / 2, plateHeight / 2])
+  |> angledLine(angle = 0, length = plateWidth, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = plateHeight)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(), profileStartY()])
+  |> close()
+  |> extrude(length = plateThickness)
+
+// Get extruded END face of the base plate to sketch on
+basePlateEndFace = startSketchOn(basePlateExtruded, face = END)
+
+fn coolingSketch(plane, startPoint, legLength, margin) {
+  coolingSketch = startProfile(plane, at = startPoint)
+    |> xLine(length = -legLength)
+    |> yLine(length = w1 - thickness)
+    |> xLine(length = w2)
+    |> yLine(length = w1 + thickness)
+    |> xLine(length = -w5 - thickness)
+    |> yLine(length = -w1 - thickness)
+    |> xLine(length = w2)
+    |> yLine(length = -w1 + thickness)
+    |> xLine(length = -legLength - margin)
+    |> yLine(length = -thickness)
+    |> xLine(length = legLength + margin + thickness)
+    |> yLine(length = w1 + thickness)
+    |> xLine(length = -w2)
+    |> yLine(length = w1 - thickness)
+    |> xLine(length = w5 - thickness)
+    |> yLine(length = -(w1 - thickness))
+    |> xLine(length = -w2)
+    |> yLine(length = -w1 - thickness)
+    |> xLine(length = legLength + thickness)
+    |> close()
+  return coolingSketch
+}
+
+fn coolingSketchNoArms(plane, startPoint) {
+  coolingSketch = startProfile(plane, at = startPoint)
+    |> yLine(length = w1 - thickness)
+    |> xLine(length = w2)
+    |> yLine(length = w1 + thickness)
+    |> xLine(length = -w5 - thickness)
+    |> yLine(length = -w1 - thickness)
+    |> xLine(length = w2)
+    |> yLine(length = -w1 + thickness)
+    |> yLine(length = -thickness)
+    |> xLine(length = thickness)
+    |> yLine(length = w1 + thickness)
+    |> xLine(length = -w2)
+    |> yLine(length = w1 - thickness)
+    |> xLine(length = w5 - thickness)
+    |> yLine(length = -(w1 - thickness))
+    |> xLine(length = -w2)
+    |> yLine(length = -w1 - thickness)
+    |> xLine(length = thickness)
+    |> close()
+  return coolingSketch
+}
+
+fn drawCoolingSketch(@id) {
+  return coolingSketch(
+         plane = basePlateEndFace,
+         startPoint = [
+           startX - (totalWidth * id) - (w1 * id),
+           startY
+         ],
+         legLength = legLength,
+         margin = margins[id],
+       )
+    |> extrude(length = -csgCuttingDepthThicknessOfChannel)
+}
+
+fn drawCoolingSketchFlipped(@id) {
+  return coolingSketch(
+         plane = basePlateEndFace,
+         startPoint = [
+           startX - (totalWidth * id) - (w1 * id),
+           startY
+         ],
+         legLength = legLength,
+         margin = margins[id],
+       )
+    |> rotate(roll = 0, pitch = 0, yaw = 180)
+    |> translate(x = 0, y = 0, z = 0)
+    |> scale(x = -1, y = 1, z = 1)
+    |> extrude(length = -csgCuttingDepthThicknessOfChannel)
+}
+
+// Create mounting holes
+mount1 = circle(
+       basePlateEndFace,
+       center = [
+         -plateWidth / 2 + mountingBuffer,
+         plateHeight / 2 - mountingBuffer
+       ],
+       radius = mountingRadius,
+     )
+  |> extrude(length = -plateThickness)
+mount2 = circle(
+       basePlateEndFace,
+       center = [
+         -(-plateWidth / 2 + mountingBuffer),
+         plateHeight / 2 - mountingBuffer
+       ],
+       radius = mountingRadius,
+     )
+  |> extrude(length = -plateThickness)
+mount3 = circle(
+       basePlateEndFace,
+       center = [
+         -(-plateWidth / 2 + mountingBuffer),
+         -(plateHeight / 2 - mountingBuffer)
+       ],
+       radius = mountingRadius,
+     )
+  |> extrude(length = -plateThickness)
+mount4 = circle(
+       basePlateEndFace,
+       center = [
+         -plateWidth / 2 + mountingBuffer,
+         -(plateHeight / 2 - mountingBuffer)
+       ],
+       radius = mountingRadius,
+     )
+  |> extrude(length = -plateThickness)
+
+// Draw one half of the cooling sketchs
+coolings = map([0 .. numberOfCoolingsPerSide - 1], f = drawCoolingSketch)
+// Draw the other mirrored half of cooling sketchs
+coolingsFlipped = map([0 .. numberOfCoolingsPerSide - 1], f = drawCoolingSketchFlipped)
+// Draw the cooling sketch that connects both halves
+headOfTableCooling = coolingSketchNoArms(plane = basePlateEndFace, startPoint = [0, 0])
+  |> rotate(roll = 0, pitch = 0, yaw = 90)
+  |> translate(x = startY, y = startHeadOfCoolingY, z = 0)
+  |> extrude(length = -csgCuttingDepthThicknessOfChannel)
+
+// Extend the ends of the cooling sketch
+connector1 = startProfile(basePlateEndFace, at = [startX, startY])
+  |> xLine(length = connectorLength)
+  |> yLine(length = -thickness)
+  |> xLine(length = -connectorLength)
+  |> line(endAbsolute = [profileStartX(), profileStartY()])
+  |> close()
+  |> extrude(length = -csgCuttingDepthThicknessOfChannel)
+
+connector2 = startProfile(basePlateEndFace, at = [startX, startY])
+  |> xLine(length = connectorLength)
+  |> yLine(length = -thickness)
+  |> xLine(length = -connectorLength)
+  |> line(endAbsolute = [profileStartX(), profileStartY()])
+  |> close()
+  |> rotate(roll = 0, pitch = 0, yaw = 180)
+  |> translate(x = 0, y = 0, z = 0)
+  |> scale(x = -1, y = 1, z = 1)
+  |> extrude(length = -csgCuttingDepthThicknessOfChannel)

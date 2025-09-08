@@ -1,8 +1,9 @@
 [package]
 name = "kcl-api"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "KCL interpreter API"
+license = "MIT"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.99"

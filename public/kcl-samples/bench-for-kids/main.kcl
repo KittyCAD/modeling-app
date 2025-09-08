@@ -1,0 +1,154 @@
+// Bench for kids.
+// Shaped like a friendly animal and sturdy enough for climbing.
+
+
+
+
+@settings(defaultLengthUnit = cm)
+
+// Define primary parameters for the bench geometry.
+benchLength = 80 // overall end-to-end size
+benchWidth = 40 // overall depth (front-to-back)
+seatHeight = 35
+
+// SEATING BLOCK (half-cylinder, rounded side up so it feels like an animal back)
+
+// Because it's half a cylinder, the bench width equals the cylinder’s diameter.
+benchSeatRadius = benchWidth / 2
+// Height of the flat face of the cylinder: seat height minus cylinder radius.
+benchSeatElevation = seatHeight - benchSeatRadius
+// Center the bench in the scene by creating a sketch plane offset by half length.
+seatSketchPlane = offsetPlane(XZ, offset = -benchLength / 2)
+
+// Flat face of the cylinder sits one radius below the seat.
+seatSketch = startSketchOn(seatSketchPlane)
+
+seatProfile = startProfile(seatSketch, at = [-benchSeatRadius, benchSeatElevation])
+  |> arc(interiorAbsolute = [0, seatHeight], endAbsolute = [benchSeatRadius, benchSeatElevation])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+seatBody = extrude(seatProfile, length = benchLength)
+
+// LEGS (four chunky, rounded cylinders)
+legRadius = benchWidth * 0.12 // scale with bench width so model stays parametric
+
+
+// Build one leg, then pattern-copy it to make the full set.
+legSketch = startSketchOn(XY)
+legProfile = circle(
+  legSketch,
+  center = [0, 0],
+  radius = legRadius,
+  tag = $legCircle,
+)
+
+// Make the leg a bit longer because it will be tilted later.
+legHeight = benchSeatElevation * 1.1
+legExtrudedBody = extrude(legProfile, length = legHeight, tagStart = $legCapStart)
+
+// Round the foot: use a slightly smaller radius to avoid fillet errors.
+legFilletRadius = legRadius * 0.9
+legBody = fillet(
+  legExtrudedBody,
+  radius = legFilletRadius,
+  tags = [
+    getCommonEdge(faces = [legCircle, legCapStart])
+  ],
+)
+
+// Position and array the legs.
+legChassisWidth = benchWidth * 0.6
+legChassisLength = benchLength * 0.8
+
+firstLeg = translate(
+  legBody,
+  x = -legChassisWidth / 2,
+  y = -legChassisLength / 2,
+  z = 0,
+)
+
+// Pattern in X, then Y, to create all four legs.
+allFourLegs = patternLinear3d(
+       firstLeg,
+       instances = 2,
+       distance = legChassisWidth,
+       axis = [1, 0, 0],
+     )
+  |> patternLinear3d(instances = 2, distance = legChassisLength, axis = [0, 1, 0])
+
+// EARS (two small cylinders, tilted sideways slightly)
+
+earHeight = 20
+earRadius = legRadius * 0.9
+earFilletRadius = earRadius * 0.9
+earTiltAngle = 13
+earDistance = benchWidth * 0.4 // defined for completeness, currently unused
+earElevation = seatHeight * 0.9
+
+// Ears sit roughly above the front legs.
+earOffsetForward = legChassisLength / 2
+
+earSketch = startSketchOn(offsetPlane(XY, offset = 0))
+earProfile = circle(
+  earSketch,
+  center = [0, 0],
+  radius = earRadius,
+  tag = $earCircle,
+)
+
+earBody = extrude(earProfile, length = earHeight, tagEnd = $earCapEnd)
+  |> fillet(
+       radius = earFilletRadius,
+       tags = [
+         getCommonEdge(faces = [earCircle, earCapEnd])
+       ],
+     )
+  |> translate(x = 0, y = -earOffsetForward, z = earElevation)
+  |> rotate(
+       roll = 0,
+       pitch = earTiltAngle,
+       yaw = 0,
+       global = true,
+     )
+
+// Copy the first ear over to the other side with a circular array.
+ears = patternCircular3d(
+  earBody,
+  instances = 2,
+  axis = [0, 1, 0],
+  center = [0, 0, 0],
+  arcDegrees = -earTiltAngle * 2,
+)
+
+// TAIL (single cylinder at the rear, slightly rotated downward)
+
+
+tailPlane = offsetPlane(XZ, offset = -benchLength * 0.45)
+tailLength = earHeight * 1.2
+tailRadius = earRadius * 0.9
+tailFilletRadius = tailRadius * 0.9
+tailElevation = benchSeatElevation + benchSeatRadius * 0.9
+
+tailSketch = startSketchOn(tailPlane)
+tailProfile = circle(
+  tailSketch,
+  center = [0, 0],
+  radius = tailRadius,
+  tag = $tailCircle,
+)
+
+tailBody = extrude(tailProfile, length = -tailLength, tagStart = $tailCapStart)
+  |> fillet(
+       radius = tailFilletRadius,
+       tags = [
+         getCommonEdge(faces = [tailCircle, tailCapStart])
+       ],
+     )
+  |> rotate(roll = -10, pitch = 0, yaw = 0)
+  |> translate(
+       x = 0,
+       y = 0,
+       z = tailElevation,
+       global = true,
+     )

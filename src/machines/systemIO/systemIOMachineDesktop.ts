@@ -689,6 +689,34 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
+    [SystemIOMachineActors.copyRecursive]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          src: string
+          target: string
+        }
+      }) => {
+        if (window.electron) {
+          await window.electron.copy(input.src, input.target, {
+            recursive: true,
+            force: false,
+          })
+          return {
+            message: `Folder copied successfully`,
+            requestedAbsolutePath: '',
+          }
+        } else {
+          return {
+            message: 'no file system found',
+            requestedAbsolutePath: '',
+          }
+        }
+      }
+    ),
     [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
       // In the future we can add cache behavior but it's really pointless
       // for the amount of data and frequency we're dealing with.
