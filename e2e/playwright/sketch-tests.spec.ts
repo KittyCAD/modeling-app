@@ -135,7 +135,6 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
 
     await page.keyboard.press('Delete')
 
-    await scene.settled(cmdBar)
     await editor.expectEditor.not.toContain('startProfile(')
   })
 
