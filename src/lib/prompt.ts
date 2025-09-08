@@ -18,6 +18,7 @@ export type Prompt = {
   // Optional fields across variants
   started_at?: string
   feedback?: MlFeedback
+  user_id?: string
   error?: string
   prompt?: string
   outputs?: Record<string, string>

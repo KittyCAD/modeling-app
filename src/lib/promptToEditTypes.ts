@@ -1,4 +1,4 @@
-import type { SourceRangePrompt } from '@kittycad/lib'
+import type { TextToCadMultiFileIterationBody } from '@kittycad/lib'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
 import type { FileMeta } from '@src/lib/types'
@@ -10,12 +10,7 @@ export type KclFileMetaMap = {
 }
 
 export interface PromptToEditRequest {
-  body: {
-    prompt: string
-    source_ranges: SourceRangePrompt[]
-    project_name?: string
-    kcl_version: string
-  }
+  body: TextToCadMultiFileIterationBody
   files: KittyCadLibFile[]
 }
 

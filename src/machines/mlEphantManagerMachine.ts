@@ -6,6 +6,7 @@ import type { ActorRefFrom } from 'xstate'
 import { getKclVersion } from '@src/lib/kclVersion'
 import { err } from '@src/lib/trap'
 import { S, transitions } from '@src/machines/utils'
+import { isArray } from '@src/lib/utils'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { FileEntry, Project } from '@src/lib/project'
@@ -22,7 +23,7 @@ import {
   textToCadMlConversations,
   textToCadMlPromptsBelongingToConversation,
 } from '@src/lib/textToCadCore'
-import type { IResponseMlConversations } from '@src/lib/textToCadTypes'
+import type { ConversationResultsPage } from '@kittycad/lib'
 
 import {
   constructMultiFileIterationRequestWithPromptHelpers,
@@ -122,7 +123,7 @@ export interface PromptMeta {
 export interface MlEphantManagerContext {
   apiTokenMlephant?: string
 
-  conversations: IResponseMlConversations
+  conversations: ConversationResultsPage
 
   // The full prompt information that ids map to.
   promptsPool: Map<Prompt['id'], Prompt>
@@ -190,7 +191,7 @@ export const mlEphantManagerMachine = setup({
         if (context.apiTokenMlephant === undefined)
           return Promise.reject('missing api token')
 
-        const conversations: IResponseMlConversations | Error =
+        const conversations: ConversationResultsPage | Error =
           await textToCadMlConversations(context.apiTokenMlephant, {
             pageToken: context.conversations.next_page,
             limit: 20,
@@ -254,8 +255,12 @@ export const mlEphantManagerMachine = setup({
         result.items.reverse().forEach((prompt) => {
           promptsPoolNext.set(prompt.id, {
             ...prompt,
-            source_ranges: [],
-          } as any)
+            source_ranges:
+              'source_ranges' in prompt &&
+              isArray((prompt as any).source_ranges)
+                ? (prompt as any).source_ranges
+                : [],
+          })
           promptsBelongingToConversationNext?.push(prompt.id)
           promptsMetaNext.set(prompt.id, {
             // Fake Edit type, because there's no way to tell from the API
@@ -347,7 +352,13 @@ export const mlEphantManagerMachine = setup({
         const promptsBelongingToConversation = []
         const promptsMeta = new Map()
 
-        promptsPool.set(result.id, { ...result, source_ranges: [] } as any)
+        promptsPool.set(result.id, {
+          ...result,
+          source_ranges:
+            'source_ranges' in result && isArray((result as any).source_ranges)
+              ? (result as any).source_ranges
+              : [],
+        })
         promptsBelongingToConversation.push(result.id)
         promptsMeta.set(result.id, {
           type: PromptType.Create,
@@ -652,17 +663,28 @@ export const mlEphantManagerMachine = setup({
             [MlEphantManagerTransitions.GetReasoningForPrompt]: {
               invoke: {
                 input: (args) => {
+                  type ReasoningInput = {
+                    event: Extract<
+                      MlEphantManagerEvents,
+                      { type: MlEphantManagerTransitions.GetReasoningForPrompt }
+                    >
+                    context: MlEphantManagerContext
+                  }
                   if ('output' in args.event) {
-                    return {
+                    const lastId = (
+                      args.event.output as {
+                        promptsBelongingToConversation?: string[]
+                      }
+                    ).promptsBelongingToConversation?.slice(-1)[0]
+                    const inputPayload: ReasoningInput = {
                       event: {
                         type: MlEphantManagerTransitions.GetReasoningForPrompt,
                         refParent: args.self,
-                        promptId: (
-                          args.event.output as any
-                        ).promptsBelongingToConversation.slice(-1)[0],
+                        promptId: lastId!,
                       },
                       context: args.context,
                     }
+                    return inputPayload
                   }
 
                   return {

@@ -1,12 +1,15 @@
 import type { TextToCad, TextToCadCreateBody } from '@kittycad/lib'
 import { ml } from '@kittycad/lib'
 import type { TextToCadResponse } from '@kittycad/lib'
-import type { Pager } from '@kittycad/lib/dist/types/src/pagination'
+type ConversationsPager = ReturnType<
+  typeof ml.list_conversations_for_user_pager
+>
+type PromptsPager = ReturnType<typeof ml.list_text_to_cad_models_for_user_pager>
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import type {
-  IResponseMlConversations,
-  PromptsPaged,
-} from '@src/lib/textToCadTypes'
+  ConversationResultsPage,
+  TextToCadResponseResultsPage,
+} from '@kittycad/lib'
 
 export async function submitTextToCadCreateRequest(
   prompt: string,
@@ -56,7 +59,7 @@ export async function textToCadMlConversations(
     limit?: number
     sortBy: 'created_at_descending'
   }
-): Promise<IResponseMlConversations | Error> {
+): Promise<ConversationResultsPage | Error> {
   // Use SDK pager internally; reuse across calls via token key.
   const client = createKCClient(token)
   const key = token || 'cookie'
@@ -64,20 +67,18 @@ export async function textToCadMlConversations(
     const pager = ml.list_conversations_for_user_pager({
       client,
       limit: args.limit ?? 20,
+      page_token: '',
       sort_by: args.sortBy,
-    } as any)
-    conversationPagers.set(key, pager as unknown as Pager<any, any, any>)
+    })
+    conversationPagers.set(key, pager)
   }
-  const pager = conversationPagers.get(key) as Pager<any, any, any>
+  const pager = conversationPagers.get(key) as ConversationsPager
   if (!pager.hasNext() && args.pageToken) {
     // Reset if caller wants to start over
     pager.reset()
   }
   const items = await pager.next()
-  return {
-    items: (items as any) ?? [],
-    next_page: pager.hasNext() ? '1' : undefined,
-  }
+  return { items, next_page: pager.hasNext() ? '1' : undefined }
 }
 
 export async function textToCadMlPromptsBelongingToConversation(
@@ -88,30 +89,28 @@ export async function textToCadMlPromptsBelongingToConversation(
     limit?: number
     sortBy: 'created_at_ascending' | 'created_at_descending'
   }
-): Promise<PromptsPaged | Error> {
+): Promise<TextToCadResponseResultsPage | Error> {
   const client = createKCClient(token)
   const key = `${token || 'cookie'}:${args.conversationId}`
   if (!promptsPagers.has(key)) {
     const pager = ml.list_text_to_cad_models_for_user_pager({
       client,
-      conversation_id: args.conversationId as any,
+      conversation_id: args.conversationId,
       no_models: true,
       limit: args.limit ?? 20,
+      page_token: '',
       sort_by: args.sortBy,
-    } as any)
-    promptsPagers.set(key, pager as unknown as Pager<any, any, any>)
+    })
+    promptsPagers.set(key, pager)
   }
-  const pager = promptsPagers.get(key) as Pager<any, any, any>
+  const pager = promptsPagers.get(key) as PromptsPager
   if (!pager.hasNext() && args.pageToken) {
     pager.reset()
   }
   const items = await pager.next()
-  return {
-    items: (items as any) ?? [],
-    next_page: pager.hasNext() ? '1' : undefined,
-  }
+  return { items, next_page: pager.hasNext() ? '1' : undefined }
 }
 
 // Internal pager caches keyed by token (and conversation)
-const conversationPagers = new Map<string, Pager<any, any, any>>()
-const promptsPagers = new Map<string, Pager<any, any, any>>()
+const conversationPagers = new Map<string, ConversationsPager>()
+const promptsPagers = new Map<string, PromptsPager>()

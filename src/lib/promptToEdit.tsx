@@ -45,8 +45,8 @@ export async function submitTextToCadMultiFileIterationRequest(
   const data = await kcCall(() =>
     ml.create_text_to_cad_multi_file_iteration({
       client,
-      files: request.files as any,
-      body: request.body as any,
+      files: request.files,
+      body: request.body,
     })
   )
   return data
