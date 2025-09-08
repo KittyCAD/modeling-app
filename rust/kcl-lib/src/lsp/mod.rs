@@ -57,7 +57,7 @@ pub(crate) fn to_lsp_edit(suggestion: &Suggestion, code: &str) -> LspSuggestion 
     (suggestion.clone(), range)
 }
 
-pub(crate) trait ToLspRange {
+pub trait ToLspRange {
     fn to_lsp_range(&self, code: &str) -> Range {
         let start = self.start_to_lsp_position(code);
         let end = self.end_to_lsp_position(code);
