@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart propellant-line-brackets.kcl
+extension: md
+snapshot_kind: binary
+---

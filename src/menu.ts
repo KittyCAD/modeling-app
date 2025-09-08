@@ -66,10 +66,6 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
     {
       label: 'View',
       submenu: [
-        { role: 'reload' },
-        { role: 'forceReload' },
-        { role: 'toggleDevTools' },
-        { type: 'separator' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },
         { role: 'zoomOut' },
@@ -112,10 +108,6 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
     {
       label: 'View',
       submenu: [
-        { role: 'reload' },
-        { role: 'forceReload' },
-        { role: 'toggleDevTools' },
-        { type: 'separator' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },
         { role: 'zoomOut' },
@@ -123,7 +115,6 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
         { role: 'togglefullscreen' },
       ],
     },
-
     {
       label: 'Window',
       submenu: [{ role: 'minimize' }, { role: 'zoom' }, { role: 'close' }],

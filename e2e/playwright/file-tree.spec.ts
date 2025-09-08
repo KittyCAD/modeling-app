@@ -299,15 +299,6 @@ test.describe('when using the file tree to', () => {
       )
       await pasteCodeInEditor(kclLego)
 
-      // Open settings and enable the debug panel
-      await page
-        .getByRole('link', {
-          name: 'settings Settings',
-        })
-        .click()
-      await page.locator('#showDebugPanel').getByText('OffOn').click()
-      await page.getByTestId('settings-close-button').click()
-
       await test.step('swap between small and large files', async () => {
         await openDebugPanel()
         // Previously created a file so we need to start back at main.kcl

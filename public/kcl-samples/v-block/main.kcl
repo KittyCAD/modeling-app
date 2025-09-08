@@ -1,0 +1,59 @@
+// V-Block
+// Hold and support round workpieces.
+
+// Set units in inches (in)
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+vBlockLength = 1 + 1 / 4
+vBlockWidth = 3
+vBlockHeight = 2 + 3 / 8
+vAngle = 90
+vDepth = 13 / 16
+vWidth = vDepth * tan(vAngle / 2) * 2
+
+slotHeight = 0.375
+slotDepth = 0.375
+
+// Create a sketch for the vBlock profile on the YZ plane
+vBlockProfileSketch = startSketchOn(offsetPlane(YZ, offset = -vBlockLength / 2))
+
+// Define the profile of the vBlock
+vBlockProfile = startProfile(vBlockProfileSketch, at = [-vBlockWidth / 2, 0])
+  // side
+  |> yLine(length = vBlockHeight / 2 - (slotHeight / 2))
+  |> xLine(length = slotDepth)
+  |> yLine(length = slotHeight)
+  |> xLine(length = -slotDepth)
+  |> yLine(length = vBlockHeight / 2 - (slotHeight / 2))
+  // plateu
+  |> xLine(length = vBlockWidth / 2 - (vWidth / 2), tag = $seg01)
+  |> line(end = [vWidth / 2, -vDepth])
+  |> line(end = [vWidth / 2, vDepth])
+  |> xLine(length = vBlockWidth / 2 - (vWidth / 2))
+  // side
+  |> yLine(length = -vBlockHeight / 2 + slotHeight / 2)
+  |> xLine(length = -slotDepth)
+  |> yLine(length = -slotHeight)
+  |> xLine(length = slotDepth)
+  |> yLine(length = -vBlockHeight / 2 + slotHeight / 2)
+  // bottom
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Extrude the profile to create the v-block
+vBlock = extrude(vBlockProfile, length = vBlockLength)
+
+// Side holes
+sideHoleDistance = vBlockWidth / 3
+sideHoleHeight = vBlockHeight / 2
+sideHoleRadiuse = 1 / 4
+sideHoleSketch = startSketchOn(vBlock, face = END)
+sideHoleProfile = circle(sideHoleSketch, center = [-sideHoleDistance / 2, sideHoleHeight], radius = sideHoleRadiuse)
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = sideHoleDistance,
+       axis = [1, 0],
+     )
+sideHoles = extrude(sideHoleProfile, length = -vBlockWidth)

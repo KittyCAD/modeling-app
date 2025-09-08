@@ -14,8 +14,10 @@ import { setupServer } from 'msw/node'
 // React and XState code to test
 import type { Models } from '@kittycad/lib'
 import { createActor } from 'xstate'
-import { useSelector } from '@xstate/react'
-import { BillingRemaining, BillingRemainingMode } from '@kittycad/react-shared'
+import {
+  BillingRemaining,
+  BillingRemainingMode,
+} from '@src/components/BillingRemaining'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
@@ -98,18 +100,6 @@ const createUserPaymentSubscriptionsResponse = (opts: {
   },
 })
 
-function BillingRemainingWithSelector({ billingActor, mode }) {
-  const billingContext = useSelector(billingActor, ({ context }) => context)
-  return (
-    <BillingRemaining
-      mode={mode}
-      error={billingContext.error}
-      credits={billingContext.credits}
-      allowance={billingContext.allowance}
-    />
-  )
-}
-
 test('Shows a loading spinner when uninitialized credit count', async () => {
   server.use(
     http.get('*/user/payment/balance', (req, res, ctx) => {
@@ -128,7 +118,10 @@ test('Shows a loading spinner when uninitialized credit count', async () => {
   }).start()
 
   const { queryByTestId } = render(
-    <BillingRemainingWithSelector billingActor={billingActor} />
+    <BillingRemaining
+      mode={BillingRemainingMode.ProgressBarFixed}
+      billingActor={billingActor}
+    />
   )
 
   await expect(queryByTestId('spinner')).toBeVisible()
@@ -165,7 +158,7 @@ test('Shows the total credits for Unknown subscription', async () => {
   }).start()
 
   const { queryByTestId } = render(
-    <BillingRemainingWithSelector
+    <BillingRemaining
       mode={BillingRemainingMode.ProgressBarFixed}
       billingActor={billingActor}
     />
@@ -216,7 +209,7 @@ test('Progress bar reflects ratio left of Free subscription', async () => {
   }).start()
 
   const { queryByTestId } = render(
-    <BillingRemainingWithSelector
+    <BillingRemaining
       mode={BillingRemainingMode.ProgressBarFixed}
       billingActor={billingActor}
     />
@@ -277,7 +270,7 @@ test('Shows infinite credits for Pro subscription', async () => {
   }).start()
 
   const { queryByTestId } = render(
-    <BillingRemainingWithSelector
+    <BillingRemaining
       mode={BillingRemainingMode.ProgressBarFixed}
       billingActor={billingActor}
     />
@@ -333,7 +326,7 @@ test('Shows infinite credits for Enterprise subscription', async () => {
   }).start()
 
   const { queryByTestId } = render(
-    <BillingRemainingWithSelector
+    <BillingRemaining
       mode={BillingRemainingMode.ProgressBarFixed}
       billingActor={billingActor}
     />
