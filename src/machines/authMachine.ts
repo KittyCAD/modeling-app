@@ -1,5 +1,9 @@
 import type { User } from '@kittycad/lib'
-import env, { updateEnvironment, updateEnvironmentPool, generateDomainsFromBaseDomain } from '@src/env'
+import env, {
+  updateEnvironment,
+  updateEnvironmentPool,
+  generateDomainsFromBaseDomain,
+} from '@src/env'
 import { users } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { assign, fromPromise, setup } from 'xstate'
