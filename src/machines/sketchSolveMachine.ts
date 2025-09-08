@@ -83,7 +83,7 @@ export const sketchSolveMachine = setup({
   },
   actions: {},
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiAYRwEMA7GPAFUJIG0AGALqJQAB0KwAlhkmFWIkAA9EARgCsAdgB0ANgCcAJgDMatXqN6AHGp0AaEAE9EAWiNHLWozst6N-fpY6ACy+BjoAvuH2aJi4BCTkVDT0YIrSeLDo2PgAtskCwkgg4lIycgrKCM5h-Fr8akFqgfwq-CYW9k5VKkG1am7BKkYGavw6TUGR0VlxRGQU1LRakqzSdIqwGMwYYFrMAGY7AE4AFDr+AJR0Mdnx80lLK9IFCiXSsvJFlc7afhpemiMKkCQMslk6LgMQW0BnUBj0bT0QQMPksUxAN1mCQWyS0YAAjgBXSSiFZQPAYHjEOgvIpvMqfUCVNwGLQaUZGfgadkqWENCFVEa1DQhbl6fr8PQ9bzozH4OaJRa7AnE0nsClUmkqQpiCTvcpfRBGIIqXRWXo9YxBMFBAVuLTA2GBYwaME6DQjWUzeXYh7Kokkskakg0gw64p6hkVI1mNk6HQjKzigwaHQqO1A3RQ0wqJHiuFe2I++5KrRYI5gbYUSkkPBPDB0cuVnYZMBQHJgVgYDJbI4YWm60ofaMIMEeEWWIIWRo6Ny5gXVJp1PRI86+dzudmF24KnFLZhYBnB6mE0QQKut4hgQ8fAcRocGpmqALaKW9V2T3kC3l6OqmAywiEYRhNy25YiWuIHkeNYnmeF6wGAV43nIvDaq8kbDoaCCtEEOhaE6KaaKY-i+AKBj+FojTioYaYBJK-CTFEGLenciq4k22xks4CHtp2DYQHIuwrKQhDoFocqsXuuwcTI7DcW2HZdggwmEFgnEoUId70phT4IKuDrIqm6hmGCC4DFo1jUQBH4irhYHFmxSwyVxPGKQ2YBHEchBHFoojENs+zeTk4ksbufplhWnFya5fHKawIlqQyBRaRhj5KKoKiuhZfj9EYPJhNCZleBZZhmNZYK2RETESWFpaQO87B0AJrBCfFom7DVvp1RADVQHFCXqawyVCOhD6Mul2FjB4PTspYIymP0tqOIgagAVohihLhhipgY9mSeF9WyVAdAeV5Pl+QFQUhUW+3db1-WqYNw3htpaWVNYpqmGCUqWMak56AKq2shtHpbSmCZ7bVkE3uqciXteDJNYJyxtWJnUQfuMPknDCFIQyD2JbemkjXSqXjZUrTDBZ1q2T0xqwgu1r4SowR+MYaZ6O6KiQ110NHXgOOIQjHwnZ53m+f5GCBUcwXo45uxQUGgt4x8BNPcTL1kyOvLImyk7nCzIoDIzHiwqz-Ds7mXM8xjux5Ikh3HnQp7ni2uPCxpmtjSOaamuY1juABLTWHYy0ICappBLh1iNDhIy7dVoW80s9sUI7MF0KneCO5szB9il3tYYEv5fT4KIesCq0ChHlHRw0ahx6tNvy1oWfp5qUEC6w8PIUNJODvq5OqI0QS6CE-31Oc7jfvCf5Az0NEgRozdSa3hAOz13YZ53yse0NaGk4XulDEzljqOYHqrrhZEUVRZj+BoCLwjK6KsMk8BFHLUmjYPI6uAEf5GjNEpv0AGYdnDQiMMzHwfguRcl8MEFe4V6w-yjFhZwKhMqeCRAEUY4oA5tAXFCEunJDBNBXG0RBicbpQyWKkXqqCdITUXLUYEJp-gMQCL9AwJs4xIhRMMIiO0kF1QDGqckMFGFvVUJoOowQwgWHOGYdwagiEhC0BKMhPgEReEYtMGhydpKRRbDBOsqwMBSKHggDQrQ2QN1WpYNo3JcwaCIf0CyYwWgpmNA3fQy9qE7kMXsXux5LEjlBhooYK5ej60BHaVhiYF4jErg3BO+jAm2wis2FyCk+JhKwpglEnhMEWEIiEP6RC5qUXME6KO9jDAiNxIdMk+Tj5jDUHUTk4M3QsyrmHTcf5OQejGPgxpmN+a717q0iaP5WGjAaD4aErRXQCjwv0ScIxXQRxRHZAJ4EW5t03qEw+v8sI2Mjv8PK8cz49FUf0opNg5pzV5BbSw-xGKRCAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiAYRwEMA7GPAFUJIG0AGALqJQAB0KwAlhkmFWIkAA9EARgCsAdgB0ANgCcAJgDMatXqN6AHGp0AaEAE9EAWiNHLWozst6N-fpY6ACy+BjoAvuH2aJi4BCTkVDT0YIrSeLDo2PgAtskCwkgg4lIycgrKCM5h-Fr8akFqgfwq-CYW9k5VKkG1am7BKkYGavw6TUGR0VlxRGQU1LRakqzSdIqwGMwYYFrMAGY7AE4AFDr+AJR0Mdnx80lLK9IFCiXSsvJFlc7afhpemiMKkCQMslk6LgMQW0BnUBj0bT0QQMPksUxAN1mCQWyS0YAAjgBXSSiFZQPAYHjEOgvIpvMqfUCVNwGLQaUZGfgadkqWENCFVEa1DQhbl6fr8PQ9bzozH4OaJRa7AnE0nsClUmkqQpiCTvcpfRBGIIqXRWXo9YxBMFBAVuLTA2GBYwaME6DQjWUzeXYh7Kokkskakg0gw64p6hkVI1mNk6HQjKzigwaHQqO1A3RQ0wqJHiuFe2I++5KrRYI5gbYUSkkDJbKBkujlys7DJgKA5MCsDB15hHDC03WlD7RhBgjwiyxBCyNHRuXMC6pNOp6JHnXzudzswu3BU4pawMDEMBYBl4Zin3sN9h0QmiCBVtvH08fQcR4cGpmqALaKW9V1TryAq8nodSmAYsIhGEYTcjuWIlrih7PmeF49pszDXlAt73o+SEngyvDaq8kYjoaCCtEEOhaE6KaaKY-i+AKBj+FojTioYaYBJK-CTFEGLenciq4s22xks4h4dl2GB0BAci7CspCEOgWhyoJ+67CJMjsOJ7adt2CAKYQWCiXIBRvvSpFfgga4OsiqbqGYYKLgMWjWOxEEASKlFwcWQlLJpYkSXp0lgEcRyEEcWiiMQ2z7BFOQqQJe5+mWFaidpQVSQZrCKcZBFCOZJGfkoqgqK6rl+P0Rg8mE0LOV4rlmGYHlgl5ER8apyWlpA7w3rJrDyTlSm7J1vrdRAvVQNluUmawZlCMRH6MiV5FjB4PTspYIymP0tqOIgagQVohihJRhipgYPlqSlPVaVhoXhZF0WxfFiVFtd42TdNRmzfN4YWcVlTWKaphglKljGlOegCodrInR6Z0pgmV1dbiqFBnIT74R8MlycsQ3KaNCFLOj6qY3hL5yN9eWvgVC10kVy2VK0wyudaXk9MasKLta1EqMEfjGGmejuioKNjWjL5k6wWOU6wdAPRFUUxRgcVHAlRN+bspPkuTR7Y1Thk06ZdP-Yzo68sibJTuc-MigMPMeLCAv8ELuai+LxO7HkiS3VejZ3g+rYU-lZtLaOwTCvGIScn+PjQ-tCBOmyGjmGm6huGDl0dUlEtLD7FB++hmF0AXeBF1s-aFeHZGBKBoM+CiHrAodAomqaQSUdYjQUSM2fTO9qP54QvsTWh9aNqheB68htNh-qTOqI0QS6CEUP1Oc7jAfCYGwz0HEwRonta1oZcVxhk+XjPBtzURDM11ZQy85Y6jmB6a6UUxLFsWY-ip67Is0TolYMkeARRNbqUWgvUcrgAhgUaM0Fm-QE5dGcNCIwfMfB+C5FyXwwRj7qXxtIKBUYyLOBUGVTwSIAijHFNYTkRhFxQnrrHEY8c2j4JzoPPOyo0h3RIZZFaS5ajAhNP8HiAQIYGEdnGJEKJhh0QugQm6AY1TkhrMQARgNVCaDqMEMIFhzhmHcGoJhIQtASkME0VcHDeID13Dw1KLZqxUn9uwLRi8EDulZFCNwqcbBlXBkw5cCJNDSkRO4MWXCHFey0CHD455LzFzJB4iO-wHTDFdrCMITR2R2hEYmRoFhgTjFXEfaJ8ET4BQyrpKSqSyIUJRJ4ChFhaIx2tEwrarFzBOk7moV+-d+LcNibdFJ99oENLGGoOonIkZun5q3ROW4wKcg9GMOhyjSw62njLeJxUAaeJAiI0YDQfDQlaK6AUVF+hThGK6duKJvIVN8oQs+Y83FQHqVZd00z+mHRCLbVMJg7RNJsBDNwSJjEv0iJEIAA */
   id: 'Sketch Solve Mode',
   context: ({ input }) => ({
     parentContext: input.parentContext,
@@ -107,22 +107,22 @@ export const sketchSolveMachine = setup({
     'equiping tool': {
       always: [
         {
-          target: 'create tool init',
+          target: 'create tool staging',
           guard: 'is create tool',
         },
         {
-          target: 'action tool',
+          target: 'selection act staging',
           guard: 'is action tool',
           reenter: true,
         },
         {
-          target: 'move edit tool',
+          target: 'move edit staging',
           reenter: true,
         },
       ],
     },
 
-    'create tool init': {
+    'create tool staging': {
       on: {
         'create segment start': {
           target: 'creating-segment',
@@ -131,14 +131,14 @@ export const sketchSolveMachine = setup({
       },
     },
 
-    'action tool': {
+    'selection act staging': {
       on: {
         'update selection': [
           {
             target: 'acting on selection',
             guard: 'should action be taken',
           },
-          'action tool',
+          'selection act staging',
         ],
       },
     },
@@ -146,30 +146,30 @@ export const sketchSolveMachine = setup({
     'creating-segment': {
       invoke: {
         src: 'draft-animation-actor',
-        onDone: 'create tool init',
-        onError: 'create tool init',
+        onDone: 'create tool staging',
+        onError: 'create tool staging',
       },
     },
 
     editing: {
       invoke: {
         src: 'move-edit-actor',
-        onError: 'move edit tool',
-        onDone: 'move edit tool',
+        onError: 'move edit staging',
+        onDone: 'move edit staging',
       },
     },
 
     'acting on selection': {
       invoke: {
         src: 'acting-on-selection',
-        onDone: 'action tool',
-        onError: 'action tool',
+        onDone: 'selection act staging',
+        onError: 'selection act staging',
       },
     },
 
-    'move edit tool': {
+    'move edit staging': {
       on: {
-        'update selection': 'move edit tool',
+        'update selection': 'move edit staging',
         'move edit start': {
           target: 'editing',
           reenter: true,
@@ -181,7 +181,7 @@ export const sketchSolveMachine = setup({
             guard: 'should action be taken',
           },
           {
-            target: 'action tool',
+            target: 'selection act staging',
             reenter: true,
           },
         ],
