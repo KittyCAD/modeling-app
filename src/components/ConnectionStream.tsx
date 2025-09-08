@@ -23,7 +23,80 @@ import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
 
-let didInit = false
+const onEngineConnectionReadyForRequests = ({
+  authToken,
+  videoWrapperRef,
+  setAppState,
+  videoRef,
+  setIsSceneReady,
+}: {
+  authToken: string
+}) => {
+  // video wrapper ref
+  if (!engineCommandManager.started) {
+    if (!authToken) {
+      console.error('authToken is not ready on connection initialization')
+      return
+    }
+
+    if (videoWrapperRef.current) {
+      const { width, height } = getDimensions(
+        videoWrapperRef.current.clientWidth,
+        videoWrapperRef.current.clientHeight
+      )
+      // TODO: Make sure pool works in the url.
+      engineCommandManager
+        .start({
+          width,
+          height,
+          token: authToken,
+          setStreamIsReady: () => {
+            setAppState({ isStreamReady: true })
+          },
+        })
+        .then((result) => {
+          if (!videoRef.current) {
+            console.error('Unable to reference the video')
+            return
+          }
+
+          if (!engineCommandManager.connection?.mediaStream) {
+            console.error('Unable to reference the mediaStream')
+            return
+          }
+
+          videoRef.current.srcObject =
+            engineCommandManager.connection?.mediaStream
+          setIsSceneReady(true)
+        })
+        .then(() => {
+          kclManager
+            .executeCode()
+            .catch(trap)
+            .then(() =>
+              // It makes sense to also call zoom to fit here, when a new file is
+              // loaded for the first time, but not overtaking the work kevin did
+              // so the camera isn't moving all the time.
+              engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'zoom_to_fit',
+                  object_ids: [], // leave empty to zoom to all objects
+                  padding: 0.1, // padding around the objects
+                  animated: false, // don't animate the zoom for now
+                },
+              })
+            )
+            .catch(trap)
+        })
+        .catch(reportRejection)
+    } else {
+      console.error('DOM is not initialized for the stream.')
+      return
+    }
+  }
+}
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -99,72 +172,13 @@ export const ConnectionStream = (props: {
 
   // Run once on initialization
   useEffect(() => {
-    // video wrapper ref
-    if (!didInit) {
-      didInit = true
-
-      if (!props.authToken) {
-        console.error('authToken is not ready on connection initialization')
-        return
-      }
-
-      if (videoWrapperRef.current) {
-        const { width, height } = getDimensions(
-          videoWrapperRef.current.clientWidth,
-          videoWrapperRef.current.clientHeight
-        )
-        // TODO: Make sure pool works in the url.
-        engineCommandManager
-          .start({
-            width,
-            height,
-            token: props.authToken,
-            setStreamIsReady: () => {
-              setAppState({ isStreamReady: true })
-            },
-          })
-          .then(() => {
-            if (!videoRef.current) {
-              console.error('Unable to reference the video')
-              return
-            }
-
-            if (!engineCommandManager.connection?.mediaStream) {
-              console.error('Unable to reference the mediaStream')
-              return
-            }
-
-            videoRef.current.srcObject =
-              engineCommandManager.connection?.mediaStream
-            setIsSceneReady(true)
-          })
-          .then(() => {
-            kclManager
-              .executeCode()
-              .catch(trap)
-              .then(() =>
-                // It makes sense to also call zoom to fit here, when a new file is
-                // loaded for the first time, but not overtaking the work kevin did
-                // so the camera isn't moving all the time.
-                engineCommandManager.sendSceneCommand({
-                  type: 'modeling_cmd_req',
-                  cmd_id: uuidv4(),
-                  cmd: {
-                    type: 'zoom_to_fit',
-                    object_ids: [], // leave empty to zoom to all objects
-                    padding: 0.1, // padding around the objects
-                    animated: false, // don't animate the zoom for now
-                  },
-                })
-              )
-              .catch(trap)
-          })
-          .catch(reportRejection)
-      } else {
-        console.error('DOM is not initialized for the stream.')
-        return
-      }
-    }
+    onEngineConnectionReadyForRequests({
+      authToken: props.authToken || '',
+      videoWrapperRef,
+      setAppState,
+      videoRef,
+      setIsSceneReady,
+    })
   }, [props.authToken, setAppState])
 
   // TODO: Handle 15 second connection window
@@ -188,17 +202,12 @@ export const ConnectionStream = (props: {
       if (!props.authToken) return
       if (engineCommandManager.started) return
 
-      const { width, height } = getDimensions(
-        videoWrapperRef.current.clientWidth,
-        videoWrapperRef.current.clientHeight
-      )
-      engineCommandManager.start({
-        width,
-        height,
-        token: props.authToken,
-        setStreamIsReady: () => {
-          setAppState({ isStreamReady: true })
-        },
+      onEngineConnectionReadyForRequests({
+        authToken: props.authToken || '',
+        videoWrapperRef,
+        setAppState,
+        videoRef,
+        setIsSceneReady,
       })
     },
   })

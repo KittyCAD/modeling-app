@@ -791,7 +791,7 @@ export class ConnectionManager extends EventTarget {
       EngineDebugger.addLog({
         label: 'connectionManager',
         message:
-          'you called tearDown without ever calling start(), this is okay.',
+          'you called tearDown without ever calling start(), exiting early.',
       })
       return
     }
@@ -800,12 +800,15 @@ export class ConnectionManager extends EventTarget {
       console.error(
         'unable to tear down connectionManager, connection is missing'
       )
-      return
     }
 
     this.idleMode = opts?.idleMode ?? false
 
     if (this.connection) {
+      this.connection.deferredConnection?.reject(false)
+      this.connection.deferredMediaStreamAndWebrtcStatsCollector?.reject(false)
+      this.connection.deferredPeerConnection?.reject(false)
+      this.connection.deferredSdpAnswer?.reject(false)
       for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
         pending.reject([
           {
@@ -824,7 +827,7 @@ export class ConnectionManager extends EventTarget {
 
     // Make sure to get all the deeply nested ones as well.
     this.removeAllEventListeners()
-    this.connection.disconnectAll()
+    this.connection?.disconnectAll()
     this.connection = undefined
 
     // It is possible all connections never even started, but we still want
