@@ -22,7 +22,9 @@ import type { Models } from '@kittycad/lib'
 
 const hasPromptsPending = (promptsPool: Prompt[]) => {
   return (
-    promptsPool.filter((prompt) => prompt.status === 'in_progress').length > 0
+    promptsPool.filter((prompt) =>
+      ['queued', 'uploaded', 'in_progress'].includes(prompt.status)
+    ).length > 0
   )
 }
 
@@ -61,12 +63,15 @@ export const MlEphantConversationPane = (props: {
       console.warn('theProject is `undefined` - should not be possible')
       return
     }
+    if (props.loaderFile === undefined) {
+      console.warn('loaderFile is `undefined` - should not be possible')
+      return
+    }
 
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.codeManager.code,
       fileNames: props.kclManager.execState.filenames,
       projectContext: props.theProject,
-      targetFile: props.loaderFile,
     })
 
     // Only on initial project creation do we call the create endpoint, which
@@ -76,7 +81,11 @@ export const MlEphantConversationPane = (props: {
       type: MlEphantManagerTransitions.PromptEditModel,
       prompt: requestedPrompt,
       projectForPromptOutput: props.theProject,
-      fileSelectedDuringPrompting: props.loaderFile,
+      applicationProjectDirectory: props.settings.app.projectDirectory.current,
+      fileSelectedDuringPrompting: {
+        entry: props.loaderFile,
+        content: props.codeManager.code,
+      },
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
@@ -94,8 +103,13 @@ export const MlEphantConversationPane = (props: {
       console.warn('Unexpected conversationId is undefined!')
     }
 
+    if (props.theProject === undefined) {
+      return
+    }
+
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
+      project: props.theProject,
       conversationId,
       nextPage:
         mlEphantManagerActorSnapshot.context
@@ -156,10 +170,12 @@ export const MlEphantConversationPane = (props: {
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
     if (
       props.mlEphantManagerActor.getSnapshot().context
-        .promptsBelongingToConversation === undefined
+        .promptsBelongingToConversation === undefined &&
+      props.theProject !== undefined
     ) {
       props.mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
+        project: props.theProject,
         conversationId,
       })
     }

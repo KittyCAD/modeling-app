@@ -20,6 +20,7 @@ import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
 import type {
   SidebarAction,
+  SidebarCssOverrides,
   SidebarPane,
   SidebarType,
 } from '@src/components/ModelingSidebar/ModelingPanes'
@@ -133,7 +134,7 @@ export function ModelingSidebarLeft() {
       title: 'Refresh app',
       sidebarName: 'Refresh app',
       icon: 'exclamationMark',
-      keybinding: 'Mod + R',
+      keybinding: '', // as a last resort, this action shouldn't have a shortcut
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       action: async () => {
         refreshPage('Sidebar button').catch(reportRejection)
@@ -452,6 +453,7 @@ interface ModelingPaneButtonProps
     keybinding: string
     iconClassName?: string
     iconSize?: 'sm' | 'md' | 'lg'
+    cssClassOverrides?: SidebarCssOverrides
   }
   align: Alignment
   onClick: () => void
@@ -478,11 +480,12 @@ function ModelingPaneButton({
   return (
     <div
       id={paneConfig.id + '-button-holder'}
-      className="relative py-[1px]"
+      className="relative"
       data-onboarding-id={`${paneConfig.id}-pane-button`}
     >
       <button
-        className={`group pointer-events-auto flex items-center justify-center border-0 rounded-none border-transparent dark:border-transparent p-2 m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''}`}
+        className={`group pointer-events-auto flex items-center justify-center border-0 rounded-none border-transparent dark:border-transparent p-2 m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''} ${paneConfig.cssClassOverrides?.button ?? ''}`}
+        aria-pressed={paneIsOpen}
         style={{
           [tooltipPosition === 'left' ? 'borderLeft' : 'borderRight']:
             'solid 2px transparent',
@@ -513,9 +516,11 @@ function ModelingPaneButton({
             {disabledText !== undefined ? ` (${disabledText})` : ''}
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
-          <kbd className="hotkey text-xs capitalize">
-            {hotkeyDisplay(paneConfig.keybinding, platform)}
-          </kbd>
+          {paneConfig.keybinding && (
+            <kbd className="hotkey text-xs capitalize">
+              {hotkeyDisplay(paneConfig.keybinding, platform)}
+            </kbd>
+          )}
         </Tooltip>
       </button>
       {!!showBadge?.value && (

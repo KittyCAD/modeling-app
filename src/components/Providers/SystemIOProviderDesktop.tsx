@@ -17,10 +17,7 @@ import {
   engineCommandManager,
 } from '@src/lib/singletons'
 import { PromptType, type Prompt } from '@src/lib/prompt'
-import {
-  MlEphantManagerTransitions,
-  type PromptMeta,
-} from '@src/machines/mlEphantManagerMachine'
+import { type PromptMeta } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,
@@ -87,10 +84,6 @@ export function SystemIOMachineLogicListenerDesktop() {
     onFileClose(filePathWithExtension, projectDirectory)
     // Open the requested file in the requested project
     onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
-    // Clear Text-to-CAD specific state
-    mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.ClearProjectSpecificState,
-    })
 
     engineCommandManager.rejectAllModelingCommands(
       EXECUTE_AST_INTERRUPT_ERROR_MESSAGE

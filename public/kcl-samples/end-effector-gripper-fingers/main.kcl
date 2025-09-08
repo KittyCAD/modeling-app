@@ -1,0 +1,240 @@
+// End Effector Grippers
+// End effector grippers are devices attached to a robot's arm that allow it to interact with its environment and perform tasks like picking up, moving, and manipulating objects. They are essential for robots to perform useful work. Grippers are one type of end effector, but end effectors can also be tools like welding torches or cameras
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define sheet metal parameters
+bracketThickness = 3
+bracketBendRadius = 3.75
+
+// Define linkage parameters
+linkRadius = 8
+linkLength = 70
+linkAngle = 65
+
+// Define a function to create an offset sketch, which will be used to loft the body of the hand
+fn sectionSketch(offsetHeight, radius) {
+  sectionSketch = startSketchOn(offsetPlane(XY, offset = offsetHeight))
+    |> startProfile(at = [radius, -radius / 10])
+    |> yLine(length = radius / 5, tag = $seg07)
+    |> tangentialArc(angle = 60, radius = 8)
+    |> angledLine(angle = 150, length = radius * 1.5, tag = $seg08)
+    |> tangentialArc(angle = 60, radius = 8)
+    |> angledLine(angle = -150, length = segLen(seg07))
+    |> tangentialArc(angle = 60, radius = 8)
+    |> yLine(length = -segLen(seg08))
+    |> tangentialArc(angle = 60, radius = 8)
+    |> angledLine(angle = -30, length = segLen(seg07))
+    |> tangentialArc(angle = 60, radius = 8)
+    |> angledLine(angle = 30, length = segLen(seg08))
+    |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  return sectionSketch
+}
+
+// Create instances of the body sketch at different heights to be lofted together
+sketch1 = sectionSketch(offsetHeight = 0, radius = 40)
+sketch2 = sectionSketch(offsetHeight = 20, radius = 50)
+sketch3 = sectionSketch(offsetHeight = 80, radius = 90)
+sketch4 = sectionSketch(offsetHeight = 100, radius = 105)
+sketch5 = sectionSketch(offsetHeight = 120, radius = 100)
+
+// Loft the lower trim of the body
+lowerTrim = loft([sketch1, sketch2])
+  |> appearance(color = "#f7f7f7")
+
+// Loft the center body housing
+housing = loft([clone(sketch2), sketch3, sketch4])
+  |> appearance(color = "#0f0f0f")
+
+// Loft the upper trim of the body
+upperTrim = loft([clone(sketch4), sketch5])
+  |> appearance(color = "#f7f7f7")
+
+// Model an angled bracket that will be used to mount the three grippers
+angleBracket = startSketchOn(offsetPlane(XY, offset = 120))
+  |> startProfile(at = [97, 5])
+  |> xLine(length = -90, tag = $seg01)
+  |> tangentialArc(angle = -60, radius = bracketBendRadius + bracketThickness)
+  |> angledLine(angle = 120, length = 90, tag = $seg02)
+  |> angledLine(angle = 120 - 90, length = bracketThickness, tag = $seg03)
+  |> angledLine(angle = segAng(seg02) + 180, length = segLen(seg02), tag = $seg06)
+  |> tangentialArc(angle = 60, radius = bracketBendRadius)
+  |> xLine(length = segLen(seg01), tag = $seg05)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg04)
+  |> close()
+  |> extrude(length = 40, tagEnd = $capEnd001)
+  |> fillet(
+       radius = 8,
+       tags = [
+         getCommonEdge(faces = [seg03, capEnd001]),
+         getCommonEdge(faces = [seg04, capEnd001])
+       ],
+     )
+
+// Add mounting provisions for the gripper linkages to each bracket
+bracketHoles01 = startSketchOn(angleBracket, face = seg05)
+hole01 = circle(bracketHoles01, center = [-70, 140], radius = 4.5)
+hole02 = circle(bracketHoles01, center = [-30, 140], radius = 4.5)
+bracketHoles02 = startSketchOn(angleBracket, face = seg06)
+hole03 = circle(bracketHoles02, center = [70, 140], radius = 4.5)
+hole04 = circle(bracketHoles02, center = [30, 140], radius = 4.5)
+bracket = extrude([hole01, hole02, hole03, hole04], length = -bracketThickness)
+  |> appearance(color = "#0f0f0f")
+
+// Model a 2 force linkage to attach the grippers to the base
+linkageBar = startSketchOn(XZ)
+  |> startProfile(at = [
+       30 + linkRadius * sin(linkAngle),
+       140 - (linkRadius * cos(linkAngle))
+     ])
+  |> angledLine(angle = linkAngle, length = linkLength, tag = $seg10)
+  |> tangentialArc(angle = 180, radius = linkRadius, tag = $seg09)
+  |> angledLine(angle = tangentToEnd(seg09), length = segLen(seg10))
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> subtract2d(tool = circle(center = [30, 140], radius = 4.5))
+  |> subtract2d(tool = circle(
+       center = [
+         30 + linkLength * cos(linkAngle),
+         140 + linkLength * sin(linkAngle)
+       ],
+       radius = 4.5,
+     ))
+  |> extrude(length = 8, symmetric = true)
+  |> appearance(color = "#f7f7f7")
+  |> patternLinear3d(instances = 2, distance = 40, axis = [1, 0, 0])
+
+// Create the base sheet metal that each gripper will be cut from
+gripBaseBracket = startSketchOn(offsetPlane(XY, offset = 129 + linkLength * sin(linkAngle)))
+  |> startProfile(at = [82 + linkLength * cos(linkAngle), 12])
+  |> xLine(length = -77, tag = $seg01e)
+  |> tangentialArc(angle = 60, radius = bracketBendRadius + bracketThickness)
+  |> angledLine(angle = -120, length = 6, tag = $seg02e)
+  |> tangentialArc(angle = 60, radius = bracketBendRadius + bracketThickness)
+  |> angledLine(angle = -60, length = 6, tag = $seg03e)
+  |> tangentialArc(angle = 60, radius = bracketBendRadius + bracketThickness)
+  |> xLine(length = segLen(seg01e))
+  |> yLine(length = bracketThickness)
+  |> xLine(length = -segLen(seg01e))
+  |> tangentialArc(angle = -60, radius = bracketBendRadius)
+  |> angledLine(angle = 120, length = segLen(seg03e))
+  |> tangentialArc(angle = -60, radius = bracketBendRadius)
+  |> angledLine(angle = 60, length = segLen(seg02e))
+  |> tangentialArc(angle = -60, radius = bracketBendRadius)
+  |> xLine(length = segLen(seg01e))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(%, length = 80)
+
+// Use subtract operations to remove excess material from the gripper, as well as model the mounting holes
+gripperCuts = startSketchOn(XZ)
+cutOuter = circle(
+       gripperCuts,
+       center = [
+         140 + linkLength * cos(linkAngle),
+         290 + linkLength * sin(linkAngle)
+       ],
+       radius = 150,
+     )
+  |> extrude(length = 40, symmetric = true)
+cutInner = circle(
+       gripperCuts,
+       center = [
+         -14 + linkLength * cos(linkAngle),
+         120 + linkLength * sin(linkAngle)
+       ],
+       radius = 35,
+     )
+  |> extrude(length = 40, symmetric = true)
+
+mountingHole01 = circle(
+       gripperCuts,
+       center = [
+         30 + linkLength * cos(linkAngle),
+         140 + linkLength * sin(linkAngle)
+       ],
+       radius = 4.5,
+     )
+  |> extrude(length = 40, symmetric = true)
+mountingHole02 = circle(
+       gripperCuts,
+       center = [
+         70 + linkLength * cos(linkAngle),
+         140 + linkLength * sin(linkAngle)
+       ],
+       radius = 4.5,
+     )
+  |> extrude(length = 40, symmetric = true)
+
+// Remove all identified material from the gripper
+gripper = subtract(
+       [gripBaseBracket],
+       tools = [
+         union([
+  union([mountingHole01, mountingHole02]),
+  union([cutOuter, cutInner])
+])
+       ],
+     )
+  |> appearance(color = "#0f0f0f")
+
+// Create a cotter pin to secure the linkages to the base
+basePins = startSketchOn(offsetPlane(YZ, offset = 30))
+  |> startProfile(at = [-9.5, 140.5])
+  |> yLine(length = 5)
+  |> xLine(length = 1)
+  |> yLine(length = -1.5)
+  |> xLine(length = 17)
+  |> yLine(length = 1.5)
+  |> xLine(length = 1)
+  |> yLine(length = -5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(axis = {
+       direction = [1.0, 0.0],
+       origin = [0.0, 140.0]
+     })
+  |> patternLinear3d(instances = 2, distance = 40, axis = [1, 0, 0])
+  |> appearance(color = "#a6a6a6")
+
+// Revolve a cotter pin and washers to secure the gripper to the linkages
+gripperPins = startSketchOn(offsetPlane(YZ, offset = 30 + linkLength * cos(linkAngle)))
+  |> startProfile(at = [
+       0,
+       140 + linkLength * sin(linkAngle) + 4.5
+     ])
+  |> xLine(length = -4.1)
+  |> yLine(length = 5)
+  |> xLine(length = -4.8)
+  |> yLine(length = -5)
+  |> xLine(length = -3.1)
+  |> yLine(length = 1)
+  |> xLine(length = -1)
+  |> yLine(endAbsolute = 140 + linkLength * sin(linkAngle) + .5)
+  |> xLine(endAbsolute = 0)
+  |> mirror2d(axis = Y)
+  |> close(%)
+  |> revolve(axis = {
+       direction = [1.0, 0.0],
+       origin = [0.0, 140 + linkLength * sin(linkAngle)]
+     })
+  |> patternLinear3d(instances = 2, distance = 40, axis = [1, 0, 0])
+  |> appearance(color = "#a6a6a6")
+
+// Pattern 3 each item around the center so that the hand has 3 fingers
+[
+       bracket,
+       linkageBar,
+       gripper,
+       basePins,
+       gripperPins
+     ]
+  |> patternCircular3d(
+       instances = 3,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )

@@ -12,6 +12,7 @@ import type {
   PromptToEditRequest,
   TextToCadErrorResponse,
 } from '@src/lib/promptToEditTypes'
+import { parentPathRelativeToProject } from '@src/lib/paths'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -57,7 +58,14 @@ export async function submitTextToCadMultiFileIterationRequest(
   )
 
   if (!response.ok) {
-    return new Error(`HTTP error! status: ${response.status}`)
+    const errorBody = await response.json()
+    if ('message' in errorBody) {
+      return new Error(errorBody.message)
+    }
+
+    return new Error(
+      `HTTP error! status: ${response.status}, error: ${JSON.stringify(errorBody)}`
+    )
   }
 
   const data = await response.json()
@@ -77,12 +85,15 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   prompt,
   selections,
   projectFiles,
+  applicationProjectDirectory,
   artifactGraph,
   projectName,
+  currentFile,
   kclVersion,
 }: ConstructRequestArgs): PromptToEditRequest {
   const kclFilesMap: KclFileMetaMap = {}
   const files: KittyCadLibFile[] = []
+
   projectFiles.forEach((file) => {
     let data: Blob
     if (file.type === 'other') {
@@ -98,12 +109,33 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
     })
   })
 
+  // Way to patch in supplying the currently-opened file without updating the API.
+  // TODO: update the API to support currently-opened files as other parts of the payload
+  const currentFilePrompt: Models['SourceRangePrompt_type'] | null =
+    currentFile.entry
+      ? {
+          prompt: 'This is the active file',
+          range: convertAppRangeToApiRange(
+            [0, currentFile.content.length, 0],
+            currentFile.content
+          ),
+          file: parentPathRelativeToProject(
+            currentFile.entry?.path,
+            applicationProjectDirectory
+          ),
+        }
+      : null
+
   // If no selection, use whole file
   if (selections === null) {
+    const rangePrompts: Models['SourceRangePrompt_type'][] = []
+    if (currentFilePrompt !== null) {
+      rangePrompts.push(currentFilePrompt)
+    }
     return {
       body: {
         prompt,
-        source_ranges: [],
+        source_ranges: rangePrompts,
         project_name:
           projectName !== '' && projectName !== 'browser'
             ? projectName
@@ -245,6 +277,10 @@ See later source ranges for more context. about the sweep`,
       }
       return prompts
     })
+  // Push the current file prompt alongside the selection-based prompts
+  if (currentFilePrompt !== null) {
+    ranges.push(currentFilePrompt)
+  }
   let payload = {
     body: {
       prompt,

@@ -49,9 +49,14 @@ import {
   EngineConnectionEvents,
 } from '@src/lang/std/engineConnection'
 import { err, reportRejection, trap, reject } from '@src/lib/trap'
+
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
+
 import { platform, uuidv4 } from '@src/lib/utils'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, settingsActor } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
+
 import type { IndexLoaderData } from '@src/lib/types'
 import {
   EXPORT_TOAST_MESSAGES,
@@ -124,7 +129,13 @@ export const ModelingMachineProvider = ({
 }) => {
   const {
     app: { allowOrbitInSketchMode },
-    modeling: { defaultUnit, cameraProjection, cameraOrbit },
+    modeling: {
+      defaultUnit,
+      cameraProjection,
+      cameraOrbit,
+      useNewSketchMode,
+      snapToGrid,
+    },
   } = useSettings()
   const loaderData = useLoaderData() as IndexLoaderData
   const projects = useFolders()
@@ -291,6 +302,7 @@ export const ModelingMachineProvider = ({
         },
         'Has exportable geometry': () =>
           !kclManager.hasErrors() && kclManager.ast.body.length > 0,
+        'should use new sketch mode': () => !!useNewSketchMode?.current,
       },
       actors: {
         exportFromEngine: fromPromise(
@@ -1189,6 +1201,7 @@ export const ModelingMachineProvider = ({
           ...modelingMachineDefaultContext.store,
           ...persistedContext,
           cameraProjection,
+          useNewSketchMode,
         },
         machineManager,
       },
@@ -1441,6 +1454,14 @@ export const ModelingMachineProvider = ({
   })
   useHotkeys(['mod + alt + x'], () => {
     resetCameraPosition().catch(reportRejection)
+  })
+
+  // Toggle Snap to grid
+  useHotkeyWrapper([SNAP_TO_GRID_HOTKEY], () => {
+    settingsActor.send({
+      type: 'set.modeling.snapToGrid',
+      data: { level: 'project', value: !snapToGrid.current },
+    })
   })
 
   useModelingMachineCommands({

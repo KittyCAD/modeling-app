@@ -1,5 +1,11 @@
 {
   "version": 2,
+  "git": {
+    "deploymentEnabled": {
+      "main": false,
+      "staging": true
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",

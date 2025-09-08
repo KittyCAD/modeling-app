@@ -97,10 +97,6 @@ export const helpRole = (
         },
       },
       { type: 'separator' },
-      { role: 'toggleDevTools' },
-      { role: 'reload' },
-      { role: 'forceReload' },
-      { type: 'separator' },
       {
         label: 'Show Release Notes',
         click: () => {

@@ -1,13 +1,12 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use schemars::JsonSchema;
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
-    ModuleId,
+    ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
@@ -16,7 +15,6 @@ use crate::{
         types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
     },
     parsing::ast::types::TagNode,
-    source_range::SourceRange,
     std::{
         shapes::{PolygonType, SketchOrSurface},
         sketch::FaceTag,
@@ -92,16 +90,6 @@ impl TyF64 {
     }
 }
 
-impl JsonSchema for TyF64 {
-    fn schema_name() -> String {
-        "TyF64".to_string()
-    }
-
-    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-        r#gen.subschema_for::<f64>()
-    }
-}
-
 impl Args {
     pub(crate) fn get_kw_arg_opt<T>(
         &self,
@@ -112,7 +100,7 @@ impl Args {
     where
         T: for<'a> FromKclValue<'a>,
     {
-        match self.kw_args.labeled.get(label) {
+        match self.labeled.get(label) {
             None => return Ok(None),
             Some(a) => {
                 if let KclValue::KclNone { .. } = &a.value {
@@ -128,7 +116,7 @@ impl Args {
     where
         T: for<'a> FromKclValue<'a>,
     {
-        let Some(arg) = self.kw_args.labeled.get(label) else {
+        let Some(arg) = self.labeled.get(label) else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument `{label}`"),
                 vec![self.source_range],
@@ -180,7 +168,7 @@ impl Args {
         &self,
         label: &str,
     ) -> Result<Vec<(EdgeReference, SourceRange)>, KclError> {
-        let Some(arg) = self.kw_args.labeled.get(label) else {
+        let Some(arg) = self.labeled.get(label) else {
             let err = KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument '{label}'"),
                 vec![self.source_range],

@@ -1,35 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <!--
+
+<head>
+  <meta charset="utf-8" />
+  <!--
         This all-blocking CSP is replaced by the vite html-transform plugin.
 
         We have to use the <meta> tag because the Electron app is hosted over file:// and does not support HTTP headers.
         Reporting functionality is not supported with <meta> tags so we have to get this right.
     -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none';">
 
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="An open-source CAD modeling tool from the future by Zoo."
-    />
-    <link rel="apple-touch-icon" href="/logo192.png" />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="stylesheet" href="./inter/inter.css" />
-    <script
-      defer
-      data-domain="app.zoo.dev"
-      src="https://plausible.corp.zoo.dev/js/script.tagged-events.js"
-    ></script>
-    <title>Zoo Design Studio</title>
-  </head>
-  <body class="body-bg">
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root" class="h-screen overflow-y-auto"></div>
-    <script type="module" src="/src/index.tsx"></script>
-  </body>
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="An open-source CAD modeling tool from the future by Zoo." />
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="stylesheet" href="./fonts/inter/inter.css" />
+  <link rel="stylesheet" href="./fonts/source-code-pro/source-code-variable.css" />
+  <script defer data-domain="app.zoo.dev" src="https://plausible.corp.zoo.dev/js/script.tagged-events.js"></script>
+  <title>Zoo Design Studio</title>
+</head>
+
+<body class="body-bg">
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root" class="h-screen overflow-y-auto"></div>
+  <script type="module" src="/src/index.tsx"></script>
+</body>
+
 </html>

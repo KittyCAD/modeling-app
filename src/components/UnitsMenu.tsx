@@ -1,15 +1,63 @@
 import { Popover } from '@headlessui/react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { changeDefaultUnits, unitLengthToUnitLen } from '@src/lang/wasm'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { codeManager, kclManager, sceneInfra } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { OrthographicCamera } from 'three'
 
 export function UnitsMenu() {
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
+  const { state: modelingState } = useModelingContext()
+  const inSketchMode = modelingState.matches('Sketch')
+
+  const [rulerWidth, setRulerWidth] = useState<number>(16)
+  const [rulerLabelValue, setRulerLabelValue] = useState<number>(1)
+
+  const currentUnit =
+    fileSettings.defaultLengthUnit ?? DEFAULT_DEFAULT_LENGTH_UNIT
+
+  const onCameraChange = useCallback(() => {
+    if (!inSketchMode) {
+      return
+    }
+    const camera = sceneInfra.camControls.camera
+    if (!(camera instanceof OrthographicCamera)) {
+      console.error(
+        'Camera is not an OrthographicCamera, skipping ruler recalculation'
+      )
+      return
+    }
+
+    let rulerWidth = sceneInfra.getPixelsPerBaseUnit(camera)
+    let displayValue = 1
+
+    if (rulerWidth > 150 || rulerWidth < 20) {
+      const k = Math.ceil(Math.log10(rulerWidth / 150))
+      rulerWidth /= Math.pow(10, k)
+      displayValue = 1 / Math.pow(10, k)
+      if (k < 0) {
+        displayValue = Math.round(displayValue) // 1e5 would become something like 1.0000000000000001e+5 without this
+      }
+    }
+    setRulerWidth(rulerWidth)
+    setRulerLabelValue(displayValue)
+  }, [inSketchMode])
+
+  useEffect(() => {
+    const unsubscribers = [
+      sceneInfra.camControls.cameraChange.add(onCameraChange),
+      sceneInfra.baseUnitChange.add(onCameraChange),
+    ]
+    onCameraChange()
+    return () => {
+      unsubscribers.forEach((unsubscriber) => unsubscriber())
+    }
+  }, [onCameraChange])
   useEffect(() => {
     setFileSettings(kclManager.fileSettings)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -25,12 +73,17 @@ export function UnitsMenu() {
         text-xs text-primary bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm 
         border !border-primary/50 rounded-full`}
           >
-            <div className="w-4 h-[1px] bg-primary relative">
+            <div
+              className="w-4 h-[1px] bg-primary relative"
+              style={{ width: inSketchMode ? `${rulerWidth}px` : '' }}
+            >
               <div className="absolute w-[1px] h-[1em] bg-primary left-0 top-1/2 -translate-y-1/2"></div>
               <div className="absolute w-[1px] h-[1em] bg-primary right-0 top-1/2 -translate-y-1/2"></div>
             </div>
             <span className="sr-only">Current units are:&nbsp;</span>
-            {fileSettings.defaultLengthUnit ?? DEFAULT_DEFAULT_LENGTH_UNIT}
+            {inSketchMode
+              ? `${rulerLabelValue > 10000 || rulerLabelValue < 0.0001 ? rulerLabelValue.toExponential() : rulerLabelValue.toString()}${currentUnit}`
+              : currentUnit}
           </Popover.Button>
           <Popover.Panel
             className={`absolute bottom-full right-0 mb-2 w-48 bg-chalkboard-10 dark:bg-chalkboard-90

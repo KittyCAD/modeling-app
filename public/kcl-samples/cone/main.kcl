@@ -1,0 +1,23 @@
+// Cone
+// A cone is defined by it's diameter and height.
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+diameter = 10
+height = 10
+
+// create a sketch for the cone profile on the XY plane
+sketch = startSketchOn(XY)
+
+// create the profile at the top of the cone
+profile = startProfile(sketch, at = [0, height])
+  |> yLine(length = -height)
+  |> xLine(length = diameter / 2)
+  |> close()
+
+// revolve the profile to create the cone
+cone = revolve(profile, axis = Y, angle = 360.0)

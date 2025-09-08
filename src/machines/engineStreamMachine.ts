@@ -260,9 +260,7 @@ export const engineStreamMachine = setup({
 
                 let oldEngineConnection =
                   rootContext.engineCommandManager.engineConnection
-                setTimeout(() => {
-                  rootContext.engineCommandManager.tearDown({ idleMode: true })
-                }, 1000)
+                rootContext.engineCommandManager.tearDown({ idleMode: true })
 
                 let timeoutCheckId: ReturnType<typeof setTimeout>
                 const timeoutEjectId = setTimeout(() => {
@@ -274,7 +272,7 @@ export const engineStreamMachine = setup({
                   timeoutCheckId = setTimeout(() => {
                     if (
                       oldEngineConnection?.state?.type !==
-                      EngineConnectionStateType.Disconnected
+                      EngineConnectionStateType.Paused
                     ) {
                       checkClosed()
                       return
