@@ -25,6 +25,7 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { radToDeg } from 'three/src/math/MathUtils'
 
 import type { GetSketchModePlane } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Path } from '@rust/kcl-lib/bindings/Path'
@@ -3754,19 +3755,27 @@ export class SceneEntities {
     if (isArray(resp)) {
       resp = resp[0]
     }
-
-    const faceInfo =
-      'resp' in resp &&
-      resp.resp.type === 'modeling' &&
-      resp.resp.data.modeling_response?.type === 'get_sketch_mode_plane'
-        ? (resp.resp.data.modeling_response.data as GetSketchModePlane)
-        : ({} as GetSketchModePlane)
+    const singleResp = resp
+    let faceInfo: GetSketchModePlane | undefined
+    if (isModelingResponse(singleResp)) {
+      const mr = singleResp.resp.data.modeling_response
+      if (mr?.type === 'get_sketch_mode_plane') {
+        faceInfo = mr.data
+      }
+    }
     await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: { type: 'sketch_mode_disable' },
     })
-    return faceInfo
+    return (
+      faceInfo ?? {
+        origin: { x: 0, y: 0, z: 0 },
+        x_axis: { x: 1, y: 0, z: 0 },
+        y_axis: { x: 0, y: 1, z: 0 },
+        z_axis: { x: 0, y: 0, z: 1 },
+      }
+    )
   }
 
   drawDashedLine({ from, to }: { from: Coords2d; to: Coords2d }) {

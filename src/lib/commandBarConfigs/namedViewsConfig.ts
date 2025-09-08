@@ -1,10 +1,6 @@
-import type {
-  CameraViewState,
-  Point3d,
-  Point4d,
-  WorldCoordinateSystem,
-  OkModelingCmdResponse,
-} from '@kittycad/lib'
+import type { CameraViewState, Point3d, Point4d, WorldCoordinateSystem } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { isArray } from '@src/lib/utils'
 import toast from 'react-hot-toast'
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
@@ -123,21 +119,21 @@ export function createNamedViewsCommand() {
             cmd: { type: 'default_camera_get_view' },
           })
 
-        if (!(cameraGetViewResponse && 'resp' in cameraGetViewResponse)) {
+        const r = isArray(cameraGetViewResponse)
+          ? cameraGetViewResponse[0]
+          : cameraGetViewResponse
+
+        if (!r) {
           return toast.error('Unable to create named view, websocket failure')
         }
 
-        if (
-          cameraGetViewResponse.resp.type === 'modeling' &&
-          'modeling_response' in cameraGetViewResponse.resp.data
-        ) {
-          if (cameraGetViewResponse.success) {
+        const rr = r
+        if (isModelingResponse(rr)) {
+          if (rr.success) {
             if (
-              cameraGetViewResponse.resp.data.modeling_response.type ===
-              'default_camera_get_view'
+              rr.resp.data.modeling_response.type === 'default_camera_get_view'
             ) {
-              const view =
-                cameraGetViewResponse.resp.data.modeling_response.data
+              const view = rr.resp.data.modeling_response.data
               const requestedView = cameraViewStateToNamedView(
                 data.name,
                 view.view

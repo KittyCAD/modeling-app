@@ -1,8 +1,5 @@
-import type {
-  CameraDragInteractionType,
-  CameraViewState,
-  OkModelingCmdResponse,
-} from '@kittycad/lib'
+import type { CameraDragInteractionType, CameraViewState } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isArray } from '@src/lib/utils'
 
 import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
@@ -1002,15 +999,10 @@ export class CameraControls {
 
     // Check valid response from the engine.
     const singleResponse = isArray(response) ? response[0] : response
-    const noValidResponse =
-      !singleResponse?.success || !('resp' in singleResponse)
-
-    if (noValidResponse) {
+    if (!singleResponse || !isModelingResponse(singleResponse)) {
       return new Error('Failed to get camera view state: no valid response.')
     }
-
-    // Ensure we have a modeling response variant
-    if (singleResponse.resp.type !== 'modeling') {
+    if (!isModelingResponse(singleResponse)) {
       return new Error('Failed to get camera view state: wrong response type.')
     }
     const data = singleResponse.resp.data
@@ -1023,7 +1015,7 @@ export class CameraControls {
     }
 
     // Check that we have the expected response type and the nested data.
-    const modelingResponse = data.modeling_response as OkModelingCmdResponse
+    const modelingResponse = data.modeling_response
     const noData = !('data' in modelingResponse)
     const wrongResponseType =
       modelingResponse.type !== 'default_camera_get_view'
@@ -1238,12 +1230,11 @@ export class CameraControls {
             cmd: { type: 'default_camera_get_view' },
           })
         if (!cameraViewStateResponse) return
-        if (
-          'resp' in cameraViewStateResponse &&
-          cameraViewStateResponse.resp.type === 'modeling'
-        ) {
-          const mr = cameraViewStateResponse.resp.data
-            .modeling_response as OkModelingCmdResponse
+        const r = isArray(cameraViewStateResponse)
+          ? cameraViewStateResponse[0]
+          : cameraViewStateResponse
+        if (r && isModelingResponse(r)) {
+          const mr = r.resp.data.modeling_response
           if ('data' in mr && 'view' in mr.data) {
             this.oldCameraState = mr.data.view
           }

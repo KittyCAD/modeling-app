@@ -1812,8 +1812,7 @@ export class EngineCommandManager extends EventTarget {
         cmd_type: pending?.command?.cmd?.type,
       })
 
-      const modelingResponse = message.resp.data
-        .modeling_response as OkModelingCmdResponse
+      const modelingResponse = message.resp.data.modeling_response
 
       Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
         (callback) => callback(modelingResponse)
@@ -1846,7 +1845,7 @@ export class EngineCommandManager extends EventTarget {
               data: {
                 type: 'modeling',
                 data: {
-                  modeling_response: response.response as OkModelingCmdResponse,
+                  modeling_response: response.response,
                 },
               },
               id: commandId,
@@ -1856,7 +1855,7 @@ export class EngineCommandManager extends EventTarget {
           this.responseMap[commandId] = {
             type: 'modeling',
             data: {
-              modeling_response: response.response as OkModelingCmdResponse,
+              modeling_response: response.response,
             },
           }
         }

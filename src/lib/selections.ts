@@ -1,6 +1,7 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type { WebSocketRequest, OkModelingCmdResponse } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D, Object3DEventMap } from 'three'
 import { Mesh } from 'three'
 
@@ -733,12 +734,11 @@ export async function sendSelectEventToEngine(
   if (isArray(res)) {
     res = res[0]
   }
-  if (
-    'resp' in res &&
-    res.resp.type === 'modeling' &&
-    res.resp.data.modeling_response.type === 'select_with_point'
-  )
-    return res.resp.data.modeling_response.data
+  const singleRes = res
+  if (isModelingResponse(singleRes)) {
+    const mr = singleRes.resp.data.modeling_response
+    if (mr.type === 'select_with_point') return mr.data
+  }
   return { entity_id: '' }
 }
 
