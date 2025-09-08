@@ -1,0 +1,22 @@
+/// GD&T annotation specifying how flat faces should be.
+///
+/// ```kcl
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5, tagStart = $face1)
+/// flatness(faces = [face1], tolerance = 0.1mm)
+/// ```
+@(impl = std_rust, experimental = true)
+export fn flatness(
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces: [TaggedFace; 1+],
+  /// The amount of deviation from a perfect plane that is acceptable.
+  @(includeInSnippet = true)
+  tolerance: number(Length)) {
+}
