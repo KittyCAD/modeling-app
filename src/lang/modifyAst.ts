@@ -723,7 +723,6 @@ export function deleteSegmentFromPipeExpression(
       }
       return _modifiedAst
     }
-    // unhandled error
     return new Error('Unhandled type')
   }
   const pipeInPathIndex = pathToNode.findIndex(
