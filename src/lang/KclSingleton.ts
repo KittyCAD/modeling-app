@@ -133,18 +133,18 @@ export class KclManager extends EventTarget {
 
   engineCommandManager: ConnectionManager
 
-  private _isExecutingCallback: (arg: boolean) => void = () => {}
-  private _astCallBack: (arg: Node<Program>) => void = () => {}
+  private _isExecutingCallback: (arg: boolean) => void = () => { }
+  private _astCallBack: (arg: Node<Program>) => void = () => { }
   private _variablesCallBack: (
     arg: {
       [key in string]?: KclValue | undefined
     }
-  ) => void = () => {}
-  private _logsCallBack: (arg: string[]) => void = () => {}
-  private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
-  private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
-  private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
-  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
+  ) => void = () => { }
+  private _logsCallBack: (arg: string[]) => void = () => { }
+  private _kclErrorsCallBack: (errors: KCLError[]) => void = () => { }
+  private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => { }
+  private _wasmInitFailedCallback: (arg: boolean) => void = () => { }
+  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => { }
 
   get ast() {
     return this._ast
@@ -446,7 +446,7 @@ export class KclManager extends EventTarget {
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
       // Exit early if we are already executing.
-
+      console.warn('execution done1!')
       return
     }
 
@@ -460,12 +460,15 @@ export class KclManager extends EventTarget {
     await this.ensureWasmInit()
 
     const codeThatExecuted = this.singletons.codeManager.code
+    console.warn('executing ast')
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.singletons.codeManager.currentFilePath || undefined,
       rustContext: this.singletons.rustContext,
     })
+    console.warn('execution done2!')
     // Program was not interrupted, setup the scene
+    console.log(logs, errors, execState, isInterrupted)
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
       this.addDiagnostics(
@@ -482,6 +485,7 @@ export class KclManager extends EventTarget {
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
       this._cancelTokens.delete(currentExecutionId)
+      console.warn('execution done3!')
       return
     }
 
@@ -526,6 +530,7 @@ export class KclManager extends EventTarget {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
+    console.warn('execution done!')
   }
 
   /**
@@ -593,7 +598,6 @@ export class KclManager extends EventTarget {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
       // the pre-execution state should be restored.
       this.clearAst()
-
       return
     }
     clearTimeout(this.executionTimeoutId)
@@ -839,8 +843,8 @@ function setSelectionFilter(
 ) {
   const { engineEvents } = selectionsToRestore
     ? handleSelectionBatch({
-        selections: selectionsToRestore,
-      })
+      selections: selectionsToRestore,
+    })
     : { engineEvents: undefined }
   if (!selectionsToRestore || !engineEvents) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises

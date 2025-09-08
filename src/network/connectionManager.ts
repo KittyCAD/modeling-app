@@ -47,12 +47,12 @@ import type { KclManager } from '@src/lang/KclSingleton'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
+import { a } from 'vitest/dist/chunks/suite.d.FvehnV49'
 
 export class ConnectionManager extends EventTarget {
   started: boolean
-  idleMode: boolean
   inSequence = 1
-  _camControlsCameraChange = () => {}
+  _camControlsCameraChange = () => { }
   id: string
 
   /**
@@ -108,10 +108,10 @@ export class ConnectionManager extends EventTarget {
       [localUnsubscribeId: string]: (a: any) => void
     }
   } = {} as any
-  _commandLogCallBack: (command: CommandLog[]) => void = () => {}
+  _commandLogCallBack: (command: CommandLog[]) => void = () => { }
   // Rogue runtime dependency from the modeling machine. hope it is there!
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
-    (() => {}) as any
+    (() => { }) as any
   // Any event listener into this map to be cleaned up later
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
@@ -119,7 +119,6 @@ export class ConnectionManager extends EventTarget {
   constructor(settings?: SettingsViaQueryString) {
     super()
     this.started = false
-    this.idleMode = false
     this.allEventListeners = new Map()
     this.id = uuidv4()
 
@@ -163,6 +162,7 @@ export class ConnectionManager extends EventTarget {
         )
       )
     }
+    console.warn('starting engine connection')
     this.started = true
 
     if (this.connection) {
@@ -334,6 +334,7 @@ export class ConnectionManager extends EventTarget {
     // Engine is ready to start sending events!
     // Gotcha: The other listenerse above need to be initialized otherwise this will halt forver.
     await onEngineConnectionOpened()
+    Promise.resolve('start completed')
   }
 
   /**
@@ -466,7 +467,7 @@ export class ConnectionManager extends EventTarget {
       this.connection.unreliableDataChannel &&
       !forceWebsocket
     ) {
-      ;(cmd as any).sequence = this.outSequence
+      ; (cmd as any).sequence = this.outSequence
       this.outSequence++
       this.connection.unreliableSend(command)
       return Promise.resolve(null)
@@ -491,7 +492,7 @@ export class ConnectionManager extends EventTarget {
       command.cmd.type === 'default_camera_look_at' ||
       command.cmd.type === ('default_camera_perspective_settings' as any)
     ) {
-      ;(cmd as any).sequence = this.outSequence++
+      ; (cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
     return this.sendCommand(
@@ -531,9 +532,13 @@ export class ConnectionManager extends EventTarget {
   ): Promise<[Models['WebSocketResponse_type']]> {
     if (!this.connection) {
       return Promise.reject(
-        new Error('sendCommand - this.connection is undefined')
+        new Error(`sendCommand - this.connection is undefined. id: ${id}, message:${message}, isSceneCommand:${isSceneCommand}`)
       )
     }
+
+    // We can send pendingCommands before we can send them to the engine and they will be infinitely awaited on when the next execution loop runs.
+    // What the fuck?
+    await this.connection.deferredConnection?.promise
 
     const { promise, resolve, reject } = promiseFactory<any>()
     this.pendingCommands[id] = {
@@ -786,29 +791,28 @@ export class ConnectionManager extends EventTarget {
     this.connection.send(resizeCmd)
   }
 
-  tearDown(opts?: { idleMode: boolean }) {
+  tearDown() {
     if (!this.started) {
       EngineDebugger.addLog({
         label: 'connectionManager',
         message:
           'you called tearDown without ever calling start(), exiting early.',
       })
-      return
     }
 
     if (!this.connection) {
-      console.error(
-        'unable to tear down connectionManager, connection is missing'
-      )
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message:
+          'unable to tear down this.connection, connection is missing',
+      })
     }
 
-    this.idleMode = opts?.idleMode ?? false
-
     if (this.connection) {
-      this.connection.deferredConnection?.reject(false)
-      this.connection.deferredMediaStreamAndWebrtcStatsCollector?.reject(false)
-      this.connection.deferredPeerConnection?.reject(false)
-      this.connection.deferredSdpAnswer?.reject(false)
+      this.connection.deferredConnection?.reject('tearingDown connectionManager')
+      this.connection.deferredMediaStreamAndWebrtcStatsCollector?.reject('tearingDown connectionManager')
+      this.connection.deferredPeerConnection?.reject('tearingDown connectionManager')
+      this.connection.deferredSdpAnswer?.reject('tearingDown connectionManager')
       for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
         pending.reject([
           {
@@ -816,7 +820,7 @@ export class ConnectionManager extends EventTarget {
             errors: [
               {
                 error_code: 'connection_problem',
-                message: 'no connection to send on, tearing down',
+                message: `no connection to send on, connection manager called tearDown(). cmdId: ${cmdId}`,
               },
             ],
           },
@@ -888,47 +892,47 @@ export class ConnectionManager extends EventTarget {
       ([event, eventListenerTracked]: [string, IEventListenerTracked]) => {
         const type = eventListenerTracked.type
 
-        if (!this.connection) {
-          console.error('unable to remove event listener on this.connection')
-          return
-        }
-
-        if (!this.connection.peerConnection) {
-          console.error(
-            'unable to remove event listener on this.connection.peerConnection'
-          )
-          return
-        }
-
-        if (!this.connection.websocket) {
-          console.error(
-            'unable to remove event listener on this.connection.websocket'
-          )
-          return
-        }
-
-        if (!darkModeMatcher) {
-          console.error('unable to remove event listener on darkModeMatcher')
-          return
-        }
-
         if (type === 'connection') {
-          this.connection.removeEventListener(
+          if (!this.connection) {
+            EngineDebugger.addLog({
+              label: 'connectionManager',
+              message: 'removeAllEventListeners - connection event listener unable to be removed.',
+            })
+          }
+          this.connection?.removeEventListener(
             eventListenerTracked.event,
             eventListenerTracked.callback
           )
         } else if (type === 'darkModeMatcher') {
-          darkModeMatcher.removeEventListener(
+          if (!darkModeMatcher) {
+            EngineDebugger.addLog({
+              label: 'connectionManager',
+              message: 'removeAllEventListeners - darkModeMatcher event listener unable to be removed.',
+            })
+          }
+          darkModeMatcher?.removeEventListener(
             eventListenerTracked.event,
             eventListenerTracked.callback
           )
         } else if (type === 'peerConnection') {
-          this.connection.peerConnection.removeEventListener(
+          if (!this.connection?.peerConnection) {
+            EngineDebugger.addLog({
+              label: 'connectionManager',
+              message: 'removeAllEventListeners - peerConnection event listener unable to be removed.',
+            })
+          }
+          this.connection?.peerConnection?.removeEventListener(
             eventListenerTracked.event,
             eventListenerTracked.callback
           )
         } else if (type === 'websocket') {
-          this.connection.websocket.removeEventListener(
+          if (!this.connection?.websocket) {
+            EngineDebugger.addLog({
+              label: 'connectionManager',
+              message: 'removeAllEventListeners - websocket event listener unable to be removed.',
+            })
+          }
+          this.connection?.websocket?.removeEventListener(
             eventListenerTracked.event,
             eventListenerTracked.callback
           )

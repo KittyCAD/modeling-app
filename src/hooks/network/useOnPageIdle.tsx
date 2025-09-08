@@ -56,6 +56,7 @@ export const useOnPageIdle = ({
         timeoutStart.current = null
       } else if (timeoutStart.current) {
         const elapsed = Date.now() - timeoutStart.current
+        console.log('time to idle', 30 - Math.floor(elapsed / 1000))
         // Don't pause if we're already disconnected.
         if (
           // It's unnecessary to once again setup an event listener for

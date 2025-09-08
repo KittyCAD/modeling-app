@@ -75,21 +75,6 @@ export const createOnEngineConnectionOpened = ({
   setStreamIsReady: (isStreamReady: boolean) => void
 }) => {
   const onEngineConnectionOpened = async () => {
-    try {
-      EngineDebugger.addLog({
-        label: 'onEngineConnectionOpened',
-        message: 'clearing scene and busting cache',
-      })
-      await rustContext.clearSceneAndBustCache(jsAppSettings, path)
-    } catch (e) {
-      console.warn('unknown error in onEngineConnectionOpened:', e)
-      EngineDebugger.addLog({
-        label: 'onEngineConnectionOpened',
-        message: 'error',
-        metadata: { e },
-      })
-    }
-
     // Set the stream's camera projection type
     // We don't send a command to the engine if in perspective mode because
     // for now it's the engine's default.

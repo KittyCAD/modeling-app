@@ -2,8 +2,10 @@ import type { MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import {
+  codeManager,
   engineCommandManager,
   kclManager,
+  rustContext,
   useSettings,
 } from '@src/lib/singletons'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -22,6 +24,10 @@ import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
+import { EngineDebugger } from '@src/lib/debugger'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+
+let didUseEffectRunOnce = false
 
 const onEngineConnectionReadyForRequests = ({
   authToken,
@@ -56,12 +62,22 @@ const onEngineConnectionReadyForRequests = ({
         })
         .then((result) => {
           if (!videoRef.current) {
-            console.error('Unable to reference the video')
+            EngineDebugger.addLog({
+              label: 'ConnectionStream.tsx',
+              message:
+                'Unable to reference the video',
+            })
+            engineCommandManager.tearDown()
             return
           }
 
           if (!engineCommandManager.connection?.mediaStream) {
-            console.error('Unable to reference the mediaStream')
+            EngineDebugger.addLog({
+              label: 'ConnectionStream.tsx',
+              message:
+                'Unable to reference the mediaStream, calling tearDown()',
+            })
+            engineCommandManager.tearDown()
             return
           }
 
@@ -72,8 +88,9 @@ const onEngineConnectionReadyForRequests = ({
         .then(() => {
           kclManager
             .executeCode()
-            .catch(trap)
-            .then(() =>
+            .then((result) => {
+              console.log('result', result)
+              console.log('running zoom to fit!')
               // It makes sense to also call zoom to fit here, when a new file is
               // loaded for the first time, but not overtaking the work kevin did
               // so the camera isn't moving all the time.
@@ -87,10 +104,13 @@ const onEngineConnectionReadyForRequests = ({
                   animated: false, // don't animate the zoom for now
                 },
               })
+            }
             )
             .catch(trap)
         })
-        .catch(reportRejection)
+        .catch((error) => {
+          console.error('Failed to start engine connection', error)
+        })
     } else {
       console.error('DOM is not initialized for the stream.')
       return
@@ -172,13 +192,16 @@ export const ConnectionStream = (props: {
 
   // Run once on initialization
   useEffect(() => {
-    onEngineConnectionReadyForRequests({
-      authToken: props.authToken || '',
-      videoWrapperRef,
-      setAppState,
-      videoRef,
-      setIsSceneReady,
-    })
+    if (!didUseEffectRunOnce) {
+      didUseEffectRunOnce = true
+      onEngineConnectionReadyForRequests({
+        authToken: props.authToken || '',
+        videoWrapperRef,
+        setAppState,
+        videoRef,
+        setIsSceneReady,
+      })
+    }
   }, [props.authToken, setAppState])
 
   // TODO: Handle 15 second connection window
@@ -191,7 +214,7 @@ export const ConnectionStream = (props: {
   useOnPageExit({
     callback: () => {
       // reset the ability to initialize
-      didInit = false
+      engineCommandManager.started = false
     },
   })
   useOnPageResize({ videoWrapperRef, videoRef, canvasRef })
@@ -201,13 +224,18 @@ export const ConnectionStream = (props: {
 
       if (!props.authToken) return
       if (engineCommandManager.started) return
+      // Trick the executor to cache bust scene.
 
-      onEngineConnectionReadyForRequests({
-        authToken: props.authToken || '',
-        videoWrapperRef,
-        setAppState,
-        videoRef,
-        setIsSceneReady,
+      jsAppSettings().then((result) => {
+        rustContext.clearSceneAndBustCache(result, codeManager.currentFilePath || undefined)
+      }).then(() => {
+        onEngineConnectionReadyForRequests({
+          authToken: props.authToken || '',
+          videoWrapperRef,
+          setAppState,
+          videoRef,
+          setIsSceneReady,
+        })
       })
     },
   })
