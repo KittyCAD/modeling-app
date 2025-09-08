@@ -22,14 +22,12 @@ export type SketchSolveMachineEvent =
             kind: 'coincident' | 'equalLength' // TODO get types from rust
           }
     }
-  | { type: 'drag-start' }
   | { type: 'drag-end' }
   | { type: 'exit sketch mode' }
-  | { type: 'Add draft segment' }
-  | { type: 'add draft points or selections' }
   | { type: 'take action' }
   | { type: 'update selection' }
-  | { type: 'finalise segment' }
+  | { type: 'create-segment-start' }
+  | { type: 'move-edit-start' }
 
 export const sketchSolveMachine = setup({
   types: {
@@ -62,6 +60,9 @@ export const sketchSolveMachine = setup({
     'firing-action': fromPromise(async () => {
       // Firing action logic
     }),
+    'move-edit-actor': fromPromise(async () => {
+      // Move edit logic
+    }),
   },
   guards: {
     'is create tool': ({ context }) => {
@@ -85,7 +86,7 @@ export const sketchSolveMachine = setup({
     notifyParentOfDragEnd: sendParent({ type: 'drag-end' }),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiAYRwEMA7GPAFUJIG0AGALqJQAB0KwAlhkmFWIkAA9EARgCsAdgB0ANgCcAJgDMatXqN6AHGp0AaEAE9EAWiNHLWozst6N-fpY6ACy+BjoAvuH2aJi4BCTkVDT0YIrSeLDo2PgAtskCwkgg4lIycgrKCM5h-Fr8akFqgfwq-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-PRXwy+ZJQ1BUPrq+ohk+JeC+dyVarskxjDGDyfe-qBGMPJINNtz9egmhdMiOdocxgDogkO6pksx2NpZaAh6KTu4zukeo3QHsRjjAaCYKwtoLA7LMBYVCwQvkpkiJEIAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiAYRwEMA7GPAFUJIG0AGALqJQAB0KwAlhkmFWIkAA9EARgCsAdgB0ANgCcAJgDMatXqN6AHGp0AaEAE9EAWiNHLWozst6N-fpY6ACy+BjoAvuH2aJi4BCTkVDT0YIrSeLDo2PgAtskCwkgg4lIycgrKCM5h-Fr8akFqgfwq-CYW9k5VKkG1am7BKkYGavw6TUGR0VlxRGQU1LRakqzSdIqwGMwYYFrMAGY7AE4AFDr+AJR0Mdnx80lLK9IFCiXSsvJFlc7afhpemiMKkCQMslk6LgMQW0BnUBj0bT0QQMPksUxAN1mCQWyS0YAAjgBXSSiFZQPAYHjEOgvIpvMqfUCVNwGLQaUZGfgadkqWENCFVEa1DQhbl6fr8PQ9bzozH4OaJRa7AnE0nsClUmkqQpiCTvcpfRBGIIqXRWXo9YxBMFBAVuLTA2GBYwaME6DQjWUzeXYh7Kokkskakg0gw64p6hkVI3BTwhFQIqH8ILIzR2oG6KGmE0egwogxe2I++5KrRYI5gbYUSkkPBPDB0cuVnbOWBgKA5MCsDCtrZHDC03WlD7RhCoh0enTuqeWE3ugXVNSs91ef46dxjHqTKIY713RW45hYBnB6mE0QQKsZMDEMDHj6DiPDg1MxBgjwqblcyXwvz9O21OYTp-sEQTjEYGiFrcCo4ksR4njWZ4Xleba3veci8NqryRiOhoIOcehaLCGjqF4U76CEAoqAmWjmOuaitA0KbJhEO5yvusG7E22xkq27adt2dAQHIuwrKQhDoFo7EwX6ZYVjx7B8R2XYYAgYmEFgPEYUIj70rhr4IEiai0VY3jIpy1q+AuwzLm0KhTv0nLeJBbF7jJpbcTIiltspglgEcRyEEcWiiMQ2z7EFORSW5voefJXlQEpAmqepmkMgUuk4S+SiqI6WiWPCwxNIVZjWXmuh2Q5bhjJYLnTEWHGyZA7zsEJInLKw4mSdJsW4s1CVqZ1GlaawGVCNhz6MjlCCtN4DrQsVpimMaApLqyhihGBhgaDoBauQ17l9RALVQHQ-mBcFoXhZF0UHb1Sz9WSg3iWlD46eNdJZVNlTWKaphglKljGrOeireVG0eltBg7Xt9XQfduz7JIRxBvBHxtawolDd1MUlriSMo+qaNyM9w3pe94Z6dllStOK+U+PZxpgdYdiOC41pEfZ0L8MYOgJu6KhQVieNLATqPoawZ0BUFIVhRgEVHFFPUi4jyPiwypOvdpgiZZNo68n4nhWKi1pBJyyYLhzsLBH4vP8yRQvFgeSx5IkiF0Oel47NeaHk5TX2jucOi0caPTGq6ejurabMIBYQREfoYSjFtQOO41pau9WmpbOgeDE6NH1Dvq32qMYrJCjYWY8xoVG+A64rumE3KzpoaL7fDKtaJnp50DnFD55h-t63hu2EX46jBCM1HWKDMcJtoCY2JOzeNK6aeHS7hBu5qmfOP1vbMP2uvF6OgTB8iO0puyoyR+CMcmqaKZmdK8IBG3O6sMk8BFMrztgBNJ88KuACHUBoTRzitHaLPLozhoRGE5j4QwrReRL3XgjDq0gAFRiAdRbQccAg3yaBKIwC4oSEQlIYJoegEReG3HDYWf88RpASlg-S01Fy1GBDmCyb9hiWw8DtJEKIirshhmgzuKpAzqkQqw6mqhNB1EnuuSO9RzDWFISELQFCRiILaMEcRjDPJZ1rPWWRJcEAkW0AxYIyYCrmH8NAyE-QtDQmoRYDQRkCIGM4nsCWp4zGjkhlooY1DeiznGP8ACDoRhShCFPawDFYa7jup3TyvEfLJQCXhai0MtH9G5K0DxPJSEkXyhyS0W5kyC3bgwnxj12BZIMrNYybRq7eECPZJcdpaqgM5B6MY4o270Kdj4sWRMJaNOmryBEDpRgNB8NCQpd8ujB36LOEYroH4ojAt42S3cZGfWHgZIJ9RkxjAGO4ZEdoURaO8ECHaHJRjjEiJEIAA */
   id: 'Sketch Solve Mode',
   context: ({ input }) => ({
     parentContext: input.parentContext,
@@ -107,33 +108,25 @@ export const sketchSolveMachine = setup({
     },
 
     'equiping tool': {
-      always: [
-        {
-          target: 'create tool init',
-          guard: 'is create tool',
-        },
-        {
-          target: 'action tool',
-          guard: 'is action tool',
-          reenter: true,
-        },
-        {
-          target: 'select tool',
-          reenter: true,
-        },
-      ],
+      always: [{
+        target: 'create tool init',
+        guard: 'is create tool',
+      }, {
+        target: 'action tool',
+        guard: 'is action tool',
+        reenter: true,
+      }, {
+        target: "move tool",
+        reenter: true,
+      }],
     },
 
     'create tool init': {
       on: {
-        'add draft points or selections': [
-          {
-            target: 'show draft segment',
-            guard: 'can add draft',
-            reenter: true,
-          },
-          'create tool init',
-        ],
+        "create-segment-start": {
+          target: "creating-segment",
+          reenter: true
+        }
       },
     },
 
@@ -149,54 +142,19 @@ export const sketchSolveMachine = setup({
       },
     },
 
-    'select tool': {
-      on: {
-        'take action': 'taking action',
-        'update selection': 'select tool',
-        'drag-start': 'dragging',
-      },
-    },
-
-    'show draft segment': {
-      on: {
-        'finalise segment': 'finalising segment',
-      },
-
+    "creating-segment": {
       invoke: {
         src: 'draft-animation-actor',
-      },
+        onDone: "create tool init",
+        onError: "create tool init"
+      }
     },
 
-    'finalising segment': {
+    editing: {
       invoke: {
-        src: 'finalising-segment',
-        onError: 'create tool init',
-        onDone: 'create tool init',
-      },
-    },
-
-    'taking action': {
-      invoke: {
-        src: 'take-action',
-        onDone: 'select tool',
-        onError: 'select tool',
-      },
-    },
-
-    dragging: {
-      invoke: {
-        src: 'dragAnimationActor',
-      },
-      on: {
-        'drag-end': 'finishing drag',
-      },
-    },
-
-    'finishing drag': {
-      invoke: {
-        src: 'finalizeDrag',
-        onDone: 'select tool',
-        onError: 'select tool',
+        src: "move-edit-actor",
+        onError: "move tool",
+        onDone: "move tool"
       },
     },
 
@@ -207,6 +165,24 @@ export const sketchSolveMachine = setup({
         onError: 'action tool',
       },
     },
+
+    "move tool": {
+      on: {
+        "update selection": "move tool",
+        "take action": [{
+          target: "firing action",
+          reenter: true,
+          guard: "should action be taken"
+        }, {
+          target: "action tool",
+          reenter: true
+        }],
+        "move-edit-start": {
+          target: "editing",
+          reenter: true
+        }
+      },
+    }
   },
   initial: 'init',
   entry: () => {
