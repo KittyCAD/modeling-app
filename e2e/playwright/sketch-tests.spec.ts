@@ -112,7 +112,7 @@ test.describe('Sketch tests', () => {
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn(-XZ)
+        `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0.0, 0.0])`
       )
     })
