@@ -1,0 +1,45 @@
+// Rectangle Table
+// Simple metal table with rectangular tabletop and four legs with a square section
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// Parameters
+tableHeight = 750
+tableLength = 1500
+tableWidth = 600
+tableTopThickness = 40
+legThickness = 40
+
+// Derived parameters
+legHeight = tableHeight - tableTopThickness
+
+// Tabletop
+tableTopPlane = offsetPlane(XY, offset = tableHeight)
+tableTopSketch = startSketchOn(tableTopPlane)
+tableTopProfile = startProfile(tableTopSketch, at = [0, 0])
+  |> yLine(length = tableLength)
+  |> xLine(length = tableWidth)
+  |> yLine(length = -tableLength)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+tableTopExtrude = extrude(tableTopProfile, length = -tableTopThickness)
+
+// Leg
+legSketch = startSketchOn(XY)
+legProfile = startProfile(legSketch, at = [0, 0])
+  |> yLine(length = legThickness)
+  |> xLine(length = legThickness)
+  |> yLine(length = -legThickness)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+legExtrude = extrude(legProfile, length = legHeight)
+
+leg2 = clone(legExtrude)
+  |> translate(x = tableWidth - legThickness, y = 0, z = 0)
+leg3 = clone(legExtrude)
+  |> translate(x = 0, y = tableLength - legThickness, z = 0)
+leg4 = clone(legExtrude)
+  |> translate(x = tableWidth - legThickness, y = tableLength - legThickness, z = 0)

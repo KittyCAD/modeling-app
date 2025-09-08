@@ -1,0 +1,175 @@
+// Artemis SLS Rocket
+// Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes
+
+
+
+
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
+
+// RS-25 engine (x4)
+// Artemis uses four RS-25s — staged-combustion engines flight-proven on over 135 space shuttle flights.
+// visible lower black part (the nozzle extension) is roughly 2.9 meters tall and 2.4 meters wide at the base
+rs25EngineSketch = startSketchOn(XZ)
+rs25EngineProfile = startProfile(rs25EngineSketch, at = [0, 0])
+  |> xLine(length = -1.2)
+  |> arc(interiorAbsolute = [-1, 1.5], endAbsolute = [-0.6, 2.9])
+  |> xLine(length = 0.6)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+rs25EngineBody = revolve(rs25EngineProfile, angle = 360, axis = Y)
+rs25EnginePaintwork = appearance(rs25EngineBody, color = "#080808")
+rs25EngineOne = translate(
+  rs25EngineBody,
+  x = 2,
+  y = 2,
+  z = 0,
+)
+rs25EngineTwo = clone(rs25EngineBody)
+rs25EngineTwoRotate = rotate(
+  rs25EngineTwo,
+  roll = 0,
+  pitch = 0,
+  yaw = 90,
+)
+rs25EngineThree = clone(rs25EngineBody)
+rs25EngineThreeRotate = rotate(
+  rs25EngineThree,
+  roll = 0,
+  pitch = 0,
+  yaw = 180,
+)
+rs25EngineFour = clone(rs25EngineBody)
+rs25EngineFourRotate = rotate(
+  rs25EngineFour,
+  roll = 0,
+  pitch = 0,
+  yaw = 270,
+)
+
+// Engine Section
+// Outer diameter: 8.4 meters (27.6 feet) — same as the rest of the core stage
+// Height (engine section only): approximately 10 meters (33 feet)
+engineSectionPlane = offsetPlane(XY, offset = 2.9)
+engineSectionSketch = startSketchOn(engineSectionPlane)
+engineSectionProfile = circle(
+  engineSectionSketch,
+  center = [0, 0],
+  radius = 8.4 / 2,
+  tag = $engineSectionLowerSegment,
+)
+engineSectionBody = extrude(engineSectionProfile, length = 10 - 2.9, tagStart = $capStart001)
+engineSectionLowerEdge = chamfer(
+  engineSectionBody,
+  length = 0.5,
+  tags = [
+    getCommonEdge(faces = [engineSectionLowerSegment, capStart001])
+  ],
+)
+engineSectionPaintwork = appearance(engineSectionBody, color = "#ffffff")
+
+// Core Stage
+// The core stage measures 213 feet (65 meters) long by 28 feet (8.4 meters) in diameter.
+coreStageSketch = startSketchOn(XZ)
+coreStageProfile = startProfile(coreStageSketch, at = [0, 10])
+  |> xLine(length = -4.2)
+  |> yLine(length = 35)
+  |> yLine(length = 2)
+  |> yLine(length = 6)
+  |> line(endAbsolute = [-4.2, 56])
+  |> line(endAbsolute = [-2.5, 65]) // Launch vehicle stage adapter
+  |> xLine(length = 2.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+coreStageBody = revolve(coreStageProfile, angle = 360, axis = Y)
+coreStagePaintwork = appearance(coreStageBody, color = "#ff9500")
+
+// ICPS
+// Height 13.7, Diameter 5.0
+icpsSectionPlane = offsetPlane(XY, offset = 65)
+icpsSectionSketch = startSketchOn(icpsSectionPlane)
+icpsSectionProfile = circle(icpsSectionSketch, center = [0, 0], radius = 5 / 2)
+icpsSectionBody = extrude(icpsSectionProfile, length = 4)
+icpsSectionPaintwork = appearance(icpsSectionBody, color = "#ffffff")
+
+// ESA Service Module
+// Height 4, Diameter 4.0
+esaServiceModulePlane = offsetPlane(XY, offset = 69)
+esaServiceModuleSketch = startSketchOn(esaServiceModulePlane)
+esaServiceModuleProfile = circle(esaServiceModuleSketch, center = [0, 0], radius = 5 / 2)
+esaServiceModuleBody = extrude(esaServiceModuleProfile, length = 4)
+esaServiceModulePaintwork = appearance(esaServiceModuleBody, color = "#ffffff")
+
+// Orion Crew Module
+orionCrewModuleSketch = startSketchOn(XZ)
+orionCrewModuleProfile = startProfile(orionCrewModuleSketch, at = [0, 73.5])
+  |> xLine(length = -2.2)
+  |> line(end = [1.4, 2.8])
+  |> xLine(length = 0.8)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+orionCrewModuleBody = revolve(orionCrewModuleProfile, angle = 360, axis = Y)
+orionCrewModulePaintwork = appearance(orionCrewModuleBody, color = "#0a0a0a")
+
+// Antenna Mast
+antennaSketch = startSketchOn(XZ)
+antennaProfile = startProfile(antennaSketch, at = [0, 81])
+  |> xLine(length = -0.3)
+  |> yLine(length = 7)
+  |> line(end = [0.3, 0.3])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+antennaBody = revolve(antennaProfile, angle = 360, axis = Y)
+antennaPaintwork = appearance(antennaBody, color = "#ffffff")
+
+// Solid rocket booster
+// The SLS rocket booster is the biggest and most powerful solid propellant booster ever built for flight.
+// Height: 54 meters / Diameter: 3.71 meters
+solidRocketBoosterSketch = startSketchOn(XZ)
+solidRocketBoosterProfile = startProfile(solidRocketBoosterSketch, at = [0, 0])
+  |> xLine(length = -2)
+  |> line(end = [0.4, 1.5])
+  |> line(end = [-0.8, 0.2])
+  |> line(endAbsolute = [-1.8, 3.2])
+  |> yLine(length = 1)
+  |> yLine(length = 3)
+  |> yLine(length = 1)
+  |> yLine(length = 1)
+  |> yLine(length = 1)
+  |> yLine(length = 1)
+  |> yLine(length = 1)
+  |> yLine(length = 1)
+  |> yLine(length = 5)
+  |> yLine(length = 8)
+  |> yLine(length = 8)
+  |> yLine(length = 8)
+  |> yLine(length = 5)
+  |> yLine(length = 1)
+  |> line(endAbsolute = [-1.8, 50])
+  |> line(endAbsolute = [0, 54])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+solidRocketBoosterBody = revolve(solidRocketBoosterProfile, angle = 360, axis = Y)
+solidRocketBoosterBodyPaintwork = appearance(solidRocketBoosterBody, color = '#FFFFFF')
+solidRocketBoosterBodyLeft = translate(
+  solidRocketBoosterBody,
+  x = 6.2,
+  y = 0,
+  z = 0,
+)
+solidRocketBoosterBodyClone = clone(solidRocketBoosterBody)
+solidRocketBoosterRight = rotate(
+  solidRocketBoosterBodyClone,
+  roll = 0,
+  pitch = 0,
+  yaw = 180,
+)
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 72.98])
+  |> xLine(length = -2.49)
+  |> arc(interiorAbsolute = [-1.98, 75.66], endAbsolute = [-1.11, 77.64])
+  |> line(end = [0.8, 3.36])
+  |> xLine(length = 0.31)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(profile001, angle = 360, axis = Y)
+  |> appearance(%, color = '#FFFFFF')

@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart split-washer-spring-version.kcl
+extension: md
+snapshot_kind: binary
+---

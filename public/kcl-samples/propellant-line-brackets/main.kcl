@@ -1,0 +1,126 @@
+// Propellant Line Bracket
+// A propellant line bracket is a mechanical support structure used to secure and stabilize propellant lines in an aerospace vehicle — such as a rocket, spacecraft, or launch platform. These brackets ensure that the fluid lines remain safely in place throughout the vehicle's lifecycle: during assembly, launch, flight, and possibly reentry or landing. These typically come with p-clamps or other types of clamping to secure the tubes.
+
+// Define units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+bracketWidth = 2
+bracketLength = 4
+bracketFlangeHeight = 1.5
+bendRadius = 0.25
+bracketThickness = 0.25
+holeDiameter = 0.5
+holeXy = [
+  [-1, bracketLength - .5],
+  [-1.5, bracketLength / 2],
+  [-1, 0.5]
+]
+
+// Sketch the bracket body
+bracketSketch = startSketchOn(YZ)
+profile001 = startProfile(bracketSketch, at = [0, 0])
+  |> xLine(length = bracketWidth, tag = $seg03)
+  |> yLine(length = bracketThickness, tag = $seg06)
+  |> xLine(length = -bracketWidth + bracketThickness, tag = $seg01)
+  |> yLine(endAbsolute = bracketFlangeHeight, tag = $seg02)
+  |> xLine(endAbsolute = 0, tag = $seg05)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg04)
+  |> close()
+
+// Extrude the bracket sketch to make the body. Add fillets to all corners.
+bracketExtrude = extrude(
+       profile001,
+       length = bracketLength,
+       tagStart = $capStart001,
+       tagEnd = $capEnd001,
+     )
+  |> fillet(radius = .125, tags = [getCommonEdge(faces = [seg01, seg02])])
+  |> fillet(radius = .25, tags = [getCommonEdge(faces = [seg03, seg04])])
+  |> fillet(
+       radius = .125,
+       tags = [
+         getCommonEdge(faces = [seg06, capEnd001]),
+         getCommonEdge(faces = [seg06, capStart001]),
+         getCommonEdge(faces = [seg05, capStart001]),
+         getCommonEdge(faces = [seg05, capEnd001])
+       ],
+     )
+
+// Create mounting holes on the bottom face of the bracket.
+sketch002 = startSketchOn(bracketExtrude, face = seg01)
+profile002 = circle(sketch002, center = [holeXy[0][0], holeXy[0][1]], radius = holeDiameter / 2)
+profile003 = circle(sketch002, center = [holeXy[1][0], holeXy[1][1]], radius = holeDiameter / 2)
+profile004 = circle(sketch002, center = [holeXy[2][0], holeXy[2][1]], radius = holeDiameter / 2)
+bottomHoles = extrude([profile002, profile003, profile004], length = -.25)
+
+// Create the mounting holes on the side face of the bracket.
+sketch003 = startSketchOn(bracketExtrude, face = seg02)
+profile005 = circle(sketch003, center = [-.5, 1], radius = holeDiameter / 2)
+profile006 = circle(sketch003, center = [-bracketLength + .5, 1], radius = holeDiameter / 2)
+extrude001 = extrude([profile006, profile005], length = -.25)
+  |> appearance(%, color = "#a18e30")
+
+  // P-Clamp
+  // is a metal bracket shaped like the letter “P” that is used to secure pipes, tubing, hoses, or cables to a structure. It’s widely used in aerospace, automotive, and industrial applications to keep lines in place and isolate them from vibration and abrasion.
+
+// Define parameters
+tubeDiameter = 1.5
+width = 1
+thickness = .125
+
+// Sketch the profile of the P-clamp
+pClampSketch = startSketchOn(-XZ)
+profile007 = startProfile(pClampSketch, at = [0, 0])
+  |> xLine(length = -2, tag = $seg003)
+  |> tangentialArc(radius = tubeDiameter / 2 + thickness, angle = -300)
+  |> xLine(endAbsolute = 0, tag = $seg004)
+  |> yLine(length = -thickness, tag = $seg005)
+  |> xLine(endAbsolute = -1.5)
+  |> arc(
+       interiorAbsolute = [
+         -2 - (cos(90) * tubeDiameter),
+         sin(90) * tubeDiameter + thickness
+       ],
+       endAbsolute = [-2, thickness],
+     )
+  |> xLine(endAbsolute = 0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg006)
+  |> close()
+
+pClampBody = extrude(
+       profile007,
+       length = width,
+       tagEnd = $capEnd002,
+       tagStart = $capStart002,
+     )
+  |> chamfer(
+       length = .125,
+       tags = [
+         getCommonEdge(faces = [seg005, capEnd002]),
+         getCommonEdge(faces = [seg005, capStart002]),
+         getCommonEdge(faces = [seg006, capStart002]),
+         getCommonEdge(faces = [seg006, capEnd002])
+       ],
+     )
+
+// Punch a hole through the top mounting surface
+sketch004 = startSketchOn(pClampBody, face = seg004)
+profile008 = circle(sketch004, center = [width / 2, width / 2], radius = holeDiameter / 2)
+topHole = extrude(profile008, length = -.125)
+
+// Punch a hole through the bottom mounting surface
+sketch005 = startSketchOn(pClampBody, face = seg003)
+profile009 = circle(sketch005, center = [-width / 2, width / 2], radius = holeDiameter / 2)
+bottomHole = extrude(profile009, length = -.125)
+  |> appearance(%, color = "#4191c3")
+  |> rotate(yaw = 90)
+
+// Move the p clamp so that the mounting hole on the bracket and the p clamp align.
+translate(
+  bottomHole,
+  x = bracketLength / 2 + width / 2,
+  y = bracketWidth / 2,
+  z = bracketThickness,
+  global = true,
+)

@@ -1,0 +1,166 @@
+name: publish-apps
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  release-desktop:
+    runs-on: namespace-profile-ubuntu-2-cores
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Find tag workflow ID
+        id: tag_workflow_id
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --branch ${{ github.event.release.tag_name }} --json databaseId | jq '.[0].databaseId')
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-arm64-windows
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-x64-windows
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-yml-windows
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-arm64-macos
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-x64-macos
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-yml-macos
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-arm64-linux
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-x64-linux
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-yml-linux
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-download-json
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List artifacts
+        run: ls -R out
+
+      - name: Override release notes
+        env:
+          NOTES: ${{ github.event.release.body }}
+        run: npm run files:set-notes
+
+      - name: Authenticate to Google Cloud
+        uses: 'google-github-actions/auth@v2.1.10'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2.1.4
+        with:
+          project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
+
+      - name: Upload release files to public bucket
+        uses: google-github-actions/upload-cloud-storage@v2.2.2
+        with:
+          path: out
+          glob: '*'
+          parent: false
+          destination: 'dl.kittycad.io/releases/modeling-app'
+
+      - name: Invalidate bucket cache on latest*.yml and last_download.json files
+        run: npm run files:invalidate-bucket
+
+      - name: Upload release files to Github
+        if: ${{ github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: 'out/Zoo*'
+
+  release-web:
+    runs-on: namespace-profile-ubuntu-2-cores
+    permissions: {}
+    steps:
+      - name: Deploy to Vercel Production
+        run: curl --request POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
+
+  announce-release:
+    needs: [release-desktop, release-web]
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Announce Release
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RELEASE_VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+        run: python public/announce_release.py
