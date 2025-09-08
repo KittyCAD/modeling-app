@@ -5,11 +5,11 @@ type ConversationsPager = ReturnType<
   typeof ml.list_conversations_for_user_pager
 >
 type PromptsPager = ReturnType<typeof ml.list_text_to_cad_models_for_user_pager>
-import { createKCClient, kcCall } from '@src/lib/kcClient'
 import type {
   ConversationResultsPage,
   TextToCadResponseResultsPage,
 } from '@kittycad/lib'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 export async function submitTextToCadCreateRequest(
   prompt: string,
@@ -67,7 +67,6 @@ export async function textToCadMlConversations(
     const pager = ml.list_conversations_for_user_pager({
       client,
       limit: args.limit ?? 20,
-      page_token: '',
       sort_by: args.sortBy,
     })
     conversationPagers.set(key, pager)
@@ -98,7 +97,6 @@ export async function textToCadMlPromptsBelongingToConversation(
       conversation_id: args.conversationId,
       no_models: true,
       limit: args.limit ?? 20,
-      page_token: '',
       sort_by: args.sortBy,
     })
     promptsPagers.set(key, pager)
