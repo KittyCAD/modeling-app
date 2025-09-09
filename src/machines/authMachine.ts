@@ -1,11 +1,12 @@
 import type { User } from '@kittycad/lib'
 import { users } from '@kittycad/lib'
-import env, {
-  updateEnvironment,
-  updateEnvironmentPool,
-  generateDomainsFromBaseDomain,
-} from '@src/env'
-import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
+import env, { updateEnvironment, updateEnvironmentPool } from '@src/env'
+import { assign, fromPromise, setup } from 'xstate'
+import {
+  LEGACY_COOKIE_NAME,
+  OAUTH2_DEVICE_CLIENT_ID,
+  COOKIE_NAME_PREFIX,
+} from '@src/lib/constants'
 import {
   listAllEnvironments,
   readEnvironmentConfigurationPool,
@@ -43,7 +44,7 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 /**
  * Determine which token do we have persisted to initialize the auth machine
  */
-const persistedCookie = getCookie(COOKIE_NAME)
+const persistedCookie = getCookie()
 const persistedDevToken = env().VITE_KITTYCAD_API_TOKEN
 export const persistedToken = persistedDevToken || persistedCookie || ''
 console.log('Initial persisted token')
@@ -218,11 +219,20 @@ async function getUser(input: { token?: string }) {
   }
 }
 
-export function getCookie(cname: string): string | null {
+export function getCookie(): string | null {
   if (isDesktop()) {
     return null
   }
 
+  const baseDomain = env().VITE_KITTYCAD_BASE_DOMAIN
+  if (baseDomain === 'zoo.dev' || baseDomain === 'zoogov.dev') {
+    return getCookieByName(LEGACY_COOKIE_NAME)
+  } else {
+    return getCookieByName(COOKIE_NAME_PREFIX + baseDomain)
+  }
+}
+
+function getCookieByName(cname: string): string | null {
   let name = cname + '='
   let decodedCookie = decodeURIComponent(document.cookie)
   let ca = decodedCookie.split(';')
@@ -253,7 +263,7 @@ async function getAndSyncStoredToken(input: {
 
   // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
-  const cookieToken = getCookie(COOKIE_NAME)
+  const cookieToken = getCookie()
   const fileToken =
     window.electron && environmentName
       ? await readEnvironmentConfigurationToken(
