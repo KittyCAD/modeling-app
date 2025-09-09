@@ -96,13 +96,14 @@ pub use execution::{
 };
 pub use kcl_error::SourceRange;
 pub use lsp::{
+    ToLspRange,
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use modules::ModuleId;
 pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
 pub use project::ProjectManager;
-pub use settings::types::{Configuration, UnitLength, project::ProjectConfiguration};
+pub use settings::types::{Configuration, project::ProjectConfiguration};
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::{recast_dir, walk_dir};
 

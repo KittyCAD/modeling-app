@@ -2274,6 +2274,7 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     case 'UnaryExpression':
     case 'MemberExpression':
     case 'IfExpression':
+    case 'SketchVar':
       return true
     case 'TagDeclarator':
     case 'PipeSubstitution':
@@ -2284,6 +2285,7 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     case 'ArrayRangeExpression':
     case 'LabelledExpression':
     case 'AscribedExpression':
+    case 'SketchBlock':
       return false
     default:
       const _exhaustiveCheck: never = expr

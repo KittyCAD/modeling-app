@@ -87,6 +87,7 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.createKCLFile
           data: {
             requestedProjectName: string
+            requestedSubDirectory?: string
             requestedFileNameWithExtension: string
             requestedCode: string
           }
@@ -203,6 +204,31 @@ export const systemIOMachine = setup({
             requestedPath: string
             requestedProjectName: string
           }
+        }
+      | {
+          type: SystemIOMachineEvents.copyRecursive
+          data: {
+            src: string
+            target: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.getMlEphantConversations
+        }
+      | {
+          type: SystemIOMachineEvents.done_getMlEphantConversations
+          output: SystemIOContext['mlEphantConversations']
+        }
+      | {
+          type: SystemIOMachineEvents.saveMlEphantConversations
+          data: {
+            projectId: string
+            conversationId: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.done_saveMlEphantConversations
+          output: SystemIOContext['mlEphantConversations']
         },
   },
   guards: {
@@ -262,6 +288,7 @@ export const systemIOMachine = setup({
       toast.success(
         ('data' in event && typeof event.data === 'string' && event.data) ||
           ('output' in event &&
+            event.output !== undefined &&
             'message' in event.output &&
             typeof event.output.message === 'string' &&
             event.output.message) ||
@@ -303,6 +330,15 @@ export const systemIOMachine = setup({
         `Project name is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters`
       )
     },
+    [SystemIOMachineActions.setMlEphantConversations]: assign({
+      mlEphantConversations: ({ event }) => {
+        assertEvent(event, [
+          SystemIOMachineEvents.done_getMlEphantConversations,
+          SystemIOMachineEvents.done_saveMlEphantConversations,
+        ])
+        return event.output
+      },
+    }),
   },
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
@@ -349,6 +385,7 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           requestedProjectName: string
+          requestedSubDirectory?: string
           requestedFileNameWithExtension: string
           requestedCode: string
           rootContext: AppMachineContext
@@ -543,6 +580,41 @@ export const systemIOMachine = setup({
         }
       }
     ),
+    [SystemIOMachineActors.copyRecursive]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          src: string
+          target: string
+        }
+      }) => {
+        return {
+          message: '',
+          requestedAbsolutePath: '',
+        }
+      }
+    ),
+    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
+      return new Map()
+    }),
+    [SystemIOMachineActors.saveMlEphantConversations]: fromPromise(
+      async (args: {
+        input: {
+          context: SystemIOContext
+          event: {
+            data: {
+              projectId: string
+              conversationId: string
+            }
+          }
+        }
+      }) => {
+        return new Map()
+      }
+    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -569,6 +641,7 @@ export const systemIOMachine = setup({
     lastProjectDeleteRequest: {
       project: NO_PROJECT_DIRECTORY,
     },
+    mlEphantConversations: undefined,
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -656,6 +729,15 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.deleteFileOrFolderAndNavigate]: {
           target: SystemIOMachineStates.deletingFileOrFolderAndNavigate,
+        },
+        [SystemIOMachineEvents.copyRecursive]: {
+          target: SystemIOMachineStates.copyingRecursive,
+        },
+        [SystemIOMachineEvents.getMlEphantConversations]: {
+          target: SystemIOMachineStates.gettingMlEphantConversations,
+        },
+        [SystemIOMachineEvents.saveMlEphantConversations]: {
+          target: SystemIOMachineStates.savingMlEphantConversations,
         },
       },
     },
@@ -1226,6 +1308,69 @@ export const systemIOMachine = setup({
         onError: {
           target: SystemIOMachineStates.idle,
           actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.copyingRecursive]: {
+      invoke: {
+        id: SystemIOMachineActors.copyRecursive,
+        src: SystemIOMachineActors.copyRecursive,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.copyRecursive)
+          return {
+            context,
+            src: event.data.src,
+            target: event.data.target,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.gettingMlEphantConversations]: {
+      invoke: {
+        id: SystemIOMachineActors.getMlEphantConversations,
+        src: SystemIOMachineActors.getMlEphantConversations,
+        // No input required.
+        // Implicit input is settings path, which comes from a function
+        // we call internally.
+        input: ({ event }) => {
+          assertEvent(event, SystemIOMachineEvents.getMlEphantConversations)
+          return {}
+        },
+        onDone: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.setMlEphantConversations],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+        },
+      },
+    },
+    [SystemIOMachineStates.savingMlEphantConversations]: {
+      invoke: {
+        id: SystemIOMachineActors.saveMlEphantConversations,
+        src: SystemIOMachineActors.saveMlEphantConversations,
+        input: ({ event, context }) => {
+          assertEvent(event, SystemIOMachineEvents.saveMlEphantConversations)
+          return {
+            context,
+            event,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.setMlEphantConversations],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
         },
       },
     },
