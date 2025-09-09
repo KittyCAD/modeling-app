@@ -1,0 +1,127 @@
+// Gingerbread Man
+// A gingerbread man is a classic holiday cookie shaped like a stylized human figure. Typically made from gingerbread dough - a sweet, spiced mixture containing ginger, cinnamon, nutmeg, cloves, molasses, and brown sugar - these charming cookies are flat with a distinctive form featuring a round head, torso, arms, and legs. The traditional gingerbread man is decorated with icing to create facial features (eyes, mouth, sometimes a nose) and details like buttons down the front, cuffs at the wrists and ankles, and sometimes a bow tie. Candies like raisins, chocolate chips, or colorful gumdrops might be used for embellishments.
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+origin2D = [0, 0]
+thickness = 50
+eyeDiameter = 30
+gumDropDiameter = 60
+decorationThickness = 10
+
+// create a sketch for the body of the gingerbread man
+bodySketch = startSketchOn(XY)
+
+// create the body
+body = startProfile(bodySketch, at = origin2D)
+  |> line(end = [-88, -112])
+  |> tangentialArc(endAbsolute = [-170, -53])
+  |> line(end = [93, 110])
+  |> yLine(length = 156)
+  |> line(end = [-110, -83])
+  |> tangentialArc(endAbsolute = [-232, 195])
+  |> line(end = [124, 95])
+  |> tangentialArc(endAbsolute = [-59, 312])
+  |> yLine(length = 23)
+  |> arc(interiorAbsolute = [-114, 421], endAbsolute = [0, 549])
+  |> mirror2d(axis = Y)
+  |> close()
+  |> extrude(length = thickness)
+  |> appearance(%, color = "#ad5b25")
+
+// create a sketch for the decorations
+decorationSketch = startSketchOn(offsetPlane(XY, offset = thickness))
+
+// sketch the inner profile
+innermouth = startProfile(decorationSketch, at = [-41, 401])
+  |> arc(interiorAbsolute = [0, 380.83], endAbsolute = [38.45, 399.54])
+  |> tangentialArc(endAbsolute = [52.56, 391.68])
+  |> arc(interiorAbsolute = [0, 362.12], endAbsolute = [-54.93, 391.2])
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// create the mouth by sketching the outer mouth profile and subtracting the inner
+mouth = startProfile(decorationSketch, at = [-37.56, 405.86])
+  |> arc(interiorAbsolute = [0, 389.05], endAbsolute = [32.65, 404.69])
+  |> tangentialArc(endAbsolute = [56.9, 389.24])
+  |> tangentialArc(endAbsolute = [-60.78, 391.48])
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> subtract2d(tool = innermouth)
+  |> extrude(length = decorationThickness)
+  |> appearance(color = "#ff0000")
+
+// create the eyes
+eyes = circle(decorationSketch, center = [-55, 440], radius = eyeDiameter / 2)
+  |> extrude(length = decorationThickness)
+  |> appearance(color = "#ffffff")
+  |> patternLinear3d(instances = 2, distance = 110, axis = [1, 0, 0])
+
+// create the buttons
+buttons = circle(decorationSketch, center = [0, 250], radius = gumDropDiameter / 2)
+  |> extrude(length = decorationThickness)
+  |> appearance(color = "#fb00ff")
+  |> patternLinear3d(instances = 2, distance = 75, axis = [0, -1, 0])
+
+// create the eyebrows
+eyebrow = startProfile(decorationSketch, at = [-73.02, 483.5])
+  |> arc(interiorAbsolute = [-60.21, 500.64], endAbsolute = [-37.9, 503.47])
+  |> tangentialArc(endAbsolute = [-34.91, 514.62])
+  |> tangentialArc(endAbsolute = [-86.17, 485])
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> extrude(length = decorationThickness)
+  |> appearance(color = "#00fffb")
+  |> patternCircular3d(
+       instances = 2,
+       axis = [0, 1, 0],
+       center = [
+         0,
+         0,
+         thickness + decorationThickness / 2
+       ],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+
+// create the belt
+belt = startProfile(decorationSketch, at = [-59.59, 99.65])
+  |> arc(interiorAbsolute = [-40.65, 88.2], endAbsolute = [-22.49, 96.09])
+  |> arc(interiorAbsolute = [0, 104.78], endAbsolute = [17.76, 96.49])
+  |> arc(interiorAbsolute = [41.83, 83.47], endAbsolute = [58.8, 96.09])
+  |> tangentialArc(endAbsolute = [69.46, 92.15])
+  |> tangentialArc(endAbsolute = [41.83, 72.02])
+  |> tangentialArc(endAbsolute = [10.66, 89.39])
+  |> tangentialArc(endAbsolute = [-14.6, 87.41])
+  |> tangentialArc(endAbsolute = [-43.8, 77.94])
+  |> tangentialArc(endAbsolute = [-67.09, 100.83])
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = decorationThickness)
+  |> appearance(color = "#ffffff")
+
+// create the cuffs
+cuffs = startProfile(decorationSketch, at = [-224.97, 184.88])
+  |> arc(interiorAbsolute = [-220.25, 171.97], endAbsolute = [-207.34, 167.5])
+  |> arc(interiorAbsolute = [-191.45, 160.79], endAbsolute = [-189.21, 143.41])
+  |> tangentialArc(endAbsolute = [-196.41, 145.15])
+  |> tangentialArc(endAbsolute = [-208.33, 158.31])
+  |> tangentialArc(endAbsolute = [-232.92, 185.38])
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = decorationThickness)
+  |> appearance(color = "#ffffff")
+  |> patternCircular3d(
+       instances = 2,
+       axis = [0, 1, 0],
+       center = [
+         0,
+         0,
+         thickness + decorationThickness / 2
+       ],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )

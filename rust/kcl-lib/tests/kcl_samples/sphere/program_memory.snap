@@ -1,0 +1,346 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing sphere.kcl
+---
+{
+  "diameter": {
+    "type": "Number",
+    "value": 10.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "profile": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -5.0,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            5.0,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.0,
+            -0.0
+          ],
+          "from": [
+            5.0,
+            0.0
+          ],
+          "radius": 5.0,
+          "tag": null,
+          "to": [
+            -5.0,
+            0.0000000000000006123233995736766
+          ],
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -5.0,
+            0.0000000000000006123233995736766
+          ],
+          "tag": null,
+          "to": [
+            -5.0,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
+        },
+        "type": "plane",
+        "value": "XY",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
+        }
+      },
+      "start": {
+        "from": [
+          -5.0,
+          0.0
+        ],
+        "to": [
+          -5.0,
+          0.0
+        ],
+        "units": {
+          "type": "Mm"
+        },
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
+  "sketch": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "value": "XY",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
+      }
+    }
+  },
+  "wedge": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        }
+      ],
+      "sketch": {
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -5.0,
+              0.0
+            ],
+            "tag": null,
+            "to": [
+              5.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.0,
+              -0.0
+            ],
+            "from": [
+              5.0,
+              0.0
+            ],
+            "radius": 5.0,
+            "tag": null,
+            "to": [
+              -5.0,
+              0.0000000000000006123233995736766
+            ],
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -5.0,
+              0.0000000000000006123233995736766
+            ],
+            "tag": null,
+            "to": [
+              -5.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "on": {
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "type": "plane",
+          "value": "XY",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
+          }
+        },
+        "start": {
+          "from": [
+            -5.0,
+            0.0
+          ],
+          "to": [
+            -5.0,
+            0.0
+          ],
+          "units": {
+            "type": "Mm"
+          },
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "height": 0.0,
+      "startCapId": null,
+      "endCapId": null,
+      "units": {
+        "type": "Mm"
+      },
+      "sectional": false
+    }
+  }
+}

@@ -17,7 +17,7 @@ import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
-import { BillingDialog } from '@kittycad/react-shared'
+import { BillingDialog } from '@src/components/BillingDialog'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -359,13 +359,7 @@ const Home = () => {
             {!hasUnlimitedCredits && (
               <li className="contents">
                 <div className="my-2">
-                  <BillingDialog
-                    upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-                    upgradeClick={openExternalBrowserIfDesktop()}
-                    error={billingContext.error}
-                    credits={billingContext.credits}
-                    allowance={billingContext.allowance}
-                  />
+                  <BillingDialog billingActor={billingActor} />
                 </div>
               </li>
             )}

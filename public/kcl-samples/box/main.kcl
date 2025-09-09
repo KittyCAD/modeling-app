@@ -1,0 +1,25 @@
+// Box
+// A box is a rectangular prism defined by it's length, width, and height.
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+length = 10
+width = 10
+height = 10
+
+// create a sketch for the box profile on the XY plane
+sketch = startSketchOn(XY)
+
+// create the profile centered at the origin
+profile = startProfile(sketch, at = [-length / 2, -width / 2])
+  |> xLine(length = length)
+  |> yLine(length = width)
+  |> xLine(length = -length)
+  |> close()
+
+// extrude the profile to create the box
+box = extrude(profile, length = height)

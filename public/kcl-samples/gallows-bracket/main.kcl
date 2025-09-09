@@ -1,0 +1,42 @@
+// Gallows Bracket
+// A gallows bracket is a metal bracket that is used to support a chimney breast after it has been removed. The bracket is typically made of steel or cast iron, and it is attached to the remaining chimney stack. The bracket provides support for the chimney breast, preventing it from collapsing.
+
+
+import gallowsBracket, angleIron from "lib.kcl"
+
+depth = 450
+height = 1250
+width = 2400
+ironWidth = 75
+ironThickness = 6
+
+// Drawings recommend 450mm spacing
+bracketsNeeded = ceil(width / 450)
+
+angleIron(
+       length = width,
+       thickness = ironThickness,
+       width = ironWidth,
+       miterStart = 0,
+       miterEnd = 0,
+     )
+  |> rotate(pitch = 90)
+  |> translate(
+       y = -ironWidth,
+       x = depth,
+       z = height,
+       global = true,
+     )
+
+gallowsBracket(
+       depth = depth,
+       height = height,
+       ironWidth = ironWidth,
+       ironThickness = ironThickness,
+     )
+  |> patternLinear3d(
+       %,
+       instances = bracketsNeeded,
+       distance = (width - (bracketsNeeded * ironWidth)) / (bracketsNeeded - 1) + ironWidth,
+       axis = [0, 1, 0],
+     )

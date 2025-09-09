@@ -1,0 +1,147 @@
+// Desk-Edge Stopper
+// 3-D–printable U-shaped guard that slides onto a desk edge and raises a vertical wall to keep pens, phones, cables, etc. from slipping off the tabletop.
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// ──────────────────
+// PROFILE PARAMETERS
+// ──────────────────
+
+// Edit only the variables in this block
+// Everything else updates automatically
+
+// Overall length of the guard measured along the desk edge (X direction)
+guardLengthAlongDesk = 200
+
+// Define U-Profile
+// Depth of the U-profile. Defines how far the stopper wraps over the desk edge. Measured from front to back. Deeper depth increases grip and stability
+uProfileDepthInside = 30
+
+// Inner width of the U-profile. Must match the thickness of the desk, plus a small tolerance (~0.5 mm) to slide on snugly without being too tight.
+uProfileWidthInside = 20.5
+
+// Height of the vertical wall that blocks objects from falling. This part rises above the desk surface. Typically between 20–50 mm depending on what you want to stop.
+stopWallHeight = 20
+
+// A uniform wall thickness is used across all parts for modeling simplicity; for 3D printing, a relatively thick value (around 1/4 to 1/6 of the profile size, min 5mm) ensures strength and reliable fabrication.
+materialThickness = 5
+
+// Total vertical height of the guard from base to top of the stopper wall
+totalGuardHeight = stopWallHeight + uProfileWidthInside + materialThickness * 2
+
+// Total front-to-back depth of the guard, including wall thickness, measured from the desk-facing surface to the outermost back face
+totalGuardDepth = uProfileDepthInside + materialThickness
+
+// ───────────────
+// HOLE PARAMETERS
+// ───────────────
+
+// Include three screw holes: one centered for general mounting, and one near each end for desks with side-positioned predrilled holes. Covers common installation cases without overcomplicating the layout.
+holeCount = 3
+
+// Distance from desk edge to screw hole center; here set to 13 mm. Best positioned near the middle of the upper U-profile surface to reduce risk of cracking.
+holeOffsetFromTheTableEdge = 13
+// Convert to offset relative to U-profile geometry
+holeOffsetFromTheUprofileEdge = uProfileDepthInside - holeOffsetFromTheTableEdge
+
+// Diameter and radius of each hole
+holeDiameter = 4
+holeRadius = holeDiameter / 2
+
+// Offset to the profile ends for outermost holes. Should be around one-sixth of the length.
+holeOffsetFromGuardEdge = guardLengthAlongDesk / 6
+
+// The spacing between the first and last screw holes equals the total guard length minus two side offsets.
+holeSpan = guardLengthAlongDesk - (holeOffsetFromGuardEdge * 2)
+
+// Spacing between holes is calculated by dividing the span (first to last hole) by the number of gaps between them, which is one less than the total hole count.
+holeSpacing = holeSpan / (holeCount - 1)
+
+// ───────────
+// 3D GEOMETRY
+// ───────────
+
+
+// Begin with a 2D sketch of the cross-section. The internal shape comes first, since it must adapt precisely to desk thickness — the rest builds around it. This keeps the model parametric and resilient to design changes.
+
+
+guardSketch = startSketchOn(YZ)
+guardProfile = startProfile(guardSketch, at = [0, 0])
+  // Internal shape of the U-profile (bottom and two sides)
+  |> xLine(length = uProfileDepthInside, tag = $innerFaceOfTheUProfileLeftSide)
+  |> yLine(length = uProfileWidthInside, tag = $innerFaceOfTheUprofileBottom)
+  // Upper face of the U-profile — this part rests flat on the tabletop
+  |> xLine(length = -uProfileDepthInside, tag = $innerFaceOfTheUprofileRightSide)
+  // Thickness of the U-profile walls
+  |> yLine(length = materialThickness)
+  // Outside side of the upper face of the U-profile — side facing the ceiling
+  |> xLine(length = uProfileDepthInside, tag = $upperFaceOfTheUprofile)
+  // Height of the border wall
+  |> yLine(length = stopWallHeight, tag = $innerFaceOfTheWall)
+  |> xLine(length = materialThickness)
+  // Front face of the whole guard (wall + u-profile)
+  |> yLine(length = -totalGuardHeight)
+  // Bottom face of the whole guard (wall + u-profile)
+  |> xLine(length = -totalGuardDepth)
+  // Close the loop / thickness of the U-profile wall
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+guardBody = extrude(guardProfile, length = guardLengthAlongDesk)
+
+// ───────────────
+// MOUNTING METHOD
+// ───────────────
+
+// This model is specifically designed for screw mounting. It includes three holes—one in the center and one near each end—positioned on the top face of the U-profile to align with existing holes on the upper side of the desk. Alternatives like tape or tight friction are possible, but not the intended method here.
+
+// ──────────────
+// HOLE GEOMETRY
+// ──────────────
+
+// holes
+holeSketch = startSketchOn(guardBody, face = upperFaceOfTheUprofile)
+holeProfile = circle(
+  holeSketch,
+  center = [
+    -holeOffsetFromTheUprofileEdge,
+    holeOffsetFromGuardEdge
+  ],
+  radius = holeRadius,
+)
+
+// Hole pattern runs along the Y axis of the sketch, which corresponds to the length of the guard along the desk edge. X points into the desk.
+holeArray = patternLinear2d(
+  holeProfile,
+  instances = holeCount,
+  distance = holeSpacing,
+  axis = [0, 1],
+)
+applyHoleCutouts = extrude(holeArray, length = -materialThickness)
+
+// ───────
+// FILLETS
+// ───────
+
+// To reinforce the connection between intersecting walls, we add fillets to all interior corners. This U-profile has three walls, resulting in two internal corners, and the stopper wall adds a third junction to round.
+fillets = fillet(
+  guardBody,
+  radius = 1,
+  tags = [
+    getCommonEdge(faces = [
+  innerFaceOfTheUprofileBottom,
+  innerFaceOfTheUProfileLeftSide
+]),
+    getCommonEdge(faces = [
+  innerFaceOfTheUprofileRightSide,
+  innerFaceOfTheUprofileBottom
+]),
+    getCommonEdge(faces = [
+  innerFaceOfTheWall,
+  upperFaceOfTheUprofile
+])
+  ],
+)

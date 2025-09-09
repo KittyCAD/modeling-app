@@ -38,6 +38,7 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.module_id(),
             Expr::AscribedExpression(expr) => expr.expr.module_id(),
             Expr::SketchBlock(expr) => expr.module_id,
+            Expr::SketchVar(expr) => expr.module_id,
             Expr::None(none) => none.module_id,
         }
     }
@@ -57,6 +58,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.module_id,
             BinaryPart::IfExpression(e) => e.module_id,
             BinaryPart::AscribedExpression(e) => e.module_id,
+            BinaryPart::SketchVar(e) => e.module_id,
         }
     }
 }
