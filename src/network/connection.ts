@@ -30,7 +30,7 @@ import { EngineDebugger } from '@src/lib/debugger'
 import { uuidv4 } from '@src/lib/utils'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
-// other dependenices. We do not need to pass values between these. It is mainly
+// other dependencies. We do not need to pass values between these. It is mainly
 // to know did it pass or fail, not what the result is?
 // A specific case from the promiseFactor<T>() call
 interface IDeferredPromise {
@@ -222,7 +222,7 @@ export class Connection extends EventTarget {
   trackListener(name: string, eventListenerTracked: IEventListenerTracked) {
     if (this.allEventListeners.has(name)) {
       console.error(
-        `You are trying to track something twice, good luck! you're crashing: ${name}. This is actuall bad.`
+        `You are trying to track something twice, good luck! you're crashing: ${name}. This is actually bad.`
       )
       return
     }

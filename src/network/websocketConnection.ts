@@ -159,7 +159,7 @@ export const createOnWebSocketMessage = ({
       return
     }
 
-    // Message is succesfull, lets process the websocket message
+    // Message is successful, lets process the websocket message
     switch (resp.type) {
       case 'pong':
         const pong = Date.now()
@@ -192,7 +192,7 @@ export const createOnWebSocketMessage = ({
         const peerConnection = createPeerConnection()
 
         if (!peerConnection) {
-          console.error('unable to create peer connnection')
+          console.error('unable to create peer connection')
           EngineDebugger.addLog({
             label: 'onWebSocketMessage',
             message: 'ice_server_info',

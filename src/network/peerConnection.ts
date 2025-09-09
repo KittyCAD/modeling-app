@@ -162,7 +162,7 @@ export function createOnConnectionStateChange({
       metadata: { event, connectionState: event.target?.connectionState },
     })
 
-    switch (event.target?.connnectionState) {
+    switch (event.target?.connectionState) {
       // From what I understand, only after have we done the ICE song and
       // dance is it safest to connect the video tracks / stream
       case 'connected':
@@ -379,7 +379,7 @@ export const createOnDataChannel = ({
     })
     event.channel.addEventListener('close', metaClose)
 
-    // event.channel is availabe and we initialize listeners on it.
+    // event.channel is available and we initialize listeners on it.
     setUnreliableDataChannel(event.channel)
   }
 

@@ -246,7 +246,7 @@ export class ConnectionManager extends EventTarget {
     // Nothing more to do when using a lite engine initialization
     // if (callbackOnEngineLiteConnect) return
 
-    const onEngineConnetionRestartRequest =
+    const onEngineConnectionRestartRequest =
       createOnEngineConnectionRestartRequest({
         dispatchEvent: this.dispatchEvent.bind(this),
       })
@@ -272,12 +272,12 @@ export class ConnectionManager extends EventTarget {
 
     this.trackListener(EngineConnectionEvents.RestartRequest, {
       event: EngineConnectionEvents.RestartRequest,
-      callback: onEngineConnetionRestartRequest,
+      callback: onEngineConnectionRestartRequest,
       type: 'connection',
     })
     this.connection.addEventListener(
       EngineConnectionEvents.RestartRequest,
-      onEngineConnetionRestartRequest
+      onEngineConnectionRestartRequest
     )
 
     this.trackListener(EngineConnectionEvents.Offline, {
@@ -332,7 +332,7 @@ export class ConnectionManager extends EventTarget {
     })
 
     // Engine is ready to start sending events!
-    // Gotcha: The other listenerse above need to be initialized otherwise this will halt forver.
+    // Gotcha: The other listenerse above need to be initialized otherwise this will halt forever.
     await onEngineConnectionOpened()
   }
 

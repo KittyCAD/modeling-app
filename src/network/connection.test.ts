@@ -156,8 +156,8 @@ describe('connection.ts', () => {
         tearDownManager: TEAR_DOWN_MANAGER_NO_OP,
         rejectPendingCommand: REJECT_PENDING_COMMAND_NO_OP,
       })
-      const peerConenction = new RTCPeerConnection()
-      const dataChannel = peerConenction.createDataChannel('my channel')
+      const peerConnection = new RTCPeerConnection()
+      const dataChannel = peerConnection.createDataChannel('my channel')
       connection.setUnreliableDataChannel(dataChannel)
       expect(connection.unreliableDataChannel).toStrictEqual(dataChannel)
     })

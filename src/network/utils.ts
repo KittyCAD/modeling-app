@@ -38,7 +38,7 @@ export type Value<T, U> = U extends undefined
 
 export type State<T, U> = Value<T, U>
 
-// internal state to the engine connnection class
+// internal state to the engine connection class
 export enum EngineConnectionStateType {
   Fresh = 'fresh',
   Connecting = 'connecting',
