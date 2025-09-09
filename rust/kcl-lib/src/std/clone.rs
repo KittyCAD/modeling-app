@@ -242,7 +242,7 @@ async fn fix_sketch_tags_and_references(
 
     // Map the surface tags to the new surface ids.
     let mut surface_id_map: HashMap<String, ExtrudeSurface> = HashMap::new();
-    for surface in surfaces.unwrap_or(vec![]).iter() {
+    for surface in surfaces.unwrap_or_default().iter() {
         if let Some(tag) = surface.get_tag() {
             surface_id_map.insert(tag.to_string(), surface.clone());
         }
