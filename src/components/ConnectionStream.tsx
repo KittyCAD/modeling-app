@@ -12,7 +12,7 @@ import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { sceneInfra } from '@src/lib/singletons'
 import { btnName } from '@src/lib/cameraControls'
 import { getDimensions } from '@src/network/utils'
-import { err, reportRejection, trap } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import Loading from '@src/components/Loading'
 import { useAppState } from '@src/AppState'
@@ -90,35 +90,38 @@ const onEngineConnectionReadyForRequests = ({
           setIsSceneReady(true)
         })
         .then(() => {
-          jsAppSettings().then((result) => {
-            rustContext
-              .clearSceneAndBustCache(
-                result,
-                codeManager.currentFilePath || undefined
-              )
-              .then(() => {
-                kclManager
-                  .executeCode()
-                  .then((result) => {
-                    // It makes sense to also call zoom to fit here, when a new file is
-                    // loaded for the first time, but not overtaking the work kevin did
-                    // so the camera isn't moving all the time.
-                    engineCommandManager
-                      .sendSceneCommand({
-                        type: 'modeling_cmd_req',
-                        cmd_id: uuidv4(),
-                        cmd: {
-                          type: 'zoom_to_fit',
-                          object_ids: [], // leave empty to zoom to all objects
-                          padding: 0.1, // padding around the objects
-                          animated: false, // don't animate the zoom for now
-                        },
-                      })
-                      .catch(reportRejection)
-                  })
-                  .catch(trap)
-              })
-          })
+          jsAppSettings()
+            .then((result) => {
+              rustContext
+                .clearSceneAndBustCache(
+                  result,
+                  codeManager.currentFilePath || undefined
+                )
+                .then(() => {
+                  kclManager
+                    .executeCode()
+                    .then((result) => {
+                      // It makes sense to also call zoom to fit here, when a new file is
+                      // loaded for the first time, but not overtaking the work kevin did
+                      // so the camera isn't moving all the time.
+                      engineCommandManager
+                        .sendSceneCommand({
+                          type: 'modeling_cmd_req',
+                          cmd_id: uuidv4(),
+                          cmd: {
+                            type: 'zoom_to_fit',
+                            object_ids: [], // leave empty to zoom to all objects
+                            padding: 0.1, // padding around the objects
+                            animated: false, // don't animate the zoom for now
+                          },
+                        })
+                        .catch(reportRejection)
+                    })
+                    .catch(reportRejection)
+                })
+                .catch(reportRejection)
+            })
+            .catch(reportRejection)
         })
         .catch((error) => {
           console.error('Failed to start engine connection', error)
@@ -204,18 +207,16 @@ export const ConnectionStream = (props: {
 
   // Run once on initialization
   useEffect(() => {
-    ;(async () => {
-      if (!didUseEffectRunOnce) {
-        didUseEffectRunOnce = true
-        onEngineConnectionReadyForRequests({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-        })
-      }
-    })()
+    if (!didUseEffectRunOnce) {
+      didUseEffectRunOnce = true
+      onEngineConnectionReadyForRequests({
+        authToken: props.authToken || '',
+        videoWrapperRef,
+        setAppState,
+        videoRef,
+        setIsSceneReady,
+      })
+    }
   }, [props.authToken, setAppState])
 
   // TODO: Handle 15 second connection window
