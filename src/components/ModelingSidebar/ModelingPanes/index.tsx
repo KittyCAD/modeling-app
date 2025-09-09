@@ -436,3 +436,11 @@ export const sidebarPanesLeft: SidebarPane[] = [
 export const sidebarPanesRight: SidebarPane[] = [
   ...(!isPlaywright() ? [textToCadPane] : []),
 ]
+
+/**
+ * Gathered up all the pane IDs defined in this file
+ * for validating the pane IDs loaded from persisted storage
+ */
+export const validPaneIds = [...sidebarPanesRight, ...sidebarPanesLeft].map(
+  ({ id }) => id
+)

@@ -21,6 +21,7 @@ import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { ModelingMachineContext } from '@src/components/ModelingMachineProvider'
 import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import { validPaneIds } from '@src/components/ModelingSidebar/ModelingPanes'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -491,13 +492,27 @@ type PersistedKeys = keyof PersistedModelingContext
 export const PersistedValues: PersistedKeys[] = ['openPanes']
 
 export const getPersistedContext = (): Partial<PersistedModelingContext> => {
-  const c = (typeof window !== 'undefined' &&
-    JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) || {
+  const fallbackContextObject = {
     openPanes: isDesktop()
       ? (['feature-tree', 'code', 'files'] satisfies Store['openPanes'])
       : (['feature-tree', 'code'] satisfies Store['openPanes']),
   }
-  return c
+
+  try {
+    const c: Partial<PersistedModelingContext> =
+      (typeof window !== 'undefined' &&
+        JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) ||
+      fallbackContextObject
+
+    // filter out any invalid IDs at read time
+    if (c.openPanes) {
+      c.openPanes = c.openPanes.filter((p) => validPaneIds.indexOf(p) >= 0)
+    }
+    return c
+  } catch (e) {
+    console.error(e)
+    return fallbackContextObject
+  }
 }
 
 export interface ModelingMachineContext {

@@ -27,6 +27,7 @@ import type {
 import {
   sidebarPanesLeft,
   sidebarPanesRight,
+  validPaneIds,
 } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -243,11 +244,12 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
         : props.sidebarPanes.filter((pane) => pane.id !== 'debug')
       ).filter(
         (pane) =>
-          !pane.hide ||
-          (pane.hide instanceof Function && !pane.hide(paneCallbackProps))
+          validPaneIds.find((id) => id === pane.id) &&
+          (!pane.hide ||
+            (pane.hide instanceof Function && !pane.hide(paneCallbackProps)))
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [props.sidebarPanes, paneCallbackProps]
+    [props.sidebarPanes, paneCallbackProps, validPaneIds]
   )
   // Since we store one persisted list of `openPanes`, we should first filter it to ones that have
   // been passed into this instance as props
