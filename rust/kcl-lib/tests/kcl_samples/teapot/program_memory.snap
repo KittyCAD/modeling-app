@@ -855,7 +855,8 @@ description: Variables in memory after executing teapot.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "outletHeight": {
@@ -1319,7 +1320,8 @@ description: Variables in memory after executing teapot.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "isClosed": false
     }
   },
   "teapotHeight": {

@@ -25,6 +25,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "ball-joint-rod-end/main.kcl",
+    "multipleFiles": false,
+    "title": "ball joint rod end",
+    "description": "A ball joint rod end is a mechanical linkage component that consists of a spherical ball housed within a socket, connected to a threaded rod, allowing rotational movement in multiple directions while providing a secure connection point between two parts of a mechanical system. Commonly used in steering systems and suspension components.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "bench/main.kcl",
     "multipleFiles": true,
     "title": "Bench",
@@ -445,6 +455,21 @@
     "description": "A cup with straight sides and a handle, typically used for hot drinks",
     "files": [
       "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "multi-axis-robot/main.kcl",
+    "multipleFiles": true,
+    "title": "Robot Arm",
+    "description": "A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes",
+    "files": [
+      "globals.kcl",
+      "main.kcl",
+      "robot-arm-base.kcl",
+      "robot-arm-j2.kcl",
+      "robot-arm-j3.kcl",
+      "robot-rotating-base.kcl"
     ]
   },
   {
