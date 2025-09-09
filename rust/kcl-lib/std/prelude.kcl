@@ -334,22 +334,21 @@ export fn offsetPlane(
 /// // Translate a cloned solid. Fillet only the clone.
 ///
 /// sketch001 = startSketchOn(XY)
-///         |> startProfile(at = [-10, 10])
-///         |> xLine(length = 20)
-///         |> yLine(length = -20)
-///         |> xLine(length = -20, tag = $filletTag)
-///         |> close()
-///         |> extrude(length = 5)
-///
+/// |> startProfile(at = [-10, 10])
+/// |> xLine(length = 20)
+/// |> yLine(length = -20)
+/// |> xLine(length = -20, tag = $face0)
+/// |> line(endAbsolute = [profileStart()], tag=$face1)
+/// |> extrude(length = 5, tagEnd=$end1)
 ///
 /// sketch002 = clone(sketch001)
-///     |> translate(x = 0, y = 0, z = 20)
+/// |> translate(x = 0, y = 0, z = 20)
 /// 
 /// fillet(
-///     sketch002,
-///     radius = 2,
-///     tags = [getNextAdjacentEdge(sketch002.sketch.tags.filletTag)],
-///     )
+/// sketch002,
+/// radius = 2,
+/// tags = [getCommonEdge(faces = [sketch002.sketch.tags.face0, sketch002.sketch.tags.face1])],
+/// )
 /// ```
 ///
 /// ```kcl
