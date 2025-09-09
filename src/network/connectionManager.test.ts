@@ -20,7 +20,6 @@ describe('ConnectionManager.ts', () => {
       }
       expect(connectionManager.connection).toBe(undefined)
       expect(connectionManager.settings).toStrictEqual(expected)
-      expect(connectionManager.idleMode).toBe(false)
       expect(connectionManager.started).toBe(false)
     })
   })

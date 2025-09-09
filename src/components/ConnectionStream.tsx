@@ -37,6 +37,10 @@ const onEngineConnectionReadyForRequests = ({
   setIsSceneReady,
 }: {
   authToken: string
+  videoWrapperRef: React.RefObject<HTMLDivElement>
+  setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
+  videoRef: React.RefObject<HTMLVideoElement>
+  setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   // video wrapper ref
   if (!engineCommandManager.started) {
