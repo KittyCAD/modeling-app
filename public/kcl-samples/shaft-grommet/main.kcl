@@ -1,0 +1,31 @@
+// Shaft Grommet
+// Made of slippery plastic, these grommets allow shafts and bearings to spin freely in metal panels. The split construction lets you snap them around shafts you’ve already installed.
+
+// Set units in inches (in)
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+id = 1 / 8
+forHoleDiameter = 11 / 64
+forMaterialThickness = 0.1
+flangeDiameterA = 3 / 16
+flangeDiameterB = 1 / 4
+flangeHeight = 1 / 32
+overallHeight = forMaterialThickness + flangeHeight * 2
+
+// Create a sketch for the grommet profile on the YZ plane
+grommetProfileSketch = startSketchOn(YZ)
+
+// Define the profile of the grommet
+grommetProfile = startProfile(grommetProfileSketch, at = [id / 2, 0])
+  |> yLine(length = overallHeight)
+  |> xLine(length = flangeDiameterB / 2 - (id / 2))
+  |> yLine(length = -flangeHeight)
+  |> xLine(length = forHoleDiameter / 2 - (flangeDiameterB / 2))
+  |> yLine(length = -forMaterialThickness)
+  |> xLine(length = flangeDiameterA / 2 - (forHoleDiameter / 2))
+  |> yLine(length = -flangeHeight)
+  |> close()
+
+// Revolve the profile to create the grommet
+grommet = revolve(grommetProfile, axis = Y, angle = 330.0)

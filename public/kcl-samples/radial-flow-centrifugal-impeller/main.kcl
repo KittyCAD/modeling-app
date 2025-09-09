@@ -1,0 +1,77 @@
+// Impeller (Radial-flow)
+// Radial-flow impeller for centrifugal pumps—designed as a parametric base for blade and housing experiments.
+
+
+
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// parameters
+bladeCount = 12 // number of blades
+sweepDeg = 30 // yaw offset between leading and trailing edge
+od = 150 // overall diameter
+hubOd = 40 // hub outside diameter
+boreDia = 30 // shaft hole diameter
+baseThick = 6 // back-plate thickness
+hubHeight = 40 // hub axial length
+bladeRadSpan = 30 // radial blade width
+bladeChord = 35 // axial blade length
+bladeHeight = hubHeight // plate height
+bladeThickness = 3
+rootR = hubOd / 2 + 10
+
+// root rectangle (leading edge)
+leadSketch = startSketchOn(XY)
+leadRect = startProfile(leadSketch, at = [0, 0])
+  |> xLine(length = bladeThickness)
+  |> yLine(length = bladeChord)
+  |> xLine(length = -bladeThickness)
+  |> close()
+
+// tip rectangle (trailing edge, rotated by sweepDeg)
+trailPlane = offsetPlane(XY, offset = bladeHeight) // lift by bladeHeight to give sheet thickness
+trailSketch = startSketchOn(trailPlane)
+trailRect = startProfile(trailSketch, at = [0, 0])
+  |> xLine(length = bladeThickness)
+  |> yLine(length = bladeChord)
+  |> xLine(length = -bladeThickness)
+  |> close()
+  |> rotate(yaw = sweepDeg)
+
+// loft one curved blade
+oneBlade = loft([leadRect, trailRect])
+
+// move blade outward so tip reaches outer diameter
+bladeOffset = translate(
+  oneBlade,
+  x = 0,
+  y = rootR,
+  z = 0,
+)
+
+// pattern blades around 360 °
+blades = patternCircular3d(
+  bladeOffset,
+  axis = [0, 0, 1],
+  center = [0, 0, 0],
+  instances = bladeCount,
+  arcDegrees = 360,
+)
+
+// back-plate disk
+diskSketch = startSketchOn(XY)
+diskCircle = circle(diskSketch, center = [0, 0], radius = od / 2)
+backPlate = extrude(diskCircle, length = -baseThick)
+
+// hub solid
+hubSketch = startSketchOn(backPlate, face = END)
+hubCircle = circle(hubSketch, center = [0, 0], radius = hubOd / 2)
+hub = extrude(hubCircle, length = hubHeight)
+
+// bore hole
+boreSketch = startSketchOn(offsetPlane(XY, offset = -baseThick * 2))
+boreCircle = circle(boreSketch, center = [0, 0], radius = boreDia / 2)
+bore = extrude(boreCircle, length = baseThick * 2 + hubHeight + 5)
+
+// final impeller
+impeller = subtract(hub, tools = [bore])
