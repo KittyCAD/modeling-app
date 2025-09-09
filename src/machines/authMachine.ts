@@ -1,6 +1,10 @@
 import type { User } from '@kittycad/lib'
 import { users } from '@kittycad/lib'
-import env, { updateEnvironment, updateEnvironmentPool } from '@src/env'
+import env, {
+  updateEnvironment,
+  updateEnvironmentPool,
+  generateDomainsFromBaseDomain,
+} from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
 import {
   LEGACY_COOKIE_NAME,
@@ -20,7 +24,6 @@ import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
-import { assign, fromPromise, setup } from 'xstate'
 
 export interface UserContext {
   user?: User
