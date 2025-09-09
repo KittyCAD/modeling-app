@@ -16,6 +16,7 @@ import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
 import { MLEphantConversationPaneMenu } from '@src/components/MlEphantConversation'
+import { MLEphantConversationPaneMenu2 } from '@src/components/MlEphantConversation2'
 import { ModelingPaneHeader } from '@src/components/ModelingSidebar/ModelingPane'
 import { DebugPane } from '@src/components/ModelingSidebar/ModelingPanes/DebugPane'
 import { FeatureTreeMenu } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreeMenu'
@@ -28,6 +29,7 @@ import {
   MemoryPaneMenu,
 } from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
 import { MlEphantConversationPane } from '@src/components/ModelingSidebar/ModelingPanes/MlEphantConversationPane'
+import { MlEphantConversationPane2 } from '@src/components/ModelingSidebar/ModelingPanes/MlEphantConversationPane2'
 import { ToastInsert } from '@src/components/ToastInsert'
 import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
@@ -50,6 +52,7 @@ import {
   useSettings,
   useUser,
 } from '@src/lib/singletons'
+import { MlEphantMachineContext } from '@src/machines/mlEphantManagerMachine2'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import { useFolders } from '@src/machines/systemIO/hooks'
@@ -145,6 +148,52 @@ const textToCadPane: SidebarPane = {
             user,
           }}
         />
+      </>
+    )
+  },
+}
+
+const textToCadPane2: SidebarPane = {
+  id: 'text-to-cad-2',
+  icon: 'sparkles',
+  keybinding: 'Ctrl + T',
+  sidebarName: 'Text-to-CAD',
+  cssClassOverrides: {
+    button:
+      'animate-super-sayian bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
+  },
+  Content: (props) => {
+    const settings = useSettings()
+    const user = useUser()
+    const { context: contextModeling, theProject } = useModelingContext()
+    const { file: loaderFile } = useLoaderData() as IndexLoaderData
+    const mlEphantManagerActor2 = MlEphantManagerContext.useActorRef()
+
+    return (
+      <>
+        {/*
+        <ModelingPaneHeader
+          id={props.id}
+          icon="sparkles"
+          title="Text-to-CAD"
+          Menu={MLEphantConversationPaneMenu2}
+          onClose={props.onClose}
+        />
+        <MlEphantConversationPane2
+          {...{
+            mlEphantManagerActor2,
+            systemIOActor,
+            kclManager,
+            codeManager,
+            contextModeling,
+            theProject: theProject.current,
+            loaderFile,
+            settings,
+            user,
+          }}
+        />
+      */}{' '}
+        hi
       </>
     )
   },
@@ -425,11 +474,11 @@ export const sidebarPanesLeft: SidebarPane[] = [
     keybinding: 'Shift + D',
     hide: ({ settings }) => !settings.app.showDebugPanel.current,
   },
-  ...(isPlaywright() ? [textToCadPane] : []),
+  ...(isPlaywright() ? [textToCadPane, textToCadPane2] : []),
 ]
 
 export const sidebarPanesRight: SidebarPane[] = [
-  ...(!isPlaywright() ? [textToCadPane] : []),
+  ...(!isPlaywright() ? [textToCadPane, textToCadPane2] : []),
 ]
 
 /**

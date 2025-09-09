@@ -57,6 +57,9 @@ export const useProjectIdToConversationId = (
     mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.ClearProjectSpecificState,
     })
+    mlEphantManagerActor2.send({
+      type: MlEphantManagerTransitions2.ContextNew,
+    })
 
     const subscription = mlEphantManagerActor.subscribe((next) => {
       if (settings2.meta.id.current === undefined) {
@@ -84,8 +87,35 @@ export const useProjectIdToConversationId = (
       })
     })
 
+    const subscription2 = mlEphantManagerActor.subscribe((next) => {
+      if (settings2.meta.id.current === undefined) {
+        return
+      }
+      if (settings2.meta.id.current === uuidNIL) {
+        return
+      }
+      const systemIOActorSnapshot = systemIOActor.getSnapshot()
+      if (
+        systemIOActorSnapshot.value ===
+        SystemIOMachineStates.savingMlEphantConversations
+      ) {
+        return
+      }
+      if (next.context.conversationId === undefined) {
+        return
+      }
+      systemIOActor.send({
+        type: SystemIOMachineEvents.saveMlEphantConversations,
+        data: {
+          projectId: settings2.meta.id.current,
+          conversationId: next.context.conversationId,
+        },
+      })
+    })
+
     return () => {
       subscription.unsubscribe()
+      subscription2.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings2.meta.id.current])
@@ -134,8 +164,45 @@ export const useWatchForNewFileRequestsFromMlEphant = (
         apiToken: token,
       })
     })
+
+    const subscription2 = mlEphantManagerActor2.subscribe((next) => {
+      if (next.context.promptsInProgressToCompleted.size === 0) {
+        return
+      }
+      if (
+        !next.matches({
+          [MlEphantManagerStates.Ready]: {
+            [MlEphantManagerStates.Background]: S.Await,
+          },
+        })
+      ) {
+        return
+      }
+
+      next.context.promptsInProgressToCompleted.forEach(
+        (promptId: Prompt['id']) => {
+          const prompt = next.context.promptsPool.get(promptId)
+          if (prompt === undefined) return
+          if (prompt.status === 'failed') return
+          const promptMeta = next.context.promptsMeta.get(prompt.id)
+          if (promptMeta === undefined) {
+            console.warn('No metadata for this prompt - ignoring.')
+            return
+          }
+
+          fn(prompt, promptMeta)
+        }
+      )
+
+      // TODO: Move elsewhere eventually, decouple from SystemIOActor
+      billingActor.send({
+        type: BillingTransition.Update,
+        apiToken: token,
+      })
+    })
     return () => {
       subscription.unsubscribe()
+      subscription2.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])

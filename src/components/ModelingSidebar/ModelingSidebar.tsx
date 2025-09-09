@@ -166,6 +166,16 @@ export function ModelingSidebarRight() {
   )
   const [actuallyNew, setActuallyNew] = useState<boolean>(false)
 
+  // We need to filter out text-to-cad-2 if the setting enable_copilot is false.
+  // Because sidebars are constructed at import time, it's not possible to do
+  // this before, so we do it now.
+  const sidebarPanesRightFiltered = sidebarPanesRight.filter((x) => {
+    if (settings.enable_copilot.current === false) {
+      return !(x.id === 'text-to-cad-2')
+    }
+    return true
+  })
+
   useEffect(() => {
     if (promptsBelongingToConversation === undefined) {
       return
@@ -192,12 +202,32 @@ export function ModelingSidebarRight() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [promptsBelongingToConversation, actuallyNew])
 
+  useEffect(() => {
+    if (!actuallyNew) {
+      setActuallyNew(true)
+      return
+    }
+
+    const newPanes = new Set(
+      modelingContext.store.openPanes.concat('text-to-cad-2')
+    )
+
+    modelingContextSend({
+      type: 'Set context',
+      data: {
+        openPanes: Array.from(newPanes),
+      },
+    })
+    // React doesn't realize that we are updating `modelingContext.store.openPanes` here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actuallyNew])
+
   // Prevents rerenders because new array is a new ref.
   const sidebarActions: Ref<SidebarAction[]> = useRef([])
   return (
     <ModelingSidebar
       id="right-sidebar"
-      sidebarPanes={sidebarPanesRight || []}
+      sidebarPanes={sidebarPanesRightFiltered || []}
       sidebarActions={sidebarActions.current || []}
       settings={settings}
       align={Alignment.Right}
