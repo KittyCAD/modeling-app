@@ -20,8 +20,7 @@ import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { ModelingMachineContext } from '@src/components/ModelingMachineProvider'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
-import { validPaneIds } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -119,7 +118,7 @@ import type {
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
+import { EXECUTION_TYPE_REAL, VALID_PANE_IDS } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type {
@@ -288,7 +287,7 @@ export type SegmentOverlayPayload =
 
 export interface Store {
   videoElement?: HTMLVideoElement
-  openPanes: SidebarType[]
+  openPanes: SidebarId[]
   cameraProjection?: Setting<CameraProjectionType>
   useNewSketchMode?: Setting<boolean>
 }
@@ -506,7 +505,7 @@ export const getPersistedContext = (): Partial<PersistedModelingContext> => {
 
     // filter out any invalid IDs at read time
     if (c.openPanes) {
-      c.openPanes = c.openPanes.filter((p) => validPaneIds.indexOf(p) >= 0)
+      c.openPanes = c.openPanes.filter((p) => VALID_PANE_IDS.includes(p))
     }
     return c
   } catch (e) {

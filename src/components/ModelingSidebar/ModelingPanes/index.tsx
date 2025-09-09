@@ -32,7 +32,11 @@ import { ToastInsert } from '@src/components/ToastInsert'
 import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
+import {
+  FILE_EXT,
+  INSERT_FOREIGN_TOAST_ID,
+  type VALID_PANE_IDS,
+} from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { PATHS, parentPathRelativeToProject } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
@@ -53,16 +57,7 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import { useRouteLoaderData } from 'react-router-dom'
 
-export type SidebarType =
-  | 'code'
-  | 'debug'
-  | 'export'
-  | 'files'
-  | 'feature-tree'
-  | 'logs'
-  | 'lspMessages'
-  | 'variables'
-  | 'text-to-cad'
+export type SidebarId = (typeof VALID_PANE_IDS)[number]
 
 export interface BadgeInfo {
   value: (props: PaneCallbackProps) => boolean | number | string
@@ -87,11 +82,11 @@ export type SidebarCssOverrides = Partial<{
 }>
 
 export type SidebarPane = {
-  id: SidebarType
+  id: SidebarId
   sidebarName: string
   icon: CustomIconName | IconDefinition
   keybinding: string
-  Content: React.FC<{ id: SidebarType; onClose: () => void }>
+  Content: React.FC<{ id: SidebarId; onClose: () => void }>
   hide?: boolean | ((props: PaneCallbackProps) => boolean)
   showBadge?: BadgeInfo
   cssClassOverrides?: SidebarCssOverrides
@@ -178,7 +173,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     id: 'code',
     icon: 'code',
     sidebarName: 'KCL Code',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
@@ -209,7 +204,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     id: 'files',
     icon: 'folder',
     sidebarName: 'Project Files',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       const projects = useFolders()
       const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
       const projectRef = useRef(loaderData.project)
@@ -373,7 +368,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     id: 'variables',
     icon: 'make-variable',
     sidebarName: 'Variables',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
@@ -393,7 +388,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     id: 'logs',
     icon: 'logs',
     sidebarName: 'Logs',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
@@ -413,7 +408,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     id: 'debug',
     icon: 'bug',
     sidebarName: 'Debug',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader

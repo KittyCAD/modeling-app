@@ -22,7 +22,7 @@ import type {
   SidebarAction,
   SidebarCssOverrides,
   SidebarPane,
-  SidebarType,
+  SidebarId,
 } from '@src/components/ModelingSidebar/ModelingPanes'
 import {
   sidebarPanesLeft,
@@ -244,7 +244,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
         : props.sidebarPanes.filter((pane) => pane.id !== 'debug')
       ).filter(
         (pane) =>
-          validPaneIds.find((id) => id === pane.id) &&
+          validPaneIds.includes(pane.id) &&
           (!pane.hide ||
             (pane.hide instanceof Function && !pane.hide(paneCallbackProps)))
       ),
@@ -261,7 +261,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
       ? 'pointer-events-none '
       : 'pointer-events-auto '
 
-  const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
+  const paneBadgeMap: Record<SidebarId, BadgeInfoComputed> = useMemo(() => {
     return filteredPanes.reduce(
       (acc, pane) => {
         if (pane.showBadge) {
@@ -274,14 +274,14 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
         }
         return acc
       },
-      {} as Record<SidebarType, BadgeInfoComputed>
+      {} as Record<SidebarId, BadgeInfoComputed>
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [paneCallbackProps])
 
   // Clear any hidden panes from the `openPanes` array
   useEffect(() => {
-    const panesToReset: SidebarType[] = []
+    const panesToReset: SidebarId[] = []
 
     props.sidebarPanes.forEach((pane) => {
       if (
@@ -306,7 +306,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
   }, [props.settings.app.showDebugPanel])
 
   const togglePane = useCallback(
-    (newPane: SidebarType) => {
+    (newPane: SidebarId) => {
       send({
         type: 'Set context',
         data: {
