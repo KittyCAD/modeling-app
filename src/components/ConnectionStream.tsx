@@ -92,12 +92,24 @@ const onEngineConnectionReadyForRequests = ({
         .then(() => {
           jsAppSettings()
             .then((result) => {
+              EngineDebugger.addLog({
+                label: 'onEngineConnectionReadyForRequests',
+                message: 'rustContext.clearSceneAndBustCache()',
+                metadata: {
+                  jsAppSettings: result,
+                  filePath: codeManager.currentFilePath || undefined,
+                },
+              })
               rustContext
                 .clearSceneAndBustCache(
                   result,
                   codeManager.currentFilePath || undefined
                 )
                 .then(() => {
+                  EngineDebugger.addLog({
+                    label: 'onEngineConnectionReadyForRequests',
+                    message: 'kclManager.executeCode()',
+                  })
                   kclManager
                     .executeCode()
                     .then((result) => {
@@ -243,8 +255,6 @@ export const ConnectionStream = (props: {
       if (!props.authToken) return
       if (engineCommandManager.started) return
       // Trick the executor to cache bust scene.
-
-      console.warn('does this page idle run!!')
 
       jsAppSettings()
         .then((result) => {

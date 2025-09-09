@@ -612,8 +612,6 @@ interface HomeItemsAreaProps {
 function HomeItemsArea(props: HomeItemsAreaProps) {
   let grid = null
 
-  console.log('home items area', props.tabSelected, props.searchResults)
-
   switch (props.tabSelected) {
     case HomeTabKeys.Projects:
       grid = areHomeItemsProjects(props.searchResults) ? (
