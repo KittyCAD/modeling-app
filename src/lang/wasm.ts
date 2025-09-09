@@ -688,6 +688,9 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'AscribedExpressionExpr':
         pathToNode.push(['expr', 'AscribedExpression'])
         break
+      case 'SketchBlock':
+        // TODO: sketch-api: implement arguments and body.
+        break
       default:
         const _exhaustiveCheck: never = step
     }
@@ -758,11 +761,10 @@ export function kclSettings(
  */
 export function changeDefaultUnits(
   kcl: string,
-  len: UnitLen | null,
-  angle: UnitAng | null
+  len: UnitLen | null
 ): string | Error {
   try {
-    return change_default_units(kcl, JSON.stringify(len), JSON.stringify(angle))
+    return change_default_units(kcl, JSON.stringify(len))
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })

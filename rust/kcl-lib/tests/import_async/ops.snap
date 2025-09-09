@@ -54,13 +54,9 @@ description: Operations executed import_async.kcl
               "type": "Number",
               "value": 35.0,
               "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "type": "Known",
+                "type": "Angle",
+                "type": "Degrees"
               }
             },
             "sourceRange": []
@@ -102,13 +98,9 @@ description: Operations executed import_async.kcl
               "type": "Number",
               "value": 20.0,
               "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "type": "Known",
+                "type": "Angle",
+                "type": "Degrees"
               }
             },
             "sourceRange": []
@@ -1153,7 +1145,7 @@ description: Operations executed import_async.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.8699956271367815,
+              "value": 1.8699956271367817,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -1235,7 +1227,7 @@ description: Operations executed import_async.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -5.816564508980187,
+        "value": -5.816564508980192,
         "ty": {
           "type": "Default",
           "len": {
@@ -2595,7 +2587,7 @@ description: Operations executed import_async.kcl
           "angle": {
             "value": {
               "type": "Number",
-              "value": 1.655242081157069,
+              "value": 1.6552420811570692,
               "ty": {
                 "type": "Known",
                 "type": "Angle",
@@ -2677,7 +2669,7 @@ description: Operations executed import_async.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": -1.6644342460226098,
+        "value": -1.664434246022614,
         "ty": {
           "type": "Default",
           "len": {

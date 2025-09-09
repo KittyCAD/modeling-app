@@ -23,8 +23,9 @@ If you write a numeric literal without a suffix, then the defaults for the curre
 ## Numeric types
 
 Just like numbers carry units information, the `number` type also includes units information. Units are written in parentheses after the type, e.g., `number(mm)`.
+As a shorthand, you can also just write the units of suffix as a type, e.g., `mm`.
 
-Any of the suffixes described above can be used meaning that values with that type have the supplied units. E.g., `number(mm)` is the type of number values with mm units and `number(_)` is the type of number values with no units.
+Any of the suffixes described above can be used meaning that values with that type have the supplied units. E.g., `number(mm)` or `mm` is the type of number values with mm units and `number(_)` is the type of number values with no units.
 
 You can also use `number(Length)`, `number(Angle)`, or `number(Count)`. These types mean a number with any length, angle, or unitless (count) units, respectively (note that `number(_)` and `number(Count)` are equivalent since there is only one kind of unitless-ness).
 
@@ -38,7 +39,7 @@ When calling a function with an argument with numeric type, the declared numeric
 
 ## Mixing units with arithmetic
 
-When doing arithmetic or comparisons, units will be adjusted as necessary if possible. However, often arithmetic expressions exceed the ability of KCL to accurately choose units which can result in warnings in your code or sometimes errors. In these cases, you will need to give KCL more information. Sometimes this can be done by making units explicit using suffixes. If not, then you will need to use *type ascription*, which asserts that an expression has the supplied type. For example, `(x * y): number(mm)` tells KCL that the units of `x * y` is mm. Note that type ascription does not do any adjustment of the numbers, e.g., `2mm: number(in)` has the value `2in` (note that this would be a very non-idiomatic way to use numeric type ascription, you could simply write `2in`. Usually type ascription is only necessary for supplying type information about the result of computation).
+When doing arithmetic or comparisons, units will be adjusted as necessary if possible. However, often arithmetic expressions exceed the ability of KCL to accurately choose units which can result in warnings in your code or sometimes errors. In these cases, you will need to give KCL more information. Sometimes this can be done by making units explicit using suffixes. If not, then you will need to use *type ascription*, which asserts that an expression has the supplied type. For example, `(x * y): mm` tells KCL that the units of `x * y` is mm. Note that type ascription does not do any adjustment of the numbers, e.g., `2mm: in` has the value `2in` (note that this would be a very non-idiomatic way to use numeric type ascription, you could simply write `2in`. Usually type ascription is only necessary for supplying type information about the result of computation).
 
 KCL has no support for area, volume, or other higher dimension units. When internal unit tracking requires multiple dimensions, KCL essentially gives up. This is usually where the extra type information described above is needed. If doing computation with higher dimensioned units, you must ensure that all adjustments occur before any computation. E.g., if you want to compute an area with unknown units, you must convert all numbers to the same unit before starting.
 
@@ -49,4 +50,4 @@ You might sometimes need to convert from one unit to another for some calculatio
 
 KCL cannot know about changes to units caused by arithmetic. For example, you may intend for `10in * 25.4` to be the value `254mm` (i.e., `10in` in mm), however, the result of that computation in KCL is `254in`. It is always better to rely on automatic conversion or to use the explicit conversion functions, where possible.
 
-Converting between degrees and radians using π ([`PI`](/docs/kcl-std/consts/std-math-PI) in KCL) is especially prone to this error and so the `PI` constant always requires specifying units of any computation it is used with. E.g., `radius = (circumference / (2 * PI)): number(mm)`.
+Converting between degrees and radians using π ([`PI`](/docs/kcl-std/consts/std-math-PI) in KCL) is especially prone to this error and so the `PI` constant always requires specifying units of any computation it is used with. E.g., `radius = (circumference / (2 * PI)): mm`.

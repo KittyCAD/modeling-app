@@ -118,7 +118,7 @@ export function HelpMenu() {
                 as="button"
                 onClick={() => {
                   close()
-                  window.electron.appCheckForUpdates().catch(reportRejection)
+                  window.electron?.appCheckForUpdates().catch(reportRejection)
                 }}
               >
                 Check for updates

@@ -1,10 +1,10 @@
-import { MachinesListing } from 'components/MachineManagerProvider'
+import type { MachinesListing } from 'components/MachineManagerProvider'
 import 'electron'
-import fs from 'node:fs/promises'
-import path from 'path'
-import { dialog, shell } from 'electron'
+import type fs from 'node:fs/promises'
+import type path from 'path'
+import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
-import { ZooLabel } from 'menu/roles'
+import type { ZooLabel } from 'menu/roles'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {
@@ -47,12 +47,14 @@ export interface IElectronAPI {
   writeFile: (
     path: string,
     data: string | Uint8Array
-  ) => ReturnType<fs.writeFile>
-  readdir: (path: string) => ReturnType<fs.readdir>
-  exists: (path: string) => ReturnType<fs.exists>
+  ) => ReturnType<typeof fs.writeFile>
+  readdir: (path: string) => Promise<string[]>
+  // This is synchronous.
+  exists: (path: string) => boolean
   getPath: (name: string) => Promise<string>
   rm: typeof fs.rm
-  stat: (path: string) => ReturnType<fs.stat>
+  // TODO: Use a real return type.
+  stat: (path: string) => Promise<any>
   statIsDirectory: (path: string) => Promise<boolean>
   canReadWriteDirectory: (
     path: string
@@ -61,7 +63,7 @@ export interface IElectronAPI {
   mkdir: typeof fs.mkdir
   join: typeof path.join
   sep: typeof path.sep
-  rename: (prev: string, next: string) => typeof fs.rename
+  rename: (prev: string, next: string) => ReturnType<typeof fs.rename>
   packageJson: {
     name: string
   }
@@ -106,7 +108,9 @@ export interface IElectronAPI {
 
 declare global {
   interface Window {
-    electron: IElectronAPI
-    openExternalLink: (e: React.MouseEvent<HTMLAnchorElement>) => void
+    electron: IElectronAPI | undefined
+    openExternalLink:
+      | ((e: React.MouseEvent<HTMLAnchorElement>) => void)
+      | undefined
   }
 }

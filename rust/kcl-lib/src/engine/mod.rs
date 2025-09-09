@@ -31,7 +31,6 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 use parse_display::{Display, FromStr};
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use uuid::Uuid;
@@ -845,7 +844,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn close(&self);
 }
 
-#[derive(Debug, Hash, Eq, Copy, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Display, FromStr)]
+#[derive(Debug, Hash, Eq, Copy, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Display, FromStr)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum PlaneName {
@@ -892,14 +891,14 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
     let token = if let Some(token) = token {
         token
     } else if let Ok(token) = std::env::var("KITTYCAD_API_TOKEN") {
-        if let Ok(zoo_token) = zoo_token_env {
-            if zoo_token != token {
-                return Err(anyhow::anyhow!(
-                    "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
-                    token,
-                    zoo_token
-                ));
-            }
+        if let Ok(zoo_token) = zoo_token_env
+            && zoo_token != token
+        {
+            return Err(anyhow::anyhow!(
+                "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
+                token,
+                zoo_token
+            ));
         }
         token
     } else if let Ok(token) = zoo_token_env {
@@ -917,14 +916,14 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
     if let Some(addr) = engine_addr {
         client.set_base_url(addr);
     } else if let Ok(addr) = std::env::var("ZOO_HOST") {
-        if let Ok(kittycad_host) = kittycad_host_env {
-            if kittycad_host != addr {
-                return Err(anyhow::anyhow!(
-                    "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
-                    kittycad_host,
-                    addr
-                ));
-            }
+        if let Ok(kittycad_host) = kittycad_host_env
+            && kittycad_host != addr
+        {
+            return Err(anyhow::anyhow!(
+                "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
+                kittycad_host,
+                addr
+            ));
         }
         client.set_base_url(addr);
     } else if let Ok(addr) = kittycad_host_env {

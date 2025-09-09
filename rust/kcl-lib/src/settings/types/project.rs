@@ -2,12 +2,13 @@
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kittycad_modeling_cmds::units::UnitLength;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
-    AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, UnitLength, is_default,
+    AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, is_default,
 };
 
 /// Project specific settings for the app.
@@ -41,6 +42,13 @@ impl ProjectConfiguration {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct PerProjectSettings {
+    /// Information about the project itself.
+    /// Choices about how settings are merged have prevent me (lee) from easily
+    /// moving this out of the settings structure.
+    #[serde(default)]
+    #[validate(nested)]
+    pub meta: ProjectMetaSettings,
+
     /// The settings for the Design Studio.
     #[serde(default)]
     #[validate(nested)]
@@ -57,6 +65,15 @@ pub struct PerProjectSettings {
     #[serde(default)]
     #[validate(nested)]
     pub command_bar: CommandBarSettings,
+}
+
+/// Information about the project.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectMetaSettings {
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub id: uuid::Uuid,
 }
 
 /// Project specific application settings.
@@ -104,7 +121,7 @@ pub struct ProjectAppearanceSettings {
 }
 
 /// Project specific settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ProjectModelingSettings {
@@ -117,6 +134,23 @@ pub struct ProjectModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
+    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
+    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fixed_size_grid: Option<bool>,
+    /// When enabled, tools like line, rectangle, etc. will snap to the grid.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snap_to_grid: Option<bool>,
+    /// The space between major grid lines, specified in the current unit.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_grid_spacing: Option<f64>,
+    /// The number of minor grid lines per major grid line.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_grids_per_major: Option<f64>,
+    /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snaps_per_minor: Option<f64>,
 }
 
 fn named_view_point_version_one() -> f64 {
@@ -167,7 +201,7 @@ mod tests {
 
     use super::{
         CommandBarSettings, NamedView, PerProjectSettings, ProjectAppSettings, ProjectAppearanceSettings,
-        ProjectConfiguration, ProjectModelingSettings, TextEditorSettings,
+        ProjectConfiguration, ProjectMetaSettings, ProjectModelingSettings, TextEditorSettings,
     };
     use crate::settings::types::UnitLength;
 
@@ -182,7 +216,9 @@ mod tests {
         let serialized = toml::to_string(&parsed).unwrap();
         assert_eq!(
             serialized,
-            r#"[settings.app]
+            r#"[settings.meta]
+
+[settings.app]
 
 [settings.modeling]
 
@@ -268,6 +304,7 @@ color = 1567.4"#;
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
+                meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
                 app: ProjectAppSettings {
                     appearance: ProjectAppearanceSettings { color: 138.0.into() },
                     onboarding_status: Default::default(),
@@ -309,9 +346,14 @@ color = 1567.4"#;
                     ]),
                 },
                 modeling: ProjectModelingSettings {
-                    base_unit: UnitLength::Yd,
+                    base_unit: UnitLength::Yards,
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
+                    snap_to_grid: None,
+                    major_grid_spacing: None,
+                    minor_grids_per_major: None,
+                    snaps_per_minor: None,
+                    fixed_size_grid: None,
                 },
                 text_editor: TextEditorSettings {
                     text_wrapping: false.into(),
@@ -323,7 +365,9 @@ color = 1567.4"#;
             },
         };
         let serialized = toml::to_string(&conf).unwrap();
-        let old_project_file = r#"[settings.app]
+        let old_project_file = r#"[settings.meta]
+
+[settings.app]
 show_debug_panel = true
 
 [settings.app.appearance]

@@ -13,7 +13,10 @@ import { AppHeader } from '@src/components/AppHeader'
 import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
 import { useLspContext } from '@src/components/LspProvider'
-import { ModelingSidebar } from '@src/components/ModelingSidebar/ModelingSidebar'
+import {
+  ModelingSidebarLeft,
+  ModelingSidebarRight,
+} from '@src/components/ModelingSidebar/ModelingSidebar'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
@@ -47,11 +50,11 @@ import { DownloadAppToast } from '@src/components/DownloadAppToast'
 import { WasmErrToast } from '@src/components/WasmErrToast'
 import openWindow from '@src/lib/openWindow'
 import {
-  APP_DOWNLOAD_PATH,
   DOWNLOAD_APP_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
@@ -72,9 +75,11 @@ import env from '@src/env'
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
 
-maybeWriteToDisk()
-  .then(() => {})
-  .catch(() => {})
+if (window.electron) {
+  maybeWriteToDisk(window.electron)
+    .then(() => {})
+    .catch(reportRejection)
+}
 
 export function App() {
   const { state: modelingState } = useModelingContext()
@@ -150,6 +155,7 @@ export function App() {
       // Stop is more serious than Pause
       engineStreamActor.send({ type: EngineStreamTransition.Stop })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   // Show a custom toast to users if they haven't done the onboarding
@@ -179,6 +185,7 @@ export function App() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings.app.onboardingStatus])
 
   useEffect(() => {
@@ -214,6 +221,7 @@ export function App() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   useEffect(() => {
@@ -233,11 +241,12 @@ export function App() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.wasmInitFailed])
 
   // Only create the native file menus on desktop
   useEffect(() => {
-    if (isDesktop()) {
+    if (window.electron) {
       window.electron
         .createModelingPageMenu()
         .then(() => {
@@ -246,7 +255,6 @@ export function App() {
         .catch(reportRejection)
     }
   }, [])
-
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">
@@ -266,53 +274,59 @@ export function App() {
             <CommandBarOpenButton />
             <ShareButton />
           </AppHeader>
-          <Toolbar />
         </div>
         <ModalContainer />
-        <ModelingSidebar />
-        <EngineStream pool={pool} authToken={authToken} />
-        {/* <CamToggle /> */}
-        <section className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
-          <UnitsMenu />
-          <Gizmo />
+        <section className="flex flex-1">
+          <ModelingSidebarLeft />
+          <div className="relative z-0 flex flex-col flex-1 items-center overflow-hidden">
+            <Toolbar />
+            <EngineStream pool={pool} authToken={authToken} />
+            <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
+              <UnitsMenu />
+              <Gizmo />
+            </div>
+          </div>
+          <ModelingSidebarRight />
         </section>
-      </div>
-      <StatusBar
-        globalItems={[
-          networkHealthStatus,
-          ...(isDesktop() ? [networkMachineStatus] : []),
-          ...defaultGlobalStatusBarItems({ location, filePath }),
-        ]}
-        localItems={[
-          ...(getSettings().app.showDebugPanel.current
-            ? ([
-                {
-                  id: 'modeling-state',
-                  element: 'text',
-                  label:
-                    modelingState.value instanceof Object
-                      ? (xStateValueToString(modelingState.value) ?? '')
-                      : modelingState.value,
-                  toolTip: {
-                    children: 'The current state of the modeler',
+        {/* <CamToggle /> */}
+        <StatusBar
+          globalItems={[
+            networkHealthStatus,
+            ...(isDesktop() ? [networkMachineStatus] : []),
+            ...defaultGlobalStatusBarItems({ location, filePath }),
+          ]}
+          localItems={[
+            ...(getSettings().app.showDebugPanel.current
+              ? ([
+                  {
+                    id: 'modeling-state',
+                    element: 'text',
+                    label:
+                      modelingState.value instanceof Object
+                        ? (xStateValueToString(modelingState.value) ?? '')
+                        : modelingState.value,
+                    toolTip: {
+                      children: 'The current state of the modeler',
+                    },
                   },
-                },
-              ] satisfies StatusBarItemType[])
-            : []),
-          {
-            id: 'selection',
-            element: 'text',
-            label:
-              getSelectionTypeDisplayText(
-                modelingState.context.selectionRanges
-              ) ?? 'No selection',
-            toolTip: {
-              children: 'Currently selected geometry',
+                ] satisfies StatusBarItemType[])
+              : []),
+            {
+              id: 'selection',
+              'data-testid': 'selection-status',
+              element: 'text',
+              label:
+                getSelectionTypeDisplayText(
+                  modelingState.context.selectionRanges
+                ) ?? 'No selection',
+              toolTip: {
+                children: 'Currently selected geometry',
+              },
             },
-          },
-          ...defaultLocalStatusBarItems,
-        ]}
-      />
+            ...defaultLocalStatusBarItems,
+          ]}
+        />
+      </div>
     </div>
   )
 }

@@ -8,7 +8,6 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
-use schemars::JsonSchema;
 use serde::Serialize;
 
 use super::{
@@ -30,7 +29,7 @@ use crate::{
 };
 
 /// A sketch surface or a sketch.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(untagged)]
 pub enum SketchOrSurface {
@@ -348,7 +347,7 @@ async fn inner_circle_three_point(
 }
 
 /// Type of the polygon
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, Default)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Default)]
 #[ts(export)]
 #[serde(rename_all = "lowercase")]
 pub enum PolygonType {
@@ -525,17 +524,11 @@ async fn inner_polygon(
 
 /// Sketch an ellipse.
 pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(crate::CompilationError {
-        source_range: args.source_range,
-        message: "Use of ellipse is currently experimental and the interface may change.".to_string(),
-        suggestion: None,
-        severity: crate::errors::Severity::Warning,
-        tag: crate::errors::Tag::None,
-    });
     let sketch_or_surface =
         args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
     let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
-    let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::length(), exec_state)?;
+    let major_radius = args.get_kw_arg_opt("majorRadius", &RuntimeType::length(), exec_state)?;
+    let major_axis = args.get_kw_arg_opt("majorAxis", &RuntimeType::point2d(), exec_state)?;
     let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -543,6 +536,7 @@ pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         sketch_or_surface,
         center,
         major_radius,
+        major_axis,
         minor_radius,
         tag,
         exec_state,
@@ -554,10 +548,12 @@ pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     })
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn inner_ellipse(
     sketch_surface_or_group: SketchOrSurface,
     center: [TyF64; 2],
-    major_radius: TyF64,
+    major_radius: Option<TyF64>,
+    major_axis: Option<[TyF64; 2]>,
     minor_radius: TyF64,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -570,7 +566,27 @@ async fn inner_ellipse(
     let (center_u, ty) = untype_point(center.clone());
     let units = ty.expect_length();
 
-    let from = [center_u[0] + major_radius.to_length_units(units), center_u[1]];
+    let major_axis = match (major_axis, major_radius) {
+        (Some(_), Some(_)) | (None, None) => {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Provide either `majorAxis` or `majorRadius`.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(major_axis), None) => major_axis,
+        (None, Some(major_radius)) => [
+            major_radius.clone(),
+            TyF64 {
+                n: 0.0,
+                ty: major_radius.ty,
+            },
+        ],
+    };
+
+    let from = [
+        center_u[0] + major_axis[0].to_length_units(units),
+        center_u[1] + major_axis[1].to_length_units(units),
+    ];
     let from_t = [TyF64::new(from[0], ty), TyF64::new(from[1], ty)];
 
     let sketch =
@@ -581,6 +597,7 @@ async fn inner_ellipse(
 
     let id = exec_state.next_uuid();
 
+    let axis = KPoint2d::from(untyped_point_to_mm([major_axis[0].n, major_axis[1].n], units)).map(LengthUnit);
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
@@ -588,7 +605,7 @@ async fn inner_ellipse(
                 path: sketch.id.into(),
                 segment: PathSegment::Ellipse {
                     center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
-                    major_radius: LengthUnit(major_radius.to_mm()),
+                    major_axis: axis,
                     minor_radius: LengthUnit(minor_radius.to_mm()),
                     start_angle: Angle::from_degrees(angle_start.to_degrees()),
                     end_angle: Angle::from_degrees(angle_end.to_degrees()),
@@ -608,7 +625,7 @@ async fn inner_ellipse(
                 metadata: args.source_range.into(),
             },
         },
-        major_radius: major_radius.to_length_units(units),
+        major_axis: major_axis.map(|x| x.to_length_units(units)),
         minor_radius: minor_radius.to_length_units(units),
         center: center_u,
         ccw: angle_start < angle_end,

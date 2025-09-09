@@ -33,8 +33,14 @@ curl --silent --request POST \
   --form "RUNNER_ARCH=${RUNNER_ARCH:-}" \
   ${TAB_API_URL}/api/results/bulk > test-results/tab.json
 cat test-results/tab.json
-
 echo
+
+if ! grep --quiet "block" test-results/tab.json; then
+  echo "ERROR: Invalid response from ${TAB_API_URL}"
+  grep --quiet 'failures="0"' test-results/junit.xml
+  exit 0
+fi
+
 echo "Sharing updated report:"
 curl --silent --request POST \
   --header "Content-Type: application/json" \

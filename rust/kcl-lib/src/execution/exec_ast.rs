@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 
 use crate::{
-    CompilationError, NodePath,
+    CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
@@ -20,9 +20,9 @@ use crate::{
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
         BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, MemberExpression, Name,
-        Node, NodeRef, ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
+        Node, NodeRef, ObjectExpression, PipeExpression, Program, SketchBlock, TagDeclarator, Type, UnaryExpression,
+        UnaryOperator,
     },
-    source_range::SourceRange,
     std::args::TyF64,
 };
 
@@ -65,11 +65,51 @@ impl ExecutorContext {
                         "The standard library can only be skipped at the top level scope of a file",
                     ));
                 }
+            } else if annotation.name() == Some(annotations::WARNINGS) {
+                // TODO we should support setting warnings for the whole project, not just one file
+                if matches!(body_type, BodyType::Root) {
+                    let props = annotations::expect_properties(annotations::WARNINGS, annotation)?;
+                    for p in props {
+                        match &*p.inner.key.name {
+                            annotations::WARN_ALLOW => {
+                                let allowed = annotations::many_of(
+                                    &p.inner.value,
+                                    &annotations::WARN_VALUES,
+                                    annotation.as_source_range(),
+                                )?;
+                                exec_state.mod_local.allowed_warnings = allowed;
+                            }
+                            annotations::WARN_DENY => {
+                                let denied = annotations::many_of(
+                                    &p.inner.value,
+                                    &annotations::WARN_VALUES,
+                                    annotation.as_source_range(),
+                                )?;
+                                exec_state.mod_local.denied_warnings = denied;
+                            }
+                            name => {
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
+                                    format!(
+                                        "Unexpected warnings key: `{name}`; expected one of `{}`, `{}`",
+                                        annotations::WARN_ALLOW,
+                                        annotations::WARN_DENY,
+                                    ),
+                                    vec![annotation.as_source_range()],
+                                )));
+                            }
+                        }
+                    }
+                } else {
+                    exec_state.err(CompilationError::err(
+                        annotation.as_source_range(),
+                        "Warnings can only be customized at the top level scope of a file",
+                    ));
+                }
             } else {
-                exec_state.warn(CompilationError::err(
-                    annotation.as_source_range(),
-                    "Unknown annotation",
-                ));
+                exec_state.warn(
+                    CompilationError::err(annotation.as_source_range(), "Unknown annotation"),
+                    annotations::WARN_UNKNOWN_ATTR,
+                );
             }
         }
         Ok(no_prelude)
@@ -364,8 +404,8 @@ impl ExecutorContext {
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
-                    let impl_kind = annotations::get_impl(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
-                    match impl_kind {
+                    let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
+                    match attrs.impl_ {
                         annotations::Impl::Rust => {
                             let std_path = match &exec_state.mod_local.path {
                                 ModulePath::Std { value } => value,
@@ -687,7 +727,8 @@ impl ExecutorContext {
                             exec_state.warn(CompilationError::err(
                                 metadata.source_range,
                                 "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
-                            ));
+                            ),
+                        annotations::WARN_MOD_RETURN_VALUE);
 
                             let mut new_meta = vec![metadata.to_owned()];
                             new_meta.extend(meta);
@@ -702,17 +743,17 @@ impl ExecutorContext {
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
-                let rust_impl = annotations::get_impl(annotations, metadata.source_range)?
-                    .map(|s| s == annotations::Impl::Rust)
-                    .unwrap_or(false);
-
-                if rust_impl {
+                let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
+                if let Some(attrs) = attrs
+                    && attrs.impl_ == annotations::Impl::Rust
+                {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
                             value: FunctionSource::Std {
                                 func,
                                 props,
+                                attrs,
                                 ast: function_expression.clone(),
                             },
                             meta: vec![metadata.to_owned()],
@@ -777,6 +818,7 @@ impl ExecutorContext {
                 result
             }
             Expr::AscribedExpression(expr) => expr.get_result(exec_state, self).await?,
+            Expr::SketchBlock(expr) => expr.get_result(exec_state, self).await?,
         };
         Ok(item)
     }
@@ -814,6 +856,19 @@ impl Node<AscribedExpression> {
     }
 }
 
+impl Node<SketchBlock> {
+    pub async fn get_result(&self, _exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        let metadata = Metadata {
+            source_range: SourceRange::from(self),
+        };
+        // TODO: sketch-api: Implement sketch block execution
+        Ok(KclValue::Bool {
+            value: false,
+            meta: vec![metadata],
+        })
+    }
+}
+
 fn apply_ascription(
     value: &KclValue,
     ty: &Node<Type>,
@@ -829,9 +884,9 @@ fn apply_ascription(
 
     value.coerce(&ty, false, exec_state).map_err(|_| {
         let suggestion = if ty == RuntimeType::length() {
-            ", you might try coercing to a fully specified numeric type such as `number(mm)`"
+            ", you might try coercing to a fully specified numeric type such as `mm`"
         } else if ty == RuntimeType::angle() {
-            ", you might try coercing to a fully specified numeric type such as `number(deg)`"
+            ", you might try coercing to a fully specified numeric type such as `deg`"
         } else {
             ""
         };
@@ -1157,21 +1212,20 @@ impl Node<BinaryExpression> {
         meta.extend(right_value.metadata());
 
         // First check if we are doing string concatenation.
-        if self.operator == BinaryOperator::Add {
-            if let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
+        if self.operator == BinaryOperator::Add
+            && let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
                 (&left_value, &right_value)
-            {
-                return Ok(KclValue::String {
-                    value: format!("{left}{right}"),
-                    meta,
-                });
-            }
+        {
+            return Ok(KclValue::String {
+                value: format!("{left}{right}"),
+                meta,
+            });
         }
 
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new_no_args(self.into(), ctx.clone());
                 let result = crate::std::csg::inner_union(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -1184,7 +1238,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::Sub {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new_no_args(self.into(), ctx.clone());
                 let result = crate::std::csg::inner_subtract(
                     vec![*left.clone()],
                     vec![*right.clone()],
@@ -1198,7 +1252,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::And {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new_no_args(self.into(), ctx.clone());
                 let result = crate::std::csg::inner_intersect(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -1327,7 +1381,7 @@ impl Node<BinaryExpression> {
                 ),
             );
             err.tag = crate::errors::Tag::UnknownNumericUnits;
-            exec_state.warn(err);
+            exec_state.warn(err, annotations::WARN_UNKNOWN_UNITS);
         }
     }
 }
@@ -1816,6 +1870,7 @@ mod test {
     use super::*;
     use crate::{
         ExecutorSettings, UnitLen,
+        errors::Severity,
         exec::UnitType,
         execution::{ContextType, parse_execute},
     };
@@ -1897,6 +1952,18 @@ arr = [0]: [string]
 
         let program = r#"
 mixedArr = [0, "a"]: [number(mm)]
+"#;
+        let result = parse_execute(program).await;
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string().contains(
+                "could not coerce an array of `number`, `string` (with type `[any; 2]`) to type `[number(mm)]`"
+            ),
+            "Expected error but found {err:?}"
+        );
+
+        let program = r#"
+mixedArr = [0, "a"]: [mm]
 "#;
         let result = parse_execute(program).await;
         let err = result.unwrap_err();
@@ -2075,7 +2142,25 @@ a = foo()
 
         parse_execute(program).await.unwrap();
 
+        let program = r#"fn foo(): mm {
+  return 42
+}
+
+a = foo()
+"#;
+
+        parse_execute(program).await.unwrap();
+
         let program = r#"fn foo(): number(mm) {
+  return { bar: 42 }
+}
+
+a = foo()
+"#;
+
+        parse_execute(program).await.unwrap_err();
+
+        let program = r#"fn foo(): mm {
   return { bar: 42 }
 }
 
@@ -2140,6 +2225,9 @@ startSketchOn(XY)
     #[tokio::test(flavor = "multi_thread")]
     async fn ascription_in_binop() {
         let ast = r#"foo = tan(0): number(rad) - 4deg"#;
+        parse_execute(ast).await.unwrap();
+
+        let ast = r#"foo = tan(0): rad - 4deg"#;
         parse_execute(ast).await.unwrap();
     }
 
@@ -2249,5 +2337,30 @@ y = x[0mm + 1]
         let ast = std::fs::read_to_string("tests/inputs/planestuff.kcl").unwrap();
 
         parse_execute(&ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn custom_warning() {
+        let warn = r#"
+a = PI * 2
+"#;
+        let result = parse_execute(warn).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 1);
+        assert_eq!(result.exec_state.errors()[0].severity, Severity::Warning);
+
+        let allow = r#"
+@warnings(allow = unknownUnits)
+a = PI * 2
+"#;
+        let result = parse_execute(allow).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 0);
+
+        let deny = r#"
+@warnings(deny = [unknownUnits])
+a = PI * 2
+"#;
+        let result = parse_execute(deny).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 1);
+        assert_eq!(result.exec_state.errors()[0].severity, Severity::Error);
     }
 }

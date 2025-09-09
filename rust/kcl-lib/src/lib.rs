@@ -68,10 +68,10 @@ mod log;
 mod lsp;
 mod modules;
 mod parsing;
+mod project;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
-mod source_range;
 pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
@@ -94,14 +94,15 @@ pub use execution::{
     typed_path::TypedPath,
     types::{UnitAngle, UnitLen},
 };
+pub use kcl_error::SourceRange;
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use modules::ModuleId;
 pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
-pub use settings::types::{Configuration, UnitLength, project::ProjectConfiguration};
-pub use source_range::SourceRange;
+pub use project::ProjectManager;
+pub use settings::types::{Configuration, project::ProjectConfiguration};
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::{recast_dir, walk_dir};
 
@@ -194,8 +195,7 @@ pub use lsp::test_util::kcl_lsp_server;
 impl Program {
     pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationError>), KclError> {
         let module_id = ModuleId::default();
-        let tokens = parsing::token::lex(input, module_id)?;
-        let (ast, errs) = parsing::parse_tokens(tokens).0?;
+        let (ast, errs) = parsing::parse_str(input, module_id).0?;
 
         Ok((
             ast.map(|ast| Program {
@@ -208,8 +208,7 @@ impl Program {
 
     pub fn parse_no_errs(input: &str) -> Result<Program, KclError> {
         let module_id = ModuleId::default();
-        let tokens = parsing::token::lex(input, module_id)?;
-        let ast = parsing::parse_tokens(tokens).parse_errs_as_err()?;
+        let ast = parsing::parse_str(input, module_id).parse_errs_as_err()?;
 
         Ok(Program {
             ast,
@@ -227,13 +226,9 @@ impl Program {
     }
 
     /// Change the meta settings for the kcl file.
-    pub fn change_default_units(
-        &self,
-        length_units: Option<execution::types::UnitLen>,
-        angle_units: Option<execution::types::UnitAngle>,
-    ) -> Result<Self, KclError> {
+    pub fn change_default_units(&self, length_units: Option<execution::types::UnitLen>) -> Result<Self, KclError> {
         Ok(Self {
-            ast: self.ast.change_default_units(length_units, angle_units)?,
+            ast: self.ast.change_default_units(length_units)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }

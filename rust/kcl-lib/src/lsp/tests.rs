@@ -11,8 +11,11 @@ use tower_lsp::{
 
 use crate::{
     SourceRange,
-    errors::{LspSuggestion, Suggestion},
-    lsp::test_util::{copilot_lsp_server, kcl_lsp_server},
+    errors::Suggestion,
+    lsp::{
+        LspSuggestion,
+        test_util::{copilot_lsp_server, kcl_lsp_server},
+    },
     parsing::ast::types::{Node, Program},
 };
 

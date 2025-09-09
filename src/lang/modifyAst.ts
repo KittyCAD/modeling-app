@@ -1,5 +1,4 @@
 import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
-import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
@@ -27,11 +26,7 @@ import {
   isNodeSafeToReplace,
   isNodeSafeToReplacePath,
 } from '@src/lang/queryAst'
-import {
-  ARG_INDEX_FIELD,
-  LABELED_ARG_FIELD,
-  UNLABELED_ARG,
-} from '@src/lang/queryAstConstants'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   addTagForSketchOnFace,
@@ -70,6 +65,7 @@ import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
 import { ARG_AT } from '@src/lang/constants'
+import type { Coords2d } from '@src/lang/std/sketch'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -108,7 +104,7 @@ export function insertNewStartProfileAt(
   node: Node<Program>,
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
-  at: [number, number],
+  at: Coords2d,
   insertType: 'start' | 'end' = 'end'
 ):
   | {
@@ -419,56 +415,6 @@ export function sketchOnExtrudedFace(
   return {
     modifiedAst: _node,
     pathToNode: newpathToNode,
-  }
-}
-
-/**
- * Append an offset plane to the AST
- */
-export function addOffsetPlane({
-  node,
-  plane,
-  insertIndex,
-  offset,
-  planeName,
-}: {
-  node: Node<Program>
-  plane: Node<Literal> | Node<Name> // Can be DefaultPlaneStr or string for offsetPlanes
-  insertIndex?: number
-  offset: Expr
-  planeName?: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(node)
-  const newPlaneName =
-    planeName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.PLANE)
-
-  const newPlane = createVariableDeclaration(
-    newPlaneName,
-    createCallExpressionStdLibKw('offsetPlane', plane, [
-      createLabeledArg('offset', offset),
-    ])
-  )
-
-  const insertAt =
-    insertIndex !== undefined
-      ? insertIndex
-      : modifiedAst.body.length
-        ? modifiedAst.body.length
-        : 0
-
-  modifiedAst.body.length
-    ? modifiedAst.body.splice(insertAt, 0, newPlane)
-    : modifiedAst.body.push(newPlane)
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['unlabeled', UNLABELED_ARG],
-  ]
-  return {
-    modifiedAst,
-    pathToNode,
   }
 }
 

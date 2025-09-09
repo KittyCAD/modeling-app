@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react'
+import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLoaderData } from 'react-router-dom'
@@ -25,7 +26,6 @@ import {
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
-import { useFileContext } from '@src/hooks/useFileContext'
 import {
   useMenuListener,
   useSketchModeMenuEnableDisable,
@@ -49,23 +49,23 @@ import {
   EngineConnectionEvents,
 } from '@src/lang/std/engineConnection'
 import { err, reportRejection, trap, reject } from '@src/lib/trap'
-import { isNonNullable, platform, uuidv4 } from '@src/lib/utils'
-import { promptToEditFlow } from '@src/lib/promptToEdit'
-import type { FileMeta } from '@src/lib/types'
-import { commandBarActor } from '@src/lib/singletons'
-import { useToken, useSettings } from '@src/lib/singletons'
+
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
+
+import { platform, uuidv4 } from '@src/lib/utils'
+import { commandBarActor, settingsActor } from '@src/lib/singletons'
+import { useSettings } from '@src/lib/singletons'
+
 import type { IndexLoaderData } from '@src/lib/types'
 import {
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
   EXECUTION_TYPE_MOCK,
-  FILE_EXT,
-  PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { FileEntry } from '@src/lib/project'
+import type { Project } from '@src/lib/project'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   getPersistedContext,
@@ -105,12 +105,16 @@ import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistan
 import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { useFolders } from '@src/machines/systemIO/hooks'
+
+const OVERLAY_TIMEOUT_MS = 1_000
 
 export const ModelingMachineContext = createContext(
   {} as {
     state: StateFrom<typeof modelingMachine>
     context: ContextFrom<typeof modelingMachine>
     send: Prop<Actor<typeof modelingMachine>, 'send'>
+    theProject: MutableRefObject<Project | undefined>
   }
 )
 
@@ -125,11 +129,37 @@ export const ModelingMachineProvider = ({
 }) => {
   const {
     app: { allowOrbitInSketchMode },
-    modeling: { defaultUnit, cameraProjection, cameraOrbit },
+    modeling: {
+      defaultUnit,
+      cameraProjection,
+      cameraOrbit,
+      useNewSketchMode,
+      snapToGrid,
+    },
   } = useSettings()
-  const { context } = useFileContext()
-  const { file } = useLoaderData() as IndexLoaderData
-  const token = useToken()
+  const loaderData = useLoaderData() as IndexLoaderData
+  const projects = useFolders()
+  const { project, file } = loaderData
+  const theProject = useRef<Project | undefined>(project)
+  useEffect(() => {
+    // Have no idea why the project loader data doesn't have the children from the ls on disk
+    // That means it is a different object or cached incorrectly?
+    if (!project || !file) {
+      return
+    }
+
+    // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
+    const foundYourProject = projects.find((p) => {
+      return p.name === project.name
+    })
+
+    if (!foundYourProject) {
+      return
+    }
+    theProject.current = foundYourProject
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [projects, loaderData, file])
+
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
 
@@ -200,8 +230,7 @@ export const ModelingMachineProvider = ({
                     pathToNodeString,
                   },
                 })
-                // overlay timeout is 1s
-              }, 1000) as unknown as number
+              }, OVERLAY_TIMEOUT_MS) as unknown as number
               return {
                 ...context.segmentHoverMap,
                 [pathToNodeString]: timeoutId,
@@ -273,6 +302,7 @@ export const ModelingMachineProvider = ({
         },
         'Has exportable geometry': () =>
           !kclManager.hasErrors() && kclManager.ast.body.length > 0,
+        'should use new sketch mode': () => !!useNewSketchMode?.current,
       },
       actors: {
         exportFromEngine: fromPromise(
@@ -1161,111 +1191,7 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
-        'submit-prompt-edit': fromPromise(async ({ input }) => {
-          let projectFiles: FileMeta[] = [
-            {
-              type: 'kcl',
-              relPath: 'main.kcl',
-              absPath: 'main.kcl',
-              fileContents: codeManager.code,
-              execStateFileNamesIndex: 0,
-            },
-          ]
-          const execStateNameToIndexMap: { [fileName: string]: number } = {}
-          Object.entries(kclManager.execState.filenames).forEach(
-            ([index, val]) => {
-              if (val?.type === 'Local') {
-                execStateNameToIndexMap[val.value] = Number(index)
-              }
-            }
-          )
-          let basePath = ''
-          if (isDesktop() && context?.project?.children) {
-            // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
-            basePath = context?.project?.path
-            const filePromises: Promise<FileMeta | null>[] = []
-            let uploadSize = 0
-            const recursivelyPushFilePromises = (files: FileEntry[]) => {
-              // mutates filePromises declared above, so this function definition should stay here
-              // if pulled out, it would need to be refactored.
-              for (const file of files) {
-                if (file.children !== null) {
-                  // is directory
-                  recursivelyPushFilePromises(file.children)
-                  continue
-                }
-
-                const absolutePathToFileNameWithExtension = file.path
-                const fileNameWithExtension = window.electron.path.relative(
-                  basePath,
-                  absolutePathToFileNameWithExtension
-                )
-
-                const filePromise = window.electron
-                  .readFile(absolutePathToFileNameWithExtension)
-                  .then((file): FileMeta => {
-                    uploadSize += file.byteLength
-                    const decoder = new TextDecoder('utf-8')
-                    const fileType = window.electron.path.extname(
-                      absolutePathToFileNameWithExtension
-                    )
-                    if (fileType === FILE_EXT) {
-                      return {
-                        type: 'kcl',
-                        absPath: absolutePathToFileNameWithExtension,
-                        relPath: fileNameWithExtension,
-                        fileContents: decoder.decode(file),
-                        execStateFileNamesIndex:
-                          execStateNameToIndexMap[
-                            absolutePathToFileNameWithExtension
-                          ],
-                      }
-                    }
-                    const blob = new Blob([file], {
-                      type: 'application/octet-stream',
-                    })
-                    return {
-                      type: 'other',
-                      relPath: fileNameWithExtension,
-                      data: blob,
-                    }
-                  })
-                  .catch((e) => {
-                    console.error('error reading file', e)
-                    return null
-                  })
-
-                filePromises.push(filePromise)
-              }
-            }
-            recursivelyPushFilePromises(context?.project?.children)
-            projectFiles = (await Promise.all(filePromises)).filter(
-              isNonNullable
-            )
-            const MB20 = 2 ** 20 * 20
-            if (uploadSize > MB20) {
-              toast.error(
-                'Your project exceeds 20Mb, this will slow down Text-to-CAD\nPlease remove any unnecessary files'
-              )
-            }
-          }
-          // route to main.kcl by default for web and desktop
-          let filePath: string = PROJECT_ENTRYPOINT
-          const possibleFileName = file?.path
-          if (possibleFileName && isDesktop()) {
-            // When prompt to edit finishes, try to route to the file they were in otherwise go to main.kcl
-            filePath = window.electron.path.relative(basePath, possibleFileName)
-          }
-          return await promptToEditFlow({
-            projectFiles,
-            prompt: input.prompt,
-            selections: input.selection,
-            token,
-            artifactGraph: kclManager.artifactGraph,
-            projectName: context.project.name,
-            filePath,
-          })
-        }),
+        'submit-prompt-edit': fromPromise(async ({ input }) => {}),
       },
     }),
     {
@@ -1275,6 +1201,7 @@ export const ModelingMachineProvider = ({
           ...modelingMachineDefaultContext.store,
           ...persistedContext,
           cameraProjection,
+          useNewSketchMode,
         },
         machineManager,
       },
@@ -1443,6 +1370,7 @@ export const ModelingMachineProvider = ({
   // wrong
   useEffect(() => {
     sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [cameraOrbit.current])
 
   useEffect(() => {
@@ -1464,6 +1392,7 @@ export const ModelingMachineProvider = ({
         onConnectionStateChanged as EventListener
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager.engineConnection, modelingSend])
 
   useEffect(() => {
@@ -1489,6 +1418,7 @@ export const ModelingMachineProvider = ({
     if (inSketchMode) {
       sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [allowOrbitInSketchMode.current])
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
@@ -1526,6 +1456,14 @@ export const ModelingMachineProvider = ({
     resetCameraPosition().catch(reportRejection)
   })
 
+  // Toggle Snap to grid
+  useHotkeyWrapper([SNAP_TO_GRID_HOTKEY], () => {
+    settingsActor.send({
+      type: 'set.modeling.snapToGrid',
+      data: { level: 'project', value: !snapToGrid.current },
+    })
+  })
+
   useModelingMachineCommands({
     machineId: 'modeling',
     state: modelingState,
@@ -1545,6 +1483,7 @@ export const ModelingMachineProvider = ({
         state: modelingState,
         context: modelingState.context,
         send: modelingSend,
+        theProject,
       }}
     >
       {/* TODO #818: maybe pass reff down to children/app.ts or render app.tsx directly?

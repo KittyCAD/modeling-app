@@ -3,7 +3,6 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 export const APP_NAME = 'Design Studio'
-export const APP_DOWNLOAD_PATH = 'design-studio/download'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
 /** The maximum number of 0's to pad a default project name's index with */
@@ -54,6 +53,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   HELIX: 'helix',
   CLONE: 'clone',
   SOLID: 'solid',
+  PATTERN: 'pattern',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
@@ -62,7 +62,7 @@ export const KCL_DEFAULT_LENGTH = `5`
 export const KCL_DEFAULT_TRANSFORM = `0`
 
 /** The default KCL degree expression */
-export const KCL_DEFAULT_DEGREE = `360`
+export const KCL_DEFAULT_DEGREE = `360deg`
 
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
@@ -249,3 +249,8 @@ export type EnvironmentConfigurationRuntime = {
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'
 
 export const MAX_PROJECT_NAME_LENGTH = 240
+
+// It's so ugh that `uuid` package doesn't export this.
+export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
+
+export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'

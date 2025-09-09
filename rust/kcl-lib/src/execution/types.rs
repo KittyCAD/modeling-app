@@ -1,13 +1,12 @@
 use std::{collections::HashMap, fmt};
 
 use anyhow::Result;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     CompilationError, SourceRange,
     execution::{
-        ExecState, Plane, PlaneInfo, Point3d,
+        ExecState, Plane, PlaneInfo, Point3d, annotations,
         kcl_value::{KclValue, TypeDef},
         memory::{self},
     },
@@ -348,7 +347,7 @@ impl fmt::Display for RuntimeType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ts_rs::TS)]
 pub enum ArrayLen {
     None,
     Minimum(usize),
@@ -368,11 +367,22 @@ impl ArrayLen {
     }
 
     /// True if the length constraint is satisfied by the supplied length.
-    fn satisfied(self, len: usize, allow_shrink: bool) -> Option<usize> {
+    pub fn satisfied(self, len: usize, allow_shrink: bool) -> Option<usize> {
         match self {
             ArrayLen::None => Some(len),
             ArrayLen::Minimum(s) => (len >= s).then_some(len),
             ArrayLen::Known(s) => (if allow_shrink { len >= s } else { len == s }).then_some(s),
+        }
+    }
+
+    pub fn human_friendly_type(self) -> String {
+        match self {
+            ArrayLen::None | ArrayLen::Minimum(0) => "any number of elements".to_owned(),
+            ArrayLen::Minimum(1) => "at least 1 element".to_owned(),
+            ArrayLen::Minimum(n) => format!("at least {n} elements"),
+            ArrayLen::Known(0) => "no elements".to_owned(),
+            ArrayLen::Known(1) => "exactly 1 element".to_owned(),
+            ArrayLen::Known(n) => format!("exactly {n} elements"),
         }
     }
 }
@@ -460,7 +470,7 @@ impl fmt::Display for PrimitiveType {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum NumericType {
@@ -831,7 +841,7 @@ impl From<UnitAngle> for NumericType {
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitType {
@@ -864,7 +874,7 @@ impl std::fmt::Display for UnitType {
 
 // TODO called UnitLen so as not to clash with UnitLength in settings.
 /// A unit of length.
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitLen {
@@ -949,29 +959,15 @@ impl TryFrom<NumericSuffix> for UnitLen {
     }
 }
 
-impl From<crate::UnitLength> for UnitLen {
-    fn from(unit: crate::UnitLength) -> Self {
+impl From<kittycad_modeling_cmds::units::UnitLength> for UnitLen {
+    fn from(unit: kittycad_modeling_cmds::units::UnitLength) -> Self {
         match unit {
-            crate::UnitLength::Cm => UnitLen::Cm,
-            crate::UnitLength::Ft => UnitLen::Feet,
-            crate::UnitLength::In => UnitLen::Inches,
-            crate::UnitLength::M => UnitLen::M,
-            crate::UnitLength::Mm => UnitLen::Mm,
-            crate::UnitLength::Yd => UnitLen::Yards,
-        }
-    }
-}
-
-impl From<UnitLen> for crate::UnitLength {
-    fn from(unit: UnitLen) -> Self {
-        match unit {
-            UnitLen::Cm => crate::UnitLength::Cm,
-            UnitLen::Feet => crate::UnitLength::Ft,
-            UnitLen::Inches => crate::UnitLength::In,
-            UnitLen::M => crate::UnitLength::M,
-            UnitLen::Mm => crate::UnitLength::Mm,
-            UnitLen::Yards => crate::UnitLength::Yd,
-            UnitLen::Unknown => unreachable!(),
+            kittycad_modeling_cmds::units::UnitLength::Centimeters => UnitLen::Cm,
+            kittycad_modeling_cmds::units::UnitLength::Feet => UnitLen::Feet,
+            kittycad_modeling_cmds::units::UnitLength::Inches => UnitLen::Inches,
+            kittycad_modeling_cmds::units::UnitLength::Meters => UnitLen::M,
+            kittycad_modeling_cmds::units::UnitLength::Millimeters => UnitLen::Mm,
+            kittycad_modeling_cmds::units::UnitLength::Yards => UnitLen::Yards,
         }
     }
 }
@@ -990,8 +986,10 @@ impl From<UnitLen> for kittycad_modeling_cmds::units::UnitLength {
     }
 }
 
+// Conversions are defined directly against kittycad_modeling_cmds::units::UnitLength.
+
 /// A unit of angle.
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitAngle {
@@ -1137,15 +1135,15 @@ impl KclValue {
                 // If the user is explicitly specifying units, treat the value
                 // as having had its units erased, rather than forcing the user
                 // to explicitly erase them.
-                if let KclValue::Number { value: n, meta, .. } = &self {
-                    if ty.is_fully_specified() {
-                        let value = KclValue::Number {
-                            ty: NumericType::Any,
-                            value: *n,
-                            meta: meta.clone(),
-                        };
-                        return ty.coerce(&value);
-                    }
+                if let KclValue::Number { value: n, meta, .. } = &self
+                    && ty.is_fully_specified()
+                {
+                    let value = KclValue::Number {
+                        ty: NumericType::Any,
+                        value: *n,
+                        meta: meta.clone(),
+                    };
+                    return ty.coerce(&value);
                 }
                 ty.coerce(self)
             }
@@ -1165,56 +1163,58 @@ impl KclValue {
                 KclValue::Solid { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            PrimitiveType::Plane => match self {
-                KclValue::String { value: s, .. }
-                    if [
-                        "xy", "xz", "yz", "-xy", "-xz", "-yz", "XY", "XZ", "YZ", "-XY", "-XZ", "-YZ",
-                    ]
-                    .contains(&&**s) =>
-                {
-                    Ok(self.clone())
-                }
-                KclValue::Plane { .. } => Ok(self.clone()),
-                KclValue::Object { value, meta } => {
-                    let origin = value
-                        .get("origin")
-                        .and_then(Point3d::from_kcl_val)
-                        .ok_or(CoercionError::from(self))?;
-                    let x_axis = value
-                        .get("xAxis")
-                        .and_then(Point3d::from_kcl_val)
-                        .ok_or(CoercionError::from(self))?;
-                    let y_axis = value
-                        .get("yAxis")
-                        .and_then(Point3d::from_kcl_val)
-                        .ok_or(CoercionError::from(self))?;
-                    let z_axis = x_axis.axes_cross_product(&y_axis);
+            PrimitiveType::Plane => {
+                match self {
+                    KclValue::String { value: s, .. }
+                        if [
+                            "xy", "xz", "yz", "-xy", "-xz", "-yz", "XY", "XZ", "YZ", "-XY", "-XZ", "-YZ",
+                        ]
+                        .contains(&&**s) =>
+                    {
+                        Ok(self.clone())
+                    }
+                    KclValue::Plane { .. } => Ok(self.clone()),
+                    KclValue::Object { value, meta } => {
+                        let origin = value
+                            .get("origin")
+                            .and_then(Point3d::from_kcl_val)
+                            .ok_or(CoercionError::from(self))?;
+                        let x_axis = value
+                            .get("xAxis")
+                            .and_then(Point3d::from_kcl_val)
+                            .ok_or(CoercionError::from(self))?;
+                        let y_axis = value
+                            .get("yAxis")
+                            .and_then(Point3d::from_kcl_val)
+                            .ok_or(CoercionError::from(self))?;
+                        let z_axis = x_axis.axes_cross_product(&y_axis);
 
-                    if value.get("zAxis").is_some() {
-                        exec_state.warn(CompilationError::err(
+                        if value.get("zAxis").is_some() {
+                            exec_state.warn(CompilationError::err(
                             self.into(),
                             "Object with a zAxis field is being coerced into a plane, but the zAxis is ignored.",
-                        ));
+                        ), annotations::WARN_IGNORED_Z_AXIS);
+                        }
+
+                        let id = exec_state.mod_local.id_generator.next_uuid();
+                        let plane = Plane {
+                            id,
+                            artifact_id: id.into(),
+                            info: PlaneInfo {
+                                origin,
+                                x_axis: x_axis.normalize(),
+                                y_axis: y_axis.normalize(),
+                                z_axis: z_axis.normalize(),
+                            },
+                            value: super::PlaneType::Uninit,
+                            meta: meta.clone(),
+                        };
+
+                        Ok(KclValue::Plane { value: Box::new(plane) })
                     }
-
-                    let id = exec_state.mod_local.id_generator.next_uuid();
-                    let plane = Plane {
-                        id,
-                        artifact_id: id.into(),
-                        info: PlaneInfo {
-                            origin,
-                            x_axis: x_axis.normalize(),
-                            y_axis: y_axis.normalize(),
-                            z_axis: z_axis.normalize(),
-                        },
-                        value: super::PlaneType::Uninit,
-                        meta: meta.clone(),
-                    };
-
-                    Ok(KclValue::Plane { value: Box::new(plane) })
+                    _ => Err(self.into()),
                 }
-                _ => Err(self.into()),
-            },
+            }
             PrimitiveType::Face => match self {
                 KclValue::Face { .. } => Ok(self.clone()),
                 _ => Err(self.into()),

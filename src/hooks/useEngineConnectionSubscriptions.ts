@@ -87,6 +87,7 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, engineStreamState, context?.sketchEnginePathId])
 
   useEffect(() => {
@@ -267,7 +268,7 @@ export function useEngineConnectionSubscriptions() {
                   zAxis: [z_axis.x, z_axis.y, z_axis.z],
                   yAxis: [y_axis.x, y_axis.y, y_axis.z],
                   position: [origin.x, origin.y, origin.z].map(
-                    (num) => num / sceneInfra._baseUnitMultiplier
+                    (num) => num / sceneInfra.baseUnitMultiplier
                   ) as [number, number, number],
                   sketchPathToNode,
                   extrudePathToNode,
@@ -281,5 +282,6 @@ export function useEngineConnectionSubscriptions() {
         : () => {},
     })
     return unSub
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, engineStreamState, state])
 }
