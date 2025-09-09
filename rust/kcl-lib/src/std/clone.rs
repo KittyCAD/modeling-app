@@ -268,21 +268,6 @@ async fn fix_sketch_tags_and_references(
         }
     }
 
-    // for path in new_sketch.paths.clone() {
-    //         // Check if this path has a tag.
-    //         if let Some(tag) = path.get_tag() {
-    //             let mut surface: Option<ExtrudeSurface> = None;
-    //             for (i, s) in surfaces.clone().unwrap_or(vec![]).iter().enumerate() {
-    //                 if s.get_tag() == Some(tag.clone()) {
-    //                     surface = Some(s.clone());
-    //                     surface.as_mut().unwrap().set_face_id(entity_id_map.get(&s.get_face_id()).copied().unwrap_or_default());
-    //                 }
-    //             }
-
-    //             new_sketch.add_tag(&tag.clone(), &path, exec_state, &surface);
-    //         }
-    //     }
-
     // Fix the base path.
     if let Some(new_base_path) = entity_id_map.get(&new_sketch.start.geo_meta.id) {
         new_sketch.start.geo_meta.id = *new_base_path;
