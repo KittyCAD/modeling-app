@@ -47,7 +47,6 @@ import type { KclManager } from '@src/lang/KclSingleton'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
-import { a } from 'vitest/dist/chunks/suite.d.FvehnV49'
 
 export class ConnectionManager extends EventTarget {
   started: boolean
@@ -164,6 +163,7 @@ export class ConnectionManager extends EventTarget {
     }
     console.warn('starting engine connection')
     this.started = true
+    this.rejectAllPendingCommands()
 
     if (this.connection) {
       return Promise.reject(
@@ -206,6 +206,7 @@ export class ConnectionManager extends EventTarget {
       token,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       tearDownManager: this.tearDown.bind(this),
+      rejectPendingCommand: this.rejectPendingCommand.bind(this),
     })
 
     // Only used for useNetworkStatus.tsx listeners, why?!
@@ -538,10 +539,6 @@ export class ConnectionManager extends EventTarget {
       )
     }
 
-    // We can send pendingCommands before we can send them to the engine and they will be infinitely awaited on when the next execution loop runs.
-    // What the fuck?
-    await this.connection.deferredConnection?.promise
-
     const { promise, resolve, reject } = promiseFactory<any>()
     this.pendingCommands[id] = {
       resolve,
@@ -820,22 +817,8 @@ export class ConnectionManager extends EventTarget {
         'tearingDown connectionManager'
       )
       this.connection.deferredSdpAnswer?.reject('tearingDown connectionManager')
-      for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
-        pending.reject([
-          {
-            success: false,
-            errors: [
-              {
-                error_code: 'connection_problem',
-                message: `no connection to send on, connection manager called tearDown(). cmdId: ${cmdId}`,
-              },
-            ],
-          },
-        ])
-        delete this.pendingCommands[cmdId]
-      }
     }
-
+    this.rejectAllPendingCommands()
     // Make sure to get all the deeply nested ones as well.
     this.removeAllEventListeners()
     this.connection?.disconnectAll()
@@ -847,6 +830,50 @@ export class ConnectionManager extends EventTarget {
 
     // Allow for restart!
     this.started = false
+  }
+
+  rejectPendingCommand({
+    cmdId,
+  }: {
+    cmdId: string
+  }) {
+    if (this.pendingCommands[cmdId]) {
+      const pendingCommand = this.pendingCommands[cmdId]
+      pendingCommand.reject([
+        {
+          success: false,
+          errors: [
+            {
+              error_code: 'connection_problem',
+              // TODO: Kevin
+              message: `ODDLY SPECIFIC REJECTION!`,
+            },
+          ],
+        },
+      ])
+      delete this.pendingCommands[cmdId]
+    }
+  }
+
+  rejectAllPendingCommands() {
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'rejectAllPendingCommands',
+    })
+    for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
+      pending.reject([
+        {
+          success: false,
+          errors: [
+            {
+              error_code: 'connection_problem',
+              message: `no connection to send on, connection manager called tearDown(). cmdId: ${cmdId}`,
+            },
+          ],
+        },
+      ])
+      delete this.pendingCommands[cmdId]
+    }
   }
 
   offline() {

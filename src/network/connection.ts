@@ -28,6 +28,7 @@ import {
 } from '@src/network/websocketConnection'
 import { EngineDebugger } from '@src/lib/debugger'
 import { uuidv4 } from '@src/lib/utils'
+import type { ModelingCmdReq_type } from '@kittycad/lib/dist/types/src/models'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependenices. We do not need to pass values between these. It is mainly
@@ -82,17 +83,20 @@ export class Connection extends EventTarget {
 
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
   tearDownManager: () => void
+  rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
 
   constructor({
     url,
     token,
     handleOnDataChannelMessage,
     tearDownManager,
+    rejectPendingCommand,
   }: {
     url: string
     token: string
     handleOnDataChannelMessage: (event: MessageEvent<any>) => void
     tearDownManager: () => void
+    rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -106,6 +110,7 @@ export class Connection extends EventTarget {
     this._token = token
     this.handleOnDataChannelMessage = handleOnDataChannelMessage
     this.tearDownManager = tearDownManager
+    this.rejectPendingCommand = rejectPendingCommand
     this._pingPongSpan = { ping: undefined, pong: undefined }
 
     this.deferredConnection = null
@@ -196,9 +201,12 @@ export class Connection extends EventTarget {
     this.deferredSdpAnswer = promiseFactory<any>()
 
     this.createWebSocketConnection()
-    await this.deferredPeerConnection.promise
-    await this.deferredMediaStreamAndWebrtcStatsCollector.promise
-    await this.deferredSdpAnswer.promise
+
+    await Promise.all([
+      this.deferredPeerConnection.promise,
+      this.deferredMediaStreamAndWebrtcStatsCollector.promise,
+      this.deferredSdpAnswer.promise,
+    ])
 
     // Gotcha: tricky to await initiateConnectionExclusive, there are multiple locations for firing?
     return this.deferredConnection.promise
@@ -833,6 +841,14 @@ export class Connection extends EventTarget {
         message: 'readyState is not WebSocket.OPEN',
         metadata: { id: this.id, readyState: this.websocket?.readyState },
       })
+      //
+      if (
+        message.type === 'modeling_cmd_req' &&
+        message.cmd &&
+        message.cmd_id
+      ) {
+        this.rejectPendingCommand({ cmdId: message.cmd_id })
+      }
       return
     }
 

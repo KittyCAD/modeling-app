@@ -125,7 +125,8 @@ function handleExecuteError(e: any): ExecutionResult {
       e.msg.includes('Failed to wait for promise from send modeling command') ||
       e.msg.includes(
         'no connection to send on, connection manager called tearDown()'
-      )
+      ) ||
+      e.msg.includes('ODDLY SPECIFIC REJECTION!')
     ) {
       isInterrupted = true
     }
@@ -145,7 +146,8 @@ function handleExecuteError(e: any): ExecutionResult {
         ) ||
         e[0].errors[0].message.includes(
           'Failed to wait for promise from send modeling command'
-        )
+        ) ||
+        e[0].errors[0].message.includes('ODDLY SPECIFIC REJECTION!')
       ) {
         isInterrupted = true
       }
