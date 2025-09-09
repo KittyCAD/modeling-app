@@ -17,6 +17,8 @@ const KclContext = createContext({
   logs: kclManager?.logs,
   errors: kclManager?.errors,
   wasmInitFailed: kclManager?.wasmInitFailed,
+  isPaused: kclManager?.isPaused || false,
+  togglePause: () => kclManager?.togglePause(),
 })
 
 export function useKclContext() {
@@ -43,6 +45,7 @@ export function KclContextProvider({
   const [errors, setErrors] = useState<KCLError[]>([])
   const [logs, setLogs] = useState<string[]>([])
   const [wasmInitFailed, setWasmInitFailed] = useState(false)
+  const [isPaused, setIsPaused] = useState(kclManager?.isPaused || false)
 
   useEffect(() => {
     codeManager.registerCallBacks({
@@ -56,6 +59,7 @@ export function KclContextProvider({
       setDiagnostics,
       setIsExecuting,
       setWasmInitFailed,
+      setIsPaused,
     })
   }, [])
 
@@ -70,6 +74,8 @@ export function KclContextProvider({
         logs,
         errors,
         wasmInitFailed,
+        isPaused,
+        togglePause: () => kclManager.togglePause(),
       }}
     >
       {children}
