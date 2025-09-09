@@ -7,21 +7,21 @@ import {
   createLiteral,
   createLocalName,
 } from '@src/lang/create'
-import { isArray } from '@src/lib/utils'
-import {
-  getVariableExprsFromSelection,
-  valueOrVariable,
-} from '@src/lang/queryAst'
-import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import type { Selections } from '@src/lib/selections'
-import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   createVariableExpressionsArray,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import {
+  getVariableExprsFromSelection,
+  valueOrVariable,
+} from '@src/lang/queryAst'
+import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import type { Selections } from '@src/lib/selections'
+import { err } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 
 export function addPatternCircular3D({
   ast,

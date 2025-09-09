@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
-import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -12,11 +12,12 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useKclContext } from '@src/lang/KclProvider'
+import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
+import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   filterOperations,
   getOperationIcon,
@@ -24,6 +25,11 @@ import {
   getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import {
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
 import {
   codeManager,
   commandBarActor,
@@ -32,6 +38,7 @@ import {
   rustContext,
   sceneInfra,
 } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 import {
   featureTreeMachine,
   featureTreeMachineDefaultContext,
@@ -41,13 +48,6 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
-import {
-  selectDefaultSketchPlane,
-  selectOffsetSketchPlane,
-} from '@src/lib/selections'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
-import { err } from '@src/lib/trap'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)

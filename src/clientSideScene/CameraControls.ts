@@ -1,7 +1,5 @@
-import type {
-  CameraDragInteractionType_type,
-  CameraViewState_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { CameraDragInteractionType, CameraViewState } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isArray } from '@src/lib/utils'
 
 import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
@@ -38,6 +36,7 @@ import type {
 import type { MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { Signal } from '@src/lib/signal'
 import { reportRejection } from '@src/lib/trap'
 import { err } from '@src/lib/trap'
 import {
@@ -50,7 +49,6 @@ import {
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
 import { degToRad } from 'three/src/math/MathUtils'
-import { Signal } from '@src/lib/signal'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -127,7 +125,7 @@ export class CameraControls {
   mouseNewPosition: Vector2
   worldDownPosition: Vector3
   cameraDown: Camera
-  oldCameraState: undefined | CameraViewState_type
+  oldCameraState: undefined | CameraViewState
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
@@ -261,7 +259,7 @@ export class CameraControls {
   }
 
   doMove = (
-    interaction: CameraDragInteractionType_type,
+    interaction: CameraDragInteractionType,
     coordinates: [number, number]
   ) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -992,7 +990,7 @@ export class CameraControls {
     })
   }
 
-  async getCameraView(): Promise<CameraViewState_type | Error> {
+  async getCameraView(): Promise<CameraViewState | Error> {
     const response = await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -1001,14 +999,12 @@ export class CameraControls {
 
     // Check valid response from the engine.
     const singleResponse = isArray(response) ? response[0] : response
-    const noValidResponse =
-      !singleResponse?.success || !('resp' in singleResponse)
-
-    if (noValidResponse) {
+    if (!singleResponse || !isModelingResponse(singleResponse)) {
       return new Error('Failed to get camera view state: no valid response.')
     }
-
-    // Check we actually have the 'modeling_response' field.
+    if (!isModelingResponse(singleResponse)) {
+      return new Error('Failed to get camera view state: wrong response type.')
+    }
     const data = singleResponse.resp.data
     const noModelingResponse = !('modeling_response' in data)
 
@@ -1056,7 +1052,7 @@ export class CameraControls {
       )
     }
 
-    const cameraViewTarget: CameraViewState_type = {
+    const cameraViewTarget: CameraViewState = {
       ...cameraView,
       pivot_rotation: Z_AXIS_QUATERNIONS[direction],
       pivot_position: {
@@ -1234,14 +1230,14 @@ export class CameraControls {
             cmd: { type: 'default_camera_get_view' },
           })
         if (!cameraViewStateResponse) return
-        if (
-          'resp' in cameraViewStateResponse &&
-          'modeling_response' in cameraViewStateResponse.resp.data &&
-          'data' in cameraViewStateResponse.resp.data.modeling_response &&
-          'view' in cameraViewStateResponse.resp.data.modeling_response.data
-        ) {
-          this.oldCameraState =
-            cameraViewStateResponse.resp.data.modeling_response.data.view
+        const r = isArray(cameraViewStateResponse)
+          ? cameraViewStateResponse[0]
+          : cameraViewStateResponse
+        if (r && isModelingResponse(r)) {
+          const mr = r.resp.data.modeling_response
+          if ('data' in mr && 'view' in mr.data) {
+            this.oldCameraState = mr.data.view
+          }
         }
 
         clearTimeout(timeoutId)
@@ -1507,7 +1503,7 @@ export class CameraControls {
   }
   getInteractionType = (
     event: PointerEvent | WheelEvent | MouseEvent
-  ): CameraDragInteractionType_type | 'none' => {
+  ): CameraDragInteractionType | 'none' => {
     // We just need to send any start value to the engine for touch.
     // I chose "rotate" because it's the 1-finger gesture
     const initialInteractionType =

@@ -3,17 +3,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
 import { initPromise } from '@src/lang/wasmUtils'
+import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   getEnvironmentConfigurationPath,
-  listProjects,
   getEnvironmentFilePath,
+  listProjects,
   readEnvironmentConfigurationFile,
-  readEnvironmentFile,
   readEnvironmentConfigurationToken,
+  readEnvironmentFile,
 } from '@src/lib/desktop'
-import type { DeepPartial } from '@src/lib/types'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
-import type { EnvironmentConfiguration } from '@src/lib/constants'
+import type { DeepPartial } from '@src/lib/types'
 
 beforeAll(async () => {
   await initPromise

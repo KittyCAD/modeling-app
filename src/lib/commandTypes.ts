@@ -1,4 +1,4 @@
-import type { EntityType_type } from '@kittycad/lib/dist/types/src/models'
+import type { EntityType } from '@kittycad/lib'
 import type { ReactNode } from 'react'
 import type { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
 
@@ -174,7 +174,7 @@ export type CommandArgumentConfig<
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
       clearSelectionFirst?: boolean
-      selectionFilter?: EntityType_type[]
+      selectionFilter?: EntityType[]
       multiple: boolean
       validation?: ({
         data,
@@ -187,7 +187,7 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selectionMixed'
       selectionTypes: Artifact['type'][]
-      selectionFilter?: EntityType_type[]
+      selectionFilter?: EntityType[]
       multiple: boolean
       allowNoSelection?: boolean
       validation?: ({
@@ -330,7 +330,7 @@ export type CommandArgument<
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
       clearSelectionFirst?: boolean
-      selectionFilter?: EntityType_type[]
+      selectionFilter?: EntityType[]
       multiple: boolean
       validation?: ({
         data,
@@ -343,7 +343,7 @@ export type CommandArgument<
   | {
       inputType: 'selectionMixed'
       selectionTypes: Artifact['type'][]
-      selectionFilter?: EntityType_type[]
+      selectionFilter?: EntityType[]
       multiple: boolean
       allowNoSelection?: boolean
       validation?: ({

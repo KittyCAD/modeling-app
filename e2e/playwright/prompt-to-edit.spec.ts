@@ -1,6 +1,6 @@
+import * as path from 'path'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import * as fsp from 'fs/promises'
-import * as path from 'path'
 
 /* eslint-disable jest/no-conditional-expect */
 

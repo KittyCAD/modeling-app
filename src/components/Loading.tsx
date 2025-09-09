@@ -15,8 +15,8 @@ import {
   EngineConnectionStateType,
 } from '@src/lang/std/engineConnection'
 import { SafeRenderer } from '@src/lib/markdown'
-import { engineCommandManager } from '@src/lib/singletons'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { engineCommandManager } from '@src/lib/singletons'
 
 interface LoadingProps extends React.PropsWithChildren {
   isDummy?: boolean

@@ -1,17 +1,17 @@
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { uuidv4 } from '@src/lib/utils'
 import {
   type FileExplorerEntry,
-  type FileExplorerRow,
   type FileExplorerRender,
+  type FileExplorerRow,
   type FileExplorerRowContextMenuProps,
   isRowFake,
 } from '@src/components/Explorer/utils'
-import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
-import type { Dispatch } from 'react'
-import { useRef, useState } from 'react'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
+import { uuidv4 } from '@src/lib/utils'
+import type { Dispatch } from 'react'
+import { useRef, useState } from 'react'
 
 export const StatusDot = () => {
   return <span className="text-primary hue-rotate-90">•</span>

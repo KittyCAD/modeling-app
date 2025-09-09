@@ -23,12 +23,12 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import type { ConstrainInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/sourceRange'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import {
   codeManager,
@@ -38,10 +38,10 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { err, reportRejection, trap } from '@src/lib/trap'
-import { throttle, toSync } from '@src/lib/utils'
 import type { useSettings } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { throttle, toSync } from '@src/lib/utils'
 import type { SegmentOverlay } from '@src/machines/modelingMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {

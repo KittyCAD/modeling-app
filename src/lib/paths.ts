@@ -2,6 +2,8 @@ import type { PlatformPath } from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
+import type { IElectronAPI } from '@root/interface'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
@@ -9,8 +11,6 @@ import {
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import type { IElectronAPI } from '@root/interface'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 
 const SETTINGS = '/settings'
 

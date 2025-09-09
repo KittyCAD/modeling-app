@@ -3,28 +3,28 @@ import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 
+import type { IElectronAPI } from '@root/interface'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { APP_NAME } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { Themes, getSystemTheme } from '@src/lib/theme'
-import { reportRejection } from '@src/lib/trap'
-import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
-import { authActor, useSettings } from '@src/lib/singletons'
-import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
-import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { updateEnvironment, updateEnvironmentPool } from '@src/env'
 import env from '@src/env'
+import { APP_NAME } from '@src/lib/constants'
 import {
   readEnvironmentConfigurationPool,
   readEnvironmentFile,
   writeEnvironmentConfigurationPool,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { authActor, useSettings } from '@src/lib/singletons'
+import { Themes, getSystemTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
+import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
-import type { IElectronAPI } from '@root/interface'
+import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'

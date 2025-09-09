@@ -1,10 +1,10 @@
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
+import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
+import { CustomIcon } from '@src/components/CustomIcon'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { useMemo } from 'react'
-import { CustomIcon } from '@src/components/CustomIcon'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const commandBarState = useCommandBarState()
