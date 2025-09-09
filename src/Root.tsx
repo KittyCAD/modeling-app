@@ -25,26 +25,28 @@ function RootLayout() {
         on the project view or anywhere else in the app in the future. It should
         work regardless of the LSP or sketching being available, as users
         may simply want to ask it questions. */}
-        <MlEphantMachineContext.Provider options={{
-          input: {
-            ws: wsCopilot
-          }
-        }}>
-        <LspProvider>
-          <KclContextProvider>
-            <AppStateProvider>
-              <MachineManagerProvider>
-                {isDesktop() ? (
-                  <SystemIOMachineLogicListenerDesktop />
-                ) : (
-                  <SystemIOMachineLogicListenerWeb />
-                )}
+        <MlEphantMachineContext.Provider
+          options={{
+            input: {
+              ws: wsCopilot,
+            },
+          }}
+        >
+          <LspProvider>
+            <KclContextProvider>
+              <AppStateProvider>
+                <MachineManagerProvider>
+                  {isDesktop() ? (
+                    <SystemIOMachineLogicListenerDesktop />
+                  ) : (
+                    <SystemIOMachineLogicListenerWeb />
+                  )}
                   <Outlet />
-              </MachineManagerProvider>
-            </AppStateProvider>
-          </KclContextProvider>
-        </LspProvider>
-      </MlEphantMachineContext.Provider>
+                </MachineManagerProvider>
+              </AppStateProvider>
+            </KclContextProvider>
+          </LspProvider>
+        </MlEphantMachineContext.Provider>
       </RouteProvider>
     </OpenInDesktopAppHandler>
   )
