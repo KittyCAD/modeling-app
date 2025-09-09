@@ -67,7 +67,7 @@ export const useOnPageIdle = ({
           elapsed >= IDLE_TIME_MS
         ) {
           timeoutStart.current = null
-          console.warn('tearing down engine connection')
+          console.warn('detected idle, tearing down connection.')
           engineCommandManager.tearDown()
         }
       }

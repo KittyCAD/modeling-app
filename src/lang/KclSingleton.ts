@@ -446,7 +446,6 @@ export class KclManager extends EventTarget {
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
       // Exit early if we are already executing.
-      console.warn('execution done1!')
       return
     }
 
@@ -460,15 +459,12 @@ export class KclManager extends EventTarget {
     await this.ensureWasmInit()
 
     const codeThatExecuted = this.singletons.codeManager.code
-    console.warn('executing ast')
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.singletons.codeManager.currentFilePath || undefined,
       rustContext: this.singletons.rustContext,
     })
-    console.warn('execution done2!')
     // Program was not interrupted, setup the scene
-    console.log(logs, errors, execState, isInterrupted)
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
       this.addDiagnostics(
@@ -485,7 +481,6 @@ export class KclManager extends EventTarget {
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
       this._cancelTokens.delete(currentExecutionId)
-      console.warn('execution done3!')
       return
     }
 
@@ -530,7 +525,6 @@ export class KclManager extends EventTarget {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
-    console.warn('execution done!')
   }
 
   /**

@@ -161,7 +161,6 @@ export class ConnectionManager extends EventTarget {
         )
       )
     }
-    console.warn('starting engine connection')
     this.started = true
     this.rejectAllPendingCommands()
 

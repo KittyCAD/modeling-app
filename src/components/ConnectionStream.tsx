@@ -88,8 +88,6 @@ const onEngineConnectionReadyForRequests = ({
           kclManager
             .executeCode()
             .then((result) => {
-              console.log('result', result)
-              console.log('running zoom to fit!')
               // It makes sense to also call zoom to fit here, when a new file is
               // loaded for the first time, but not overtaking the work kevin did
               // so the camera isn't moving all the time.
