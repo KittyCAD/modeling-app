@@ -1,5 +1,5 @@
 import { EngineDebugger } from '@src/lib/debugger'
-import { engineCommandManager } from '@src/lib/singletons'
+import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import { useEffect } from 'react'
 
 export const useOnPageExit = ({ callback }: { callback: () => void }) => {
@@ -13,6 +13,7 @@ export const useOnPageExit = ({ callback }: { callback: () => void }) => {
       callback()
       // When the component unmounts teardown the engineCommandManager
       engineCommandManager.tearDown()
+      sceneInfra.camControls.oldCameraState = undefined
     }
   }, [callback])
 }

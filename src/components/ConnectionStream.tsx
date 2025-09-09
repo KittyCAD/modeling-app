@@ -1,5 +1,5 @@
 import type { MouseEventHandler } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import {
   codeManager,
@@ -54,6 +54,7 @@ const onEngineConnectionReadyForRequests = ({
         videoWrapperRef.current.clientWidth,
         videoWrapperRef.current.clientHeight
       )
+
       // TODO: Make sure pool works in the url.
       engineCommandManager
         .start({
@@ -89,26 +90,35 @@ const onEngineConnectionReadyForRequests = ({
           setIsSceneReady(true)
         })
         .then(() => {
-          kclManager
-            .executeCode()
-            .then((result) => {
-              // It makes sense to also call zoom to fit here, when a new file is
-              // loaded for the first time, but not overtaking the work kevin did
-              // so the camera isn't moving all the time.
-              engineCommandManager
-                .sendSceneCommand({
-                  type: 'modeling_cmd_req',
-                  cmd_id: uuidv4(),
-                  cmd: {
-                    type: 'zoom_to_fit',
-                    object_ids: [], // leave empty to zoom to all objects
-                    padding: 0.1, // padding around the objects
-                    animated: false, // don't animate the zoom for now
-                  },
-                })
-                .catch(reportRejection)
-            })
-            .catch(trap)
+          jsAppSettings().then((result) => {
+            rustContext
+              .clearSceneAndBustCache(
+                result,
+                codeManager.currentFilePath || undefined
+              )
+              .then(() => {
+                kclManager
+                  .executeCode()
+                  .then((result) => {
+                    // It makes sense to also call zoom to fit here, when a new file is
+                    // loaded for the first time, but not overtaking the work kevin did
+                    // so the camera isn't moving all the time.
+                    engineCommandManager
+                      .sendSceneCommand({
+                        type: 'modeling_cmd_req',
+                        cmd_id: uuidv4(),
+                        cmd: {
+                          type: 'zoom_to_fit',
+                          object_ids: [], // leave empty to zoom to all objects
+                          padding: 0.1, // padding around the objects
+                          animated: false, // don't animate the zoom for now
+                        },
+                      })
+                      .catch(reportRejection)
+                  })
+                  .catch(trap)
+              })
+          })
         })
         .catch((error) => {
           console.error('Failed to start engine connection', error)
@@ -194,16 +204,18 @@ export const ConnectionStream = (props: {
 
   // Run once on initialization
   useEffect(() => {
-    if (!didUseEffectRunOnce) {
-      didUseEffectRunOnce = true
-      onEngineConnectionReadyForRequests({
-        authToken: props.authToken || '',
-        videoWrapperRef,
-        setAppState,
-        videoRef,
-        setIsSceneReady,
-      })
-    }
+    ;(async () => {
+      if (!didUseEffectRunOnce) {
+        didUseEffectRunOnce = true
+        onEngineConnectionReadyForRequests({
+          authToken: props.authToken || '',
+          videoWrapperRef,
+          setAppState,
+          videoRef,
+          setIsSceneReady,
+        })
+      }
+    })()
   }, [props.authToken, setAppState])
 
   // TODO: Handle 15 second connection window
@@ -211,13 +223,16 @@ export const ConnectionStream = (props: {
   // TODO: Handle global disconnections. 1. Websocket closed, 2. Run time initializations
   // TODO: Handle PingPong checks
 
+  const resetGlobalEngineCommandManager = useCallback(() => {
+    // reset the ability to initialize
+    engineCommandManager.started = false
+    didUseEffectRunOnce = false
+  }, [])
+
   // TODO: When exiting the page via the router teardown the engineCommandManager
   // Gotcha: If you do it too quickly listenToDarkModeMatcher will complain.
   useOnPageExit({
-    callback: () => {
-      // reset the ability to initialize
-      engineCommandManager.started = false
-    },
+    callback: resetGlobalEngineCommandManager,
   })
   useOnPageResize({ videoWrapperRef, videoRef, canvasRef })
   useOnPageIdle({
@@ -227,6 +242,8 @@ export const ConnectionStream = (props: {
       if (!props.authToken) return
       if (engineCommandManager.started) return
       // Trick the executor to cache bust scene.
+
+      console.warn('does this page idle run!!')
 
       jsAppSettings()
         .then((result) => {
