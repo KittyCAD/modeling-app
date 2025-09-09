@@ -115,11 +115,14 @@ export class ConnectionManager extends EventTarget {
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
 
+  callbackOnUnitTestingConnection: (() => void) | null
+
   constructor(settings?: SettingsViaQueryString) {
     super()
     this.started = false
     this.allEventListeners = new Map()
     this.id = uuidv4()
+    this.callbackOnUnitTestingConnection = null
 
     if (settings) {
       // completely overwrite the settings
@@ -143,12 +146,14 @@ export class ConnectionManager extends EventTarget {
     height,
     token,
     setStreamIsReady,
+    callbackOnUnitTestingConnection,
   }: {
     settings?: SettingsViaQueryString
     width: number
     height: number
     token: string
     setStreamIsReady: (setStreamIsReady: boolean) => void
+    callbackOnUnitTestingConnection?: () => void
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -196,9 +201,6 @@ export class ConnectionManager extends EventTarget {
       height,
     }
 
-    // Gotcha: do not proxy handleResize!
-    // TODO: this.handleResize(this.streamDimensions); return;
-
     const url = this.generateWebsocketURL()
     this.connection = new Connection({
       url,
@@ -206,7 +208,15 @@ export class ConnectionManager extends EventTarget {
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       tearDownManager: this.tearDown.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
+      callbackOnUnitTestingConnection,
+      handleMessage: this.handleMessage.bind(this),
     })
+
+    // Nothing more to do when using a lite engine initialization
+    if (callbackOnUnitTestingConnection) {
+      this.callbackOnUnitTestingConnection = callbackOnUnitTestingConnection
+      return
+    }
 
     // Only used for useNetworkStatus.tsx listeners, why?!
     this.dispatchEvent(
@@ -226,6 +236,7 @@ export class ConnectionManager extends EventTarget {
         },
       })
     )
+
     await this.connection.connect()
 
     // Moved from ondatachannelopen in RTCPeerConnection.
@@ -239,12 +250,6 @@ export class ConnectionManager extends EventTarget {
     if (!this.connection.websocket) {
       return Promise.reject(new Error('this.connection.websocket is undefined'))
     }
-    // When is this.connection.connect() called?
-    // onEngineConnectionStarted callback!
-
-    // TODO:
-    // Nothing more to do when using a lite engine initialization
-    // if (callbackOnEngineLiteConnect) return
 
     const onEngineConnectionRestartRequest =
       createOnEngineConnectionRestartRequest({
@@ -547,7 +552,6 @@ export class ConnectionManager extends EventTarget {
       idToRangeMap: message.idToRangeMap,
       isSceneCommand,
     }
-
     this.connection.send(message.command)
     return promise
   }
@@ -741,6 +745,9 @@ export class ConnectionManager extends EventTarget {
       setStreamIsReady: () => {
         console.error('This is a NO OP. Should not be called in web.')
       },
+      callbackOnUnitTestingConnection: () => {
+        console.log('what is happening, why is rust doing this!')
+      },
     })
   }
 
@@ -789,6 +796,11 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown() {
+    if (this.callbackOnUnitTestingConnection) {
+      // Do not tear down in unit testing mode
+      return
+    }
+
     if (!this.started) {
       EngineDebugger.addLog({
         label: 'connectionManager',

@@ -40,6 +40,9 @@ beforeAll(async () => {
         setStreamIsReady: () => {
           console.log('no op for a unit test')
         },
+        callbackOnUnitTestingConnection: () => {
+          resolve(true)
+        },
       })
       .catch(reportRejection)
   })
@@ -164,7 +167,7 @@ describe('Testing addShell', () => {
       `shell001 = shell(extrude001, faces = END, thickness = 1)`
     )
     await enginelessExecutor(ast)
-  })
+  }, 30_000)
 
   it('should add a shell call on variable-less extrude', async () => {
     // Note: this was code from https://github.com/KittyCAD/modeling-app/issues/7640

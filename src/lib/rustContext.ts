@@ -100,7 +100,6 @@ export default class RustContext {
     path?: string
   ): Promise<ExecState> {
     const instance = await this._checkInstance()
-
     try {
       const result = await instance.execute(
         JSON.stringify(node),

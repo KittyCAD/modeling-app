@@ -28,6 +28,7 @@ import {
 } from '@src/network/websocketConnection'
 import { EngineDebugger } from '@src/lib/debugger'
 import { uuidv4 } from '@src/lib/utils'
+import { withWebSocketURL } from '@src/lib/withBaseURL'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependencies. We do not need to pass values between these. It is mainly
@@ -80,9 +81,14 @@ export class Connection extends EventTarget {
   // Used for EngineDebugger to know what instance of the class is tracked
   id: string
 
+  // Unit testing requirements
+  isUsingUnitTestingConnection: boolean = false
+
+  // callback functions
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
   tearDownManager: () => void
   rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
+  handleMessage: null
 
   constructor({
     url,
@@ -90,12 +96,15 @@ export class Connection extends EventTarget {
     handleOnDataChannelMessage,
     tearDownManager,
     rejectPendingCommand,
+    callbackOnUnitTestingConnection,
+    handleMessage,
   }: {
     url: string
     token: string
     handleOnDataChannelMessage: (event: MessageEvent<any>) => void
     tearDownManager: () => void
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
+    callbackOnUnitTestingConnection?: () => void
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -110,8 +119,8 @@ export class Connection extends EventTarget {
     this.handleOnDataChannelMessage = handleOnDataChannelMessage
     this.tearDownManager = tearDownManager
     this.rejectPendingCommand = rejectPendingCommand
+    this.handleMessage = handleMessage
     this._pingPongSpan = { ping: undefined, pong: undefined }
-
     this.deferredConnection = null
     this.deferredPeerConnection = null
     this.deferredMediaStreamAndWebrtcStatsCollector = null
@@ -126,6 +135,54 @@ export class Connection extends EventTarget {
       message: 'constructor end',
       metadata: { id: this.id },
     })
+
+    if (callbackOnUnitTestingConnection) {
+      this.connectUnitTesting(callbackOnUnitTestingConnection)
+      this.isUsingUnitTestingConnection = true
+    }
+  }
+
+  connectUnitTesting(callback: () => void) {
+    const url = withWebSocketURL(
+      `?video_res_width=${256}&video_res_height=${256}`
+    )
+    this.websocket = new WebSocket(url, [])
+    this.websocket.binaryType = 'arraybuffer'
+    const onWebSocketOpen = (event: Event) => {
+      this.send({
+        type: 'headers',
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      })
+      this.deferredMediaStreamAndWebrtcStatsCollector?.resolve(true)
+      this.deferredPeerConnection?.resolve(true)
+      this.deferredSdpAnswer?.resolve(true)
+      this.deferredConnection?.resolve(true)
+    }
+    this.websocket.addEventListener('open', onWebSocketOpen)
+    this.websocket.addEventListener('message', ((event: MessageEvent) => {
+      const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+      if (!('resp' in message)) return
+
+      let resp = message.resp
+
+      // If there's no body to the response, we can bail here.
+      if (!resp || !resp.type) {
+        return
+      }
+
+      switch (resp.type) {
+        case 'pong':
+          break
+
+        // Only fires on successful authentication.
+        case 'ice_server_info':
+          callback()
+          return
+      }
+      this.handleMessage(event)
+    }) as EventListener)
   }
 
   get token() {
