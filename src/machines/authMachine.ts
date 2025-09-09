@@ -1,5 +1,5 @@
 import type { User } from '@kittycad/lib'
-import { users } from '@kittycad/lib'
+import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
   updateEnvironmentPool,
@@ -334,7 +334,6 @@ async function logoutEnvironment(requestedDomain?: string) {
       if (token) {
         try {
           const apiUrlBase = (() => {
-            // If domain looks like a full URL, use it directly; otherwise compute API URL
             try {
               const u = new URL(domain)
               return u.origin
@@ -343,17 +342,17 @@ async function logoutEnvironment(requestedDomain?: string) {
               return d.API_URL
             }
           })()
-          await fetch(apiUrlBase + '/oauth2/token/revoke', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-              token: token,
-              client_id: OAUTH2_DEVICE_CLIENT_ID,
-            }).toString(),
-          })
+
+          const client = createKCClient(token, apiUrlBase)
+          await kcCall(() =>
+            oauth2.oauth2_token_revoke({
+              client,
+              body: {
+                token,
+                client_id: OAUTH2_DEVICE_CLIENT_ID,
+              },
+            })
+          )
         } catch (e) {
           console.error('Error revoking token:', e)
         }

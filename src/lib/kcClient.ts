@@ -4,8 +4,11 @@ import env from '@src/env'
 import { isDesktop } from '@src/lib/isDesktop'
 import isomorphicFetch from 'isomorphic-fetch'
 
-export function createKCClient(token?: string): Client {
-  const baseUrl = env().VITE_KITTYCAD_API_BASE_URL
+export function createKCClient(
+  token?: string,
+  baseUrlOverride?: string
+): Client {
+  const baseUrl = baseUrlOverride || env().VITE_KITTYCAD_API_BASE_URL
   const injectedFetch = ((input: any, init?: any) => {
     const impl =
       typeof fetch !== 'undefined'
