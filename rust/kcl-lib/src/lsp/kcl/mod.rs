@@ -1044,9 +1044,10 @@ impl LanguageServer for Backend {
                 let (sig, docs) = if let Some(Some(result)) = with_cached_var(&name, |value| {
                     match value {
                         // User-defined function
-                        KclValue::Function { value, .. } if !value.is_std => {
+                        KclValue::Function { value, .. } if !value[0].1.is_std => {
+                            let sigs: Vec<_> = value.iter().map(|v| v.1.ast.signature()).collect();
                             // TODO get docs from comments
-                            Some((value.ast.signature(), ""))
+                            Some((sigs.join("\n---\n"), ""))
                         }
                         _ => None,
                     }

@@ -753,7 +753,7 @@ impl ExecutorContext {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
-                            value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
+                            value: vec![FunctionSource::rust(func, function_expression.clone(), props, attrs)],
                             meta: vec![metadata.to_owned()],
                         }
                     } else {
@@ -767,11 +767,11 @@ impl ExecutorContext {
                     // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
                     KclValue::Function {
-                        value: Box::new(FunctionSource::kcl(
+                        value: vec![FunctionSource::kcl(
                             function_expression.clone(),
                             exec_state.mut_stack().snapshot(),
                             matches!(&exec_state.mod_local.path, ModulePath::Std { .. }),
-                        )),
+                        )],
                         meta: vec![metadata.to_owned()],
                     }
                 }

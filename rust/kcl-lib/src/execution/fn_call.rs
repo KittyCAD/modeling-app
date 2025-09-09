@@ -174,7 +174,8 @@ impl Node<CallExpressionKw> {
 
         let args = Args::new(fn_args, unlabeled, callsite, exec_state, ctx.clone());
 
-        let return_value = fn_src
+        // TODO check functions
+        let return_value = fn_src[0]
             .call_kw(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
             .await
             .map_err(|e| {
