@@ -350,10 +350,6 @@ test.describe(
           'View.Standard views.Center view on selection'
         )
       })
-      await test.step('Modeling.View.Standard views.Refresh', async () => {
-        await page.waitForTimeout(250)
-        await findElectronNativeMenuById(tronApp, 'View.Standard views.Refresh')
-      })
       await test.step('Modeling.View.Named views.Create named view', async () => {
         await page.waitForTimeout(250)
         await clickElectronNativeMenuById(

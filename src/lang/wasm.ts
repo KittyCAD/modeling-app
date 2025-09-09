@@ -691,6 +691,9 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'SketchBlock':
         // TODO: sketch-api: implement arguments and body.
         break
+      case 'SketchVar':
+        // TODO: sketch-api: implement initial.
+        break
       default:
         const _exhaustiveCheck: never = step
     }

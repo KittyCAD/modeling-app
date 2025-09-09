@@ -190,8 +190,6 @@ export function modelingMenuCallbackMostActions(
           },
         })
         .catch(reportRejection)
-    } else if (data.menuLabel === 'View.Standard views.Refresh') {
-      globalThis?.window?.location.reload()
     } else if (data.menuLabel === 'View.Named views.Create named view') {
       commandBarActor.send({
         type: 'Find and select command',
