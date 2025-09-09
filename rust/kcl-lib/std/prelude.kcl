@@ -293,7 +293,8 @@ export fn offsetPlane(
 ///         y = 0,
 ///         z = 0,
 ///     )
-///     |> extrude(length = 5)
+///
+/// extrude(clonedSketch, length = 5)
 /// ```
 ///
 /// ```kcl
@@ -362,16 +363,16 @@ export fn offsetPlane(
 ///   |> close()
 ///
 /// sketch002 = clone(sketch001)
-///     |> translate(x = 10, y = 20, z = 0)
-///     |> extrude(length = 5)
+///   |> translate(x = 15, y = 0, z = 5)
+///   |> extrude(length = 5)
 ///
-/// startSketchOn(sketch002, face = sketchingFace)
-///   |> startProfile(at = [1, 1])
-///   |> line(end = [8, 0])
-///   |> line(end = [0, 8])
-///   |> line(end = [-8, 0])
-///   |> close(tag = $sketchingFace002)
-///   |> extrude(length = 10)
+/// startSketchOn(sketch002, face = sketch002.sketch.tags.sketchingFace)
+///   |> startProfile(at = [4, 6])
+///   |> line(end = [3, 0])
+///   |> line(end = [0, 3])
+///   |> line(end = [-3, 0])
+///   |> close()
+///   |> extrude(length = 5)
 /// ```
 ///
 /// ```kcl
