@@ -91,16 +91,18 @@ const onEngineConnectionReadyForRequests = ({
               // It makes sense to also call zoom to fit here, when a new file is
               // loaded for the first time, but not overtaking the work kevin did
               // so the camera isn't moving all the time.
-              engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: {
-                  type: 'zoom_to_fit',
-                  object_ids: [], // leave empty to zoom to all objects
-                  padding: 0.1, // padding around the objects
-                  animated: false, // don't animate the zoom for now
-                },
-              })
+              engineCommandManager
+                .sendSceneCommand({
+                  type: 'modeling_cmd_req',
+                  cmd_id: uuidv4(),
+                  cmd: {
+                    type: 'zoom_to_fit',
+                    object_ids: [], // leave empty to zoom to all objects
+                    padding: 0.1, // padding around the objects
+                    animated: false, // don't animate the zoom for now
+                  },
+                })
+                .catch(reportRejection)
             })
             .catch(trap)
         })
@@ -222,22 +224,23 @@ export const ConnectionStream = (props: {
       if (engineCommandManager.started) return
       // Trick the executor to cache bust scene.
 
-      jsAppSettings()
-        .then((result) => {
-          rustContext.clearSceneAndBustCache(
+      jsAppSettings().then((result) => {
+        rustContext
+          .clearSceneAndBustCache(
             result,
             codeManager.currentFilePath || undefined
           )
-        })
-        .then(() => {
-          onEngineConnectionReadyForRequests({
-            authToken: props.authToken || '',
-            videoWrapperRef,
-            setAppState,
-            videoRef,
-            setIsSceneReady,
+          .then(() => {
+            onEngineConnectionReadyForRequests({
+              authToken: props.authToken || '',
+              videoWrapperRef,
+              setAppState,
+              videoRef,
+              setIsSceneReady,
+            })
           })
-        })
+          .catch(reportRejection)
+      })
     },
   })
 

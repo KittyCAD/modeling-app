@@ -19,7 +19,7 @@ export const useOnPageIdle = ({
     settings.app.streamIdleMode.current
   )
   const { state: modelingMachineState } = useModelingContext()
-  const IDLE_TIME_MS = Number(500)
+  const IDLE_TIME_MS = Number(streamIdleMode)
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)
 
