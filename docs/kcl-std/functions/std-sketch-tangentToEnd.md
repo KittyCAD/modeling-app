@@ -43,7 +43,7 @@ pillExtrude = extrude(pillSketch, length = 10)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the tangentToEnd function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-tangentToEnd0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -71,7 +71,7 @@ pillExtrude = extrude(pillSketch, length = 10)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the tangentToEnd function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-tangentToEnd1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -98,7 +98,7 @@ rectangleExtrude = extrude(rectangleSketch, length = 10)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the tangentToEnd function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-tangentToEnd2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -121,7 +121,7 @@ bottom = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the tangentToEnd function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-tangentToEnd3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -147,7 +147,7 @@ triangleSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the tangentToEnd function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-tangentToEnd4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

@@ -60,14 +60,6 @@ export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
 
 export const deg = (Math.PI * 2) / 360
 
-export const commonPoints = {
-  startAt: '[-12.99, -10.63]',
-  num1: 8.2,
-  num2: 14.44,
-  /** The Y-value of a common lineTo move we perform in tests */
-  num3: -2.44,
-} as const
-
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
 
@@ -919,7 +911,6 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(
   context: BrowserContext,
   page: Page,
-  testDir: string,
   testInfo?: TestInfo
 ) {
   await page.addInitScript(
@@ -928,7 +919,6 @@ export async function setup(
       settingsKey,
       settings,
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR,
       PERSIST_MODELING_CONTEXT,
     }) => {
       localStorage.clear()
@@ -940,7 +930,9 @@ export async function setup(
       )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
-      localStorage.setItem('PLAYWRIGHT_TEST_DIR', PLAYWRIGHT_TEST_DIR)
+      window.addEventListener('beforeunload', () => {
+        localStorage.removeItem(IS_PLAYWRIGHT_KEY)
+      })
     },
     {
       token,
@@ -955,10 +947,6 @@ export async function setup(
             },
             ...TEST_SETTINGS.project,
             onboarding_status: 'dismissed',
-            // Tests were written before this setting existed.
-            // It's true by default because it's a good user experience, but
-            // these tests require it to be false.
-            fixed_size_grid: false,
           },
           project: {
             ...TEST_SETTINGS.project,
@@ -967,7 +955,6 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: testDir,
       PERSIST_MODELING_CONTEXT,
     }
   )
@@ -1067,7 +1054,7 @@ export async function createProject({
 
 async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
-  await expect(page.getByRole('tab', { name: 'Projects' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {

@@ -1,0 +1,53 @@
+// Scrub Daddy Sponge Holder
+// A scrub daddy is a sponge with a course texture which has the shape of a smiling face. This holder attaches magnetically to the wall of your sink or other locations where a sponge may be needed. The holder is designed to fit through the eye openings on the sponge. This is designed to fit mangets with a diameter of 6mm and thickness of 3 mm.
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+magnetDiameter = 6.2
+magnetThickness = 3
+spongeThickness = 40
+spongeEyeDiameter = 14
+spongeEyeCenter2Center = 34
+spongeDiameter = 100
+
+sketch = startSketchOn(XY)
+
+// create the magnets so we can subtract them from the holder later
+magnets = startProfile(sketch, at = [0, 0])
+  |> circle(center = [spongeEyeCenter2Center / 2, 0], diameter = magnetDiameter)
+  |> patternCircular2d(instances = 2, center = [0, 0])
+  |> extrude(length = magnetThickness)
+
+// create the base of the holder
+base = startProfile(
+       sketch,
+       at = [
+         -spongeDiameter / 2 * 0.6,
+         -spongeEyeDiameter / 2 * 1.5
+       ],
+     )
+  |> xLine(length = spongeDiameter * 0.6, tag = $line001)
+  |> yLine(length = spongeEyeDiameter * 1.5, tag = $line002)
+  |> xLine(endAbsolute = profileStartX(), tag = $line003)
+  |> close(tag = $line004)
+  |> extrude(length = magnetThickness * 1.5)
+  |> subtract(tools = [magnets])
+  |> fillet(
+       radius = 5,
+       tags = [
+         getNextAdjacentEdge(line001),
+         getNextAdjacentEdge(line002),
+         getNextAdjacentEdge(line003),
+         getNextAdjacentEdge(line004)
+       ],
+     )
+
+// create the holder pegs which go into the eyes of the sponge
+holder = startSketchOn(base, face = END)
+  |> circle(center = [spongeEyeCenter2Center / 2, 0], diameter = spongeEyeDiameter, tag = $circ001)
+  |> extrude(length = spongeThickness - magnetThickness)
+  |> fillet(radius = 2, tags = [getOppositeEdge(circ001), circ001])
+  |> patternCircular3d(instances = 2, center = [0, 0, 0], axis = Z)

@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use schemars::JsonSchema;
 use serde::Serialize;
 
 use crate::{
@@ -14,7 +13,8 @@ use crate::{
         types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::{
-        DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
+        DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, NumericLiteral, TagDeclarator,
+        TagNode,
     },
     std::{StdFnProps, args::TyF64},
 };
@@ -22,7 +22,7 @@ use crate::{
 pub type KclObjectFields = HashMap<String, KclValue>;
 
 /// Any KCL value.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum KclValue {
@@ -134,17 +134,6 @@ pub enum FunctionSource {
         settings: MetaSettings,
         memory: EnvironmentRef,
     },
-}
-
-impl JsonSchema for FunctionSource {
-    fn schema_name() -> String {
-        "FunctionSource".to_owned()
-    }
-
-    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-        // TODO: Actually generate a reasonable schema.
-        r#gen.subschema_for::<()>()
-    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -360,6 +349,16 @@ impl KclValue {
                     result
                 }
             }
+        }
+    }
+
+    pub(crate) fn from_numeric_literal(literal: &Node<NumericLiteral>, exec_state: &mut ExecState) -> Self {
+        let meta = vec![literal.metadata()];
+        let ty = NumericType::from_parsed(literal.suffix, &exec_state.mod_local.settings);
+        KclValue::Number {
+            value: literal.value,
+            meta,
+            ty,
         }
     }
 

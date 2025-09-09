@@ -67,6 +67,14 @@ description: Result of parsing any_type.kcl
                   "start": 0,
                   "type": "Identifier"
                 },
+                "param_type": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "p_type": "Any",
+                  "start": 0,
+                  "type": "Primitive"
+                },
                 "labeled": false
               }
             ],
@@ -156,6 +164,14 @@ description: Result of parsing any_type.kcl
                   "name": "x",
                   "start": 0,
                   "type": "Identifier"
+                },
+                "param_type": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "p_type": "Any",
+                  "start": 0,
+                  "type": "Primitive"
                 },
                 "labeled": false
               }
@@ -387,6 +403,18 @@ description: Result of parsing any_type.kcl
                   "name": "a",
                   "start": 0,
                   "type": "Identifier"
+                },
+                "param_type": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "len": "None",
+                  "moduleId": 0,
+                  "start": 0,
+                  "ty": {
+                    "type": "Primitive",
+                    "p_type": "Any"
+                  },
+                  "type": "Array"
                 },
                 "labeled": false
               }

@@ -40,8 +40,7 @@ export class AuthenticatedApp {
   }
 
   async initialise(code = '') {
-    const testDir = this.testInfo.outputPath('electron-test-projects-dir')
-    await setup(this.context, this.page, testDir, this.testInfo)
+    await setup(this.context, this.page, this.testInfo)
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
@@ -210,7 +209,7 @@ export class ElectronZoo {
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
     }, this.projectDirName)
 
-    await setup(this.context, this.page, this.projectDirName, testInfo)
+    await setup(this.context, this.page, testInfo)
 
     await this.cleanProjectDir()
 
@@ -252,7 +251,7 @@ export class ElectronZoo {
     }
 
     if (!this.firstUrl) {
-      await this.page.getByRole('tab', { name: 'Projects' }).count()
+      await this.page.getByRole('heading', { name: 'Projects' }).count()
       this.firstUrl = this.page.url()
     }
 

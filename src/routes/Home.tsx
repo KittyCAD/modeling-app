@@ -1,4 +1,3 @@
-import { GenerateWithTTCButton } from '@src/components/GenerateWithTTCButton'
 import type { FormEvent, HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -10,19 +9,14 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 
-import type { IResponseMlConversation } from '@src/lib/textToCad'
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
-import { ConvoCard } from '@src/components/PromptCard'
 import {
-  HomeSearchBar,
-  useHomeSearch,
-  areHomeItemsProjects,
-  areHomeItemsConversations,
-} from '@src/components/HomeSearchBar'
-import type { HomeItems } from '@src/components/HomeSearchBar'
+  ProjectSearchBar,
+  useProjectSearch,
+} from '@src/components/ProjectSearchBar'
 import { BillingDialog } from '@src/components/BillingDialog'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useMenuListener } from '@src/hooks/useMenu'
@@ -32,8 +26,7 @@ import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
 import {
   getNextSearchParams,
-  getProjectSortFunction,
-  getConvoSortFunction,
+  getSortFunction,
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
@@ -44,7 +37,6 @@ import {
   kclManager,
   authActor,
   billingActor,
-  mlEphantManagerActor,
   systemIOActor,
   useSettings,
 } from '@src/lib/singletons'
@@ -65,7 +57,9 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
+import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import {
@@ -74,7 +68,6 @@ import {
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import { useSelector } from '@xstate/react'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { MlEphantManagerStates } from '@src/machines/mlEphantManagerMachine'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -104,7 +97,6 @@ const Home = () => {
         .catch(reportRejection)
     }
     billingActor.send({ type: BillingTransition.Update, apiToken })
-
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
@@ -223,40 +215,9 @@ const Home = () => {
     }
   )
   const projects = useFolders()
-  const conversations = useSelector(mlEphantManagerActor, (actor) => {
-    return actor.context.conversations
-  })
-
-  const [tabSelected, setTabSelected] = useState<HomeTabKeys>(
-    HomeTabKeys.Projects
-  )
-  const [items, setItems] = useState<HomeItems>(projects)
   const [searchParams, setSearchParams] = useSearchParams()
-  const { searchResults, query, searchAgainst } = useHomeSearch(projects)
-  const sortBy = searchParams.get('sort_by') ?? 'modified:desc'
-
-  const onChangeTab = (key: HomeTabKeys) => {
-    setTabSelected(key)
-  }
-
-  useEffect(() => {
-    switch (tabSelected) {
-      case HomeTabKeys.Projects:
-        setItems(projects)
-        break
-      case HomeTabKeys.Prompts:
-        setItems(conversations)
-        break
-      default:
-        const _ex: never = tabSelected
-    }
-  }, [tabSelected, projects, conversations])
-
-  useEffect(() => {
-    searchAgainst(items)('')
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [items])
-
+  const { searchResults, query, setQuery } = useProjectSearch(projects)
+  const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
@@ -265,10 +226,8 @@ const Home = () => {
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
-          tabSelected={tabSelected}
-          onChangeHomeSearchBar={searchAgainst(items)}
-          onChangeTab={onChangeTab}
-          sortBy={sortBy}
+          setQuery={setQuery}
+          sort={sort}
           setSearchParams={setSearchParams}
           settings={settings}
           readWriteProjectDir={readWriteProjectDir}
@@ -335,8 +294,9 @@ const Home = () => {
               </ActionButton>
             </li>
             <li className="contents">
-              <GenerateWithTTCButton
-                onClick={() => {
+              <ActionButton
+                Element="button"
+                onClick={() =>
                   commandBarActor.send({
                     type: 'Find and select command',
                     data: {
@@ -349,8 +309,25 @@ const Home = () => {
                       },
                     },
                   })
+                }
+                className={sidebarButtonClasses}
+                iconStart={{
+                  icon: 'sparkles',
+                  bgClassName: '!bg-transparent rounded-sm',
                 }}
-              />
+                data-testid="home-text-to-cad"
+              >
+                Generate with Text-to-CAD
+                <Tooltip position="bottom-left">
+                  <div className="text-sm flex flex-col max-w-xs">
+                    <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
+                      <CustomIcon name="beaker" className="w-4 h-4" />
+                      <span>Experimental</span>
+                    </div>
+                    <p className="pt-2 text-left">{ML_EXPERIMENTAL_MESSAGE}</p>
+                  </div>
+                </Tooltip>
+              </ActionButton>
             </li>
             <li className="contents">
               <ActionButton
@@ -420,12 +397,12 @@ const Home = () => {
             </li>
           </ul>
         </aside>
-        <HomeItemsArea
-          tabSelected={tabSelected}
+        <ProjectGrid
           searchResults={searchResults}
-          sortBy={sortBy}
+          projects={projects}
           query={query}
-          settings={settings}
+          sort={sort}
+          className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
       <StatusBar
@@ -439,99 +416,47 @@ const Home = () => {
   )
 }
 
-enum HomeTabKeys {
-  Projects,
-  Prompts,
-}
-
-interface HomeTabProps {
-  onChange: (key: HomeTabKeys) => void
-  selected: HomeTabKeys
-}
-
-function HomeTab(props: HomeTabProps) {
-  const [selected, setSelected] = useState(props.selected)
-
-  const tabs = [
-    { name: 'Projects', key: HomeTabKeys.Projects },
-    { name: 'Prompts', key: HomeTabKeys.Prompts },
-  ]
-
-  const cssTab = 'cursor-pointer border rounded-t text-lg text-center'
-  const cssActive = `${cssTab} p-2 border-chalkboard-70 border-b-transparent`
-  const cssInactive = `${cssTab} pl-2 pr-2 pt-2 mt-1 border text-chalkboard-90 border-chalkboard-50 bg-chalkboard-20`
-
-  const onClickTab = (key: HomeTabKeys) => () => {
-    setSelected(key)
-    props.onChange(key)
-  }
-
-  return (
-    <div className="flex flex-row">
-      {tabs.map((el) => (
-        <div
-          key={el.key}
-          className={el.key === selected ? cssActive : cssInactive}
-          style={{ width: '130px' }}
-          onClick={onClickTab(el.key)}
-          role="tab"
-          tabIndex={0}
-        >
-          {el.name}
-        </div>
-      ))}
-    </div>
-  )
-}
-
 interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
-  tabSelected: HomeTabKeys
-  onChangeHomeSearchBar: (query: string) => void
-  onChangeTab: (key: HomeTabKeys) => void
-  sortBy: string
+  setQuery: (query: string) => void
+  sort: string
   setSearchParams: (params: Record<string, string>) => void
   settings: ReturnType<typeof useSettings>
   readWriteProjectDir: ReadWriteProjectState
 }
 
 function HomeHeader({
-  tabSelected,
-  onChangeHomeSearchBar,
-  onChangeTab,
-  sortBy,
+  setQuery,
+  sort,
   setSearchParams,
   settings,
   readWriteProjectDir,
   ...rest
 }: HomeHeaderProps) {
-  const isSortByModified =
-    sortBy?.includes('modified') || !sortBy || sortBy === null
+  const isSortByModified = sort?.includes('modified') || !sort || sort === null
 
   return (
     <section {...rest}>
       <div className="flex flex-col md:flex-row gap-4 justify-between md:items-center select-none">
         <div className="flex gap-8 items-center">
-          <HomeTab onChange={onChangeTab} selected={tabSelected} />
+          <h1 className="text-3xl font-bold">Projects</h1>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-          <HomeSearchBar onChange={onChangeHomeSearchBar} />
+          <ProjectSearchBar setQuery={setQuery} />
           <div className="flex gap-2 items-center">
             <small>Sort by</small>
             <ActionButton
               Element="button"
               data-testid="home-sort-by-name"
               className={`text-xs border-primary/10 ${
-                !sortBy.includes('name')
+                !sort.includes('name')
                   ? 'text-chalkboard-80 dark:text-chalkboard-40'
                   : ''
               }`}
-              onClick={() =>
-                setSearchParams(getNextSearchParams(sortBy, 'name'))
-              }
+              onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
               iconStart={{
-                icon: getSortIcon(sortBy, 'name'),
+                icon: getSortIcon(sort, 'name'),
                 bgClassName: 'bg-transparent',
-                iconClassName: !sortBy.includes('name')
+                iconClassName: !sort.includes('name')
                   ? '!text-chalkboard-90 dark:!text-chalkboard-30'
                   : '',
               }}
@@ -547,17 +472,17 @@ function HomeHeader({
                   : ''
               }`}
               onClick={() =>
-                setSearchParams(getNextSearchParams(sortBy, 'modified'))
+                setSearchParams(getNextSearchParams(sort, 'modified'))
               }
               iconStart={{
-                icon: sortBy ? getSortIcon(sortBy, 'modified') : 'arrowDown',
+                icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
                 bgClassName: 'bg-transparent',
                 iconClassName: !isSortByModified
                   ? '!text-chalkboard-90 dark:!text-chalkboard-30'
                   : '',
               }}
             >
-              Age
+              Last Modified
             </ActionButton>
           </div>
         </div>
@@ -593,153 +518,45 @@ function HomeHeader({
   )
 }
 
-function NoResults() {
-  return (
-    <div className="col-start-2 -col-end-1 w-full flex flex-col justify-center items-center">
-      No results found
-    </div>
-  )
-}
-
-interface HomeItemsAreaProps {
-  tabSelected: HomeTabKeys
-  searchResults: HomeItems
-  sortBy: string
-  query: string
-  settings: ReturnType<typeof useSettings>
-}
-
-function HomeItemsArea(props: HomeItemsAreaProps) {
-  let grid = null
-
-  switch (props.tabSelected) {
-    case HomeTabKeys.Projects:
-      grid = areHomeItemsProjects(props.searchResults) ? (
-        <ResultGridProjects
-          searchResults={props.searchResults}
-          query={props.query}
-          sortBy={props.sortBy}
-        />
-      ) : (
-        <NoResults />
-      )
-      break
-    case HomeTabKeys.Prompts:
-      grid = areHomeItemsConversations(props.searchResults) ? (
-        <ResultGridConversations
-          searchResults={props.searchResults.items}
-          query={props.query}
-          sortBy={props.sortBy}
-          settings={props.settings}
-        />
-      ) : (
-        <NoResults />
-      )
-      break
-    default:
-      const _ex: never = props.tabSelected
-  }
-
-  return (
-    <div
-      data-testid="home-section"
-      className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
-    >
-      {grid}
-    </div>
-  )
-}
-
-interface ResultGridConversationsProps {
-  searchResults: IResponseMlConversation[]
-  query: string
-  sortBy: string
-  settings: ReturnType<typeof useSettings>
-}
-
-function ResultGridConversations(props: ResultGridConversationsProps) {
-  // Maybe consider lifting this higher but I see no reason at the moment
-  const onAction = (prompt: string) => {
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'application',
-        name: 'Text-to-CAD',
-        argDefaultValues: {
-          method: 'newProject',
-          prompt,
-          newProjectName: props.settings.projects.defaultProjectName.current,
-        },
-      },
-    })
-  }
-
-  const mlEphantManagerSnapshot = mlEphantManagerActor.getSnapshot()
-
-  if (mlEphantManagerSnapshot.matches(MlEphantManagerStates.Setup)) {
-    return (
-      <div className="col-start-2 -col-end-1 w-full flex flex-col justify-center items-center">
-        <Loading isDummy={true}>Loading your prompts...</Loading>
-      </div>
-    )
-  }
-
-  if (props.searchResults.length > 0) {
-    return (
-      <div className="grid w-full sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
-        {props.searchResults
-          .sort(getConvoSortFunction(props.sortBy))
-          .map((convo: IResponseMlConversation) => (
-            <ConvoCard key={convo.id} {...convo} onAction={onAction} />
-          ))}
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center w-full gap-4">
-      <div className="text-sm text-chalkboard-80 dark:text-chalkboard-30">
-        Looks like you haven't prompted yet!
-      </div>
-      <GenerateWithTTCButton onClick={() => onAction('')} hasBorder={true} />
-    </div>
-  )
-}
-
-interface ResultGridProjectsProps extends HTMLProps<HTMLDivElement> {
+interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   searchResults: Project[]
+  projects: Project[]
   query: string
-  sortBy: string
+  sort: string
 }
 
-function ResultGridProjects(props: ResultGridProjectsProps) {
+function ProjectGrid({
+  searchResults,
+  projects,
+  query,
+  sort,
+  ...rest
+}: ProjectGridProps) {
   const state = useSystemIOState()
 
   return (
-    <section className={props.className}>
+    <section data-testid="home-section" {...rest}>
       {state.matches(SystemIOMachineStates.readingFolders) ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
-          {props.searchResults.length > 0 ? (
+          {searchResults.length > 0 ? (
             <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {props.searchResults
-                .sort(getProjectSortFunction(props.sortBy))
-                .map((item) => (
-                  <ProjectCard
-                    key={item.name}
-                    project={item}
-                    handleRenameProject={handleRenameProject}
-                    handleDeleteProject={handleDeleteProject}
-                  />
-                ))}
+              {searchResults.sort(getSortFunction(sort)).map((project) => (
+                <ProjectCard
+                  key={project.name}
+                  project={project}
+                  handleRenameProject={handleRenameProject}
+                  handleDeleteProject={handleDeleteProject}
+                />
+              ))}
             </ul>
           ) : (
             <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
-              No results found
-              {props.searchResults.length === 0
+              No projects found
+              {projects.length === 0
                 ? ', ready to make your first one?'
-                : ` with the search term "${props.query}"`}
+                : ` with the search term "${query}"`}
             </p>
           )}
         </>

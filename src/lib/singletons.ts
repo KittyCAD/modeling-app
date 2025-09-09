@@ -50,7 +50,6 @@ declare global {
 window.engineCommandManager = engineCommandManager
 
 export const sceneInfra = new SceneInfra(engineCommandManager)
-engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager(engineCommandManager)
@@ -224,6 +223,7 @@ export const getSettings = () => {
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
 sceneInfra.camControls.getSettings = getSettings
+sceneEntitiesManager.getSettings = getSettings
 
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {

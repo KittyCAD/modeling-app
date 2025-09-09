@@ -1,0 +1,19 @@
+// Complete Assembly:
+// Consist of a lower and upper body combination with eye-end mounts at the top and bottom. 200 mm-long helical spring (44 mm OD, and wire diameter of 6 mm) captured between upper and lower seats; Internal piston rod running through the spring. Integrated bump-stop beneath the upper seat to limit compression stroke. The assembly provides adjustable ride height and damping when installed between chassis and wheel hub.
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+import "coilover-bottom.kcl" as coiloverBottom
+import "spring.kcl" as coiloverSpring
+import "coilover-top.kcl" as coiloverTop
+
+// Place the Bottom Coilover Part
+coiloverBottom
+
+// Place the Coilover Spring
+coiloverSpring
+
+// Place the Top Coilover Part
+coiloverTop
+  |> translate(x = 0, y = 0.0, z = 200)

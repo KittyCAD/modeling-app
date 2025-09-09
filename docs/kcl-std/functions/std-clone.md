@@ -52,7 +52,7 @@ clonedSketch = clone(exampleSketch)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -83,7 +83,7 @@ clonedPart = clone(myPart)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -116,7 +116,7 @@ loft([sketch001, sketch002])
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -148,7 +148,7 @@ sketch002 = clone(sketch001)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -187,7 +187,7 @@ startSketchOn(sketch002, face = sketchingFace)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -233,7 +233,7 @@ clonedMountingPlate = clone(mountingPlate)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -270,7 +270,7 @@ sweepedSpring = clone(springSketch)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone6_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -295,7 +295,7 @@ sketch002 = clone(sketch001)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone7_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -349,7 +349,7 @@ example001 = revolve(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone8_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -377,7 +377,7 @@ clonedCube = clone(myCube)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone9_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

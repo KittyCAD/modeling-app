@@ -262,7 +262,7 @@ export function useEngineConnectionSubscriptions() {
                   zAxis: [z_axis.x, z_axis.y, z_axis.z],
                   yAxis: [y_axis.x, y_axis.y, y_axis.z],
                   position: [origin.x, origin.y, origin.z].map(
-                    (num) => num / sceneInfra._baseUnitMultiplier
+                    (num) => num / sceneInfra.baseUnitMultiplier
                   ) as [number, number, number],
                   sketchPathToNode,
                   extrudePathToNode,

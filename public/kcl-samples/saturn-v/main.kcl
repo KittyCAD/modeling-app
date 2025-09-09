@@ -1,0 +1,223 @@
+// Saturn V Rocket
+// Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes
+
+
+
+
+@settings(defaultLengthUnit = m)
+
+r1 = 4.5 // baseRadiusStage1
+r2 = 3.2 // baseRadiusUpperStage
+
+
+// ----------------------------
+// --- Engine Nozzles (x4) ---
+// ----------------------------
+// Created with revolve profiles to model conic nozzles; cloned and rotated to form quad layout
+
+
+nozzleSketch = startSketchOn(YZ)
+nozzleProfile = startProfile(nozzleSketch, at = [-0.1, 0])
+  |> yLine(length = 9)
+  |> line(end = [-2, -9])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+nozzle1 = revolve(nozzleProfile, angle = 360, axis = Y)
+  |> translate(x = -r1, y = 0, z = 0)
+  |> appearance(%, color = "#292929")
+nozzle2 = clone(nozzle1)
+  |> rotate(roll = 0, pitch = 0, yaw = 90)
+nozzle3 = clone(nozzle1)
+  |> rotate(roll = 0, pitch = 0, yaw = 180)
+nozzle4 = clone(nozzle1)
+  |> rotate(roll = 0, pitch = 0, yaw = 270)
+
+  // ------------------------------------
+  // --- Nozzle Hoods (Alternating) ---
+  // ------------------------------------
+// Modeled identically to nozzles but translated upward and given alternating colors
+
+hoodSketch = startSketchOn(YZ)
+hoodProfile = startProfile(hoodSketch, at = [-0.1, 0])
+  |> yLine(length = 9)
+  |> line(end = [-2, -9])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+hood1 = revolve(hoodProfile, angle = 360, axis = Y)
+  |> translate(x = -r1, y = 0, z = 4)
+  |> appearance(%, color = "#ffffff")
+hood2 = clone(hood1)
+  |> rotate(roll = 0, pitch = 0, yaw = 90)
+  |> appearance(%, color = "#000000")
+hood3 = clone(hood1)
+  |> rotate(roll = 0, pitch = 0, yaw = 180)
+  |> appearance(%, color = "#ffffff")
+hood4 = clone(hood1)
+  |> rotate(roll = 0, pitch = 0, yaw = 270)
+  |> appearance(%, color = "#000000")
+
+  // ----------------------------
+  // --- Stabilizer Fins (x4) ---
+  // ----------------------------
+// Small extrusions in X-Y profile, rotated to form cross pattern
+
+finSketch = startSketchOn(YZ)
+finProfile = startProfile(finSketch, at = [-4.23, 6.02])
+  |> xLine(length = -3.4)
+  |> yLine(length = 2.2)
+  |> line(end = [3.4, 3])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+fin1 = extrude(finProfile, length = 0.1)
+  |> appearance(%, color = "#ffffff")
+fin2 = clone(fin1)
+  |> rotate(roll = 0, pitch = 0, yaw = 90)
+fin3 = clone(fin1)
+  |> rotate(roll = 0, pitch = 0, yaw = 180)
+fin4 = clone(fin1)
+  |> rotate(roll = 0, pitch = 0, yaw = 270)
+
+  // -------------------------------
+  // --- Stage 1: Bottom Section ---
+  // -------------------------------
+// Uses split white/black geometry to emulate paint scheme with mirrored arcs
+
+bottomBasePlane = offsetPlane(XY, offset = 6)
+blackPanelSketch = startSketchOn(bottomBasePlane)
+blackPanelProfile = startProfile(blackPanelSketch, at = [0, -r1])
+  |> yLine(length = r1 * 2)
+  |> arc(interiorAbsolute = [r1, 0], endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+blackPanel = extrude(blackPanelProfile, length = 14)
+  |> appearance(%, color = "#000000")
+
+whitePanelProfile = startProfile(blackPanelSketch, at = [0, -r1])
+  |> yLine(length = r1 * 2)
+  |> arc(interiorAbsolute = [-r1, 0], endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+whitePanel = extrude(whitePanelProfile, length = 14)
+  |> appearance(%, color = "#ffffff")
+
+  // ------------------------------
+  // --- Stage 1: Upper Section ---
+  // ------------------------------
+// Alternating black and white zones using circular cross-sections
+
+cylinderBasePlane = offsetPlane(XY, offset = 20)
+cylinderSketch = startSketchOn(cylinderBasePlane)
+stage1CylinderProfile = circle(cylinderSketch, center = [0, 0], radius = r1)
+stage1Cylinder = extrude(stage1CylinderProfile, length = 18)
+  |> appearance(%, color = "#ffffff")
+
+midStripePlane = offsetPlane(XY, offset = 38)
+midStripeSketch = startSketchOn(midStripePlane)
+midStripeProfileBlack = startProfile(midStripeSketch, at = [-r1, 0])
+  |> xLine(length = r1 * 2)
+  |> arc(interiorAbsolute = [0, r1], endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+midStripeBlack = extrude(midStripeProfileBlack, length = 9)
+  |> appearance(%, color = "#000000")
+
+// White
+midStripeProfileWhite = startProfile(midStripeSketch, at = [-r1, 0])
+  |> xLine(length = r1 * 2)
+  |> arc(interiorAbsolute = [0, -r1], endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+midStripeWhite = extrude(midStripeProfileWhite, length = 9)
+  |> appearance(%, color = "#ffffff")
+
+// Ring
+ringPlane = offsetPlane(XY, offset = 47)
+ringSketch = startSketchOn(ringPlane)
+ringProfile = circle(ringSketch, center = [0, 0], radius = r1)
+ringBand = extrude(ringProfile, length = 2)
+  |> appearance(%, color = "#000000")
+
+// Upper Cyl
+upperCylPlane = offsetPlane(XY, offset = 49)
+upperCylSketch = startSketchOn(upperCylPlane)
+upperCylProfile = circle(upperCylSketch, center = [0, 0], radius = r1)
+upperStage1 = extrude(upperCylProfile, length = 15)
+  |> appearance(%, color = "#ffffff")
+
+  // --------------------------------
+  // --- Stage Transition Cones ---
+  // --------------------------------
+  // This conic taper transitions between stage diameters
+
+// lower cones
+transitionLowerConeSketch = startSketchOn(YZ)
+transitionLowerConeWhiteProfile = startProfile(transitionLowerConeSketch, at = [0, 64])
+  |> xLine(length = -r1)
+  |> line(end = [(r1 - r2) / 2, 2.5])
+  |> xLine(endAbsolute = 0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+transitionLowerConeWhite = revolve(transitionLowerConeWhiteProfile, angle = 180, axis = Y)
+  |> appearance(%, color = "#ffffff")
+
+transitionLowerConeBlackProfile = startProfile(transitionLowerConeSketch, at = [0, 64])
+  |> xLine(length = -r1)
+  |> line(end = [(r1 - r2) / 2, 2.5])
+  |> xLine(endAbsolute = 0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+transitionLowerConeBlack = revolve(transitionLowerConeBlackProfile, angle = -180, axis = Y)
+  |> appearance(%, color = "#000000")
+
+// upper cones
+transitionUpperConeSketch = startSketchOn(YZ)
+transitionUpperConeBlackProfile = startProfile(transitionUpperConeSketch, at = [0, 66.5])
+  |> xLine(length = (r1 - r2) / 2 - r1)
+  |> line(end = [(r1 - r2) / 2, 2.5])
+  |> xLine(endAbsolute = 0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+transitionUpperConeBlack = revolve(transitionUpperConeBlackProfile, angle = 180, axis = Y)
+  |> appearance(%, color = "#000000")
+
+transitionUpperConeWhiteProfile = startProfile(transitionUpperConeSketch, at = [0, 66.5])
+  |> xLine(length = (r1 - r2) / 2 - r1)
+  |> line(end = [(r1 - r2) / 2, 2.5])
+  |> xLine(endAbsolute = 0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+transitionUpperConeWhite = revolve(transitionUpperConeWhiteProfile, angle = -180, axis = Y)
+  |> appearance(%, color = "#ffffff")
+
+  // ----------------------------
+  // --- Stage 2: Upper Body ---
+  // ----------------------------
+  // Simple white and black stack of extruded cylinders
+
+// white
+stage2Plane = offsetPlane(XY, offset = 69)
+stage2Sketch = startSketchOn(stage2Plane)
+stage2Profile = circle(stage2Sketch, center = [0, 0], radius = r2)
+stage2White = extrude(stage2Profile, length = 9)
+  |> appearance(%, color = "#ffffff")
+
+// black
+stage2StripePlane = offsetPlane(XY, offset = 78)
+stage2StripeSketch = startSketchOn(stage2StripePlane)
+stage2StripeProfile = circle(stage2StripeSketch, center = [0, 0], radius = r2)
+stage2Black = extrude(stage2StripeProfile, length = 2)
+  |> appearance(%, color = "#000000")
+
+  // ----------------------------
+  // --- Launch Escape System ---
+  // ----------------------------
+// Final tapered nose modeled using a revolve profile for a sleek profile
+
+lesSketch = startSketchOn(XZ)
+lesProfile = startProfile(lesSketch, at = [0, 80])
+  |> xLine(length = -r2)
+  |> line(end = [1.75, 7.2])
+  |> yLine(length = 4)
+  |> line(end = [1, 1.2])
+  |> yLine(length = 7)
+  |> line(endAbsolute = [0, 100])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+launchEscapeSystem = revolve(lesProfile, angle = 360, axis = Y)
+  |> appearance(%, color = '#FFFFFF')

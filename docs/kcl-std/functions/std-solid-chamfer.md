@@ -66,7 +66,7 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the chamfer function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -109,7 +109,7 @@ sketch001 = startSketchOn(part001, face = chamfer1)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the chamfer function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

@@ -957,7 +957,7 @@ export async function selectOffsetSketchPlane(
           planeInfo.origin.x,
           planeInfo.origin.y,
           planeInfo.origin.z,
-        ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
+        ].map((num) => num / sceneInfra.baseUnitMultiplier) as [
           number,
           number,
           number,

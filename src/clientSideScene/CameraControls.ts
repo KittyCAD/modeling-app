@@ -45,6 +45,7 @@ import { deg2Rad } from '@src/lib/utils2d'
 import { degToRad } from 'three/src/math/MathUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { Subscription, UnreliableSubscription } from '@src/network/utils'
+import { Signal } from '@src/lib/signal'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -420,15 +421,8 @@ export class CameraControls {
   setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
     this._isCamMovingCallback = cb
   }
-  private _camChangeCallbacks: { [key: string]: () => void } = {}
-  subscribeToCamChange(cb: () => void) {
-    const cbId = uuidv4()
-    this._camChangeCallbacks[cbId] = cb
-    const unsubscribe = () => {
-      delete this._camChangeCallbacks[cbId]
-    }
-    return unsubscribe
-  }
+
+  public readonly cameraChange = new Signal()
 
   onWindowResize = () => {
     if (this.camera instanceof PerspectiveCamera) {
@@ -1507,7 +1501,7 @@ export class CameraControls {
       })
     }
     this.deferReactUpdate(this.reactCameraProperties)
-    Object.values(this._camChangeCallbacks).forEach((cb) => cb())
+    this.cameraChange.dispatch()
   }
   getInteractionType = (
     event: PointerEvent | WheelEvent | MouseEvent

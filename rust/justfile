@@ -58,6 +58,14 @@ test:
     cargo install cargo-nextest
     {{cnr}} --workspace --features=artifact-graph --no-fail-fast
 
+[working-directory: 'kcl-python-bindings']
+python-test:
+    just test
+
+[working-directory: 'kcl-python-bindings']
+python-test-filter name:
+    just test-filter {{name}}
+
 bump-kcl-crate-versions bump='patch':
     # First build the kcl-bumper tool.
     cargo build -p kcl-bumper
@@ -68,6 +76,8 @@ publish-kcl version:
     git tag kcl-{{version}} -m "Release kcl-{{version}}"
     cargo publish -p kcl-derive-docs
     cargo publish -p kcl-directory-test-macro
+    cargo publish -p kcl-error
+    cargo publish -p kcl-api
     cargo publish -p kcl-lib
     cargo publish -p kcl-test-server
     # We push the tag at the end of publish since pushing the tag
