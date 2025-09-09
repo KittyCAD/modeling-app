@@ -33,7 +33,7 @@ lugNut
 
 // Place the brake caliper
 brakeCaliper
-  |> translate(y = 0.055 )
+  |> translate(y = 0.055)
 
 // Place the car tire
 carTire
