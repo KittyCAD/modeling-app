@@ -1,14 +1,12 @@
 import { KclManagerEvents } from '@src/lang/KclSingleton'
-import { EngineDebugger } from '@src/lib/debugger'
 import {
   engineCommandManager,
   kclManager,
   sceneInfra,
   useSettings,
 } from '@src/lib/singletons'
-import { EngineCommandManagerEvents } from '@src/network/utils'
 import { useEffect, useRef, useState } from 'react'
-import { useModelingContext } from '../useModelingContext'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import { trap } from '@src/lib/trap'
 
 export const useOnPageIdle = ({
@@ -78,7 +76,7 @@ export const useOnPageIdle = ({
     return () => {
       window.cancelAnimationFrame(frameId)
     }
-  }, [modelingMachineState])
+  }, [modelingMachineState, IDLE_TIME_MS])
 
   useEffect(() => {
     if (!streamIdleMode) return

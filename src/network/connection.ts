@@ -28,7 +28,6 @@ import {
 } from '@src/network/websocketConnection'
 import { EngineDebugger } from '@src/lib/debugger'
 import { uuidv4 } from '@src/lib/utils'
-import type { ModelingCmdReq_type } from '@kittycad/lib/dist/types/src/models'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependenices. We do not need to pass values between these. It is mainly
@@ -841,7 +840,7 @@ export class Connection extends EventTarget {
         message: 'readyState is not WebSocket.OPEN',
         metadata: { id: this.id, readyState: this.websocket?.readyState },
       })
-      //
+      // If the command has an id, reject it!
       if (
         message.type === 'modeling_cmd_req' &&
         message.cmd &&

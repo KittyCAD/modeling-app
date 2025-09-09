@@ -224,23 +224,25 @@ export const ConnectionStream = (props: {
       if (engineCommandManager.started) return
       // Trick the executor to cache bust scene.
 
-      jsAppSettings().then((result) => {
-        rustContext
-          .clearSceneAndBustCache(
-            result,
-            codeManager.currentFilePath || undefined
-          )
-          .then(() => {
-            onEngineConnectionReadyForRequests({
-              authToken: props.authToken || '',
-              videoWrapperRef,
-              setAppState,
-              videoRef,
-              setIsSceneReady,
+      jsAppSettings()
+        .then((result) => {
+          rustContext
+            .clearSceneAndBustCache(
+              result,
+              codeManager.currentFilePath || undefined
+            )
+            .then(() => {
+              onEngineConnectionReadyForRequests({
+                authToken: props.authToken || '',
+                videoWrapperRef,
+                setAppState,
+                videoRef,
+                setIsSceneReady,
+              })
             })
-          })
-          .catch(reportRejection)
-      })
+            .catch(reportRejection)
+        })
+        .catch(reportRejection)
     },
   })
 

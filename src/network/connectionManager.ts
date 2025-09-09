@@ -334,7 +334,6 @@ export class ConnectionManager extends EventTarget {
     // Engine is ready to start sending events!
     // Gotcha: The other listenerse above need to be initialized otherwise this will halt forver.
     await onEngineConnectionOpened()
-    Promise.resolve('start completed')
   }
 
   /**

@@ -14,5 +14,5 @@ export const useOnPageExit = ({ callback }: { callback: () => void }) => {
       // When the component unmounts teardown the engineCommandManager
       engineCommandManager.tearDown()
     }
-  }, [])
+  }, [callback])
 }
