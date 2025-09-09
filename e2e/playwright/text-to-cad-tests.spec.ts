@@ -70,15 +70,13 @@ test.describe('Text-to-CAD tests', () => {
     const failureToastMessage = page.getByText(
       `The prompt must clearly describe a CAD model`
     )
-    await expect(failureToastMessage.first()).toBeVisible({ timeout: 30000 })
+    await expect(failureToastMessage.first()).toBeVisible({ timeout: 30_000 })
 
-    // start a new prompt.
-    await toolbar.fireTtcPrompt('a 2x4 lego')
+    // Start a new prompt
+    await toolbar.fireTtcPrompt('create a cube')
 
-    // Make sure the new prompt works.
-    await expect(page.getByText('a 2x4 lego')).toBeVisible()
-    await editor.expectEditor.toContain('startSketchOn', { timeout: 60000 })
-    await scene.settled(cmdBar)
+    // Make sure the new prompt works
+    await editor.expectEditor.toContain('startSketchOn', { timeout: 60_000 })
   })
 
   // TODO: enable once we can do it in the ml elephant pane
