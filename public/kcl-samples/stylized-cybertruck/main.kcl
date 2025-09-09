@@ -1,0 +1,236 @@
+// Stylized Cybertruck
+// A simplified, parametric 3-D model of a low-poly cybertruck, intended for use as a game-ready asset, concept visualization, or real-time rendering demo.
+
+
+// The model includes:
+// - A chassis block forming the vehicle’s base
+// - Front and rear fenders with wheel cut-outs
+// - Four detachable wheels (tire + hubcap)
+// - An angular cabin defined by intersecting trapezoids
+// - Sloped front, rear, and side panels
+// - Flat front and rear light panels
+//
+// All major dimensions are parameterized for quick adjustments.
+// Geometry prioritizes stylized clarity and clean topology over realism,
+// making it suitable for games, educational tools, or prototyping environments.
+// Set units and version
+
+
+
+
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
+
+// Chassis dimensions
+chassisLength = 3.5 // total vehicle length
+chassisWidth = 1.8 // total vehicle width
+chassisHeight = 0.4 // height of main chassis block
+
+
+// Wheel configuration
+wheelBase = 2.3 // distance between front and rear wheels
+wheelDiameter = 0.7 // outer diameter of tire
+wheelWidth = chassisWidth * 0.15 // width of tire
+
+
+// Fender geometry
+fenderInset = 0.1 // horizontal gap between chassis and fender
+fenderLength = chassisLength + fenderInset * 2 // overall fender span along length
+fenderWidth = chassisWidth + fenderInset * 2 // overall fender span across width
+fenderHeight = 0.35 // height of the fender block
+
+
+// Elevation levels
+groundClearance = 0.4 // vertical gap between ground and bottom of fender
+chassisElevation = groundClearance + fenderHeight // bottom of the main chassis
+
+
+// Hood and cabin
+hoodLength = 0 // front hood segment length
+cabinElevation = chassisElevation + chassisHeight // vertical start of cabin
+cabinHeight = 0.8 // total cabin height
+windPanelShift = chassisLength * 0.4 // slant of windshield
+rearPanelShift = chassisLength - windPanelShift // slant of rear cabin wall
+sidePanelShift = chassisWidth * 0.2 // slant of side cabin wall
+
+
+// Front lights
+headlightsElevation = cabinElevation
+headlightsDistance = chassisWidth * 0.75
+headlightsHeight = chassisHeight * 0.2
+headlightsWidth = chassisWidth
+lightDepth = 0.05 // extrusion depth for headlights and taillights
+
+
+// Rear lights
+taillightsOffset = 0
+taillightsHeight = chassisHeight * 0.2
+taillightsWidth = chassisWidth
+taillightsElevation = cabinElevation
+taillightsDistance = chassisWidth - (taillightsOffset * 2) - taillightsWidth
+taillightsSize = chassisHeight * 0.8
+
+// Reference planes
+chassisPlane = offsetPlane(XZ, offset = chassisWidth / 2) // profile plane for chassis and cabin
+fenderPlane = offsetPlane(XZ, offset = chassisWidth / 2 + fenderInset) // profile plane for outer fenders
+
+
+// Fenders
+// Protective side covers that house the wheels.
+// Positioned slightly wider than the chassis to suggest ruggedness.
+fenderProfile = startProfile(fenderPlane, at = [-fenderLength / 2, groundClearance])
+  |> yLine(length = fenderHeight)
+  |> xLine(length = fenderLength)
+  |> yLine(length = -fenderHeight)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+fenderBody = extrude([fenderProfile], length = -chassisWidth - (fenderInset * 2))
+  |> appearance(%, color = "#e0e0e0")
+
+  // Wheel Cutouts
+// Hexagonal recesses subtracted from the fenders to make space for the wheels.
+fn makeWheelCutout(size) {
+  wheelSketch = startSketchOn(XZ)
+  cutOutProfile = polygon(
+    wheelSketch,
+    radius = size * 0.75,
+    numSides = 6,
+    center = [0, size / 2],
+  )
+  cutOutVoid = extrude(cutOutProfile, length = -wheelWidth * 1.5)
+  return cutOutVoid
+}
+frontLeftCutout = makeWheelCutout(size = wheelDiameter)
+  |> translate(x = -wheelBase / 2, y = -fenderWidth / 2, z = 0)
+rearLeftCutout = makeWheelCutout(size = wheelDiameter)
+  |> translate(x = wheelBase / 2, y = -fenderWidth / 2, z = 0)
+frontRightCutout = makeWheelCutout(size = wheelDiameter)
+  |> rotate(
+       %,
+       roll = 0,
+       pitch = 0,
+       yaw = 180,
+     )
+  |> translate(x = wheelBase / 2, y = -fenderWidth / 2, z = 0)
+rearRightCutout = makeWheelCutout(size = wheelDiameter)
+  |> rotate(
+       %,
+       roll = 0,
+       pitch = 0,
+       yaw = 180,
+     )
+  |> translate(x = -wheelBase / 2, y = -fenderWidth / 2, z = 0)
+fenderWithCutouts = subtract(
+       [fenderBody],
+       tools = [
+         frontLeftCutout,
+         rearLeftCutout,
+         frontRightCutout,
+         rearRightCutout
+       ],
+     )
+  |> appearance(%, color = "#1a1a1a")
+
+  // Chassis
+  // The main structural body of the vehicle, sitting above the fenders.
+// Defines the base frame on which the cabin and roof are mounted.
+chassisProfile = startProfile(chassisPlane, at = [-chassisLength / 2, chassisElevation])
+  |> yLine(length = chassisHeight)
+  |> xLine(length = chassisLength)
+  |> yLine(length = -chassisHeight)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+chassis = extrude([chassisProfile], length = -chassisWidth)
+  |> appearance(%, color = "#757575") // gray body
+
+  // Cabin (angular upper body)
+  // Defined by intersecting sloped front, back, and side profiles.
+// Emulates the faceted, wedge-like shape of the Cybertruck.
+cabinSideProfile = startProfile(
+       chassisPlane,
+       at = [
+         -chassisLength / 2 + hoodLength,
+         cabinElevation
+       ],
+     )
+  |> line(end = [windPanelShift, cabinHeight])
+  |> line(end = [rearPanelShift, -cabinHeight])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+cabinSideBody = extrude([cabinSideProfile], length = -chassisWidth)
+
+cabinFrontPlane = offsetPlane(YZ, offset = -chassisLength * 0.55)
+cabinFrontSketch = startSketchOn(cabinFrontPlane)
+cabinFrontProfile = startProfile(cabinFrontSketch, at = [-chassisWidth / 2, cabinElevation])
+  |> line(end = [sidePanelShift, cabinHeight])
+  |> xLine(length = chassisWidth - (sidePanelShift * 2))
+  |> line(end = [sidePanelShift, -cabinHeight])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+cabinFrontBody = extrude([cabinFrontProfile], length = chassisLength * 1.1)
+
+cabinBody = intersect([cabinSideBody, cabinFrontBody])
+  |> appearance(%, color = "#9ce8f2")
+
+  // Wheels
+  // Cylindrical wheels with a central hubcap detail.
+// Created as separate parts and positioned under the fender cutouts.
+fn wheelFn(diameter, width) {
+  wheelSketch = startSketchOn(XZ)
+  wheelProfile = circle(wheelSketch, center = [0, diameter / 2], radius = diameter / 2)
+    |> subtract2d(%, tool = circle(wheelSketch, center = [0, diameter / 2], radius = diameter / 4))
+  wheelTireBody = extrude(wheelProfile, length = -wheelWidth)
+    |> appearance(%, color = "#141414")
+  diskProfile = circle(wheelSketch, center = [0, diameter / 2], radius = diameter / 4)
+  diskBody = extrude(diskProfile, length = -wheelWidth)
+    |> appearance(%, color = "#d1d1d1")
+  return [wheelTireBody, diskBody]
+}
+wheelFrontLeft = wheelFn(diameter = wheelDiameter, width = wheelWidth)
+  |> translate(x = -wheelBase / 2, y = -fenderWidth / 2, z = 0)
+wheelRearLeft = wheelFn(diameter = wheelDiameter, width = wheelWidth)
+  |> translate(x = wheelBase / 2, y = -fenderWidth / 2, z = 0)
+wheelFrontRight = wheelFn(diameter = wheelDiameter, width = wheelWidth)
+  |> rotate(
+       %,
+       roll = 0,
+       pitch = 0,
+       yaw = 180,
+     )
+  |> translate(x = wheelBase / 2, y = -fenderWidth / 2, z = 0)
+wheelRearRight = wheelFn(diameter = wheelDiameter, width = wheelWidth)
+  |> rotate(
+       %,
+       roll = 0,
+       pitch = 0,
+       yaw = 180,
+     )
+  |> translate(x = -wheelBase / 2, y = -fenderWidth / 2, z = 0)
+
+  // Headlights
+// Two circular front lights mounted on the front face of the chassis.
+headlightsPlane = offsetPlane(YZ, offset = -chassisLength / 2)
+headlightsSketch = startSketchOn(headlightsPlane)
+headlightsProfile = startProfile(headlightsSketch, at = [-chassisWidth / 2, headlightsElevation])
+  |> yLine(length = -headlightsHeight)
+  |> xLine(length = headlightsWidth)
+  |> yLine(length = headlightsHeight)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+headlightsBody = extrude(headlightsProfile, length = -lightDepth)
+  |> appearance(%, color = "#ededed")
+
+  // Taillights
+// Two rectangular rear lights mounted on the back face of the chassis.
+taillightsPlane = offsetPlane(YZ, offset = chassisLength / 2)
+taillightsSketch = startSketchOn(taillightsPlane)
+taillightsProfile = startProfile(taillightsSketch, at = [-chassisWidth / 2, taillightsElevation])
+  |> yLine(length = -taillightsHeight)
+  |> xLine(length = taillightsWidth)
+  |> yLine(length = taillightsHeight)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+taillightsBody = extrude(taillightsProfile, length = lightDepth)
+  |> appearance(%, color = "#ff0000")

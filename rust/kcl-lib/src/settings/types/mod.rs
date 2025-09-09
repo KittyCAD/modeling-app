@@ -3,6 +3,7 @@
 pub mod project;
 
 use anyhow::Result;
+use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -64,7 +65,7 @@ pub struct Settings {
 }
 
 /// Application wide settings.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
@@ -94,10 +95,6 @@ pub struct AppSettings {
     /// of the app to aid in development.
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
-    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
-    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
-    #[serde(default = "make_it_so", skip_serializing_if = "is_true")]
-    pub fixed_size_grid: bool,
 }
 
 /// Default to true.
@@ -107,20 +104,6 @@ fn make_it_so() -> bool {
 
 fn is_true(b: &bool) -> bool {
     *b
-}
-
-impl Default for AppSettings {
-    fn default() -> Self {
-        Self {
-            appearance: Default::default(),
-            onboarding_status: Default::default(),
-            dismiss_web_banner: Default::default(),
-            stream_idle_mode: Default::default(),
-            allow_orbit_in_sketch_mode: Default::default(),
-            show_debug_panel: Default::default(),
-            fixed_size_grid: make_it_so(),
-        }
-    }
 }
 
 fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
@@ -270,12 +253,12 @@ impl From<AppTheme> for kittycad::types::Color {
 }
 
 /// Settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default = "default_length_unit_millimeters", skip_serializing_if = "is_default")]
     pub base_unit: UnitLength,
     /// The projection mode the camera should use while modeling.
     #[serde(default, skip_serializing_if = "is_default")]
@@ -289,7 +272,10 @@ pub struct ModelingSettings {
     /// Toggle touch controls for 3D view navigation
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_touch_controls: DefaultTrue,
-    /// Toggle new sketch mode implementation (Dev only)
+    /// Toggle copilot features
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub enable_copilot: bool,
+    /// Toggle new sketch mode implementation
     #[serde(default, skip_serializing_if = "is_default")]
     pub use_new_sketch_mode: bool,
     /// Highlight edges of 3D objects?
@@ -301,6 +287,49 @@ pub struct ModelingSettings {
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
+    /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
+    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
+    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+    #[serde(default = "make_it_so", skip_serializing_if = "is_true")]
+    pub fixed_size_grid: bool,
+    /// When enabled, tools like line, rectangle, etc. will snap to the grid.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub snap_to_grid: bool,
+    /// The space between major grid lines, specified in the current unit.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub major_grid_spacing: f64,
+    /// The number of minor grid lines per major grid line.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub minor_grids_per_major: f64,
+    /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub snaps_per_minor: f64,
+}
+
+fn default_length_unit_millimeters() -> UnitLength {
+    UnitLength::Millimeters
+}
+
+impl Default for ModelingSettings {
+    fn default() -> Self {
+        Self {
+            base_unit: UnitLength::Millimeters,
+            camera_projection: Default::default(),
+            camera_orbit: Default::default(),
+            mouse_controls: Default::default(),
+            enable_touch_controls: Default::default(),
+            enable_copilot: Default::default(),
+            use_new_sketch_mode: Default::default(),
+            highlight_edges: Default::default(),
+            enable_ssao: Default::default(),
+            show_scale_grid: Default::default(),
+            fixed_size_grid: true,
+            snap_to_grid: Default::default(),
+            major_grid_spacing: Default::default(),
+            minor_grids_per_major: Default::default(),
+            snaps_per_minor: Default::default(),
+        }
+    }
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
@@ -323,86 +352,6 @@ impl From<DefaultTrue> for bool {
 impl From<bool> for DefaultTrue {
     fn from(b: bool) -> Self {
         Self(b)
-    }
-}
-
-/// The valid types of length units.
-#[derive(
-    Debug, Default, Eq, PartialEq, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr,
-)]
-#[cfg_attr(
-    feature = "pyo3",
-    pyo3::pyclass(eq, eq_int),
-    pyo3_stub_gen::derive::gen_stub_pyclass_enum
-)]
-#[ts(export)]
-#[serde(rename_all = "lowercase")]
-#[display(style = "lowercase")]
-pub enum UnitLength {
-    /// Centimeters <https://en.wikipedia.org/wiki/Centimeter>
-    Cm,
-    /// Feet <https://en.wikipedia.org/wiki/Foot_(unit)>
-    Ft,
-    /// Inches <https://en.wikipedia.org/wiki/Inch>
-    In,
-    /// Meters <https://en.wikipedia.org/wiki/Meter>
-    M,
-    /// Millimeters <https://en.wikipedia.org/wiki/Millimeter>
-    #[default]
-    Mm,
-    /// Yards <https://en.wikipedia.org/wiki/Yard>
-    Yd,
-}
-
-impl From<kittycad::types::UnitLength> for UnitLength {
-    fn from(unit: kittycad::types::UnitLength) -> Self {
-        match unit {
-            kittycad::types::UnitLength::Cm => UnitLength::Cm,
-            kittycad::types::UnitLength::Ft => UnitLength::Ft,
-            kittycad::types::UnitLength::In => UnitLength::In,
-            kittycad::types::UnitLength::M => UnitLength::M,
-            kittycad::types::UnitLength::Mm => UnitLength::Mm,
-            kittycad::types::UnitLength::Yd => UnitLength::Yd,
-        }
-    }
-}
-
-impl From<UnitLength> for kittycad::types::UnitLength {
-    fn from(unit: UnitLength) -> Self {
-        match unit {
-            UnitLength::Cm => kittycad::types::UnitLength::Cm,
-            UnitLength::Ft => kittycad::types::UnitLength::Ft,
-            UnitLength::In => kittycad::types::UnitLength::In,
-            UnitLength::M => kittycad::types::UnitLength::M,
-            UnitLength::Mm => kittycad::types::UnitLength::Mm,
-            UnitLength::Yd => kittycad::types::UnitLength::Yd,
-        }
-    }
-}
-
-impl From<kittycad_modeling_cmds::units::UnitLength> for UnitLength {
-    fn from(unit: kittycad_modeling_cmds::units::UnitLength) -> Self {
-        match unit {
-            kittycad_modeling_cmds::units::UnitLength::Centimeters => UnitLength::Cm,
-            kittycad_modeling_cmds::units::UnitLength::Feet => UnitLength::Ft,
-            kittycad_modeling_cmds::units::UnitLength::Inches => UnitLength::In,
-            kittycad_modeling_cmds::units::UnitLength::Meters => UnitLength::M,
-            kittycad_modeling_cmds::units::UnitLength::Millimeters => UnitLength::Mm,
-            kittycad_modeling_cmds::units::UnitLength::Yards => UnitLength::Yd,
-        }
-    }
-}
-
-impl From<UnitLength> for kittycad_modeling_cmds::units::UnitLength {
-    fn from(unit: UnitLength) -> Self {
-        match unit {
-            UnitLength::Cm => kittycad_modeling_cmds::units::UnitLength::Centimeters,
-            UnitLength::Ft => kittycad_modeling_cmds::units::UnitLength::Feet,
-            UnitLength::In => kittycad_modeling_cmds::units::UnitLength::Inches,
-            UnitLength::M => kittycad_modeling_cmds::units::UnitLength::Meters,
-            UnitLength::Mm => kittycad_modeling_cmds::units::UnitLength::Millimeters,
-            UnitLength::Yd => kittycad_modeling_cmds::units::UnitLength::Yards,
-        }
     }
 }
 
@@ -469,6 +418,19 @@ pub struct TextEditorSettings {
     pub blinking_cursor: DefaultTrue,
 }
 
+/// Same as TextEditorSettings but applies to a per-project basis.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[serde(rename_all = "snake_case")]
+#[ts(export)]
+pub struct ProjectTextEditorSettings {
+    /// Whether to wrap text in the editor or overflow with scroll.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_wrapping: Option<bool>,
+    /// Whether to make the cursor blink in the editor.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub blinking_cursor: Option<bool>,
+}
+
 /// Settings that affect the behavior of project management.
 #[derive(Debug, Clone, Default, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
 #[serde(rename_all = "snake_case")]
@@ -513,6 +475,16 @@ pub struct CommandBarSettings {
     /// Whether to include settings in the command bar.
     #[serde(default, skip_serializing_if = "is_default")]
     pub include_settings: DefaultTrue,
+}
+
+/// Same as CommandBarSettings but applies to a per-project basis.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[serde(rename_all = "snake_case")]
+#[ts(export)]
+pub struct ProjectCommandBarSettings {
+    /// Whether to include settings in the command bar.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub include_settings: Option<bool>,
 }
 
 /// The types of onboarding status.
@@ -678,9 +650,10 @@ text_wrapping = true"#;
                 },
                 modeling: ModelingSettings {
                     enable_ssao: false.into(),
-                    base_unit: UnitLength::In,
+                    base_unit: UnitLength::Inches,
                     mouse_controls: MouseControlType::Zoo,
                     camera_projection: CameraProjectionType::Perspective,
+                    fixed_size_grid: true,
                     ..Default::default()
                 },
                 project: ProjectSettings {

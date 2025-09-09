@@ -1,0 +1,92 @@
+// Modular Shelf Grid
+// A parametric, grid-based shelving system for layout prototyping and modular storage design.
+
+
+// This model generates a configurable number of uniform shelf modules,
+// stacked in a grid defined by row and column counts.
+// Each module is:
+// - A rectangular box composed of two vertical side panels and two horizontal shelves
+// - Open at the front for accessible storage
+// All dimensions and counts are parametric, enabling rapid iteration
+// for uses such as built-ins, modular wall storage, or retail shelving.
+
+
+
+
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
+
+columnCount = 5 // number of shelf modules in horizontal direction (X axis)
+rowCount = 3 // number of shelf modules in vertical direction (Z axis)
+
+
+// --- Module Dimensions ---
+unitWidth = 0.4 // external width of each module
+unitHeight = 0.5 // external height of each module
+unitDepth = 0.4 // depth from front to back
+
+
+// --- Geometry Parameters ---
+panelThickness = 0.02 // thickness for side walls and shelves
+sidePanelOffset = unitWidth - panelThickness // spacing between left and right panels
+
+
+// --- Shelf Geometry ---
+shelfThickness = panelThickness // same as panel thickness
+shelfWidth = unitWidth - (panelThickness * 2) // fits between side panels
+shelfDepth = unitDepth // full shelf depth
+shelfSpacing = unitHeight - shelfThickness // position of top shelf above bottom
+
+
+// --- Reference Plane ---
+basePlane = startSketchOn(XY)
+
+// --- Side Panels ---
+// Left and right vertical panels forming module sides.
+sidePanelProfile = startProfile(basePlane, at = [-unitWidth / 2, 0])
+  |> yLine(length = -unitDepth)
+  |> xLine(length = panelThickness)
+  |> yLine(length = unitDepth)
+  |> close()
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = sidePanelOffset,
+       axis = [1, 0],
+     )
+sidePanels = extrude(sidePanelProfile, length = unitHeight)
+
+// --- Shelf Boards ---
+// Two shelves: one at the bottom, one at the top of each module.
+firstShelfSketch = startSketchOn(basePlane)
+firstShelfProfile = startProfile(firstShelfSketch, at = [-shelfWidth / 2, 0])
+  |> yLine(length = -shelfDepth)
+  |> xLine(length = shelfWidth)
+  |> yLine(length = shelfDepth)
+  |> close()
+firstShelf = extrude(firstShelfProfile, length = shelfThickness)
+
+// Stack two shelf boards inside the unit (bottom and top)
+shelves = patternLinear3d(
+  firstShelf,
+  instances = 2,
+  distance = shelfSpacing,
+  axis = [0, 0, 1],
+)
+
+// --- Grid of Shelf Modules ---
+// Repeats the basic shelf module (side panels + two shelves)
+// in both horizontal and vertical directions to form a full grid.
+
+
+modularShelfArray = patternLinear3d(
+       [sidePanels, shelves],
+       instances = columnCount,
+       distance = unitWidth,
+       axis = [1, 0, 0],
+     )
+  |> patternLinear3d(
+       %,
+       instances = rowCount,
+       distance = unitHeight,
+       axis = [0, 0, 1],
+     )

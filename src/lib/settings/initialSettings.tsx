@@ -44,6 +44,7 @@ export class Setting<T = unknown> {
   public Component: SettingProps<T>['Component']
   public description?: string
   private validate: (v: T) => boolean
+  public readonly isEnabled: (c: SettingsType) => boolean
   private _default: T
   private _user?: T
   private _project?: T
@@ -52,6 +53,7 @@ export class Setting<T = unknown> {
     this._default = props.defaultValue
     this.current = props.defaultValue
     this.validate = props.validate
+    this.isEnabled = props.isEnabled || (() => true)
     this.description = props.description
     this.hideOnLevel = props.hideOnLevel
     this.hideOnPlatform = props.hideOnPlatform
@@ -226,16 +228,6 @@ export function createSettings() {
       showDebugPanel: new Setting<boolean>({
         defaultValue: false,
         description: 'Whether to show the debug panel, a development tool',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
-      fixedSizeGrid: new Setting<boolean>({
-        defaultValue: true,
-        hideOnLevel: 'project',
-        description:
-          'When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -474,12 +466,22 @@ export function createSettings() {
       /**
        * Use the new sketch mode implementation - solver (Dev only)
        */
+      enableCopilot: new Setting<boolean>({
+        hideOnLevel: 'project',
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        defaultValue: false,
+        description: 'Toggle copilot',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       useNewSketchMode: new Setting<boolean>({
         hideOnLevel: 'project',
         // Don't show in prod, consider switching to use AdamS's endpoint https://github.com/KittyCAD/common/pull/1704
         hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
         defaultValue: false,
-        description: 'Use the new sketch mode implementation (Dev only)',
+        description: 'Use the new sketch mode implementation',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -563,6 +565,56 @@ export function createSettings() {
         },
         hideOnLevel: 'project',
       }),
+      fixedSizeGrid: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      majorGridSpacing: new Setting<number>({
+        defaultValue: 1,
+        description:
+          'The space between major grid lines, specified in the current unit',
+        validate: (v) => typeof v === 'number',
+        commandConfig: {
+          inputType: 'number',
+          min: 0,
+        },
+      }),
+      minorGridsPerMajor: new Setting<number>({
+        defaultValue: 4,
+        description: 'Number of minor grid lines per major grid line',
+        validate: (v) => typeof v === 'number',
+        commandConfig: {
+          inputType: 'number',
+          min: 1,
+          integer: true,
+        },
+      }),
+      snapToGrid: new Setting<boolean>({
+        defaultValue: false,
+        description:
+          'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      snapsPerMinor: new Setting<number>({
+        defaultValue: 1,
+        description:
+          'Number of snaps between minor grid lines. 1 means snapping to every minor grid line',
+        validate: (v) => typeof v === 'number',
+        isEnabled: (context) => context.modeling.snapToGrid.current,
+        commandConfig: {
+          inputType: 'number',
+          min: 0.001,
+        },
+      }),
+
       /**
        * TODO: This setting is not yet implemented.
        * Whether to turn off animations and other motion effects

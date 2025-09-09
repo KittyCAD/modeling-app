@@ -554,6 +554,11 @@ test.describe(
                     color: parseFloat(color),
                   },
                 },
+                // TODO: make sure this isn't just working around a bug
+                // where the existing data wouldn't be preserved?
+                meta: {
+                  id: '9379bcda-e1e4-4613-851e-a5c4f5c7e83d',
+                },
               },
             })
           )
@@ -791,6 +796,90 @@ test.describe(
       })
     })
 
+    // This test checks if project level settings can be set to default values even if the user level setting is
+    // not set to the default. There used to be a bug that the default was not serialized in rust and couldn't be set.
+    test('Set project level settings to default values', async ({
+      page,
+      homePage,
+    }) => {
+      await test.step(`Setup`, async () => {
+        await page.setBodyDimensions({ width: 1200, height: 800 })
+        await homePage.goToModelingScene()
+        await page
+          .getByRole('button', { name: 'Start Sketch' })
+          .waitFor({ state: 'visible' })
+      })
+
+      await test.step('Open settings', async () => {
+        await page.getByRole('link', { name: 'Settings' }).last().click()
+        await expect(
+          page.getByRole('heading', { name: 'Settings', exact: true })
+        ).toBeVisible()
+      })
+
+      await test.step('Set user-level settings', async () => {
+        await settingsSwitchTab(page)('user')
+
+        // Set user level unit to anything but the default
+        const unitSelect = page.getByTestId('modeling-defaultUnit')
+        await unitSelect.selectOption('ft')
+        const toast = page.getByText(
+          `Set default unit to "ft" as a user default`
+        )
+        await expect(toast).toBeVisible()
+        await expect(toast).not.toBeVisible()
+        await expect(unitSelect).toHaveValue('ft')
+
+        // Make sure show debug panel is on by default  (it's On in the test setup)
+
+        // Set show debug panel to On (by default it's Off)
+        const showDebugPanel = page.locator('#showDebugPanel')
+        await expect(showDebugPanel.getByRole('checkbox')).toBeChecked()
+      })
+
+      // Set project level unit to the default (meters) to make sure it's not skipped via serialization
+      await test.step('Set project-level settings', async () => {
+        const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
+        await projectSettingsTab.hover()
+        await projectSettingsTab.click()
+
+        // Change project level debug panel to off, see if it sticks
+        const showDebugPanel = page.locator('#showDebugPanel')
+        const showDebugPanelToggle = showDebugPanel.getByText('OffOn')
+        await showDebugPanelToggle.click()
+        await expect(showDebugPanel.getByRole('checkbox')).not.toBeChecked()
+        const toastDebug = page.getByText(
+          `Set show debug panel to "false" for this project`
+        )
+        await expect(toastDebug).toBeVisible()
+        await expect(toastDebug).not.toBeVisible()
+
+        await expect(showDebugPanel.getByRole('checkbox')).not.toBeChecked()
+
+        // Change project level units to the default (m) and expect that to work
+        const unitSelect = page.getByTestId('modeling-defaultUnit')
+        await unitSelect.selectOption('m')
+        const toast = page.getByText(`Set default unit to "m" for this project`)
+        await expect(toast).toBeVisible()
+        await expect(toast).not.toBeVisible()
+
+        await expect(unitSelect).toHaveValue('m')
+      })
+
+      await test.step('Verify values per tab', async () => {
+        await settingsSwitchTab(page)('user')
+        let unitSelect = page.getByTestId('modeling-defaultUnit')
+        await expect(unitSelect).toHaveValue('ft')
+
+        await settingsSwitchTab(page)('proj')
+        unitSelect = page.getByTestId('modeling-defaultUnit')
+        await expect(unitSelect).toHaveValue('m')
+      })
+
+      // Close settings
+      await page.getByTestId('settings-close-button').click()
+    })
+
     test('Changing theme in sketch mode', async ({
       context,
       page,
@@ -824,8 +913,8 @@ test.describe(
       const lineToolButton = page.getByTestId('line')
       const segmentOverlays = page.getByTestId('segment-overlay')
       const sketchOriginLocation = { x: 600, y: 250 }
-      const darkThemeSegmentColor: [number, number, number] = [215, 215, 215]
-      const lightThemeSegmentColor: [number, number, number] = [90, 90, 90]
+      const darkThemeSegmentColor: [number, number, number] = [249, 249, 249]
+      const lightThemeSegmentColor: [number, number, number] = [28, 28, 28]
 
       await test.step(`Get into sketch mode`, async () => {
         await page.mouse.click(700, 200)
