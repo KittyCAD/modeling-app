@@ -889,6 +889,7 @@ description: Operations executed marine-ladder.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

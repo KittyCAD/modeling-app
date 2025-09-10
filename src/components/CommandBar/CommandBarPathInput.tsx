@@ -3,12 +3,12 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
 import type { CommandArgument } from '@src/lib/commandTypes'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, toSync } from '@src/lib/utils'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { useSelector } from '@xstate/react'
-import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import type { OpenDialogOptions } from 'electron'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>

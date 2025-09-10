@@ -23,6 +23,8 @@ import {
   sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
+import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
+import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 import {
   findUsesOfTagInPipe,
   getNodeFromPath,
@@ -35,11 +37,9 @@ import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
+import type { Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
-import type { Selections } from '@src/lib/selections'
-import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 
 beforeAll(async () => {
   await initPromise

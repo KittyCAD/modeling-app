@@ -8,66 +8,65 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router-dom'
-
+import { Toolbar } from '@src/Toolbar'
 import { AppHeader } from '@src/components/AppHeader'
+import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
+import { DownloadAppToast } from '@src/components/DownloadAppToast'
 import Gizmo from '@src/components/Gizmo'
 import { useLspContext } from '@src/components/LspProvider'
 import {
   ModelingSidebarLeft,
   ModelingSidebarRight,
 } from '@src/components/ModelingSidebar/ModelingSidebar'
+import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
+import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
+import { ShareButton } from '@src/components/ShareButton'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import {
+  defaultGlobalStatusBarItems,
+  defaultLocalStatusBarItems,
+} from '@src/components/StatusBar/defaultStatusBarItems'
+import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { UnitsMenu } from '@src/components/UnitsMenu'
+import { WasmErrToast } from '@src/components/WasmErrToast'
+import env from '@src/env'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
-import {
-  billingActor,
-  codeManager,
-  kclManager,
-  settingsActor,
-  editorManager,
-  getSettings,
-} from '@src/lib/singletons'
-import { maybeWriteToDisk } from '@src/lib/telemetry'
-import type { IndexLoaderData } from '@src/lib/types'
-import { useSettings, useToken } from '@src/lib/singletons'
-import { BillingTransition } from '@src/machines/billingMachine'
-import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
-import { ShareButton } from '@src/components/ShareButton'
-import {
-  needsToOnboard,
-  TutorialRequestToast,
-} from '@src/routes/Onboarding/utils'
-import { reportRejection } from '@src/lib/trap'
-import { DownloadAppToast } from '@src/components/DownloadAppToast'
-import { WasmErrToast } from '@src/components/WasmErrToast'
-import openWindow from '@src/lib/openWindow'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
   DOWNLOAD_APP_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
-import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { isDesktop } from '@src/lib/isDesktop'
 import { isPlaywright } from '@src/lib/isPlaywright'
-import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
-import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import {
-  defaultLocalStatusBarItems,
-  defaultGlobalStatusBarItems,
-} from '@src/components/StatusBar/defaultStatusBarItems'
-import { StatusBar } from '@src/components/StatusBar/StatusBar'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import { xStateValueToString } from '@src/lib/xStateValueToString'
+import openWindow from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
-import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
-import { Toolbar } from '@src/Toolbar'
+import {
+  billingActor,
+  codeManager,
+  editorManager,
+  getSettings,
+  kclManager,
+  settingsActor,
+} from '@src/lib/singletons'
+import { useSettings, useToken } from '@src/lib/singletons'
+import { maybeWriteToDisk } from '@src/lib/telemetry'
+import { reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import env from '@src/env'
+import { xStateValueToString } from '@src/lib/xStateValueToString'
+import { BillingTransition } from '@src/machines/billingMachine'
+import {
+  TutorialRequestToast,
+  needsToOnboard,
+} from '@src/routes/Onboarding/utils'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 
 // CYCLIC REF

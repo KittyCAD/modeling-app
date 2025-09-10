@@ -893,6 +893,7 @@ description: Artifact commands radial-flow-centrifugal-impeller.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -1,5 +1,3 @@
-import type { Models } from '@kittycad/lib'
-import type { ClientMetrics } from '@src/network/utils'
 import {
   ConnectingType,
   EngineConnectionEvents,
@@ -8,6 +6,12 @@ import {
 } from '@src/network/utils'
 import { EngineDebugger } from '@src/lib/debugger'
 import { reportRejection } from '@src/lib/trap'
+import type {
+  RtcSessionDescription,
+  WebSocketRequest,
+  WebSocketResponse,
+  ClientMetrics,
+} from '@kittycad/lib/dist/types/src'
 
 /**
  * 4 different event listeners to clean up
@@ -22,7 +26,7 @@ export const createOnWebSocketOpen = ({
   token,
   dispatchEvent,
 }: {
-  send: (message: Models['WebSocketRequest_type']) => void
+  send: (message: WebSocketRequest) => void
   token: string | undefined
   dispatchEvent: (event: Event) => boolean
 }) => {
@@ -98,7 +102,7 @@ export const createOnWebSocketMessage = ({
   ping: () => number | undefined
   setPing: (pong: number | undefined) => void
   createPeerConnection: () => RTCPeerConnection | undefined
-  send: (message: Models['WebSocketRequest_type']) => void
+  send: (message: WebSocketRequest) => void
   setSdpAnswer: (answer: RTCSessionDescriptionInit) => void
   initiateConnectionExclusive: () => Promise<unknown>
   addIceCandidate: (candidate: RTCIceCandidateInit) => void
@@ -119,9 +123,9 @@ export const createOnWebSocketMessage = ({
       return
     }
 
-    const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+    const message: WebSocketResponse = JSON.parse(event.data)
 
-    if (!message.success) {
+    if (!message.success && 'errors' in message) {
       const errorsString = message?.errors
         ?.map((error) => {
           return `  - ${error.error_code}: ${error.message}`
@@ -153,11 +157,12 @@ export const createOnWebSocketMessage = ({
       return
     }
 
-    const resp = message.resp
     // If there's no body to the response, we can bail here.
-    if (!resp || !resp.type) {
+    if (!('resp' in message) || !message.resp.type) {
       return
     }
+
+    const resp = message.resp
 
     // Message is successful, lets process the websocket message
     switch (resp.type) {
@@ -276,7 +281,7 @@ export const createOnWebSocketMessage = ({
                 )
                 send({
                   type: 'sdp_offer',
-                  offer: offer as Models['RtcSessionDescription_type'],
+                  offer: offer as RtcSessionDescription,
                 })
                 dispatchEvent(
                   new CustomEvent(

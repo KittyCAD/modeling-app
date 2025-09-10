@@ -2105,6 +2105,7 @@ description: Operations executed surgical-drill-guide.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

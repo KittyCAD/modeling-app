@@ -1,19 +1,22 @@
-import type { Models } from '@kittycad/lib'
 import type { Connection } from '@src/network/connection'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
+import type {
+  HighlightSetEntity,
+  OkModelingCmdResponse,
+  RtcSessionDescription,
+  WebSocketResponse,
+} from '@kittycad/lib/dist/types/src'
 
 // Ping/Pong every 1 second
 export const pingIntervalMs = 1_000
 
-export type ModelTypes = Models['OkModelingCmdResponse_type']['type']
+export type ModelTypes = OkModelingCmdResponse['type']
 // TODO: Should eventually be replaced with native EventTarget event system,
 // as it manages events in a more familiar way to other developers.
 export interface Subscription<T extends ModelTypes> {
   event: T
-  callback: (
-    data: Extract<Models['OkModelingCmdResponse_type'], { type: T }>
-  ) => void
+  callback: (data: Extract<OkModelingCmdResponse, { type: T }>) => void
 }
 
 export interface NewTrackArgs {
@@ -24,11 +27,9 @@ export interface NewTrackArgs {
 // When unreliable responses are listened, check if it is a highlight type
 export function isHighlightSetEntity_type(
   data: any
-): data is Models['HighlightSetEntity_type'] {
+): data is HighlightSetEntity {
   return data.entity_id && data.sequence
 }
-
-export type ClientMetrics = Models['ClientMetrics_type']
 
 export type Value<T, U> = U extends undefined
   ? { type: T; value: U }
@@ -223,7 +224,7 @@ export enum EngineConnectionEvents {
 }
 
 export function toRTCSessionDescriptionInit(
-  desc: Models['RtcSessionDescription_type']
+  desc: RtcSessionDescription
 ): RTCSessionDescriptionInit | undefined {
   if (desc.type === 'unspecified') {
     console.error('Invalid SDP answer: type is "unspecified".')
@@ -241,7 +242,7 @@ export function toRTCSessionDescriptionInit(
 export const DATACHANNEL_NAME_UMC = 'unreliable_modeling_cmds'
 
 export type UnreliableResponses = Extract<
-  Models['OkModelingCmdResponse_type'],
+  OkModelingCmdResponse,
   { type: 'highlight_set_entity' | 'camera_drag_move' }
 >
 
@@ -268,12 +269,12 @@ export interface PendingMessage {
   command: EngineCommand
   range: SourceRange
   idToRangeMap: { [key: string]: SourceRange }
-  resolve: (data: [Models['WebSocketResponse_type']]) => void
+  resolve: (data: [WebSocketResponse]) => void
   // BOTH resolve and reject get passed back to the rust side which
   // assumes it is this type! Do not change it!
   // Format your errors as this type!
-  reject: (reason: [Models['WebSocketResponse_type']]) => void
-  promise: Promise<[Models['WebSocketResponse_type']]>
+  reject: (reason: [WebSocketResponse]) => void
+  promise: Promise<[WebSocketResponse]>
   isSceneCommand: boolean
 }
 export type EventSource =

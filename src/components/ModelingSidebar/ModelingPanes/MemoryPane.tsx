@@ -1,6 +1,6 @@
+import ReactJsonView from '@microlink/react-json-view'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
-import ReactJsonView from '@microlink/react-json-view'
 
 import type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 import type { Path } from '@rust/kcl-lib/bindings/Path'

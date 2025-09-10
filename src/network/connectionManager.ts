@@ -35,7 +35,6 @@ import { binaryToUuid, isArray, uuidv4 } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type CodeManager from '@src/lang/codeManager'
-import type { Models } from '@kittycad/lib/dist/types/src'
 import { BSON } from 'bson'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
@@ -47,6 +46,12 @@ import type { KclManager } from '@src/lang/KclSingleton'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
+import type { WebSocketRequest, WebSocketResponse } from '@kittycad/lib'
+import {
+  isExportResponse,
+  isModelingBatchResponse,
+  isModelingResponse,
+} from '@src/lib/kcSdkGuards'
 
 export class ConnectionManager extends EventTarget {
   started: boolean
@@ -419,9 +424,7 @@ export class ConnectionManager extends EventTarget {
   async sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
-  ): Promise<
-    Models['WebSocketResponse_type'] | [Models['WebSocketResponse_type']] | null
-  > {
+  ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
     if (this.connection === undefined) {
       EngineDebugger.addLog({
         label: 'sendSceneCommand',
@@ -533,7 +536,7 @@ export class ConnectionManager extends EventTarget {
       idToRangeMap: PendingMessage['idToRangeMap']
     },
     isSceneCommand = false
-  ): Promise<[Models['WebSocketResponse_type']]> {
+  ): Promise<[WebSocketResponse]> {
     if (!this.connection) {
       return Promise.reject(
         new Error(
@@ -563,13 +566,13 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    let message: Models['WebSocketResponse_type'] | null = null
+    let message: WebSocketResponse | null = null
 
     if (event.data instanceof ArrayBuffer) {
       // BSON deserialize the command
       message = BSON.deserialize(
         new Uint8Array(event.data)
-      ) as Models['WebSocketResponse_type']
+      ) as WebSocketResponse
       // The request id comes back as binary and we want to get the uuid
       // string from that.
 
@@ -619,9 +622,9 @@ export class ConnectionManager extends EventTarget {
       !(
         pending &&
         message.success &&
-        (message.resp.type === 'modeling' ||
-          message.resp.type === 'modeling_batch' ||
-          message.resp.type === 'export')
+        (isModelingResponse(message) ||
+          isModelingBatchResponse(message) ||
+          isExportResponse(message))
       )
     ) {
       if (pending) {
@@ -660,7 +663,7 @@ export class ConnectionManager extends EventTarget {
       pending.command.type === 'modeling_cmd_batch_req'
     ) {
       let individualPendingResponses: {
-        [key: string]: Models['WebSocketRequest_type']
+        [key: string]: WebSocketRequest
       } = {}
       pending.command.requests.forEach(({ cmd, cmd_id }) => {
         individualPendingResponses[cmd_id] = {

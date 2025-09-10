@@ -1,12 +1,12 @@
-import { useSelector } from '@xstate/react'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { CustomIcon } from '@src/components/CustomIcon'
 import {
   BillingRemaining,
   BillingRemainingMode,
 } from '@src/components/BillingRemaining'
-import { type BillingActor } from '@src/machines/billingMachine'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { type BillingActor } from '@src/machines/billingMachine'
+import { useSelector } from '@xstate/react'
 
 export const BillingDialog = (props: { billingActor: BillingActor }) => {
   const billingContext = useSelector(

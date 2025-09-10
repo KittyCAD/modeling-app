@@ -217,6 +217,7 @@ impl PrimitiveType {
         let mut hasher = Sha256::new();
         match self {
             PrimitiveType::Any => hasher.update(b"any"),
+            PrimitiveType::None => hasher.update(b"none"),
             PrimitiveType::Named { id } => hasher.update(id.compute_digest()),
             PrimitiveType::String => hasher.update(b"string"),
             PrimitiveType::Number(suffix) => hasher.update(suffix.digestable_id()),

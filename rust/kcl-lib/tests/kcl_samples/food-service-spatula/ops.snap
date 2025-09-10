@@ -2463,6 +2463,7 @@ description: Operations executed food-service-spatula.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

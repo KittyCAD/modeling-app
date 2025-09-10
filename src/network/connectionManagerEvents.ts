@@ -15,11 +15,11 @@ import type { Configuration } from '@src/lang/wasm'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { uuidv4 } from '@src/lib/utils'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import type { Models } from '@kittycad/lib/dist/types/src'
 import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Connection } from '@src/network/connection'
+import { type WebSocketResponse } from '@kittycad/lib/dist/types/src'
 
 export const createOnEngineConnectionRestartRequest = ({
   dispatchEvent,
@@ -64,9 +64,7 @@ export const createOnEngineConnectionOpened = ({
   sendSceneCommand: (
     command: EngineCommand,
     forceWebsocket?: boolean
-  ) => Promise<
-    Models['WebSocketResponse_type'] | [Models['WebSocketResponse_type']] | null
-  >
+  ) => Promise<WebSocketResponse | [WebSocketResponse] | null>
   setTheme: (theme: Themes) => Promise<void>
   listenToDarkModeMatcher: () => void
   camControlsCameraChange: () => void

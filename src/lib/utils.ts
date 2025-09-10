@@ -1,16 +1,15 @@
+import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
+import type { AsyncFn } from '@src/lib/types'
 import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
-import type { AsyncFn } from '@src/lib/types'
 
 import * as THREE from 'three'
-import type {
-  CameraViewState_type,
-  UnitLength_type,
-} from '@kittycad/lib/dist/types/src/models'
+
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { ConnectionManager } from '@src/network/connectionManager'
+
+import type { CameraViewState, UnitLength } from '@kittycad/lib'
 
 export const uuidv4 = v4
 
@@ -686,7 +685,7 @@ export async function engineViewIsometricWithoutGeometryPresent({
   cameraProjection,
 }: {
   engineCommandManager: ConnectionManager
-  unit: UnitLength_type
+  unit: UnitLength
   cameraProjection: CameraProjectionType
 }) {
   // When the video first loads, if the scene is empty (has no sketches/solids/etc defined)
@@ -721,7 +720,7 @@ export async function engineViewIsometricWithoutGeometryPresent({
   // If you load an empty scene with any file unit it will have an eye offset of this
   const magicEngineEyeOffset = 1378.0057 / scaleFactor
   const quat = computeIsometricQuaternionForEmptyScene()
-  const isometricView: CameraViewState_type = {
+  const isometricView: CameraViewState = {
     pivot_rotation: {
       x: quat.x,
       y: quat.y,

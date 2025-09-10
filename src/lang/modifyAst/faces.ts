@@ -1,5 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
   createCallExpressionStdLibKw,
   createLabeledArg,
@@ -11,12 +12,19 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
   retrieveSelectionsFromOpArg,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import {
+  getArtifactOfTypes,
+  getCapCodeRef,
+  getFaceCodeRef,
+  getSweepArtifactFromSelection,
+} from '@src/lang/std/artifactGraph'
 import type {
   Artifact,
   ArtifactGraph,
@@ -26,17 +34,9 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selection, Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
-import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
-import {
-  getArtifactOfTypes,
-  getCapCodeRef,
-  getFaceCodeRef,
-  getSweepArtifactFromSelection,
-} from '@src/lang/std/artifactGraph'
-import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 
 export function addShell({
   ast,

@@ -1,33 +1,34 @@
-import type { Models } from '@kittycad/lib'
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { connectReasoningStream } from '@src/lib/reasoningWs'
-import { assertEvent, assign, setup, fromPromise } from 'xstate'
+import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 
-import { S, transitions } from '@src/machines/utils'
-import { err } from '@src/lib/trap'
 import { getKclVersion } from '@src/lib/kclVersion'
+import { err } from '@src/lib/trap'
+import { S, transitions } from '@src/machines/utils'
+import { isArray } from '@src/lib/utils'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
 import type { FileEntry, Project } from '@src/lib/project'
+import type { Selections } from '@src/lib/selections'
 import type { FileMeta } from '@src/lib/types'
 
 import type { Prompt } from '@src/lib/prompt'
 import { PromptType } from '@src/lib/prompt'
 
+import { textToCadPromptFeedback } from '@src/lib/textToCad'
 import {
-  textToCadMlConversations,
-  textToCadMlPromptsBelongingToConversation,
   getTextToCadCreateResult,
   submitTextToCadCreateRequest,
+  textToCadMlConversations,
+  textToCadMlPromptsBelongingToConversation,
 } from '@src/lib/textToCadCore'
-import { textToCadPromptFeedback } from '@src/lib/textToCad'
-import type { IResponseMlConversations } from '@src/lib/textToCadTypes'
+import type { ConversationResultsPage } from '@kittycad/lib'
 
 import {
+  constructMultiFileIterationRequestWithPromptHelpers,
   getPromptToEditResult,
   submitTextToCadMultiFileIterationRequest,
-  constructMultiFileIterationRequestWithPromptHelpers,
 } from '@src/lib/promptToEdit'
 import toast from 'react-hot-toast'
 
@@ -101,7 +102,7 @@ export type MlEphantManagerEvents =
   | {
       type: MlEphantManagerTransitions.AppendThoughtForPrompt
       promptId: string
-      thought: Models['MlCopilotServerMessage_type']
+      thought: MlCopilotServerMessage
     }
 
 // Used to specify a specific event in input properties
@@ -122,7 +123,7 @@ export interface PromptMeta {
 export interface MlEphantManagerContext {
   apiTokenMlephant?: string
 
-  conversations: IResponseMlConversations
+  conversations: ConversationResultsPage
 
   // The full prompt information that ids map to.
   promptsPool: Map<Prompt['id'], Prompt>
@@ -145,7 +146,7 @@ export interface MlEphantManagerContext {
   promptsMeta: Map<Prompt['id'], PromptMeta>
 
   // Thoughts for each prompt
-  promptsThoughts: Map<Prompt['id'], Models['MlCopilotServerMessage_type'][]>
+  promptsThoughts: Map<Prompt['id'], MlCopilotServerMessage[]>
 }
 
 export const mlEphantDefaultContext = () => ({
@@ -190,7 +191,7 @@ export const mlEphantManagerMachine = setup({
         if (context.apiTokenMlephant === undefined)
           return Promise.reject('missing api token')
 
-        const conversations: IResponseMlConversations | Error =
+        const conversations: ConversationResultsPage | Error =
           await textToCadMlConversations(context.apiTokenMlephant, {
             pageToken: context.conversations.next_page,
             limit: 20,
@@ -252,7 +253,14 @@ export const mlEphantManagerMachine = setup({
         const promptsMetaNext = new Map<Prompt['id'], PromptMeta>()
 
         result.items.reverse().forEach((prompt) => {
-          promptsPoolNext.set(prompt.id, { ...prompt, source_ranges: [] })
+          promptsPoolNext.set(prompt.id, {
+            ...prompt,
+            source_ranges:
+              'source_ranges' in prompt &&
+              isArray((prompt as any).source_ranges)
+                ? (prompt as any).source_ranges
+                : [],
+          })
           promptsBelongingToConversationNext?.push(prompt.id)
           promptsMetaNext.set(prompt.id, {
             // Fake Edit type, because there's no way to tell from the API
@@ -344,7 +352,13 @@ export const mlEphantManagerMachine = setup({
         const promptsBelongingToConversation = []
         const promptsMeta = new Map()
 
-        promptsPool.set(result.id, { ...result, source_ranges: [] })
+        promptsPool.set(result.id, {
+          ...result,
+          source_ranges:
+            'source_ranges' in result && isArray((result as any).source_ranges)
+              ? (result as any).source_ranges
+              : [],
+        })
         promptsBelongingToConversation.push(result.id)
         promptsMeta.set(result.id, {
           type: PromptType.Create,
@@ -649,17 +663,28 @@ export const mlEphantManagerMachine = setup({
             [MlEphantManagerTransitions.GetReasoningForPrompt]: {
               invoke: {
                 input: (args) => {
+                  type ReasoningInput = {
+                    event: Extract<
+                      MlEphantManagerEvents,
+                      { type: MlEphantManagerTransitions.GetReasoningForPrompt }
+                    >
+                    context: MlEphantManagerContext
+                  }
                   if ('output' in args.event) {
-                    return {
+                    const lastId = (
+                      args.event.output as {
+                        promptsBelongingToConversation?: string[]
+                      }
+                    ).promptsBelongingToConversation?.slice(-1)[0]
+                    const inputPayload: ReasoningInput = {
                       event: {
                         type: MlEphantManagerTransitions.GetReasoningForPrompt,
                         refParent: args.self,
-                        promptId: (
-                          args.event.output as any
-                        ).promptsBelongingToConversation.slice(-1)[0],
+                        promptId: lastId!,
                       },
                       context: args.context,
                     }
+                    return inputPayload
                   }
 
                   return {

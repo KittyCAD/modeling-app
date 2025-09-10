@@ -23,7 +23,7 @@ pub enum RuntimeType {
     Array(Box<RuntimeType>, ArrayLen),
     Union(Vec<RuntimeType>),
     Tuple(Vec<RuntimeType>),
-    Object(Vec<(String, RuntimeType)>),
+    Object(Vec<(String, RuntimeType)>, bool),
 }
 
 impl RuntimeType {
@@ -157,24 +157,25 @@ impl RuntimeType {
         value: Type,
         exec_state: &mut ExecState,
         source_range: SourceRange,
+        constrainable: bool,
     ) -> Result<Self, CompilationError> {
         match value {
             Type::Primitive(pt) => Self::from_parsed_primitive(pt, exec_state, source_range),
-            Type::Array { ty, len } => {
-                Self::from_parsed(*ty, exec_state, source_range).map(|t| RuntimeType::Array(Box::new(t), len))
-            }
+            Type::Array { ty, len } => Self::from_parsed(*ty, exec_state, source_range, constrainable)
+                .map(|t| RuntimeType::Array(Box::new(t), len)),
             Type::Union { tys } => tys
                 .into_iter()
-                .map(|t| Self::from_parsed(t.inner, exec_state, source_range))
+                .map(|t| Self::from_parsed(t.inner, exec_state, source_range, constrainable))
                 .collect::<Result<Vec<_>, CompilationError>>()
                 .map(RuntimeType::Union),
             Type::Object { properties } => properties
                 .into_iter()
                 .map(|(id, ty)| {
-                    RuntimeType::from_parsed(ty.inner, exec_state, source_range).map(|ty| (id.name.clone(), ty))
+                    RuntimeType::from_parsed(ty.inner, exec_state, source_range, constrainable)
+                        .map(|ty| (id.name.clone(), ty))
                 })
                 .collect::<Result<Vec<_>, CompilationError>>()
-                .map(RuntimeType::Object),
+                .map(|values| RuntimeType::Object(values, constrainable)),
         }
     }
 
@@ -185,6 +186,7 @@ impl RuntimeType {
     ) -> Result<Self, CompilationError> {
         Ok(match value {
             AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
+            AstPrimitiveType::None => RuntimeType::Primitive(PrimitiveType::None),
             AstPrimitiveType::String => RuntimeType::Primitive(PrimitiveType::String),
             AstPrimitiveType::Boolean => RuntimeType::Primitive(PrimitiveType::Boolean),
             AstPrimitiveType::Number(suffix) => {
@@ -212,10 +214,18 @@ impl RuntimeType {
             .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {alias}")))?;
 
         Ok(match ty_val {
-            KclValue::Type { value, .. } => match value {
-                TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
-                TypeDef::Alias(ty) => ty.clone(),
-            },
+            KclValue::Type {
+                value, experimental, ..
+            } => {
+                let result = match value {
+                    TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
+                    TypeDef::Alias(ty) => ty.clone(),
+                };
+                if *experimental {
+                    exec_state.warn_experimental(&format!("the type `{alias}`"), source_range);
+                }
+                result
+            }
             _ => unreachable!(),
         })
     }
@@ -240,7 +250,7 @@ impl RuntimeType {
                 "a tuple with values of types ({})",
                 tys.iter().map(Self::human_friendly_type).collect::<Vec<_>>().join(", ")
             ),
-            RuntimeType::Object(_) => format!("an object with fields {self}"),
+            RuntimeType::Object(..) => format!("an object with fields {self}"),
         }
     }
 
@@ -257,7 +267,7 @@ impl RuntimeType {
             (Union(ts1), Union(ts2)) => ts1.iter().all(|t| ts2.contains(t)),
             (t1, Union(ts2)) => ts2.iter().any(|t| t1.subtype(t)),
 
-            (Object(t1), Object(t2)) => t2
+            (Object(t1, _), Object(t2, _)) => t2
                 .iter()
                 .all(|(f, t)| t1.iter().any(|(ff, tt)| f == ff && tt.subtype(t))),
 
@@ -268,28 +278,28 @@ impl RuntimeType {
             (RuntimeType::Tuple(t1), t2) if t1.len() == 1 && t1[0].subtype(t2) => true,
 
             // Equivalence between Axis types and their object representation.
-            (Object(t1), Primitive(PrimitiveType::Axis2d)) => {
+            (Object(t1, _), Primitive(PrimitiveType::Axis2d)) => {
                 t1.iter()
                     .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point2d()))
                     && t1
                         .iter()
                         .any(|(n, t)| n == "direction" && t.subtype(&RuntimeType::point2d()))
             }
-            (Object(t1), Primitive(PrimitiveType::Axis3d)) => {
+            (Object(t1, _), Primitive(PrimitiveType::Axis3d)) => {
                 t1.iter()
                     .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point3d()))
                     && t1
                         .iter()
                         .any(|(n, t)| n == "direction" && t.subtype(&RuntimeType::point3d()))
             }
-            (Primitive(PrimitiveType::Axis2d), Object(t2)) => {
+            (Primitive(PrimitiveType::Axis2d), Object(t2, _)) => {
                 t2.iter()
                     .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point2d()))
                     && t2
                         .iter()
                         .any(|(n, t)| n == "direction" && t.subtype(&RuntimeType::point2d()))
             }
-            (Primitive(PrimitiveType::Axis3d), Object(t2)) => {
+            (Primitive(PrimitiveType::Axis3d), Object(t2, _)) => {
                 t2.iter()
                     .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point3d()))
                     && t2
@@ -310,7 +320,7 @@ impl RuntimeType {
                 .collect::<Vec<_>>()
                 .join(" or "),
             RuntimeType::Tuple(_) => "tuples".to_owned(),
-            RuntimeType::Object(_) => format!("objects with fields {self}"),
+            RuntimeType::Object(..) => format!("objects with fields {self}"),
         }
     }
 }
@@ -334,7 +344,7 @@ impl fmt::Display for RuntimeType {
                 "{}",
                 ts.iter().map(|t| t.to_string()).collect::<Vec<_>>().join(" | ")
             ),
-            RuntimeType::Object(items) => write!(
+            RuntimeType::Object(items, _) => write!(
                 f,
                 "{{ {} }}",
                 items
@@ -390,6 +400,7 @@ impl ArrayLen {
 #[derive(Debug, Clone, PartialEq)]
 pub enum PrimitiveType {
     Any,
+    None,
     Number(NumericType),
     String,
     Boolean,
@@ -412,6 +423,7 @@ impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
             PrimitiveType::Any => "any values".to_owned(),
+            PrimitiveType::None => "none values".to_owned(),
             PrimitiveType::Number(NumericType::Known(unit)) => format!("numbers({unit})"),
             PrimitiveType::Number(_) => "numbers".to_owned(),
             PrimitiveType::String => "strings".to_owned(),
@@ -447,6 +459,7 @@ impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             PrimitiveType::Any => write!(f, "any"),
+            PrimitiveType::None => write!(f, "none"),
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
             PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number"),
@@ -1112,7 +1125,9 @@ impl KclValue {
             RuntimeType::Array(ty, len) => self.coerce_to_array_type(ty, convert_units, *len, exec_state, false),
             RuntimeType::Tuple(tys) => self.coerce_to_tuple_type(tys, convert_units, exec_state),
             RuntimeType::Union(tys) => self.coerce_to_union_type(tys, convert_units, exec_state),
-            RuntimeType::Object(tys) => self.coerce_to_object_type(tys, convert_units, exec_state),
+            RuntimeType::Object(tys, constrainable) => {
+                self.coerce_to_object_type(tys, *constrainable, convert_units, exec_state)
+            }
         }
     }
 
@@ -1124,6 +1139,10 @@ impl KclValue {
     ) -> Result<KclValue, CoercionError> {
         match ty {
             PrimitiveType::Any => Ok(self.clone()),
+            PrimitiveType::None => match self {
+                KclValue::KclNone { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Number(ty) => {
                 if convert_units {
                     return ty.coerce(self);
@@ -1174,7 +1193,7 @@ impl KclValue {
                         Ok(self.clone())
                     }
                     KclValue::Plane { .. } => Ok(self.clone()),
-                    KclValue::Object { value, meta } => {
+                    KclValue::Object { value, meta, .. } => {
                         let origin = value
                             .get("origin")
                             .and_then(Point3d::from_kcl_val)
@@ -1240,7 +1259,9 @@ impl KclValue {
                 _ => Err(self.into()),
             },
             PrimitiveType::Axis2d => match self {
-                KclValue::Object { value: values, meta } => {
+                KclValue::Object {
+                    value: values, meta, ..
+                } => {
                     if values
                         .get("origin")
                         .ok_or(CoercionError::from(self))?
@@ -1275,12 +1296,15 @@ impl KclValue {
                     Ok(KclValue::Object {
                         value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
                         meta: meta.clone(),
+                        constrainable: false,
                     })
                 }
                 _ => Err(self.into()),
             },
             PrimitiveType::Axis3d => match self {
-                KclValue::Object { value: values, meta } => {
+                KclValue::Object {
+                    value: values, meta, ..
+                } => {
                     if values
                         .get("origin")
                         .ok_or(CoercionError::from(self))?
@@ -1315,6 +1339,7 @@ impl KclValue {
                     Ok(KclValue::Object {
                         value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
                         meta: meta.clone(),
+                        constrainable: false,
                     })
                 }
                 _ => Err(self.into()),
@@ -1474,11 +1499,12 @@ impl KclValue {
     fn coerce_to_object_type(
         &self,
         tys: &[(String, RuntimeType)],
+        constrainable: bool,
         _convert_units: bool,
         _exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         match self {
-            KclValue::Object { value, .. } => {
+            KclValue::Object { value, meta, .. } => {
                 for (s, t) in tys {
                     // TODO coerce fields
                     if !value.get(s).ok_or(CoercionError::from(self))?.has_type(t) {
@@ -1486,11 +1512,18 @@ impl KclValue {
                     }
                 }
                 // TODO remove non-required fields
-                Ok(self.clone())
+                Ok(KclValue::Object {
+                    value: value.clone(),
+                    meta: meta.clone(),
+                    // Note that we don't check for constrainability, coercing to a constrainable object
+                    // adds that property.
+                    constrainable,
+                })
             }
             KclValue::KclNone { meta, .. } if tys.is_empty() => Ok(KclValue::Object {
                 value: HashMap::new(),
                 meta: meta.clone(),
+                constrainable,
             }),
             _ => Err(self.into()),
         }
@@ -1501,12 +1534,14 @@ impl KclValue {
             KclValue::Bool { .. } => Some(RuntimeType::Primitive(PrimitiveType::Boolean)),
             KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(*ty))),
             KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
-            KclValue::Object { value, .. } => {
+            KclValue::Object {
+                value, constrainable, ..
+            } => {
                 let properties = value
                     .iter()
                     .map(|(k, v)| v.principal_type().map(|t| (k.clone(), t)))
                     .collect::<Option<Vec<_>>>()?;
-                Some(RuntimeType::Object(properties))
+                Some(RuntimeType::Object(properties, *constrainable))
             }
             KclValue::Plane { .. } => Some(RuntimeType::Primitive(PrimitiveType::Plane)),
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
@@ -1524,7 +1559,8 @@ impl KclValue {
             KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::TagDecl)),
             KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Edge)),
             KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
-            KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => None,
+            KclValue::KclNone { .. } => Some(RuntimeType::Primitive(PrimitiveType::None)),
+            KclValue::Module { .. } | KclValue::Type { .. } => None,
         }
     }
 
@@ -1577,6 +1613,7 @@ mod test {
             KclValue::Object {
                 value: crate::execution::KclObjectFields::new(),
                 meta: Vec::new(),
+                constrainable: false,
             },
             KclValue::TagIdentifier(Box::new("foo".parse().unwrap())),
             KclValue::TagDeclarator(Box::new(crate::parsing::ast::types::TagDeclarator::new("foo"))),
@@ -1721,13 +1758,14 @@ mod test {
         );
         none.coerce(&tty1, true, &mut exec_state).unwrap_err();
 
-        let oty = RuntimeType::Object(vec![]);
+        let oty = RuntimeType::Object(vec![], false);
         assert_coerce_results(
             &none,
             &oty,
             &KclValue::Object {
                 value: HashMap::new(),
                 meta: Vec::new(),
+                constrainable: false,
             },
             &mut exec_state,
         );
@@ -1740,6 +1778,7 @@ mod test {
         let obj0 = KclValue::Object {
             value: HashMap::new(),
             meta: Vec::new(),
+            constrainable: false,
         };
         let obj1 = KclValue::Object {
             value: [(
@@ -1751,6 +1790,7 @@ mod test {
             )]
             .into(),
             meta: Vec::new(),
+            constrainable: false,
         };
         let obj2 = KclValue::Object {
             value: [
@@ -1780,38 +1820,51 @@ mod test {
             ]
             .into(),
             meta: Vec::new(),
+            constrainable: false,
         };
 
-        let ty0 = RuntimeType::Object(vec![]);
+        let ty0 = RuntimeType::Object(vec![], false);
         assert_coerce_results(&obj0, &ty0, &obj0, &mut exec_state);
         assert_coerce_results(&obj1, &ty0, &obj1, &mut exec_state);
         assert_coerce_results(&obj2, &ty0, &obj2, &mut exec_state);
 
-        let ty1 = RuntimeType::Object(vec![("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
+        let ty1 = RuntimeType::Object(
+            vec![("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))],
+            false,
+        );
         obj0.coerce(&ty1, true, &mut exec_state).unwrap_err();
         assert_coerce_results(&obj1, &ty1, &obj1, &mut exec_state);
         assert_coerce_results(&obj2, &ty1, &obj2, &mut exec_state);
 
         // Different ordering, (TODO - test for covariance once implemented)
-        let ty2 = RuntimeType::Object(vec![
-            (
-                "bar".to_owned(),
-                RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
-            ),
-            ("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean)),
-        ]);
+        let ty2 = RuntimeType::Object(
+            vec![
+                (
+                    "bar".to_owned(),
+                    RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+                ),
+                ("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean)),
+            ],
+            false,
+        );
         obj0.coerce(&ty2, true, &mut exec_state).unwrap_err();
         obj1.coerce(&ty2, true, &mut exec_state).unwrap_err();
         assert_coerce_results(&obj2, &ty2, &obj2, &mut exec_state);
 
         // field not present
-        let tyq = RuntimeType::Object(vec![("qux".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
+        let tyq = RuntimeType::Object(
+            vec![("qux".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))],
+            false,
+        );
         obj0.coerce(&tyq, true, &mut exec_state).unwrap_err();
         obj1.coerce(&tyq, true, &mut exec_state).unwrap_err();
         obj2.coerce(&tyq, true, &mut exec_state).unwrap_err();
 
         // field with different type
-        let ty1 = RuntimeType::Object(vec![("bar".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
+        let ty1 = RuntimeType::Object(
+            vec![("bar".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))],
+            false,
+        );
         obj2.coerce(&ty1, true, &mut exec_state).unwrap_err();
     }
 
@@ -2083,6 +2136,7 @@ mod test {
             ]
             .into(),
             meta: Vec::new(),
+            constrainable: false,
         };
         let a3d = KclValue::Object {
             value: [
@@ -2135,6 +2189,7 @@ mod test {
             ]
             .into(),
             meta: Vec::new(),
+            constrainable: false,
         };
 
         let ty2d = RuntimeType::Primitive(PrimitiveType::Axis2d);

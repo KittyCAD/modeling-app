@@ -8,7 +8,6 @@ import type { ImportPath } from '@rust/kcl-lib/bindings/ImportPath'
 import type { ImportSelector } from '@rust/kcl-lib/bindings/ImportSelector'
 import type { ItemVisibility } from '@rust/kcl-lib/bindings/ItemVisibility'
 import {
-  formatNumberLiteral,
   type ArrayExpression,
   type BinaryExpression,
   type CallExpressionKw,
@@ -25,6 +24,7 @@ import {
   type UnaryExpression,
   type VariableDeclaration,
   type VariableDeclarator,
+  formatNumberLiteral,
 } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 

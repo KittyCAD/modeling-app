@@ -24,6 +24,7 @@ import {
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 import type { KclManager } from '@src/lang/KclSingleton'
+
 import { isTopLevelModule } from '@src/lang/util'
 import { markOnce } from '@src/lib/performance'
 import type { Selection, Selections } from '@src/lib/selections'
@@ -33,6 +34,7 @@ import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
+
 import { historyCompartment } from '@src/editor/compartments'
 import type CodeManager from '@src/lang/codeManager'
 import type { ConnectionManager } from '@src/network/connectionManager'

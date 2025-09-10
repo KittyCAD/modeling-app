@@ -4198,6 +4198,7 @@ description: Operations executed saturn-v.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

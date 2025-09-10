@@ -1,7 +1,7 @@
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { bracket } from '@e2e/playwright/fixtures/bracket'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 
 test.describe('Testing selections', () => {
   test('parent Solid should be select and deletable and uses custom planes to position children', async ({

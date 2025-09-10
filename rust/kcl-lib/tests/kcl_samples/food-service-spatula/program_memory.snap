@@ -2670,7 +2670,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "handleProfile": {
     "type": "Sketch",

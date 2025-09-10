@@ -1,5 +1,5 @@
 import { markOnce } from '@src/lib/performance'
-import type { ClientMetrics, IEventListenerTracked } from '@src/network/utils'
+import type { IEventListenerTracked } from '@src/network/utils'
 import {
   ConnectingType,
   DATACHANNEL_NAME_UMC,
@@ -19,7 +19,6 @@ import {
   createOnSignalingStateChange,
   createOnTrack,
 } from '@src/network/peerConnection'
-import type { Models } from '@kittycad/lib'
 import {
   createOnWebSocketClose,
   createOnWebSocketError,
@@ -29,6 +28,11 @@ import {
 import { EngineDebugger } from '@src/lib/debugger'
 import { uuidv4 } from '@src/lib/utils'
 import { withWebSocketURL } from '@src/lib/withBaseURL'
+import type {
+  WebSocketRequest,
+  WebSocketResponse,
+  ClientMetrics,
+} from '@kittycad/lib/dist/types/src'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependencies. We do not need to pass values between these. It is mainly
@@ -163,7 +167,7 @@ export class Connection extends EventTarget {
     }
     this.websocket.addEventListener('open', onWebSocketOpen)
     this.websocket.addEventListener('message', ((event: MessageEvent) => {
-      const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+      const message: WebSocketResponse = JSON.parse(event.data)
       if (!('resp' in message)) return
 
       let resp = message.resp
@@ -861,7 +865,7 @@ export class Connection extends EventTarget {
 
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
-  unreliableSend(message: Models['WebSocketRequest_type']) {
+  unreliableSend(message: WebSocketRequest) {
     if (!this.unreliableDataChannel) {
       console.error('race condition my guy, unreliableSend')
       return
@@ -889,7 +893,7 @@ export class Connection extends EventTarget {
     )
   }
 
-  send(message: Models['WebSocketRequest_type']) {
+  send(message: WebSocketRequest) {
     if (!this.websocket) {
       console.error('send, websocket is undefined')
       return

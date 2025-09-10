@@ -22,6 +22,10 @@ import {
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import {
+  getArtifactOfTypes,
+  getSweepEdgeCodeRef,
+} from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
   PathToNode,
@@ -32,10 +36,6 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
-import {
-  getArtifactOfTypes,
-  getSweepEdgeCodeRef,
-} from '@src/lang/std/artifactGraph'
 
 export function addExtrude({
   ast,

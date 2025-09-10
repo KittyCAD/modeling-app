@@ -195,6 +195,7 @@ description: Operations executed circle_three_point.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

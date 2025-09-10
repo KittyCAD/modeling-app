@@ -1,15 +1,15 @@
-import ms from 'ms'
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
-import type { Prompt } from '@src/lib/prompt'
-import type { IResponseMlConversation } from '@src/lib/textToCad'
-import { useState } from 'react'
-import type { Models } from '@kittycad/lib'
 import { Thinking } from '@src/components/Thinking'
+import type { Prompt } from '@src/lib/prompt'
+import type { Conversation } from '@kittycad/lib'
+import ms from 'ms'
+import { useState } from 'react'
 
 // In the future we can split this out but the code is 99% the same as
 // the PromptCard, which came first.
-export interface ConvoCardProps extends IResponseMlConversation {
-  onAction?: (prompt: IResponseMlConversation['first_prompt']) => void
+export interface ConvoCardProps extends Conversation {
+  onAction?: (prompt: Conversation['first_prompt']) => void
 }
 
 export const ConvoCard = (props: ConvoCardProps) => {
@@ -39,9 +39,9 @@ export const ConvoCard = (props: ConvoCardProps) => {
   )
 }
 
-export interface PromptCardProps extends Prompt {
+export type PromptCardProps = Prompt & {
   disabled?: boolean
-  thoughts?: Models['MlCopilotServerMessage_type'][]
+  thoughts?: MlCopilotServerMessage[]
   userAvatar?: string
   onSeeReasoning: (id: Prompt['id']) => void
   onAction?: (id: Prompt['id'], prompt: Prompt['prompt']) => void
@@ -112,7 +112,7 @@ export const PromptCardActionButton = (props: {
 
 export const PromptCardStatus = (props: {
   id: Prompt['id']
-  thoughts?: Models['MlCopilotServerMessage_type'][]
+  thoughts?: MlCopilotServerMessage[]
   status: Prompt['status']
   onlyShowImmediateThought: boolean
   startedAt: Prompt['started_at']

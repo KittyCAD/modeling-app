@@ -3375,42 +3375,10 @@ description: Operations executed car-wheel-assembly.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "x": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
         "y": {
           "value": {
             "type": "Number",
-            "value": 0.5,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "z": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
+            "value": 0.055,
             "ty": {
               "type": "Default",
               "len": {
@@ -3609,42 +3577,10 @@ description: Operations executed car-wheel-assembly.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "x": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
         "y": {
           "value": {
             "type": "Number",
-            "value": 0.5,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "z": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
+            "value": 0.055,
             "ty": {
               "type": "Default",
               "len": {
@@ -4617,6 +4553,7 @@ description: Operations executed car-wheel-assembly.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

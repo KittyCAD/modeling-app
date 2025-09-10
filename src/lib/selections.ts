@@ -1,20 +1,23 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
-import type { Models } from '@kittycad/lib'
+import type { OkModelingCmdResponse, WebSocketRequest } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D, Object3DEventMap } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
+  EXTRA_SEGMENT_HANDLE,
+  SEGMENT_BLUE,
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
-  SEGMENT_BLUE,
-  EXTRA_SEGMENT_HANDLE,
 } from '@src/clientSideScene/sceneConstants'
 import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import { getNodeFromPath, isSingleCursorInPipe } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
@@ -26,7 +29,6 @@ import type {
   Program,
   SourceRange,
 } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -47,7 +49,6 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
-import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -72,7 +73,7 @@ export type Selections = {
 export async function getEventForSelectWithPoint({
   data,
 }: Extract<
-  Models['OkModelingCmdResponse_type'],
+  OkModelingCmdResponse,
   { type: 'select_with_point' }
 >): Promise<ModelingMachineEvent | null> {
   if (!data?.entity_id) {
@@ -216,7 +217,7 @@ export function handleSelectionBatch({
 }: {
   selections: Selections
 }): {
-  engineEvents: Models['WebSocketRequest_type'][]
+  engineEvents: WebSocketRequest[]
   codeMirrorSelection: EditorSelection
   updateSceneObjectColors: () => void
 } {
@@ -232,7 +233,7 @@ export function handleSelectionBatch({
             .range || defaultSourceRange(),
       })
   })
-  const engineEvents: Models['WebSocketRequest_type'][] =
+  const engineEvents: WebSocketRequest[] =
     resetAndSetEngineEntitySelectionCmds(selectionToEngine)
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
@@ -281,7 +282,7 @@ export function processCodeMirrorRanges({
   artifactGraph: ArtifactGraph
 }): null | {
   modelingEvent: ModelingMachineEvent
-  engineEvents: Models['WebSocketRequest_type'][]
+  engineEvents: WebSocketRequest[]
 } {
   const isChange =
     codeMirrorRanges.length !== selectionRanges?.graphSelections?.length ||
@@ -405,7 +406,7 @@ export function updateExtraSegments(
 
 function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[]
-): Models['WebSocketRequest_type'][] {
+): WebSocketRequest[] {
   if (engineCommandManager.connection?.pingIntervalId === undefined) {
     return []
   }
@@ -728,12 +729,11 @@ export async function sendSelectEventToEngine(
   if (isArray(res)) {
     res = res[0]
   }
-  if (
-    res?.success &&
-    res?.resp?.type === 'modeling' &&
-    res?.resp?.data?.modeling_response.type === 'select_with_point'
-  )
-    return res?.resp?.data?.modeling_response?.data
+  const singleRes = res
+  if (isModelingResponse(singleRes)) {
+    const mr = singleRes.resp.data.modeling_response
+    if (mr.type === 'select_with_point') return mr.data
+  }
   return { entity_id: '' }
 }
 

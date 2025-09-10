@@ -1,16 +1,21 @@
-import { useLoaderData } from 'react-router-dom'
-import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
-  useState,
-  useEffect,
   type MouseEventHandler,
   type ReactNode,
+  useEffect,
   useRef,
+  useState,
 } from 'react'
+import { useLoaderData } from 'react-router-dom'
 import type { ContextFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
+import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
+import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
+import type { FileExplorerEntry } from '@src/components/Explorer/utils'
+import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
+import { MLEphantConversationPaneMenu } from '@src/components/MlEphantConversation'
 import { ModelingPaneHeader } from '@src/components/ModelingSidebar/ModelingPane'
 import { DebugPane } from '@src/components/ModelingSidebar/ModelingPanes/DebugPane'
 import { FeatureTreeMenu } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreeMenu'
@@ -23,35 +28,30 @@ import {
   MemoryPaneMenu,
 } from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
 import { MlEphantConversationPane } from '@src/components/ModelingSidebar/ModelingPanes/MlEphantConversationPane'
+import { ToastInsert } from '@src/components/ToastInsert'
 import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import { PATHS, parentPathRelativeToProject } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
 import {
+  codeManager,
   commandBarActor,
   editorManager,
-  systemIOActor,
-  mlEphantManagerActor,
   kclManager,
-  codeManager,
+  mlEphantManagerActor,
+  systemIOActor,
   useSettings,
   useUser,
 } from '@src/lib/singletons'
-import type { settingsMachine } from '@src/machines/settingsMachine'
-import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
-import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
-import { parentPathRelativeToProject, PATHS } from '@src/lib/paths'
 import type { IndexLoaderData } from '@src/lib/types'
-import { useRouteLoaderData } from 'react-router-dom'
-import type { FileExplorerEntry } from '@src/components/Explorer/utils'
-import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
+import type { settingsMachine } from '@src/machines/settingsMachine'
 import { useFolders } from '@src/machines/systemIO/hooks'
-import type { Project } from '@src/lib/project'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import toast from 'react-hot-toast'
-import { ToastInsert } from '@src/components/ToastInsert'
-import { isPlaywright } from '@src/lib/isPlaywright'
-import { MLEphantConversationPaneMenu } from '@src/components/MlEphantConversation'
+import { useRouteLoaderData } from 'react-router-dom'
 
 export type SidebarType =
   | 'code'

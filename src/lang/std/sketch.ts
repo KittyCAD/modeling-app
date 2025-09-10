@@ -8,22 +8,22 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   ARG_ANGLE,
   ARG_ANGLE_END,
-  ARG_AT,
   ARG_ANGLE_START,
+  ARG_AT,
   ARG_CIRCLE_CENTER,
-  ARG_RADIUS,
   ARG_END,
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
+  ARG_INTERIOR_ABSOLUTE,
   ARG_INTERSECT_TAG,
   ARG_LENGTH,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
   ARG_OFFSET,
+  ARG_RADIUS,
   ARG_TAG,
   DETERMINING_ARGS,
-  ARG_INTERIOR_ABSOLUTE,
 } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -93,8 +93,8 @@ import {
   getLength,
   roundOff,
 } from '@src/lib/utils'
-import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
+import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')

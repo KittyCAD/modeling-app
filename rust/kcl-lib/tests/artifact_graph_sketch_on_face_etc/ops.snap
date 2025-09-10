@@ -454,6 +454,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

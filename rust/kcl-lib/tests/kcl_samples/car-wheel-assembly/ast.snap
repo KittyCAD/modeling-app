@@ -178,30 +178,6 @@ description: Result of parsing car-wheel-assembly.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "x",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "arg": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
-                  }
-                },
-                {
-                  "type": "LabeledArg",
-                  "label": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -210,36 +186,12 @@ description: Result of parsing car-wheel-assembly.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "raw": "0.5",
+                    "raw": "0.055",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
-                      "value": 0.5,
-                      "suffix": "None"
-                    }
-                  }
-                },
-                {
-                  "type": "LabeledArg",
-                  "label": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "z",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "arg": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
+                      "value": 0.055,
                       "suffix": "None"
                     }
                   }
@@ -646,30 +598,6 @@ description: Result of parsing car-wheel-assembly.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "x",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "arg": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
-                  }
-                },
-                {
-                  "type": "LabeledArg",
-                  "label": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -678,36 +606,12 @@ description: Result of parsing car-wheel-assembly.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "raw": "0.5",
+                    "raw": "0.055",
                     "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
-                      "value": 0.5,
-                      "suffix": "None"
-                    }
-                  }
-                },
-                {
-                  "type": "LabeledArg",
-                  "label": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "z",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "arg": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
+                      "value": 0.055,
                       "suffix": "None"
                     }
                   }

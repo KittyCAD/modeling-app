@@ -1,16 +1,17 @@
 import toast from 'react-hot-toast'
 
+import type { ApiFile } from '@rust/kcl-lib/bindings/ApiFile'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-import type { ApiFile } from '@rust/kcl-lib/bindings/ApiFile'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { BSON } from 'bson'
 
-import type { Models } from '@kittycad/lib/dist/types/src'
+import type { WebSocketResponse } from '@kittycad/lib'
+
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
 import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
@@ -18,12 +19,13 @@ import { initPromise } from '@src/lang/wasmUtils'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'
+import type { FileEntry, Project } from '@src/lib/project'
 import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule } from '@src/lib/wasm_lib_wrapper'
+
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { FileEntry, Project } from '@src/lib/project'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -226,9 +228,7 @@ export default class RustContext {
   }
 
   /** Send a response back to the rust side, that we got back from the engine. */
-  async sendResponse(
-    response: Models['WebSocketResponse_type']
-  ): Promise<void> {
+  async sendResponse(response: WebSocketResponse): Promise<void> {
     const instance = await this._checkInstance()
 
     try {

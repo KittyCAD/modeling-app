@@ -260,6 +260,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],
