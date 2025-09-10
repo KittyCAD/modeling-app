@@ -77,7 +77,7 @@ sceneInfra.camControls.engineStreamActor = engineStreamActor
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
-    .then(() => {})
+    .then(() => { })
     .catch(reportRejection)
 }
 
@@ -280,7 +280,7 @@ export function App() {
           <ModelingSidebarLeft />
           <div
             className="relative z-0 flex flex-col flex-1 items-center overflow-hidden"
-            style={{ minWidth: '96px' }}
+            style={{ minWidth: '256px' }}
           >
             <Toolbar />
             <EngineStream pool={pool} authToken={authToken} />
@@ -301,18 +301,18 @@ export function App() {
           localItems={[
             ...(getSettings().app.showDebugPanel.current
               ? ([
-                  {
-                    id: 'modeling-state',
-                    element: 'text',
-                    label:
-                      modelingState.value instanceof Object
-                        ? (xStateValueToString(modelingState.value) ?? '')
-                        : modelingState.value,
-                    toolTip: {
-                      children: 'The current state of the modeler',
-                    },
+                {
+                  id: 'modeling-state',
+                  element: 'text',
+                  label:
+                    modelingState.value instanceof Object
+                      ? (xStateValueToString(modelingState.value) ?? '')
+                      : modelingState.value,
+                  toolTip: {
+                    children: 'The current state of the modeler',
                   },
-                ] satisfies StatusBarItemType[])
+                },
+              ] satisfies StatusBarItemType[])
               : []),
             {
               id: 'selection',
