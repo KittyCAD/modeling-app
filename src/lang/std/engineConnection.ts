@@ -31,7 +31,7 @@ import {
   getThemeColorForEngine,
 } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { binaryToUuid, isArray, uuidv4 } from '@src/lib/utils'
+import { binaryToUuid, isArray, promiseFactory, uuidv4 } from '@src/lib/utils'
 import { withWebSocketURL } from '@src/lib/withBaseURL'
 
 const pingIntervalMs = 1_000
@@ -2288,14 +2288,4 @@ export class EngineCommandManager extends EventTarget {
       },
     })
   }
-}
-
-function promiseFactory<T>() {
-  let resolve: (value: T | PromiseLike<T>) => void = () => {}
-  let reject: (value: T | PromiseLike<T>) => void = () => {}
-  const promise = new Promise<T>((_resolve, _reject) => {
-    resolve = _resolve
-    reject = _reject
-  })
-  return { promise, resolve, reject }
 }

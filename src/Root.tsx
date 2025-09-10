@@ -10,13 +10,17 @@ import { KclContextProvider } from '@src/lang/KclProvider'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Outlet } from 'react-router-dom'
 import { MlEphantMachineContext } from '@src/machines/mlEphantManagerMachine2'
+import { useToken } from '@src/lib/singletons'
+import { ZooSocket } from '@src/lib/utils'
 
 // Root component will live for the entire applications runtime
 // This is a great place to add polling code.
 function RootLayout() {
   // Many providers need at the very least a Zoo API token to work.
   // We can provide that here.
-  const wsCopilot = new WebSocket(withAPIBaseURL('/ws/ml/copilot'))
+  const token = useToken()
+
+  const wsCopilot = ZooSocket('/ws/ml/copilot', token)
 
   return (
     <OpenInDesktopAppHandler>
