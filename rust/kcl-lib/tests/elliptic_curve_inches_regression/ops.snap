@@ -110,26 +110,18 @@ description: Operations executed elliptic_curve_inches_regression.kcl
                 "type": "Number",
                 "value": 90.658755,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               }
             ]
@@ -141,13 +133,9 @@ description: Operations executed elliptic_curve_inches_regression.kcl
             "type": "Number",
             "value": 16.805477,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []

@@ -16,7 +16,7 @@ use crate::{
         cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
-        types::{self, NumericType},
+        types::{self, NumericType, UnitSubsts},
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
@@ -103,6 +103,10 @@ pub(super) struct ModuleState {
     pub settings: MetaSettings,
     pub(super) explicit_length_units: bool,
     pub(super) path: ModulePath,
+    /// The unit substitutions for the current stack frame (see docs on execution::types::UnitSubsts
+    /// for more detail). Each stack frame has a possible substitution, and the stack is never empty. The
+    /// root stack frame always has `(None, None)`.
+    pub(super) unit_stack: Vec<UnitSubsts>,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
 
@@ -203,6 +207,19 @@ impl ExecState {
 
     pub(crate) fn mut_stack(&mut self) -> &mut Stack {
         &mut self.mod_local.stack
+    }
+
+    pub(crate) fn mut_unit_stack(&mut self) -> &mut Vec<UnitSubsts> {
+        &mut self.mod_local.unit_stack
+    }
+
+    pub(crate) fn current_unit_substs(&self) -> UnitSubsts {
+        debug_assert!(self.mod_local.unit_stack.last().is_some());
+        self.mod_local
+            .unit_stack
+            .last()
+            .cloned()
+            .unwrap_or(UnitSubsts::default())
     }
 
     pub fn next_uuid(&mut self) -> Uuid {
@@ -512,6 +529,7 @@ impl ModuleState {
             being_declared: Default::default(),
             module_exports: Default::default(),
             explicit_length_units: false,
+            unit_stack: vec![UnitSubsts::default()],
             path,
             settings: Default::default(),
             artifacts: Default::default(),

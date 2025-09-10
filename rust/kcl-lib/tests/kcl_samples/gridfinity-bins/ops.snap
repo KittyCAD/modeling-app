@@ -789,39 +789,27 @@ description: Operations executed gridfinity-bins.kcl
                 "type": "Number",
                 "value": 21.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Mm"
                 }
               },
               {
                 "type": "Number",
                 "value": 21.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Mm"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Mm"
                 }
               }
             ]
@@ -1190,39 +1178,27 @@ description: Operations executed gridfinity-bins.kcl
                 "type": "Number",
                 "value": 21.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Mm"
                 }
               },
               {
                 "type": "Number",
                 "value": 21.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Mm"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Mm"
                 }
               }
             ]
@@ -1621,13 +1597,9 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Number",
             "value": 42.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -1776,13 +1748,9 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Number",
             "value": 42.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -1907,13 +1875,9 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Number",
             "value": 42.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2062,13 +2026,9 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Number",
             "value": 42.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2170,13 +2130,9 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Number",
             "value": 42.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2289,13 +2245,9 @@ description: Operations executed gridfinity-bins.kcl
             "type": "Number",
             "value": 42.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []

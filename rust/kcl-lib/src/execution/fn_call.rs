@@ -10,7 +10,7 @@ use crate::{
         cad_op::{Group, OpArg, OpKclValue, Operation},
         kcl_value::FunctionSource,
         memory,
-        types::RuntimeType,
+        types::{DisplayType, RuntimeType, UnitSubsts},
     },
     parsing::ast::types::{CallExpressionKw, DefaultParamVal, FunctionExpression, Node, Program, Type},
     std::StdFn,
@@ -215,7 +215,7 @@ impl Node<CallExpressionKw> {
 
         // Clone the function so that we can use a mutable reference to
         // exec_state.
-        let func: KclValue = fn_name.get_result(exec_state, ctx).await?.clone();
+        let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
         let Some(fn_src) = func.as_function() else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -261,7 +261,7 @@ impl Node<CallExpressionKw> {
         let args = Args::new(fn_args, unlabeled, callsite, exec_state, ctx.clone());
 
         let return_value = fn_src
-            .call_kw(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
+            .call(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
             .await
             .map_err(|e| {
                 // Add the call expression to the source ranges.
@@ -291,7 +291,7 @@ impl Node<CallExpressionKw> {
 }
 
 impl FunctionDefinition<'_> {
-    pub async fn call_kw(
+    pub async fn call(
         &self,
         fn_name: Option<String>,
         exec_state: &mut ExecState,
@@ -324,7 +324,7 @@ impl FunctionDefinition<'_> {
             );
         }
 
-        let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
+        let (args, unit_substs) = type_check_params(fn_name.as_deref(), self, args, exec_state)?;
 
         // Don't early return until the stack frame is popped!
         self.body.prep_mem(exec_state);
@@ -367,11 +367,13 @@ impl FunctionDefinition<'_> {
             None
         };
 
+        exec_state.mut_unit_stack().push(unit_substs);
         let mut result = match &self.body {
             FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
             FunctionBody::Kcl(f, _) => {
-                if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
+                if let Err(e) = assign_args_to_params(self, args, exec_state) {
                     exec_state.mut_stack().pop_env();
+                    exec_state.mut_unit_stack().pop();
                     return Err(e);
                 }
 
@@ -386,6 +388,7 @@ impl FunctionDefinition<'_> {
         };
 
         exec_state.mut_stack().pop_env();
+        exec_state.mut_unit_stack().pop();
 
         if let Some(mut op) = op {
             op.set_std_lib_call_is_error(result.is_err());
@@ -405,7 +408,22 @@ impl FunctionDefinition<'_> {
             update_memory_for_tags_of_geometry(result, exec_state)?;
         }
 
-        coerce_result_type(result, self, exec_state)
+        let ret_ty = self
+            .return_type
+            .as_ref()
+            .map(|ret_ty| {
+                let mut ty =
+                    RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false)
+                        .map_err(|e| KclError::new_semantic(e.into()))?;
+                ty.subst_units(unit_substs);
+                Ok::<_, KclError>(ty)
+            })
+            .transpose()?;
+        if let Some(ret_ty) = &ret_ty {
+            coerce_result_type(result, ret_ty, exec_state)
+        } else {
+            result
+        }
     }
 
     // Postcondition: result.is_some() if function is not in the standard library.
@@ -427,7 +445,7 @@ impl FunctionBody<'_> {
 }
 
 impl FunctionSource {
-    pub async fn call_kw(
+    pub async fn call(
         &self,
         fn_name: Option<String>,
         exec_state: &mut ExecState,
@@ -436,7 +454,7 @@ impl FunctionSource {
         callsite: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
         let def: FunctionDefinition = self.into();
-        def.call_kw(fn_name, exec_state, ctx, args, callsite).await
+        def.call(fn_name, exec_state, ctx, args, callsite).await
     }
 }
 
@@ -551,7 +569,12 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     Ok(())
 }
 
-fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, exec_state: &mut ExecState) -> String {
+fn type_err_str(
+    expected: &impl DisplayType,
+    found: &KclValue,
+    source_range: &SourceRange,
+    exec_state: &mut ExecState,
+) -> String {
     fn strip_backticks(s: &str) -> &str {
         let mut result = s;
         if s.starts_with('`') {
@@ -563,8 +586,8 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
         result
     }
 
-    let expected_human = expected.human_friendly_type();
-    let expected_ty = expected.to_string();
+    let expected_human = expected.human_friendly_string();
+    let expected_ty = expected.src_string();
     let expected_str =
         if expected_human == expected_ty || expected_human == format!("a value with type `{expected_ty}`") {
             format!("a value with type `{expected_ty}`")
@@ -581,7 +604,7 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
 
     let mut result = format!("{expected_str}, but found {found_str}.");
 
-    if found.is_unknown_number() {
+    if found.is_unknown_number(exec_state) {
         exec_state.clear_units_warnings(source_range);
         result.push_str("\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: mm` or `(a * b): deg`.");
     }
@@ -589,12 +612,12 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
     result
 }
 
-fn type_check_params_kw(
+fn type_check_params(
     fn_name: Option<&str>,
     fn_def: &FunctionDefinition<'_>,
     mut args: Args<Sugary>,
     exec_state: &mut ExecState,
-) -> Result<Args<Desugared>, KclError> {
+) -> Result<(Args<Desugared>, UnitSubsts), KclError> {
     let mut result = Args::new_no_args(args.source_range, args.ctx);
 
     // If it's possible the input arg was meant to be labelled and we probably don't want to use
@@ -608,6 +631,10 @@ fn type_check_params_kw(
         let (label, arg) = args.unlabeled.pop().unwrap();
         args.labeled.insert(label.unwrap(), arg);
     }
+
+    // Collect substitutions for `number(Length)` or `number(Angle)`. See docs on execution::types::UnitSubsts
+    // for details.
+    let mut unit_substs = UnitSubsts::default();
 
     // Apply the `a == a: a` shorthand by desugaring unlabeled args into labeled ones.
     let (labeled_unlabeled, unlabeled_unlabeled) = args.unlabeled.into_iter().partition(|(l, _)| {
@@ -657,20 +684,28 @@ fn type_check_params_kw(
         } else if args.unlabeled.len() == 1 {
             let mut arg = args.unlabeled.pop().unwrap().1;
             if let Some(ty) = ty {
-                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
+                let mut rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
                     .map_err(|e| KclError::new_semantic(e.into()))?;
-                arg.value = arg.value.coerce(&rty, true, exec_state).map_err(|_| {
-                    KclError::new_argument(KclErrorDetails::new(
-                        format!(
-                            "The input argument of {} requires {}",
-                            fn_name
-                                .map(|n| format!("`{n}`"))
-                                .unwrap_or_else(|| "this function".to_owned()),
-                            type_err_str(ty, &arg.value, &arg.source_range, exec_state),
-                        ),
-                        vec![arg.source_range],
-                    ))
-                })?;
+                rty.subst_units(unit_substs);
+
+                let (value, substs) = arg
+                    .value
+                    .coerce_and_find_unit_substs(&rty, true, exec_state)
+                    .map_err(|_| {
+                        KclError::new_argument(KclErrorDetails::new(
+                            format!(
+                                "The input argument of {} requires {}",
+                                fn_name
+                                    .map(|n| format!("`{n}`"))
+                                    .unwrap_or_else(|| "this function".to_owned()),
+                                type_err_str(ty, &arg.value, &arg.source_range, exec_state),
+                            ),
+                            vec![arg.source_range],
+                        ))
+                    })?;
+
+                arg.value = value;
+                unit_substs = unit_substs.or(substs);
             }
             result.unlabeled = vec![(None, arg)]
         } else {
@@ -748,11 +783,13 @@ fn type_check_params_kw(
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
-                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
+                        let mut rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
                             .map_err(|e| KclError::new_semantic(e.into()))?;
-                        arg.value = arg
+                        rty.subst_units(unit_substs);
+
+                        let (value, substs) = arg
                                 .value
-                                .coerce(
+                                .coerce_and_find_unit_substs(
                                     &rty,
                                     true,
                                     exec_state,
@@ -771,6 +808,9 @@ fn type_check_params_kw(
                                         vec![arg.source_range],
                                     ))
                                 })?;
+
+                        arg.value = value;
+                        unit_substs = unit_substs.or(substs);
                     }
                     result.labeled.insert(label, arg);
                 }
@@ -789,10 +829,10 @@ fn type_check_params_kw(
         }
     }
 
-    Ok(result)
+    Ok((result, unit_substs))
 }
 
-fn assign_args_to_params_kw(
+fn assign_args_to_params(
     fn_def: &FunctionDefinition<'_>,
     args: Args<Desugared>,
     exec_state: &mut ExecState,
@@ -848,26 +888,20 @@ fn assign_args_to_params_kw(
 
 fn coerce_result_type(
     result: Result<Option<KclValue>, KclError>,
-    fn_def: &FunctionDefinition<'_>,
+    return_ty: &RuntimeType,
     exec_state: &mut ExecState,
 ) -> Result<Option<KclValue>, KclError> {
     if let Ok(Some(val)) = result {
-        if let Some(ret_ty) = &fn_def.return_type {
-            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false)
-                .map_err(|e| KclError::new_semantic(e.into()))?;
-            let val = val.coerce(&ty, true, exec_state).map_err(|_| {
-                KclError::new_type(KclErrorDetails::new(
-                    format!(
-                        "This function requires its result to be {}",
-                        type_err_str(ret_ty, &val, &(&val).into(), exec_state)
-                    ),
-                    ret_ty.as_source_ranges(),
-                ))
-            })?;
-            Ok(Some(val))
-        } else {
-            Ok(Some(val))
-        }
+        let val = val.coerce(return_ty, true, exec_state).map_err(|_| {
+            KclError::new_type(KclErrorDetails::new(
+                format!(
+                    "This function requires its result to be {}",
+                    type_err_str(return_ty, &val, &(&val).into(), exec_state)
+                ),
+                val.into(),
+            ))
+        })?;
+        Ok(Some(val))
     } else {
         result
     }
@@ -1016,9 +1050,8 @@ mod test {
                 pipe_value: None,
                 _status: std::marker::PhantomData,
             };
-
-            let actual = assign_args_to_params_kw(&(&func_src).into(), args, &mut exec_state)
-                .map(|_| exec_state.mod_local.stack);
+            let actual =
+                assign_args_to_params(&(&func_src).into(), args, &mut exec_state).map(|_| exec_state.mod_local.stack);
             assert_eq!(
                 actual, expected,
                 "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"

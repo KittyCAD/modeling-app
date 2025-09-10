@@ -2983,13 +2983,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": -0.2,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -2999,13 +2995,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 2.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3062,13 +3054,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": -1.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3078,13 +3066,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3141,13 +3125,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": -0.5,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3157,13 +3137,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 0.5,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3220,13 +3196,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": -0.5,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3236,13 +3208,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 2.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3456,13 +3424,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": -1.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3472,13 +3436,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 1.25,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3692,13 +3652,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": -1.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3708,13 +3664,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 0.73,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3912,13 +3864,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 180.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -3944,13 +3892,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -4014,13 +3958,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": -1.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -4030,13 +3970,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 0.77,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -4234,13 +4170,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 180.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -4266,13 +4198,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -4336,13 +4264,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": -1.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -4352,13 +4276,9 @@ description: Operations executed walkie-talkie.kcl
             "type": "Number",
             "value": 0.25000000000000006,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []

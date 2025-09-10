@@ -673,9 +673,9 @@ impl KclValue {
         })
     }
 
-    pub fn is_unknown_number(&self) -> bool {
+    pub fn is_unknown_number(&self, exec_state: &ExecState) -> bool {
         match self {
-            KclValue::Number { ty, .. } => !ty.is_fully_specified(),
+            KclValue::Number { ty, .. } => !ty.is_fully_specified(exec_state),
             _ => false,
         }
     }

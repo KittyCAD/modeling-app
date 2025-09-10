@@ -316,13 +316,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -332,13 +328,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -418,13 +410,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -434,13 +422,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -762,13 +746,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -778,13 +758,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.1,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -864,13 +840,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -880,13 +852,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -1208,13 +1176,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -1224,13 +1188,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.2,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -1310,13 +1270,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -1326,13 +1282,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 72.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -1654,13 +1606,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -1670,13 +1618,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.3,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -1756,13 +1700,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -1772,13 +1712,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 144.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -2100,13 +2036,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -2116,13 +2048,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.4,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -2202,13 +2130,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -2218,13 +2142,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 216.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -2546,13 +2466,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -2562,13 +2478,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.5,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -2648,13 +2560,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -2664,13 +2572,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 288.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -2992,13 +2896,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3008,13 +2908,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.6,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3094,13 +2990,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -3110,13 +3002,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -3438,13 +3326,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3454,13 +3338,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.7,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3540,13 +3420,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -3556,13 +3432,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 36.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -3884,13 +3756,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3900,13 +3768,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.8,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3986,13 +3850,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -4002,13 +3862,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 108.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -4330,13 +4186,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -4346,13 +4198,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.9,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -4432,13 +4280,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -4448,13 +4292,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 180.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -4776,13 +4616,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -4792,13 +4628,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.11,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -4878,13 +4710,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -4894,13 +4722,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 252.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -5222,13 +5046,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -5238,13 +5058,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": -260.12,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -5324,13 +5140,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -5340,13 +5152,9 @@ description: Operations executed dodecahedron.kcl
             "type": "Number",
             "value": 324.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []

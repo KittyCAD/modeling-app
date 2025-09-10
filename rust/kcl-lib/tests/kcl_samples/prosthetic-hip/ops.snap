@@ -1702,13 +1702,9 @@ description: Operations executed prosthetic-hip.kcl
             "type": "Number",
             "value": 133.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2006,13 +2002,9 @@ description: Operations executed prosthetic-hip.kcl
             "type": "Number",
             "value": 133.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []
@@ -2310,13 +2302,9 @@ description: Operations executed prosthetic-hip.kcl
             "type": "Number",
             "value": 133.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Mm"
             }
           },
           "sourceRange": []

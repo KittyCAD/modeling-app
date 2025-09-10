@@ -1125,13 +1125,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -1141,13 +1137,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.151,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -1204,13 +1196,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -1220,13 +1208,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": -0.091,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -1450,13 +1434,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -1466,13 +1446,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.69,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -1575,39 +1551,27 @@ description: Operations executed pipe-flange-assembly.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               }
             ]
@@ -1694,39 +1658,27 @@ description: Operations executed pipe-flange-assembly.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               },
               {
                 "type": "Number",
                 "value": 1.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               }
             ]
@@ -2114,13 +2066,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -2130,13 +2078,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.722,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -2177,13 +2121,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -2209,13 +2149,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -2318,39 +2254,27 @@ description: Operations executed pipe-flange-assembly.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               }
             ]
@@ -2594,13 +2518,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -2610,13 +2530,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": -1.419875,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -2719,39 +2635,27 @@ description: Operations executed pipe-flange-assembly.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "type": "Known",
+                  "type": "Length",
+                  "type": "Inches"
                 }
               }
             ]
@@ -2979,13 +2883,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -3011,13 +2911,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -3081,13 +2977,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3097,13 +2989,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.43999999999999995,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3311,13 +3199,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -3343,13 +3227,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
             }
           },
           "sourceRange": []
@@ -3413,13 +3293,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
@@ -3429,13 +3305,9 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Number",
             "value": -0.591,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "type": "Known",
+              "type": "Length",
+              "type": "Inches"
             }
           },
           "sourceRange": []
