@@ -19,11 +19,13 @@ import type { ViewUpdate } from '@codemirror/view'
 import { EditorView, keymap } from '@codemirror/view'
 import type { StateFrom } from 'xstate'
 
+import { historyCompartment } from '@src/editor/compartments'
 import {
   addLineHighlight,
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { isTopLevelModule } from '@src/lang/util'
 import { markOnce } from '@src/lib/performance'
@@ -34,8 +36,6 @@ import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
-import { historyCompartment } from '@src/editor/compartments'
-import type CodeManager from '@src/lang/codeManager'
 
 declare global {
   interface Window {

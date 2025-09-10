@@ -2,12 +2,12 @@ import { Popover } from '@headlessui/react'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import { changeDefaultUnits, unitLengthToUnitLen } from '@src/lang/wasm'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { codeManager, kclManager, sceneInfra } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
-import { useModelingContext } from '@src/hooks/useModelingContext'
 import { OrthographicCamera } from 'three'
 
 export function UnitsMenu() {

@@ -2,11 +2,11 @@ import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { IndexLoaderData } from '@src/lib/types'
 import { useUser } from '@src/lib/singletons'
+import type { IndexLoaderData } from '@src/lib/types'
 
-import styles from './AppHeader.module.css'
 import type { ReactNode } from 'react'
+import styles from './AppHeader.module.css'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   project?: Omit<IndexLoaderData, 'code'>

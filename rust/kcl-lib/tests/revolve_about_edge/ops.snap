@@ -234,6 +234,7 @@ description: Operations executed revolve_about_edge.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

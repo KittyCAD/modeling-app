@@ -432,6 +432,7 @@ description: Operations executed pipe-with-bend.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -492,6 +492,7 @@ description: Operations executed parametric_with_tan_arc.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -1,8 +1,8 @@
+import { Popover } from '@headlessui/react'
 import { ActionButton } from '@src/components/ActionButton'
+import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
-import { ActionIcon } from '@src/components/ActionIcon'
-import { Popover } from '@headlessui/react'
 
 export function StatusBar({
   globalItems,

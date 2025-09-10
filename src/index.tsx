@@ -8,18 +8,18 @@ import { Router } from '@src/Router'
 import { ToastUpdate } from '@src/components/ToastUpdate'
 import '@src/index.css'
 import { initPromise } from '@src/lang/wasmUtils'
+import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { markOnce } from '@src/lib/performance'
-import { reportRejection } from '@src/lib/trap'
 import {
   appActor,
-  systemIOActor,
   commandBarActor,
   mlEphantManagerActor,
+  systemIOActor,
 } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
-import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler()

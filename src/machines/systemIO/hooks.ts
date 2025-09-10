@@ -1,25 +1,25 @@
-import { NIL as uuidNIL } from 'uuid'
-import { type settings } from '@src/lib/settings/initialSettings'
 import type { Prompt } from '@src/lib/prompt'
+import { type settings } from '@src/lib/settings/initialSettings'
+import type { SystemIOActor } from '@src/lib/singletons'
+import { systemIOActor } from '@src/lib/singletons'
+import type { BillingActor } from '@src/machines/billingMachine'
+import { BillingTransition } from '@src/machines/billingMachine'
 import type {
-  PromptMeta,
   MlEphantManagerActor,
+  PromptMeta,
 } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
-import type { SystemIOActor } from '@src/lib/singletons'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import type { BillingActor } from '@src/machines/billingMachine'
 import { S } from '@src/machines/utils'
-import { BillingTransition } from '@src/machines/billingMachine'
-import { systemIOActor } from '@src/lib/singletons'
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
+import { NIL as uuidNIL } from 'uuid'
 
 export const useRequestedProjectName = () =>
   useSelector(systemIOActor, (state) => state.context.requestedProjectName)

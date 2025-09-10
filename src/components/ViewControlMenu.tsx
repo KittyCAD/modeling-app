@@ -7,18 +7,18 @@ import {
   ContextMenuItem,
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { getSelectedPlaneId } from '@src/lang/queryAst'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
-import { kclManager, sceneInfra, settingsActor } from '@src/lib/singletons'
-import { err, reportRejection } from '@src/lib/trap'
-import { useSettings } from '@src/lib/singletons'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import {
   selectDefaultSketchPlane,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
-import { getSelectedPlaneId } from '@src/lang/queryAst'
-import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
+import { kclManager, sceneInfra, settingsActor } from '@src/lib/singletons'
+import { useSettings } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {

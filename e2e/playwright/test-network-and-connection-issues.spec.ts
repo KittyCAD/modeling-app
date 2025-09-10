@@ -1,4 +1,4 @@
-import { getUtils, TEST_COLORS, circleMove } from '@e2e/playwright/test-utils'
+import { TEST_COLORS, circleMove, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Test network related behaviors', () => {

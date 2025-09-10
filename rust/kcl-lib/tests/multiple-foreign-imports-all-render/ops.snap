@@ -417,6 +417,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

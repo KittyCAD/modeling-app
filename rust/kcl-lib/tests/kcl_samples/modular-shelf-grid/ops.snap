@@ -1096,6 +1096,7 @@ description: Operations executed modular-shelf-grid.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

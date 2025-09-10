@@ -406,7 +406,7 @@ impl ExecutorContext {
                     let metadata = Metadata::from(&**ty);
                     let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
                     match attrs.impl_ {
-                        annotations::Impl::Rust => {
+                        annotations::Impl::Rust | annotations::Impl::RustConstraint => {
                             let std_path = match &exec_state.mod_local.path {
                                 ModulePath::Std { value } => value,
                                 ModulePath::Local { .. } | ModulePath::Main => {
@@ -420,6 +420,7 @@ impl ExecutorContext {
                             let value = KclValue::Type {
                                 value: TypeDef::RustRepr(t, props),
                                 meta: vec![metadata],
+                                experimental: attrs.experimental,
                             };
                             let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
                             exec_state
@@ -438,7 +439,7 @@ impl ExecutorContext {
                         }
                         // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
                         annotations::Impl::Primitive => {}
-                        annotations::Impl::Kcl => match &ty.alias {
+                        annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.alias {
                             Some(alias) => {
                                 let value = KclValue::Type {
                                     value: TypeDef::Alias(
@@ -446,10 +447,12 @@ impl ExecutorContext {
                                             alias.inner.clone(),
                                             exec_state,
                                             metadata.source_range,
+                                            attrs.impl_ == annotations::Impl::KclConstrainable,
                                         )
                                         .map_err(|e| KclError::new_semantic(e.into()))?,
                                     ),
                                     meta: vec![metadata],
+                                    experimental: attrs.experimental,
                                 };
                                 let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
                                 exec_state
@@ -745,7 +748,7 @@ impl ExecutorContext {
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
                 if let Some(attrs) = attrs
-                    && attrs.impl_ == annotations::Impl::Rust
+                    && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
@@ -895,7 +898,7 @@ fn apply_ascription(
     exec_state: &mut ExecState,
     source_range: SourceRange,
 ) -> Result<KclValue, KclError> {
-    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
+    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into(), false)
         .map_err(|e| KclError::new_semantic(e.into()))?;
 
     if matches!(&ty, &RuntimeType::Primitive(PrimitiveType::Number(..))) {
@@ -1117,7 +1120,7 @@ impl Node<MemberExpression> {
                     None,
                 )),
             },
-            (KclValue::Object { value: map, meta: _ }, Property::String(property), false) => {
+            (KclValue::Object { value: map, .. }, Property::String(property), false) => {
                 if let Some(value) = map.get(&property) {
                     Ok(value.to_owned())
                 } else {
@@ -1206,6 +1209,7 @@ impl Node<MemberExpression> {
                     .iter()
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
+                constrainable: false,
             }),
             (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
                 Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1472,7 +1476,9 @@ impl Node<UnaryExpression> {
                 plane.id = exec_state.next_uuid();
                 Ok(KclValue::Plane { value: plane })
             }
-            KclValue::Object { value: values, meta } => {
+            KclValue::Object {
+                value: values, meta, ..
+            } => {
                 // Special-case for negating line-like objects.
                 let Some(direction) = values.get("direction") else {
                     return Err(err());
@@ -1526,6 +1532,7 @@ impl Node<UnaryExpression> {
                 Ok(KclValue::Object {
                     value,
                     meta: meta.clone(),
+                    constrainable: false,
                 })
             }
             _ => Err(err()),
@@ -1727,6 +1734,7 @@ impl Node<ObjectExpression> {
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
+            constrainable: false,
         })
     }
 }

@@ -1,21 +1,21 @@
 import { Popover } from '@headlessui/react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
+import { isDesktop } from '@src/lib/isDesktop'
+import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { codeManager, kclManager } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   acceptOnboarding,
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
-import { onboardingStartPath } from '@src/lib/onboardingPaths'
-import { reportRejection } from '@src/lib/trap'
-import { isDesktop } from '@src/lib/isDesktop'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />

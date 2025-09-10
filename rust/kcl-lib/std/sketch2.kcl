@@ -1,0 +1,46 @@
+/// Functions for sketch mode 2.0 (constraints version)
+
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+import Point2d from "std::types"
+
+@(impl = std_constrainable, experimental = true)
+export type Line = {
+  start: Point2d | none,
+  end: Point2d | none,
+  midpoint: Point2d | none,
+}
+
+@(impl = std_constrainable, experimental = true)
+export fn line(
+  start: Point2d,
+  end?: Point2d,
+  midpoint?: Point2d,
+): Line {
+  { start, end, midpoint }
+}
+
+@(impl = std_constrainable, experimental = true)
+export type Arc = {
+  start: Point2d,
+  end: Point2d,
+  center: Point2d | none,
+  interior: Point2d | none,
+}
+
+@(impl = std_constrainable, experimental = true)
+export fn arc(
+  start: Point2d,
+  end: Point2d,
+  center?: Point2d,
+  interior?: Point2d,
+): Arc {
+  { start, end, center, interior }
+}
+
+@(experimental = true)
+export type Segment = Arc | Line
+
+@(impl = std_rust_constraint, experimental = true)
+export fn parallel(@input: [Line; 2+], distance?: number(Length)) {}

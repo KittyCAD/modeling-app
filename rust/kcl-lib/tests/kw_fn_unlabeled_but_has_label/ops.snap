@@ -190,6 +190,7 @@ description: Operations executed kw_fn_unlabeled_but_has_label.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

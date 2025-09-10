@@ -4324,6 +4324,7 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -1,15 +1,15 @@
-import { useSelector } from '@xstate/react'
-import { type settings } from '@src/lib/settings/initialSettings'
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { type settings } from '@src/lib/settings/initialSettings'
+import { useSelector } from '@xstate/react'
 import { Resizable } from 're-resizable'
 import type { HTMLProps, MouseEventHandler, Ref } from 'react'
 import {
-  useState,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -32,17 +32,17 @@ import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import usePlatform from '@src/hooks/usePlatform'
 import { useKclContext } from '@src/lang/KclProvider'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useSettings, mlEphantManagerActor } from '@src/lib/singletons'
+import { mlEphantManagerActor, useSettings } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
+import { settingsActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
-import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
-import usePlatform from '@src/hooks/usePlatform'
-import { settingsActor } from '@src/lib/singletons'
 
 interface BadgeInfoComputed {
   value: number | boolean | string

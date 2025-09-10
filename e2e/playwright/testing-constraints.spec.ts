@@ -3,8 +3,8 @@ import { XOR } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
 
 import {
-  getUtils,
   NUMBER_REGEXP,
+  getUtils,
   pollEditorLinesSelectedLength,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'

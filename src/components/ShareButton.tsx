@@ -1,16 +1,16 @@
-import { isErr } from '@src/lib/trap'
+import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
+import { useKclContext } from '@src/lang/KclProvider'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { billingActor, commandBarActor } from '@src/lib/singletons'
-import { memo, useCallback, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { Popover } from '@headlessui/react'
-import { useSelector } from '@xstate/react'
-import { useKclContext } from '@src/lang/KclProvider'
+import { isErr } from '@src/lib/trap'
 import { Tier } from '@src/machines/billingMachine'
 import type { SubscriptionsOrError } from '@src/machines/billingMachine'
+import { useSelector } from '@xstate/react'
+import { memo, useCallback, useState } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 const shareHotkey = 'mod+alt+s'
 
@@ -19,7 +19,7 @@ const canPasswordProtectShareLinks = (
 ): boolean => {
   if (subOrErr === undefined || typeof subOrErr === 'number' || isErr(subOrErr))
     return false
-  return subOrErr.modeling_app.share_links[0] === 'password_protected'
+  return subOrErr.modeling_app?.share_links?.[0] === 'password_protected'
 }
 
 /** Share Zoo link button shown in the upper-right of the modeling view */
