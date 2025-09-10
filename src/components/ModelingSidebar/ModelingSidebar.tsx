@@ -338,7 +338,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
       className={`group z-10 flex flex-col ${pointerEventsCssClass} ${openPanesForThisSide.length ? undefined : '!w-auto'}`}
       defaultSize={
         props.elementProps?.defaultSize || {
-          width: '30%',
+          width: '550px',
           height: 'auto',
         }
       }
