@@ -27,10 +27,6 @@ import {
   ZOOM_MAGIC_NUMBER,
 } from '@src/clientSideScene/sceneUtils'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import type {
-  Subscription,
-  UnreliableSubscription,
-} from '@src/lang/std/engineConnection'
 import type { MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -48,6 +44,7 @@ import {
 import { deg2Rad } from '@src/lib/utils2d'
 import { degToRad } from 'three/src/math/MathUtils'
 import { type ConnectionManager } from '@src/network/connectionManager'
+import type { Subscription, UnreliableSubscription } from '@src/network/utils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -74,19 +71,19 @@ interface ThreeCamValues {
 
 export type ReactCameraProperties =
   | {
-      type: 'perspective'
-      fov?: number
-      position: [number, number, number]
-      target: [number, number, number]
-      quaternion: [number, number, number, number]
-    }
+    type: 'perspective'
+    fov?: number
+    position: [number, number, number]
+    target: [number, number, number]
+    quaternion: [number, number, number, number]
+  }
   | {
-      type: 'orthographic'
-      zoom?: number
-      position: [number, number, number]
-      target: [number, number, number]
-      quaternion: [number, number, number, number]
-    }
+    type: 'orthographic'
+    zoom?: number
+    position: [number, number, number]
+    target: [number, number, number]
+    quaternion: [number, number, number, number]
+  }
 
 const lastCmdDelay = 50
 
@@ -321,11 +318,11 @@ export class CameraControls {
     type CallBackParam = Parameters<
       (
         | Subscription<
-            | 'default_camera_zoom'
-            | 'camera_drag_end'
-            | 'default_camera_get_settings'
-            | 'zoom_to_fit'
-          >
+          | 'default_camera_zoom'
+          | 'camera_drag_end'
+          | 'default_camera_get_settings'
+          | 'zoom_to_fit'
+        >
         | UnreliableSubscription<'camera_drag_move'>
       )['callback']
     >[0]
@@ -419,7 +416,7 @@ export class CameraControls {
   }
 
   private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
-    () => {}
+    () => { }
   setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
     this._isCamMovingCallback = cb
   }
@@ -674,7 +671,7 @@ export class CameraControls {
     this.camera = new PerspectiveCamera(
       this.lastPerspectiveFov,
       this.engineCommandManager.streamDimensions.width /
-        this.engineCommandManager.streamDimensions.height,
+      this.engineCommandManager.streamDimensions.height,
       z_near,
       z_far
     )
@@ -951,7 +948,7 @@ export class CameraControls {
       // zPosition should stay the same
       const xyRadius = Math.sqrt(
         (this.target.x - this.camera.position.x) ** 2 +
-          (this.target.y - this.camera.position.y) ** 2
+        (this.target.y - this.camera.position.y) ** 2
       )
       const xyAngle = Math.atan2(
         this.camera.position.y - this.target.y,
@@ -1224,27 +1221,27 @@ export class CameraControls {
       // and its response. Typically round-trip time is < 30ms. It seems safe
       // then to wait 1 magnitude of time before calling this request toasted.
       const timeoutId = setTimeout(reject, 300)
-      ;(async () => {
-        const cameraViewStateResponse =
-          await this.engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'default_camera_get_view' },
-          })
-        if (!cameraViewStateResponse) return
-        const r = isArray(cameraViewStateResponse)
-          ? cameraViewStateResponse[0]
-          : cameraViewStateResponse
-        if (r && isModelingResponse(r)) {
-          const mr = r.resp.data.modeling_response
-          if ('data' in mr && 'view' in mr.data) {
-            this.oldCameraState = mr.data.view
+        ; (async () => {
+          const cameraViewStateResponse =
+            await this.engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'default_camera_get_view' },
+            })
+          if (!cameraViewStateResponse) return
+          const r = isArray(cameraViewStateResponse)
+            ? cameraViewStateResponse[0]
+            : cameraViewStateResponse
+          if (r && isModelingResponse(r)) {
+            const mr = r.resp.data.modeling_response
+            if ('data' in mr && 'view' in mr.data) {
+              this.oldCameraState = mr.data.view
+            }
           }
-        }
 
-        clearTimeout(timeoutId)
-        resolve()
-      })().catch(reject)
+          clearTimeout(timeoutId)
+          resolve()
+        })().catch(reject)
     })
   }
 
@@ -1472,7 +1469,7 @@ export class CameraControls {
       ],
     }
   }
-  reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => {}
+  reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => { }
   setReactCameraPropertiesCallback = (
     cb: (a: ReactCameraProperties) => void
   ) => {
@@ -1512,12 +1509,12 @@ export class CameraControls {
       'pointerType' in event && event.pointerType === 'touch'
         ? 'rotate'
         : _getInteractionType(
-            this.interactionGuards,
-            event,
-            this.enablePan,
-            this.enableRotate,
-            this.enableZoom
-          )
+          this.interactionGuards,
+          event,
+          this.enablePan,
+          this.enableRotate,
+          this.enableZoom
+        )
     if (
       initialInteractionType === 'rotate' &&
       this.getSettings?.().modeling.cameraOrbit.current === 'trackball'

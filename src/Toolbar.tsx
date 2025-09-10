@@ -11,7 +11,6 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useKclContext } from '@src/lang/KclProvider'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
-import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -27,6 +26,7 @@ import type {
   ToolbarModeName,
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
+import { EngineConnectionStateType } from '@src/network/utils'
 
 export function Toolbar({
   className = '',
@@ -462,7 +462,7 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       wrapperStyle={
         isDesktop()
           ? // Without this, the tooltip disappears before being able to click on anything in it
-            ({ WebkitAppRegion: 'no-drag' } as React.CSSProperties)
+          ({ WebkitAppRegion: 'no-drag' } as React.CSSProperties)
           : {}
       }
       hoverOnly
@@ -494,11 +494,10 @@ const ToolbarItemTooltipShortContent = ({
   hotkey?: string | string[]
 }) => (
   <div
-    className={`text-sm flex flex-col ${
-      !['available', 'experimental'].includes(status)
-        ? 'text-chalkboard-70 dark:text-chalkboard-40'
-        : ''
-    }`}
+    className={`text-sm flex flex-col ${!['available', 'experimental'].includes(status)
+      ? 'text-chalkboard-70 dark:text-chalkboard-40'
+      : ''
+      }`}
   >
     {status === 'experimental' && (
       <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
@@ -543,9 +542,8 @@ const ToolbarItemTooltipRichContent = ({
           />
         )}
         <div
-          className={`text-sm flex-1 flex flex-col gap-1 ${
-            !shouldBeEnabled ? 'text-chalkboard-70 dark:text-chalkboard-40' : ''
-          }`}
+          className={`text-sm flex-1 flex flex-col gap-1 ${!shouldBeEnabled ? 'text-chalkboard-70 dark:text-chalkboard-40' : ''
+            }`}
         >
           {itemConfig.title}
         </div>
