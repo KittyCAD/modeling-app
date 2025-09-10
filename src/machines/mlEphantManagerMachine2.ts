@@ -18,11 +18,18 @@ import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/pr
 
 import toast from 'react-hot-toast'
 
+export enum MlEphantManagerStates2 {
+  Setup,
+  Ready,
+  Response,
+  Request,
+}
+
 export enum MlEphantManagerTransitions2 {
   PromptEditModel = 'prompt-edit-model',
   PromptCreateModel = 'prompt-create-model',
   ContextNew = 'context-new',
-  ResponseAppend = 'response-append',
+  ResponseReceive = 'response-receive',
 }
 
 export type MlEphantManagerEvents2 =
@@ -45,20 +52,39 @@ export type MlEphantManagerEvents2 =
       type: MlEphantManagerTransitions.ContextNew
     }
   | {
-      type: MlEphantManagerTransitions.ResponseAppend
-      response: Models['MlCopilotServerMessage_type']
+      type: MlEphantManagerTransitions.ResponseReceive
+      response: MlCopilotServerMessage_type
     }
 
 // Used to specify a specific event in input properties
 type XSEvent<T> = Extract<MlEphantManagerEvents2, { type: T }>
 
-interface Exchange {
-  request: MlCopilotClientMessage_type
+const onDoneErrorGoAwaitAndAssignOrToast = {
+  onDone: { target: S.Await, actions: [assign(({ event }) => event.output)] },
+  onError: { target: S.Await, actions: ['toastError'] },
+}
 
-  // A response may not necessarily ever come back!
+const invokeTransition = <T extends MlEphantManagerTransitions2>(src: T) => ({
+  invoke: {
+    input: (args) => ({
+      event: args.event as XSEvent<T>,
+      context: args.context,
+    }),
+    src,
+    ...onDoneErrorGoAwaitAndAssignOrToast,
+  },
+})
+
+interface Exchange {
+  // Technically the WebSocket could send us a response at any time, without
+  // ever having requested anything - such as on WebSocket 'open'.
+  request?: MlCopilotClientMessage_type
+
+  // A response may not necessarily ever come back! (Thus list remains empty.)
   // It's possible a request triggers multiple responses, such as reasoning,
   // deltas, tool_outputs.
-  response?: (MlCopilotServerMessage_type | Error_type)[]
+  // The end of a response is signaled by 'end_of_stream'.
+  response: MlCopilotServerMessage_type[]
 }
 
 type Conversation = Exchange[]
@@ -79,10 +105,33 @@ export const mlEphantDefaultContext2 = (input: { ws: WebSocket }) => ({
   },
 })
 
+function assertsString(x: unknown): asserts x is string {
+  if (typeof x !== 'string') {
+    throw new Error('Expected payload to be of type string')
+  }
+}
+
+function assertsMlCopilotServerMessage(
+  x: unknown
+): asserts x is MlCopilotServerMessage_type {
+  if (
+    'body' in response &&
+    ('error' in response.body) ^
+      ('info' in response.body) ^
+      ('conversation_id' in response.body) ^
+      ('delta' in response.body) ^
+      ('tool_output' in response.body) ^
+      ('reasoning' in response.body) ^
+      ('end_of_stream' in response.body)
+  ) {
+    throw new Error('response not a MlCopilotServerMessage_type')
+  }
+}
+
 export const mlEphantManagerMachine2 = setup({
   types: {
-    context: {} as MlEphantManagerContext,
-    events: {} as MlEphantManagerEvents,
+    context: {} as MlEphantManagerContext2,
+    events: {} as MlEphantManagerEvents2,
   },
   actions: {
     toastError: ({ event }) => {
@@ -97,190 +146,187 @@ export const mlEphantManagerMachine2 = setup({
     },
   },
   actors: {
-    [MlEphantManagerTransitions.PromptCreateModel]: fromPromise(
+    [MlEphantManagerTransitions2.Setup]: fromPromise(async function (args: {
+      input: {
+        event: XSEvent<MlEphantManagerTransitions2.Setup>
+        context: MlEphantManagerContext2
+      }
+    }): Promise<Partial<MlEphantManagerContext2>> {
+      ws.addEventListener('message', function (event: MessageEvent) {
+        assertsString(event.data)
+
+        let response: unknown
+        try {
+          response = JSON.parse(event.data)
+        } catch (e: unknown) {
+          throw e
+        }
+
+        assertsMlCopilotServerMessage(response)
+        self.send({
+          type: {
+            [MlEphantManagerTransitions2.Ready]: {
+              [MlEphantManagerTransitions2.Response]:
+                MlEphantManagerTransitions2.ResponseReceive,
+            },
+          },
+          response,
+        })
+      })
+
+      return {
+        conversation: {
+          exchanges: [],
+          pageToken: undefined,
+        },
+      }
+    }),
+    [MlEphantManagerTransitions2.ContextNew]: fromPromise(
       async function (args: {
         input: {
-          event: XSEvent<MlEphantManagerTransitions.PromptCreateModel>
-          context: MlEphantManagerContext
+          event: XSEvent<MlEphantManagerTransitions2.ContextNew>
+          context: MlEphantManagerContext2
         }
-      }): Promise<Partial<MlEphantManagerContext>> {
-        const context = args.input.context
-        if (context.apiTokenMlephant === undefined)
-          return Promise.reject('missing api token')
-
-        // It's possible for cached prompts to "instant return" so we need
-        // to signal to the system we instantly went from in progress
-        // to completed.
-        const promptsInProgressToCompleted = new Set<string>(
-          context.promptsInProgressToCompleted
+      }): Promise<Partial<MlEphantManagerContext2>> {
+        ws.send(
+          JSON.stringify({
+            body: {
+              system: {
+                command: 'new',
+              },
+            },
+          })
         )
-
-        const result = await submitTextToCadCreateRequest(
-          args.input.event.prompt,
-          args.input.event.projectForPromptOutput.path,
-          context.apiTokenMlephant
-        )
-
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        const promptsPool = new Map()
-        // We're going to create a new project so it'll be the first
-        const promptsBelongingToConversation = []
-        const promptsMeta = new Map()
-
-        promptsPool.set(result.id, { ...result, source_ranges: [] })
-        promptsBelongingToConversation.push(result.id)
-        promptsMeta.set(result.id, {
-          type: PromptType.Create,
-          project: args.input.event.projectForPromptOutput,
-        })
-
-        if (result.status === 'completed') {
-          promptsInProgressToCompleted.add(result.id)
-        }
 
         return {
-          promptsPool,
-          conversationId: result.conversation_id,
-          promptsBelongingToConversation,
-          promptsMeta,
-          promptsInProgressToCompleted,
+          conversation: {
+            exchanges: [],
+            pageToken: undefined,
+          },
         }
       }
     ),
-    [MlEphantManagerTransitions.PromptEditModel]: fromPromise(
+    [MlEphantManagerTransitions2.PromptCreateModel]: fromPromise(
       async function (args: {
         input: {
-          event: XSEvent<MlEphantManagerTransitions.PromptEditModel>
-          context: MlEphantManagerContext
+          event: XSEvent<MlEphantManagerTransitions2.PromptCreateModel>
+          context: MlEphantManagerContext2
+        }
+      }): Promise<Partial<MlEphantManagerContext2>> {
+        // ws.send(JSON.stringify({
+        // })
+
+        console.log('prompt create model')
+        return {}
+      }
+    ),
+    [MlEphantManagerTransitions2.PromptEditModel]: fromPromise(
+      async function (args: {
+        input: {
+          event: XSEvent<MlEphantManagerTransitions2.PromptEditModel>
+          context: MlEphantManagerContext2
         }
       }): Promise<Partial<MlEphantManagerContext>> {
-        const context = args.input.context
-        const event = args.input.event
+        // const requestData = constructMultiFileIterationRequestWithPromptHelpers(
+        //   {
+        //     conversationId: context.conversationId,
+        //     prompt: event.prompt,
+        //     selections: event.selections,
+        //     applicationProjectDirectory: event.applicationProjectDirectory,
+        //     projectFiles: event.projectFiles,
+        //     artifactGraph: event.artifactGraph,
+        //     projectName: event.projectForPromptOutput.name,
+        //     currentFile: event.fileSelectedDuringPrompting,
+        //     kclVersion: getKclVersion(),
+        //   }
+        // )
 
-        if (context.apiTokenMlephant === undefined)
-          return Promise.reject('missing api token')
-
-        const requestData = constructMultiFileIterationRequestWithPromptHelpers(
-          {
-            conversationId: context.conversationId,
-            prompt: event.prompt,
-            selections: event.selections,
-            applicationProjectDirectory: event.applicationProjectDirectory,
-            projectFiles: event.projectFiles,
-            artifactGraph: event.artifactGraph,
-            projectName: event.projectForPromptOutput.name,
-            currentFile: event.fileSelectedDuringPrompting,
-            kclVersion: getKclVersion(),
-          }
-        )
-        const result = await submitTextToCadMultiFileIterationRequest(
-          requestData,
-          context.apiTokenMlephant
-        )
-
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        const promptsPool = context.promptsPool
-        const promptsBelongingToConversation = Array.from(
-          context.promptsBelongingToConversation ?? []
-        )
-        const promptsMeta = new Map(context.promptsMeta)
-
-        promptsPool.set(result.id, {
-          ...result,
-          prompt: result.prompt ?? '',
-          output_format: 'glb', // it's a lie. we have no 'none' type...
-        })
-        promptsBelongingToConversation.push(result.id)
-        promptsMeta.set(result.id, {
-          type: PromptType.Edit,
-          targetFile: args.input.event.fileSelectedDuringPrompting.entry,
-          project: args.input.event.projectForPromptOutput,
-        })
-
-        return {
-          conversationId: result.conversation_id,
-          promptsBelongingToConversation,
-          promptsMeta,
-        }
+        console.log('prompt edit model')
+        return {}
       }
     ),
   },
 }).createMachine({
-  initial: S.Await,
+  inital: MlEphantManagerStates2.Setup,
   context: mlEphantDefaultContext2,
   states: {
-    [S.Await]: {
-      // Reduces boilerplate. Lets you specify many transitions with
-      // states of the same name.
-      on: transitions([
-        MlEphantManagerTransitions.PromptCreateModel,
-        MlEphantManagerTransitions.PromptEditModel,
-        MlEphantManagerTransitions.ContextNew,
-        MlEphantManagerTransitions.ResponseAppend,
-      ]),
-    },
-    [MlEphantManagerTransitions.ContextNew]: {
-      always: {
-        target: S.Await,
-        actions: [
-          assign({
-            conversation: {
-              exchanges: [],
-              pageToken: undefined,
-            },
-          }),
-        ],
-      },
-    },
-    [MlEphantManagerTransitions.PromptCreateModel]: {
+    [MlEphantManagerStates2.Setup]: {
       invoke: {
         input: (args) => ({
           event:
-            args.event as XSEvent<MlEphantManagerTransitions.PromptCreateModel>,
+            // Setup the Websocket 'message' event listener
+            args.event as XSEvent<MlEphantManagerStates2.Setup>,
           context: args.context,
         }),
-        src: MlEphantManagerTransitions.PromptCreateModel,
+        src: MlEphantManagerStates2.Setup,
         onDone: {
-          target: MlEphantManagerTransitions.GetReasoningForPrompt,
-          actions: assign(({ event }) => event.output),
+          target: MlEphantManagerStates2.Ready,
         },
-        onError: { target: S.Await, actions: 'toastError' },
+        onError: {
+          actions: ['toastError'],
+        },
       },
     },
-    [MlEphantManagerTransitions.PromptEditModel]: {
-      invoke: {
-        input: (args) => ({
-          event:
-            args.event as XSEvent<MlEphantManagerTransitions.PromptEditModel>,
-          context: args.context,
-        }),
-        src: MlEphantManagerTransitions.PromptEditModel,
-        onDone: {
-          target: MlEphantManagerTransitions.GetReasoningForPrompt,
-          actions: assign(({ event }) => event.output),
-        },
-        onError: { target: S.Await, actions: 'toastError' },
-      },
-    },
-    [MlEphantManagerTransitions.ResponseAppend]: {
-      always: {
-        target: S.Await,
-        actions: [
-          assign({
-            promptsThoughts: ({ event, context }) => {
-              assertEvent(event, MlEphantManagerTransitions2.ResponseAppend)
-              const next = Array.from(context.conversation.exchanges)
-              next.push(event.response)
-              return next
+    [MlEphantManagerStates2.Ready]: {
+      type: 'parallel',
+      states: {
+        [MlEphantManagerStates2.Response]: {
+          initial: S.Await,
+          states: {
+            [S.Await]: {
+              on: transitions([MlEphantManagerTransitions2.ResponseReceive]),
             },
-          }),
-        ],
+            // Triggered by the WebSocket 'message' event.
+            [MlEphantManagerTransitions2.ResponseReceive]: {
+              target: S.Await,
+              actions: [
+                assign(({ event, context }) => {
+                  const conversation = {
+                    exchanges: Array.from(context.conversation.exchanges),
+                    pageToken: context.conversation.pageToken,
+                  }
+
+                  let lastExchange: [Exchange] | [] =
+                    conversation.exchanges.slice(-1)
+                  if (lastExchange[0] === undefined) {
+                    lastExchange.push({
+                      response: [event.response],
+                    })
+                  } else {
+                    lastExchange[0].response.push(event.response)
+                  }
+
+                  return {
+                    conversation,
+                  }
+                }),
+              ],
+            },
+          },
+        },
+        [MlEphantManagerStates2.Request]: {
+          initial: S.Await,
+          states: {
+            [S.Await]: {
+              on: transitions([
+                MlEphantManagerTransitions2.PromptCreateModel,
+                MlEphantManagerTransitions2.PromptEditModel,
+                MlEphantManagerTransitions2.ContextNew,
+              ]),
+            },
+            [MlEphantManagerTransitions2.ContextNew]: {
+              ...invokeTransition(MlEphantManagerTransitions2.ContextNew),
+            },
+            [MlEphantManagerTransitions2.PromptCreateModel]: {
+              ...invokeTransition(
+                MlEphantManagerTransitions2.PromptCreateModel
+              ),
+            },
+            [MlEphantManagerTransitions2.PromptEditModel]: {
+              ...invokeTransition(MlEphantManagerTransitions2.PromptEditModel),
+            },
+          },
+        },
       },
     },
   },

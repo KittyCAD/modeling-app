@@ -685,3 +685,32 @@ export function returnSelfOrGetHostNameFromURL(requestedEnvironment: string) {
   }
   return environment
 }
+
+export function promiseFactory<T>() {
+  let resolve: (value: T | PromiseLike<T>) => void = () => {}
+  let reject: (value: T | PromiseLike<T>) => void = () => {}
+  const promise = new Promise<T>((_resolve, _reject) => {
+    resolve = _resolve
+    reject = _reject
+  })
+  return { promise, resolve, reject }
+}
+
+export function ZooSocket(path: string, token: string): Promise<WebSocket> {
+  const ws = new WebSocket(withAPIBaseURL(path))
+  const { promise, resolve } = promiseFactory<WebSocket>()
+
+  ws.addEventListener('open', () => {
+    ws.send(
+      JSON.stringify({
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      })
+    )
+
+    resolve()
+  })
+
+  return promise
+}
