@@ -56,12 +56,12 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
+import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
+import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
-import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
-import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.

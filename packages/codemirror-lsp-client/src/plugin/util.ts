@@ -1,8 +1,8 @@
 import type { Text } from '@codemirror/state'
+import type { EditorView } from '@codemirror/view'
 import type { MarkedOptions } from '@ts-stack/markdown'
 import { Marked } from '@ts-stack/markdown'
 import type * as LSP from 'vscode-languageserver-protocol'
-import type { EditorView } from '@codemirror/view'
 
 import { isArray } from '../lib/utils'
 

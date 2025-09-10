@@ -1,9 +1,9 @@
 import type { Command } from '@src/lib/commandTypes'
-import { ACTOR_IDS } from '@src/machines/machineConstants'
-import { refreshPage } from '@src/lib/utils'
 import { reportRejection } from '@src/lib/trap'
-import type { ActorRefFrom } from 'xstate'
+import { refreshPage } from '@src/lib/utils'
 import type { authMachine } from '@src/machines/authMachine'
+import { ACTOR_IDS } from '@src/machines/machineConstants'
+import type { ActorRefFrom } from 'xstate'
 
 export function createAuthCommands({
   authActor,

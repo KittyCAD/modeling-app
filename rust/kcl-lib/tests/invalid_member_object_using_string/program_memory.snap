@@ -32,7 +32,8 @@ description: Variables in memory after executing invalid_member_object_using_str
           }
         }
       }
-    }
+    },
+    "constrainable": false
   },
   "p": {
     "type": "String",

@@ -1,7 +1,7 @@
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { type Page } from '@playwright/test'
-import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 
 test.use({
   hasTouch: true,

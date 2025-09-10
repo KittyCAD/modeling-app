@@ -1,7 +1,5 @@
-import type { ReactNode } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
-import type { FileEntry } from '@src/lib/project'
 import {
   desktopSafePathJoin,
   getEXTWithPeriod,
@@ -9,7 +7,9 @@ import {
   getStringAfterLastSeparator,
   joinOSPaths,
 } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
+import type { ReactNode } from 'react'
 
 /**
  * Remap FileEntry data into another data structure for the Project Explorer

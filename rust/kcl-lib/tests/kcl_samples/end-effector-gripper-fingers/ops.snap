@@ -3893,6 +3893,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

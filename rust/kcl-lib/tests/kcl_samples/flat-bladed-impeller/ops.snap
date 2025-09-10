@@ -1063,6 +1063,7 @@ description: Operations executed flat-bladed-impeller.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

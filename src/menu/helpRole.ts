@@ -2,10 +2,10 @@ import type { BrowserWindow } from 'electron'
 import { shell } from 'electron'
 
 import { reportRejection } from '@src/lib/trap'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { getAutoUpdater } from '@src/updater'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export const helpRole = (
   mainWindow: BrowserWindow

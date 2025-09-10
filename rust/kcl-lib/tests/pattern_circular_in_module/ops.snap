@@ -326,6 +326,7 @@ description: Operations executed pattern_circular_in_module.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -6,6 +6,7 @@ import {
   findAllChildrenAndOrderByPlaceInCode,
   getNodeFromPath,
 } from '@src/lang/queryAst'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SegmentArtifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -16,7 +17,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
 import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/sourceRange'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
 import {
   getEventForSelectWithPoint,
   selectDefaultSketchPlane,
@@ -29,16 +30,15 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
+import { engineStreamActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { getModuleId } from '@src/lib/utils'
-import { engineStreamActor } from '@src/lib/singletons'
 import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import type {
   EdgeCutInfo,
   ExtrudeFacePlane,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()

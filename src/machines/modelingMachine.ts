@@ -1,18 +1,21 @@
+import { sketchSolveMachine } from '@src/machines/sketchSolveMachine'
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
 import { assign, fromPromise, setup } from 'xstate'
-import { sketchSolveMachine } from '@src/machines/sketchSolveMachine'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { Plane } from '@rust/kcl-lib/bindings/Plane'
+import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import { deleteSegment } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
-import type { Setting } from '@src/lib/settings/initialSettings'
-import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import { DRAFT_DASHED_LINE } from '@src/clientSideScene/sceneConstants'
+import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
@@ -30,6 +33,7 @@ import {
   applyConstraintHorzVert,
   horzVertInfo,
 } from '@src/components/Toolbar/HorzVert'
+import { intersectInfo } from '@src/components/Toolbar/Intersect'
 import {
   applyRemoveConstrainingValues,
   removeConstrainingValuesInfo,
@@ -55,9 +59,20 @@ import type {
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   EdgeTreatmentType,
-  modifyAstWithEdgeTreatmentAndTag,
   editEdgeTreatment,
+  modifyAstWithEdgeTreatmentAndTag,
 } from '@src/lang/modifyAst/addEdgeTreatment'
+import {
+  addIntersect,
+  addSubtract,
+  addUnion,
+} from '@src/lang/modifyAst/boolean'
+import {
+  deleteSelectionPromise,
+  deletionErrorMessage,
+} from '@src/lang/modifyAst/deleteSelection'
+import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
   addLoft,
@@ -65,29 +80,21 @@ import {
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
 import {
-  addSubtract,
-  addUnion,
-  addIntersect,
-} from '@src/lang/modifyAst/boolean'
-import {
-  deleteSelectionPromise,
-  deletionErrorMessage,
-} from '@src/lang/modifyAst/deleteSelection'
-import {
-  addTranslate,
+  addAppearance,
+  addClone,
   addRotate,
   addScale,
-  addClone,
-  addAppearance,
+  addTranslate,
 } from '@src/lang/modifyAst/transforms'
 import {
+  artifactIsPlaneWithPaths,
   getNodeFromPath,
+  isCursorInFunctionDefinition,
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
-  artifactIsPlaneWithPaths,
-  isCursorInFunctionDefinition,
 } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getFaceCodeRef,
   getPathsFromArtifact,
@@ -95,6 +102,11 @@ import {
   getPlaneFromArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/std/sketch'
+import {
+  crossProduct,
+  isCursorInSketchCommandRange,
+  updateSketchDetailsNodePaths,
+} from '@src/lang/util'
 import type {
   Artifact,
   KclValue,
@@ -107,6 +119,7 @@ import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type {
   Axis,
@@ -115,6 +128,7 @@ import type {
   Selections,
 } from '@src/lib/selections'
 import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
+import type { Setting } from '@src/lib/settings/initialSettings'
 import {
   codeManager,
   editorManager,
@@ -126,21 +140,7 @@ import {
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { isDesktop } from '@src/lib/isDesktop'
-import {
-  crossProduct,
-  isCursorInSketchCommandRange,
-  updateSketchDetailsNodePaths,
-} from '@src/lang/util'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import type { Plane } from '@rust/kcl-lib/bindings/Plane'
-import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import { addShell, addOffsetPlane } from '@src/lang/modifyAst/faces'
-import { intersectInfo } from '@src/components/Toolbar/Intersect'
-import { addHelix } from '@src/lang/modifyAst/geometry'
-import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
 
 export type SetSelections =
   | {

@@ -61,6 +61,7 @@ pub enum KclValue {
     },
     Object {
         value: KclObjectFields,
+        constrainable: bool,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
@@ -98,6 +99,7 @@ pub enum KclValue {
     Type {
         #[serde(skip)]
         value: TypeDef,
+        experimental: bool,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
@@ -247,7 +249,7 @@ impl KclValue {
             KclValue::String { value: _, meta } => meta.clone(),
             KclValue::Tuple { value: _, meta } => meta.clone(),
             KclValue::HomArray { value, .. } => value.iter().flat_map(|v| v.metadata()).collect(),
-            KclValue::Object { value: _, meta } => meta.clone(),
+            KclValue::Object { meta, .. } => meta.clone(),
             KclValue::TagIdentifier(x) => x.meta.clone(),
             KclValue::TagDeclarator(x) => vec![x.metadata()],
             KclValue::Plane { value } => value.meta.clone(),

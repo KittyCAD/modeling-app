@@ -4951,6 +4951,7 @@ description: Artifact commands stylized-pickup-truck.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

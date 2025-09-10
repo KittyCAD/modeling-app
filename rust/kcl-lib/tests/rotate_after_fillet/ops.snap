@@ -1025,6 +1025,7 @@ description: Operations executed rotate_after_fillet.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

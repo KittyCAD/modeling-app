@@ -1,24 +1,24 @@
-import { reportRejection } from '@src/lib/trap'
-import { NIL as uuidNIL } from 'uuid'
-import { type settings } from '@src/lib/settings/initialSettings'
-import type CodeManager from '@src/lang/codeManager'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type { SystemIOActor } from '@src/lib/singletons'
-import { useEffect } from 'react'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useSelector } from '@xstate/react'
+import type { User } from '@kittycad/lib'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
+import type { FileEntry, Project } from '@src/lib/project'
+import type { Prompt } from '@src/lib/prompt'
+import { type settings } from '@src/lib/settings/initialSettings'
+import type { SystemIOActor } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
-import type { Prompt } from '@src/lib/prompt'
+import type { ModelingMachineContext } from '@src/machines/modelingMachine'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
-import type { ModelingMachineContext } from '@src/machines/modelingMachine'
-import type { FileEntry, Project } from '@src/lib/project'
-import type { Models } from '@kittycad/lib'
+import { useSelector } from '@xstate/react'
+import { useEffect } from 'react'
+import { NIL as uuidNIL } from 'uuid'
 
 const hasPromptsPending = (promptsPool: Prompt[]) => {
   return (
@@ -37,7 +37,7 @@ export const MlEphantConversationPane = (props: {
   contextModeling: ModelingMachineContext
   loaderFile: FileEntry | undefined
   settings: typeof settings
-  user?: Models['User_type']
+  user?: User
 }) => {
   const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
   const promptsBelongingToConversation = useSelector(

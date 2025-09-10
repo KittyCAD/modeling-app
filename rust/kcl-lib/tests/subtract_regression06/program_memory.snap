@@ -1408,7 +1408,8 @@ description: Variables in memory after executing subtract_regression06.kcl
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "sketch002": {
     "type": "Plane",

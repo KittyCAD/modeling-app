@@ -14,6 +14,7 @@ import { fromPromise } from 'xstate'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { newKclFile } from '@src/lang/project'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import {
@@ -28,13 +29,12 @@ import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { codeManager, kclManager } from '@src/lib/singletons'
-import { err } from '@src/lib/trap'
-import { type IndexLoaderData } from '@src/lib/types'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import { type IndexLoaderData } from '@src/lib/types'
 import { fileMachine } from '@src/machines/fileMachine'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>

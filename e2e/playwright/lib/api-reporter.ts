@@ -1,8 +1,8 @@
 import type {
+  FullResult,
   Reporter,
   TestCase,
   TestResult,
-  FullResult,
 } from '@playwright/test/reporter'
 
 class APIReporter implements Reporter {

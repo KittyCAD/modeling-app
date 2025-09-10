@@ -8,12 +8,12 @@ import { editorShortcutMeta } from '@src/components/ModelingSidebar/ModelingPane
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { codeManager, kclManager } from '@src/lib/singletons'
-import { reportRejection, trap } from '@src/lib/trap'
 import { commandBarActor, settingsActor } from '@src/lib/singletons'
+import { reportRejection, trap } from '@src/lib/trap'
 
-import styles from './KclEditorMenu.module.css'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import toast from 'react-hot-toast'
+import styles from './KclEditorMenu.module.css'
 
 function copyKclCodeToClipboard() {
   if (!codeManager.code) {

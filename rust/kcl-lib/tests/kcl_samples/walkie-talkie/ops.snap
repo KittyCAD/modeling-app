@@ -5248,6 +5248,7 @@ description: Operations executed walkie-talkie.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -776,7 +776,8 @@ description: Variables in memory after executing subtract_regression03.kcl
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "plane001": {
     "type": "Object",
@@ -957,7 +958,8 @@ description: Variables in memory after executing subtract_regression03.kcl
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "plane002": {
     "type": "Object",
@@ -1138,7 +1140,8 @@ description: Variables in memory after executing subtract_regression03.kcl
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "sketch001": {
     "type": "Plane",
