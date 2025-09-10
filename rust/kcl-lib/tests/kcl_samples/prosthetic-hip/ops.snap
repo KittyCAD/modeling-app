@@ -2543,6 +2543,7 @@ description: Operations executed prosthetic-hip.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -4959,7 +4959,8 @@ description: Variables in memory after executing french-press.kcl
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",

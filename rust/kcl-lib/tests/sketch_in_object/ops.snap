@@ -360,6 +360,7 @@ description: Operations executed sketch_in_object.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

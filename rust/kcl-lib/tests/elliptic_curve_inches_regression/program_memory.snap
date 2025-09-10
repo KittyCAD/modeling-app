@@ -138,7 +138,8 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "sketch000": {
     "type": "Plane",

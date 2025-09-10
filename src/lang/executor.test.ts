@@ -271,6 +271,7 @@ newVar = myVar + 1`
     const mem = await exe(code)
     expect(mem['yo']).toEqual({
       type: 'Object',
+      constrainable: false,
       value: {
         aStr: {
           type: 'String',

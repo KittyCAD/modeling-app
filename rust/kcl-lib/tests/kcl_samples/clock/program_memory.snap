@@ -1099,7 +1099,8 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       },
       "eleven": {
         "type": "Object",
@@ -1166,7 +1167,8 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       },
       "five": {
         "type": "Object",
@@ -1202,7 +1204,8 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       },
       "four": {
         "type": "Object",
@@ -1269,7 +1272,8 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       },
       "nine": {
         "type": "Object",
@@ -1336,7 +1340,8 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       },
       "one": {
         "type": "Object",
@@ -1372,7 +1377,8 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       },
       "seven": {
         "type": "Object",
@@ -1470,7 +1476,8 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       },
       "six": {
         "type": "Object",
@@ -1537,7 +1544,8 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       },
       "ten": {
         "type": "Object",
@@ -1573,7 +1581,8 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       },
       "three": {
         "type": "Object",
@@ -1671,7 +1680,8 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       },
       "twelve": {
         "type": "Object",
@@ -1769,7 +1779,8 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       },
       "two": {
         "type": "Object",
@@ -1836,9 +1847,11 @@ description: Variables in memory after executing clock.kcl
               }
             ]
           }
-        }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
   },
   "numberThickness": {
     "type": "Number",

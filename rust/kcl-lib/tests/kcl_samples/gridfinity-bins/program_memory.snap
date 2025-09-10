@@ -68,7 +68,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "binBaseLength": {
     "type": "Number",

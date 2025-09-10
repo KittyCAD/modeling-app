@@ -234,6 +234,7 @@ description: Operations executed module_return_using_var.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

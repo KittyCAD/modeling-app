@@ -3502,6 +3502,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -5776,6 +5776,7 @@ description: Operations executed cpu-cooler.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

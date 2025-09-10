@@ -720,6 +720,7 @@ description: Operations executed sketch_on_face_union.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

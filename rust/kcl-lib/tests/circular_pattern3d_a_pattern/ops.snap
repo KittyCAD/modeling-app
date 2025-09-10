@@ -494,6 +494,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

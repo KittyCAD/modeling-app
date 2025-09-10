@@ -435,6 +435,7 @@ description: Artifact commands user_reported_union_2_bug.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

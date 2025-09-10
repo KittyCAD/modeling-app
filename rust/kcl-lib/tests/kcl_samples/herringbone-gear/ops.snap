@@ -2064,6 +2064,7 @@ description: Operations executed herringbone-gear.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

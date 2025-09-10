@@ -3086,6 +3086,7 @@ description: Operations executed gallows-bracket.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],
