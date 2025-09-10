@@ -713,17 +713,14 @@ export function deleteSegmentFromPipeExpression(
   if (err(pipeExpression)) return pipeExpression
 
   if (pipeExpression.node.type === 'CallExpressionKw') {
-    if (pipeExpression.node.callee.name.name === 'startProfile') {
-      const topLevelDeleteResult = deleteTopLevelStatement(
-        _modifiedAst,
-        pathToNode
-      )
-      if (topLevelDeleteResult instanceof Error) {
-        return topLevelDeleteResult
-      }
-      return _modifiedAst
+    const topLevelDeleteResult = deleteTopLevelStatement(
+      _modifiedAst,
+      pathToNode
+    )
+    if (topLevelDeleteResult instanceof Error) {
+      return topLevelDeleteResult
     }
-    return new Error('Unhandled type')
+    return _modifiedAst
   }
   const pipeInPathIndex = pathToNode.findIndex(
     ([_, desc]) => desc === 'PipeExpression'
