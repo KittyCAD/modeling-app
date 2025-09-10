@@ -1,0 +1,24 @@
+// Wedge
+// A wedge is a triangular prism defined by it's length, width, and height.
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+length = 10
+width = 10
+height = 10
+
+// create a sketch for the wedge profile on the XY plane
+sketch = startSketchOn(XY)
+
+// create the profile at the top of the wedge
+profile = startProfile(sketch, at = [0, height])
+  |> yLine(length = -height)
+  |> xLine(length = length)
+  |> close()
+
+// extrude the profile to create the wedge
+wedge = extrude(profile, length = width)

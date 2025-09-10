@@ -1,0 +1,182 @@
+// Gallows Bracket lib
+// Supporting library for the gallows bracket
+
+
+export fn angleIron(length, thickness, width, miterStart, miterEnd) {
+  assert(miterStart, isGreaterThan = -90, isLessThan = 90)
+  assert(miterEnd, isGreaterThanOrEqual = -90, isLessThan = 90)
+
+  csgFriendlyOffset = 1
+  length002 = -1 * (width - thickness)
+  length001 = -1 * (width - thickness)
+  sketch001 = startSketchOn(-XZ)
+  profile001 = startProfile(sketch001, at = [0, 0])
+    |> xLine(length = width, tag = $baseSegment)
+    |> yLine(length = -thickness)
+    |> xLine(length = length001)
+    |> yLine(length = length002)
+    |> xLine(length = -thickness)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+    |> close()
+  extrudedSolid = extrude(profile001, length = length + csgFriendlyOffset * 2)
+
+  // Start a new sketch on the tagged face of the extrusion
+  ironWithStartMiter = if miterStart != 0 {
+    miterStartSketch = startSketchOn(XY)
+    miterStartProfile = if miterStart > 0 {
+      startProfile(
+             miterStartSketch,
+             at = [
+               1 - (1 * sin(miterStart)),
+               1 - (1 * cos(miterStart))
+             ],
+           )
+        |> angledLine(angle = -180 - miterStart, length = (width + csgFriendlyOffset) / cos(miterStart))
+        |> yLine(endAbsolute = profileStartY() - 1)
+        |> xLine(endAbsolute = profileStartX())
+        |> close()
+    } else {
+      startProfile(
+             miterStartSketch,
+             at = [
+               -width - 1 - (1 * sin(miterStart)),
+               1 - (1 * cos(miterStart))
+             ],
+           )
+        |> angledLine(angle = -miterStart, length = (width + csgFriendlyOffset) / cos(miterStart))
+        |> yLine(endAbsolute = profileStartY() - 1)
+        |> xLine(endAbsolute = profileStartX())
+        |> close()
+    }
+    miterStartTool = extrude(miterStartProfile, length = -width - 2)
+      |> translate(x = 0, y = 0, z = 1)
+
+miterStartTool
+    subtract(extrudedSolid, tools = miterStartTool)
+  } else {
+    extrudedSolid
+  }
+
+  finishedIron = if miterEnd != 0 {
+    miterEndSketch = startSketchOn(XY)
+    miterEndProfile = if miterEnd > 0 {
+      startProfile(
+             miterEndSketch,
+             at = [
+               1 - (1 * sin(miterEnd)),
+               length + 1 + 1 * cos(miterEnd)
+             ],
+           )
+        |> angledLine(angle = 180 + miterEnd, length = (width + csgFriendlyOffset) / cos(miterEnd))
+        |> yLine(endAbsolute = profileStartY() + 1)
+        |> xLine(endAbsolute = profileStartX())
+        |> close()
+    } else {
+      startProfile(
+             miterEndSketch,
+             at = [
+               -width - 1 - (1 * sin(miterEnd)),
+               length + 1 + 1 * cos(miterEnd)
+             ],
+           )
+        |> angledLine(angle = miterEnd, length = (width + csgFriendlyOffset) / cos(miterEnd))
+        |> yLine(endAbsolute = profileStartY() + 1)
+        |> xLine(endAbsolute = profileStartX())
+        |> close()
+    }
+    miterEndTool = extrude(miterEndProfile, length = -width - 2)
+      |> translate(x = 0, y = 0, z = 1)
+miterEndTool
+    subtract(ironWithStartMiter, tools = miterEndTool)
+  } else {
+    ironWithStartMiter
+  }
+  return finishedIron
+}
+
+export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
+  boltRadius = 4
+  // Recommendations from drawings
+  bottomBoltOffset = 75
+  distanceBetweenBolts = 450
+  assert(height, isGreaterThan = bottomBoltOffset + distanceBetweenBolts, error = "You must have at least 525mm of height to get sufficient bolt spacing")
+
+  vertical = angleIron(
+         length = height,
+         width = ironWidth,
+         thickness = ironThickness,
+         miterStart = 0,
+         miterEnd = 45,
+       )
+    |> rotate(roll = 90, yaw = 180)
+  verticalHolesNeeded = ceil((height - bottomBoltOffset) / distanceBetweenBolts)
+  verticalHolesSketch = offsetPlane(YZ, offset = -1)
+  verticalHoles = circle(verticalHolesSketch, center = [-ironWidth / 2, 75], radius = boltRadius + 0.5)
+    |> patternLinear2d(instances = verticalHolesNeeded, distance = (height - bottomBoltOffset) / verticalHolesNeeded, axis = [0, 1])
+    |> extrude(length = ironThickness + 2)
+
+  verticalWithHoles = reduce(
+    verticalHoles,
+    initial = vertical,
+    f = fn(@hole, accum) {
+      return subtract(accum, tools = hole)
+    },
+  )
+
+  horizontal = angleIron(
+         length = depth,
+         width = ironWidth,
+         thickness = ironThickness,
+         miterStart = 45,
+         miterEnd = 0,
+       )
+    |> rotate(pitch = 270, yaw = -90)
+    |> translate(z = height + 1, global = true)
+  horizontalHolesSketch = offsetPlane(XY, offset = height - ironThickness)
+  horizontalHoles = circle(
+         horizontalHolesSketch,
+         center = [
+           depth - (ironWidth / 2),
+           -ironWidth / 2
+         ],
+         radius = boltRadius + 0.5,
+       )
+    |> extrude(length = ironThickness + 2)
+  horizontalWithHoles = subtract(horizontal, tools = horizontalHoles)
+
+  strutLength = sqrt(2 * (min([height, depth]) - ironThickness) ^ 2)
+  strut = angleIron(
+         length = strutLength,
+         width = ironWidth - ironThickness,
+         thickness = ironThickness,
+         miterStart = -45,
+         miterEnd = -45,
+       )
+    |> rotate(pitch = 270, yaw = -90)
+    |> translate(x = -strutLength - 1, z = ironWidth - ironThickness, global = true)
+    |> rotate(pitch = -45, global = true)
+    |> translate(
+         y = -ironThickness,
+         x = depth,
+         z = height - ironThickness,
+         global = true,
+       )
+
+  legSketch = startSketchOn(-YZ)
+  leg = startProfile(legSketch, at = [0, 0])
+    |> angledLine(angle = 0, length = ironWidth, tag = $rectangleSegmentA001)
+    |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = ironWidth)
+    |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+    |> extrude(length = 100)
+    |> translate(z = height - ironWidth, global = true)
+
+  // Leg to insert into party wall
+  return [
+    verticalWithHoles,
+    horizontalWithHoles,
+    strut,
+    leg
+  ]
+}

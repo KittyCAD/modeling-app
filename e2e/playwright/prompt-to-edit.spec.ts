@@ -31,7 +31,6 @@ sketch003 = startSketchOn(XY)
 extrude003 = extrude(sketch003, length = 20)
 `
 
-// e2e/playwright/prompt-to-edit.spec.ts
 test.describe('Prompt-to-edit tests', () => {
   test(`Check the happy path, for basic changing color`, async ({
     context,
@@ -88,7 +87,6 @@ test.describe('Prompt-to-edit tests', () => {
     context,
     homePage,
     cmdBar,
-    editor,
     toolbar,
     page,
     scene,
@@ -99,39 +97,23 @@ test.describe('Prompt-to-edit tests', () => {
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
+    await toolbar.closePane('code')
     await toolbar.openPane('text-to-cad')
-
-    const body1CapCoords = { x: 571, y: 311 }
-    const [clickBody1Cap] = scene.makeMouseHelpers(
-      body1CapCoords.x,
-      body1CapCoords.y
-    )
-    const yellow: [number, number, number] = [179, 179, 131]
-
-    await test.step('wait for scene to load and select body', async () => {
-      await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
-
-      await clickBody1Cap()
-      await scene.expectPixelColor(yellow, body1CapCoords, 20)
-
-      await editor.expectState({
-        highlightedCode: '',
-        activeLines: ['|>startProfile(at=[-114,85.52])'],
-        diagnostics: [],
-      })
-    })
 
     await test.step('fire of bad prompt', async () => {
       await page
         .getByTestId('ml-ephant-conversation-input')
         .fill('ansheusha asnthuatshoeuhtaoetuhthaeu laughs in dvorak')
+      await page.waitForTimeout(500)
       await page.keyboard.press('Enter')
     })
     await test.step('check fail appeared', async () => {
       await expect(page.getByTestId('thinking-immediate')).not.toBeVisible({
-        timeout: 2 * 60_000,
-      }) // can take a while
-      await expect(page.getByTestId('prompt-card-status-failed')).toBeVisible()
+        timeout: 30_000,
+      })
+      await expect(page.getByTestId('prompt-card-status-failed')).toBeVisible({
+        timeout: 30_000,
+      })
     })
   })
 

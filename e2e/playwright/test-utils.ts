@@ -5,7 +5,7 @@ import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import { COOKIE_NAME, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import {IS_PLAYWRIGHT_KEY, COOKIE_NAME_PREFIX} from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -911,7 +911,6 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(
   context: BrowserContext,
   page: Page,
-  testDir: string,
   testInfo?: TestInfo
 ) {
   await page.addInitScript(
@@ -920,7 +919,6 @@ export async function setup(
       settingsKey,
       settings,
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR,
       PERSIST_MODELING_CONTEXT,
     }) => {
       localStorage.clear()
@@ -932,7 +930,9 @@ export async function setup(
       )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
-      localStorage.setItem('PLAYWRIGHT_TEST_DIR', PLAYWRIGHT_TEST_DIR)
+      window.addEventListener('beforeunload', () => {
+        localStorage.removeItem(IS_PLAYWRIGHT_KEY)
+      })
     },
     {
       token,
@@ -955,14 +955,13 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: testDir,
       PERSIST_MODELING_CONTEXT,
     }
   )
 
   await context.addCookies([
     {
-      name: COOKIE_NAME,
+      name: COOKIE_NAME_PREFIX + 'dev.zoo.dev',
       value: token,
       path: '/',
       domain: 'localhost',

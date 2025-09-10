@@ -51,6 +51,7 @@ import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import toast from 'react-hot-toast'
 import { ToastInsert } from '@src/components/ToastInsert'
 import { isPlaywright } from '@src/lib/isPlaywright'
+import { MLEphantConversationPaneMenu } from '@src/components/MlEphantConversation'
 
 export type SidebarType =
   | 'code'
@@ -133,7 +134,7 @@ const textToCadPane: SidebarPane = {
           id={props.id}
           icon="sparkles"
           title="Text-to-CAD"
-          Menu={null}
+          Menu={MLEphantConversationPaneMenu}
           onClose={props.onClose}
         />
         <MlEphantConversationPane
