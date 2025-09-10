@@ -2,7 +2,7 @@ import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { type settings } from '@src/lib/settings/initialSettings'
 import { useSelector } from '@xstate/react'
 import { Resizable } from 're-resizable'
-import type { HTMLProps, MouseEventHandler, Ref } from 'react'
+import type { HTMLProps, MouseEventHandler, ComponentProps, Ref } from 'react'
 import {
   useCallback,
   useContext,
@@ -201,6 +201,7 @@ export function ModelingSidebarRight() {
       sidebarActions={sidebarActions.current || []}
       settings={settings}
       align={Alignment.Right}
+      elementProps={{ defaultSize: { width: '25%' } }}
     />
   )
 }
@@ -211,6 +212,7 @@ interface ModelingSidebarProps {
   sidebarPanes: SidebarPane[]
   settings: typeof settings
   align: Alignment
+  elementProps?: Pick<ComponentProps<typeof Resizable>, 'defaultSize'>
 }
 
 export function ModelingSidebar(props: ModelingSidebarProps) {
@@ -336,11 +338,14 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
   return filteredPanes.length === 0 ? null : (
     <Resizable
       className={`group z-10 flex flex-col ${pointerEventsCssClass} ${openPanesForThisSide.length ? undefined : '!w-auto'}`}
-      defaultSize={{
-        width: '550px',
-        height: 'auto',
-      }}
+      defaultSize={
+        props.elementProps?.defaultSize || {
+          width: '550px',
+          height: 'auto',
+        }
+      }
       minWidth={openPanesForThisSide.length ? 200 : undefined}
+      maxWidth="50%"
       handleWrapperClass="sidebar-resize-handles"
       enable={{
         right: props.align === Alignment.Left,
