@@ -572,6 +572,7 @@ export class ConnectionManager extends EventTarget {
       ) as Models['WebSocketResponse_type']
       // The request id comes back as binary and we want to get the uuid
       // string from that.
+
       if (message.request_id) {
         message.request_id = binaryToUuid(message.request_id)
       }
