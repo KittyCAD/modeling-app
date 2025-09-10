@@ -1,7 +1,7 @@
 import type { Group, Mesh, OrthographicCamera, Quaternion } from 'three'
 import { PerspectiveCamera, Vector3 } from 'three'
 
-import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
+import { compareVec2Distance } from '@src/lang/std/sketch'
 
 const fudgeFactor = 72.66985970437086
 
@@ -16,7 +16,7 @@ export const perspScale = (cam: PerspectiveCamera, group: Group | Mesh) =>
 export function isQuaternionVertical(q: Quaternion) {
   const v = new Vector3(0, 0, 1).applyQuaternion(q)
   // no x or y components means it's vertical
-  return compareVec2Epsilon2([v.x, v.y], [0, 0])
+  return compareVec2Distance([v.x, v.y], [0, 0])
 }
 
 export function quaternionFromUpNForward(up: Vector3, forward: Vector3) {

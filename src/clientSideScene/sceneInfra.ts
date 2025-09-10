@@ -29,7 +29,7 @@ import {
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { Coords2d } from '@src/lang/std/sketch'
-import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
+import { compareVec2Distance } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/lib/selections'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal } from '@src/lib/signal'
@@ -485,11 +485,10 @@ export class SceneInfra {
     const intersects = this.raycastRing()
 
     if (this.selected) {
-      const DRAG_THRESHOLD_PX = 10
-      const hasBeenDragged = !compareVec2Epsilon2(
+      const hasBeenDragged = !compareVec2Distance(
         this.ndc2ScreenSpace(this.currentMouseVector),
         this.ndc2ScreenSpace(this.selected.mouseDownVector),
-        DRAG_THRESHOLD_PX //0.02
+        10 // Drag threshold in pixels
       )
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
         this.selected.hasBeenDragged = true
