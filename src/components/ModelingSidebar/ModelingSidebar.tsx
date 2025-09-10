@@ -343,7 +343,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
         }
       }
       minWidth={openPanesForThisSide.length ? 200 : undefined}
-      maxWidth="40%"
+      maxWidth="50%"
       handleWrapperClass="sidebar-resize-handles"
       enable={{
         right: props.align === Alignment.Left,
