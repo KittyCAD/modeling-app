@@ -486,8 +486,8 @@ export class SceneInfra {
 
     if (this.selected) {
       const hasBeenDragged = !vec2WithinDistance(
-        this.ndc2ScreenSpace(this.currentMouseVector),
-        this.ndc2ScreenSpace(this.selected.mouseDownVector),
+        this.ndc2screenSpace(this.currentMouseVector),
+        this.ndc2screenSpace(this.selected.mouseDownVector),
         10 // Drag threshold in pixels
       )
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
@@ -766,7 +766,7 @@ export class SceneInfra {
     const scale = this.getClientSceneScaleFactor(dummy)
     return getLength(a, b) / scale
   }
-  ndc2ScreenSpace(ndc: Vector2): Coords2d {
+  ndc2screenSpace(ndc: Vector2): Coords2d {
     return [
       ((ndc.x + 1) / 2) * this.renderer.domElement.clientWidth,
       ((ndc.y + 1) / 2) * this.renderer.domElement.clientHeight,
