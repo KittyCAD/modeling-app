@@ -22,8 +22,8 @@ use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid, UnitLen,
-        types::{PrimitiveType, RuntimeType},
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
+        types::{PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::TagNode,
     std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
