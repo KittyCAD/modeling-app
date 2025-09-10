@@ -3366,13 +3366,13 @@ export function getConstraintInfoKw(
 }
 
 // Compare if the distance between 2 points is within a threshold
-export function compareVec2Distance(
-  vec1: [number, number],
-  vec2: [number, number],
+export function vec2WithinDistance(
+  a: Coords2d,
+  b: Coords2d,
   threshold = 0.015625 // or 2^-6
 ) {
-  const x = vec1[0] - vec2[0]
-  const y = vec1[1] - vec2[1]
+  const x = a[0] - b[0]
+  const y = a[1] - b[1]
   const distanceSquared = x * x + y * y
   return distanceSquared < threshold * threshold
 }

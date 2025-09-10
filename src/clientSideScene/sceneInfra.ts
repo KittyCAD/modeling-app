@@ -29,7 +29,7 @@ import {
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { Coords2d } from '@src/lang/std/sketch'
-import { compareVec2Distance } from '@src/lang/std/sketch'
+import { vec2WithinDistance } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/lib/selections'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal } from '@src/lib/signal'
@@ -485,7 +485,7 @@ export class SceneInfra {
     const intersects = this.raycastRing()
 
     if (this.selected) {
-      const hasBeenDragged = !compareVec2Distance(
+      const hasBeenDragged = !vec2WithinDistance(
         this.ndc2ScreenSpace(this.currentMouseVector),
         this.ndc2ScreenSpace(this.selected.mouseDownVector),
         10 // Drag threshold in pixels
@@ -759,6 +759,7 @@ export class SceneInfra {
     })
   }
 
+  // a and b given in world space
   screenSpaceDistance(a: Coords2d, b: Coords2d): number {
     const dummy = new Mesh()
     dummy.position.set(0, 0, 0)
