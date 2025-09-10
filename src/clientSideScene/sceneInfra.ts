@@ -277,15 +277,13 @@ export class SceneInfra {
   hoveredObject: null | Object3D<Object3DEventMap> = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
-  // Given in the [-1, -1] x [1, 1] range, where (-1, -1) corresponds to the bottom left of the canvas, (0, 0) is the center,
-  // regardless of the current zoom level or position of the camera (basically NDC space).
+  // Given in NDC: [-1, 1] range, where (-1, -1) corresponds to the bottom left of the canvas, (0, 0) is the center.
   currentMouseVector = new Vector2()
   selected: {
     mouseDownVector: Vector2
     object: Object3D<Object3DEventMap>
     hasBeenDragged: boolean
   } | null = null
-  mouseDownVector: null | Vector2 = null
   private isRenderingPaused = false
   private lastFrameTime = 0
 
