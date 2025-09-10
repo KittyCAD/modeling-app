@@ -277,6 +277,8 @@ export class SceneInfra {
   hoveredObject: null | Object3D<Object3DEventMap> = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
+  // Given in the [-1, -1] x [1, 1] range, where (-1, -1) corresponds to the bottom left of the canvas, (0, 0) is the center,
+  // regardless of the current zoom level or position of the camera (basically NDC space).
   currentMouseVector = new Vector2()
   selected: {
     mouseDownVector: Vector2
@@ -495,7 +497,7 @@ export class SceneInfra {
         // this is where we could fire a onDragStart event
       }
       if (
-        hasBeenDragged &&
+        this.selected.hasBeenDragged &&
         planeIntersectPoint &&
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
