@@ -485,10 +485,11 @@ export class SceneInfra {
     const intersects = this.raycastRing()
 
     if (this.selected) {
+      const DRAG_THRESHOLD_PX = 10
       const hasBeenDragged = !compareVec2Epsilon2(
-        [this.currentMouseVector.x, this.currentMouseVector.y],
-        [this.selected.mouseDownVector.x, this.selected.mouseDownVector.y],
-        0.02
+        this.ndc2ScreenSpace(this.currentMouseVector),
+        this.ndc2ScreenSpace(this.selected.mouseDownVector),
+        DRAG_THRESHOLD_PX //0.02
       )
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
         this.selected.hasBeenDragged = true
@@ -764,6 +765,12 @@ export class SceneInfra {
     dummy.position.set(0, 0, 0)
     const scale = this.getClientSceneScaleFactor(dummy)
     return getLength(a, b) / scale
+  }
+  ndc2ScreenSpace(ndc: Vector2): Coords2d {
+    return [
+      ((ndc.x + 1) / 2) * this.renderer.domElement.clientWidth,
+      ((ndc.y + 1) / 2) * this.renderer.domElement.clientHeight,
+    ]
   }
   pauseRendering() {
     this.isRenderingPaused = true
