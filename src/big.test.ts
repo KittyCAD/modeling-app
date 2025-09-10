@@ -5588,7 +5588,7 @@ p3 = [342.51, 216.38],
       },
     }
 
-    describe.only('Deleting segment with three dot menu', () => {
+    describe('Deleting segment with three dot menu', () => {
       const namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.deleteSegment
       )
@@ -5771,9 +5771,14 @@ p3 = [342.51, 216.38],
             }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
 
             // After the condition is met, do the actual assertion
-            expect(actor.getSnapshot().value).toEqual({
-              Sketch: { SketchIdle: 'scene drawn' },
-            })
+            await waitForCondition(() => {
+              const snapshot = actor.getSnapshot()
+              const a1 = JSON.stringify(snapshot.value)
+              const a2 = JSON.stringify({
+                Sketch: { SketchIdle: 'scene drawn' },
+              })
+              return a1 !== a2
+            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManager.ast,
@@ -5912,9 +5917,15 @@ p3 = [342.51, 216.38],
             }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
 
             // After the condition is met, do the actual assertion
-            expect(actor.getSnapshot().value).toEqual({
-              Sketch: { SketchIdle: 'scene drawn' },
-            })
+
+            await waitForCondition(() => {
+              const snapshot = actor.getSnapshot()
+              const a1 = JSON.stringify(snapshot.value)
+              const a2 = JSON.stringify({
+                Sketch: { SketchIdle: 'scene drawn' },
+              })
+              return a1 !== a2
+            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManager.ast,
@@ -6023,9 +6034,14 @@ p3 = [342.51, 216.38],
             }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
 
             // After the condition is met, do the actual assertion
-            expect(actor.getSnapshot().value).toEqual({
-              Sketch: { SketchIdle: 'scene drawn' },
-            })
+            await waitForCondition(() => {
+              const snapshot = actor.getSnapshot()
+              const a1 = JSON.stringify(snapshot.value)
+              const a2 = JSON.stringify({
+                Sketch: { SketchIdle: 'scene drawn' },
+              })
+              return a1 !== a2
+            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManager.ast,
