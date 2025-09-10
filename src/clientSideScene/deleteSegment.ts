@@ -16,8 +16,6 @@ import {
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { SketchDetails } from '@src/machines/modelingMachine'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 
 export async function deleteSegment({
   pathToNode,
@@ -65,7 +63,7 @@ export async function deleteSegment({
   if (!sketchDetails) return
   try {
     await sceneEntitiesManager.updateAstAndRejigSketch(
-      pathToNode,
+      sketchDetails.sketchEntryNodePath,
       sketchDetails.sketchNodePaths,
       sketchDetails.planeNodePath,
       modifiedAst,
@@ -77,15 +75,5 @@ export async function deleteSegment({
   } catch (_err) {
     // When deleting the last startProfile in a sketch, the above updateAstAndRejigSketch fails because prepareTruncatedAst
     // calls getNodeFromPath with a path that no longer exists (we just deleted it)..
-    await updateModelingState(
-      modifiedAst,
-      EXECUTION_TYPE_REAL,
-      {
-        kclManager,
-        editorManager: sceneEntitiesManager.editorManager,
-        codeManager,
-      },
-      { isDeleting: modifiedAst.body.length === 0 }
-    )
   }
 }
