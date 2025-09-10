@@ -88,8 +88,6 @@ pub enum Point3dAxis3dOrGeometryReference {
     Sketch(Box<Sketch>),
     /// Solid.
     Solid(Box<Solid>),
-    /// Edge Tag.
-    TaggedEdge(TagIdentifier),
-    /// Face Tag.
-    TaggedFace(TagIdentifier),
+    /// Tagged edge or face.
+    TaggedEdgeOrFace(TagIdentifier),
 }

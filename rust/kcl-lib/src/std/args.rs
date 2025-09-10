@@ -983,19 +983,17 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
         let case4 = FaceTag::from_kcl_val;
         let case5 = Box::<Solid>::from_kcl_val;
         let case6 = TagIdentifier::from_kcl_val;
-        let case7 = TagIdentifier::from_kcl_val;
-        let case8 = Box::<Plane>::from_kcl_val;
-        let case9 = Box::<Sketch>::from_kcl_val;
+        let case7 = Box::<Plane>::from_kcl_val;
+        let case8 = Box::<Sketch>::from_kcl_val;
 
         case2(arg)
             .or_else(|| case1(arg).map(Self::Point))
             .or_else(|| case3(arg).map(Self::Edge))
             .or_else(|| case4(arg).map(Self::Face))
             .or_else(|| case5(arg).map(Self::Solid))
-            .or_else(|| case6(arg).map(Self::TaggedEdge))
-            .or_else(|| case7(arg).map(Self::TaggedFace))
-            .or_else(|| case8(arg).map(Self::Plane))
-            .or_else(|| case9(arg).map(Self::Sketch))
+            .or_else(|| case6(arg).map(Self::TaggedEdgeOrFace))
+            .or_else(|| case7(arg).map(Self::Plane))
+            .or_else(|| case8(arg).map(Self::Sketch))
     }
 }
 

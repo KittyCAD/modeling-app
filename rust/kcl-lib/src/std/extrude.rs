@@ -22,14 +22,12 @@ use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::UnitLen;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    exec::PlaneType,
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, PlaneInfo, Point3d, Sketch,
-        SketchSurface, Solid,
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
         types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference, sketch::PlaneData},
+    std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
 };
 
 /// Extrudes by a given amount.
@@ -242,7 +240,9 @@ async fn inner_extrude(
                 }
                 Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(mcmd::ExtrudeToReference {
                     target: sketch.id.into(),
-                    reference: ExtrudeReference::EntityReference { entity_id: sketch_ref.id },
+                    reference: ExtrudeReference::EntityReference {
+                        entity_id: sketch_ref.id,
+                    },
                     faces: Default::default(),
                     extrude_method,
                 }),
@@ -252,25 +252,13 @@ async fn inner_extrude(
                     faces: Default::default(),
                     extrude_method,
                 }),
-                Point3dAxis3dOrGeometryReference::TaggedEdge(tag) => {
-                    let tagged_edge = args.get_tag_engine_info(exec_state, tag)?;
-                    let tagged_edge_id = tagged_edge.id;
+                Point3dAxis3dOrGeometryReference::TaggedEdgeOrFace(tag) => {
+                    let tagged_edge_or_face = args.get_tag_engine_info(exec_state, tag)?;
+                    let tagged_edge_or_face_id = tagged_edge_or_face.id;
                     ModelingCmd::from(mcmd::ExtrudeToReference {
                         target: sketch.id.into(),
                         reference: ExtrudeReference::EntityReference {
-                            entity_id: tagged_edge_id,
-                        },
-                        faces: Default::default(),
-                        extrude_method,
-                    })
-                }
-                Point3dAxis3dOrGeometryReference::TaggedFace(tag) => {
-                    let tagged_face = args.get_tag_engine_info(exec_state, tag)?;
-                    let tagged_face_id = tagged_face.id;
-                    ModelingCmd::from(mcmd::ExtrudeToReference {
-                        target: sketch.id.into(),
-                        reference: ExtrudeReference::EntityReference {
-                            entity_id: tagged_face_id,
+                            entity_id: tagged_edge_or_face_id,
                         },
                         faces: Default::default(),
                         extrude_method,
@@ -280,12 +268,10 @@ async fn inner_extrude(
 
             (_, _, _, None, None) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "Either `length` or `to` parameter must be provided for extrusion."
-                        .to_owned(),
+                    "Either `length` or `to` parameter must be provided for extrusion.".to_owned(),
                     vec![args.source_range],
                 )));
             }
-
         };
         let cmds = sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });
         exec_state
