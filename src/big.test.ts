@@ -7,13 +7,13 @@ import {
   recast,
   type Name,
   type PlaneArtifact,
-  CallExpressionKw,
-  PipeExpression,
-  SourceRange,
-  VariableDeclarator,
+  type CallExpressionKw,
+  type PipeExpression,
+  type SourceRange,
+  type VariableDeclarator,
   defaultNodePath,
   nodePathFromRange,
-  ParseResult,
+  type ParseResult,
 } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'

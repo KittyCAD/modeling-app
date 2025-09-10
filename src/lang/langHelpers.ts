@@ -9,7 +9,6 @@ import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { EditorView } from 'codemirror'
-import { C } from 'vitest/dist/chunks/reporters.d.79o4mouw'
 
 export type ToolTip =
   | 'lineTo'

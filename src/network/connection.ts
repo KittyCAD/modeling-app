@@ -88,7 +88,7 @@ export class Connection extends EventTarget {
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
   tearDownManager: () => void
   rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
-  handleMessage: null
+  handleMessage: ((event: MessageEvent<any>) => void) | null
 
   constructor({
     url,
@@ -105,6 +105,7 @@ export class Connection extends EventTarget {
     tearDownManager: () => void
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
     callbackOnUnitTestingConnection?: () => void
+    handleMessage: (event: MessageEvent<any>) => void
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -180,6 +181,10 @@ export class Connection extends EventTarget {
         case 'ice_server_info':
           callback()
           return
+      }
+      if (!this.handleMessage) {
+        console.error('unable to process message, handleMessage is missing')
+        return
       }
       this.handleMessage(event)
     }) as EventListener)
