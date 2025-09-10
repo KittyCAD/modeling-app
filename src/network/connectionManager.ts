@@ -796,11 +796,6 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown() {
-    if (this.callbackOnUnitTestingConnection) {
-      // Do not tear down in unit testing mode
-      return
-    }
-
     if (!this.started) {
       EngineDebugger.addLog({
         label: 'connectionManager',
