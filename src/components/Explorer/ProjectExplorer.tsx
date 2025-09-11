@@ -378,6 +378,44 @@ export const ProjectExplorer = ({
             copyToClipBoard.current = null
             setIsCopying(false)
           },
+          onDrop: ({ src }) => {
+            if (src) {
+              const absoluteParentPath = getParentAbsolutePath(row.path)
+              const parentIndex = flattenedData.findIndex((entry) => {
+                return entry.path === absoluteParentPath
+              })
+              const parent =
+                parentIndex >= 0 ? flattenedData[parentIndex] : project
+              const result = copyPasteSourceAndTarget(
+                row.children?.map((child) => child.path) || [],
+                parent.children?.map((child) => child.path) || [],
+                {
+                  path: src.path,
+                  name: src.name,
+                  children: src.children,
+                },
+                {
+                  path: row.path,
+                  name: row.name,
+                  children: row.children,
+                },
+                '-copy-'
+              )
+              console.log('FRANK', { row, parent, src, result })
+              if (result && result.src && result.target) {
+                console.log('result', result)
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.copyRecursive,
+                  data: {
+                    src: result.src,
+                    target: result.target,
+                  },
+                })
+              } else {
+                toast.error('Failed to copy and paste the result is null')
+              }
+            }
+          },
           onRenameStart: () => {
             if (readOnly) {
               return

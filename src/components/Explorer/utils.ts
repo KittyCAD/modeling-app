@@ -27,7 +27,7 @@ export interface FileExplorerEntry extends FileEntry {
 /**
  * A limited version of a file entry for drag-and-drop purposes
  */
-export type FileExplorerDropData = Omit<FileEntry, 'children'> & {
+export type FileExplorerDropData = FileEntry & {
   parentPath: string
 }
 
@@ -57,6 +57,7 @@ export interface FileExplorerRow extends FileExplorerEntry {
   onDelete: () => void
   onCopy: () => void
   onPaste: () => void
+  onDrop: (props: { src: FileExplorerDropData }) => void
   onRenameStart: () => void
   onRenameEnd: SubmitByPressOrBlur
 }

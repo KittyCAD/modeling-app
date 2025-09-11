@@ -271,7 +271,7 @@ export const FileExplorerRowElement = ({
     }
     const dragPreviewElem = window.document.getElementById(dragPreviewId)
     if (dragPreviewElem) {
-      window.document.removeChild(dragPreviewElem)
+      document.body.removeChild(dragPreviewElem)
     }
   }, [dragPreviewId])
   // Clean up any missed drag preview elements
@@ -318,7 +318,7 @@ export const FileExplorerRowElement = ({
           row.onOpen()
         }
         event.preventDefault()
-        event.dataTransfer.dropEffect = 'move'
+        event.dataTransfer.dropEffect = 'copy'
         event.currentTarget.classList.add('bg-primary/10')
       }}
       onDragLeave={(event) => {
@@ -326,12 +326,13 @@ export const FileExplorerRowElement = ({
       }}
       onDragStart={(event) => {
         console.log(event.currentTarget.innerText, row.name, 'onDragStart')
-        event.dataTransfer.effectAllowed = 'move'
+        event.dataTransfer.effectAllowed = 'copy'
         event.dataTransfer.setData(
           'json',
           JSON.stringify({
             name: row.name,
             path: row.path,
+            children: row.children,
             parentPath: row.parentPath,
           } satisfies FileExplorerDropData)
         )
@@ -364,9 +365,11 @@ export const FileExplorerRowElement = ({
         const shouldDroppedEntryBeMoved =
           (!targetIsDroppedEntryParent && row.isFolder) ||
           targetIsFileInDifferentFolder
+        console.log('Should we move it?', shouldDroppedEntryBeMoved)
 
         // Now move the thing!
         if (shouldDroppedEntryBeMoved) {
+          row.onDrop({ src: droppedData })
         }
 
         removeDragPreviewElem()
