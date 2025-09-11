@@ -7,9 +7,8 @@ import { useNavigate } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { isDesktop } from '@src/lib/isDesktop'
-import { interactionMap } from '@src/lib/settings/initialKeybindings'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { useSettings } from '@src/lib/singletons'
+import { useInteractionMap, useSettings } from '@src/lib/singletons'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 
@@ -22,6 +21,7 @@ export type SettingsSearchItem = {
 }
 
 export function SettingsSearchBar() {
+  const interactionMap = useInteractionMap()
   const inputRef = useRef<HTMLInputElement>(null)
   useHotkeys(
     'Ctrl+.',
@@ -55,18 +55,15 @@ export function SettingsSearchBar() {
             }))
         })
       ),
-      ...Object.entries(interactionMap).flatMap(
-        ([category, categoryKeybindings]) =>
-          categoryKeybindings.map((keybinding) => ({
-            name: keybinding.name,
-            displayName: keybinding.title,
-            description: keybinding.description,
-            category: category,
-            level: 'keybindings' as ExtendedSettingsLevel,
-          }))
-      ),
+      ...interactionMap.map((keybinding) => ({
+        name: keybinding.name,
+        displayName: keybinding.title,
+        description: keybinding.description,
+        category: keybinding.category,
+        level: 'keybindings' as ExtendedSettingsLevel,
+      })),
     ],
-    [settings]
+    [settings, interactionMap]
   )
   const [searchResults, setSearchResults] = useState(settingsAsSearchable)
 

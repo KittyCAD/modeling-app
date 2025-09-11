@@ -1,12 +1,9 @@
 import type { ForwardedRef } from 'react'
 import { forwardRef } from 'react'
 import { useLocation } from 'react-router-dom'
-
 import type { InteractionMapItem } from '@src/lib/settings/initialKeybindings'
-import {
-  interactionMap,
-  sortInteractionMapByCategory,
-} from '@src/lib/settings/initialKeybindings'
+import { interactionMapCategoriesInOrder } from '@src/lib/settings/initialKeybindings'
+import { useInteractionMap } from '@src/lib/singletons'
 
 type AllKeybindingsFieldsProps = object
 
@@ -15,32 +12,32 @@ export const AllKeybindingsFields = forwardRef(
     _props: AllKeybindingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    // This is how we will get the interaction map from the context
-    // in the future whene franknoirot/editable-hotkeys is merged.
-    // const { state } = useInteractionMapContext()
+    const interactionMap = useInteractionMap()
 
     return (
       <div className="relative overflow-y-auto pb-16">
         <div ref={scrollRef} className="flex flex-col gap-12">
-          {Object.entries(interactionMap)
-            .sort(sortInteractionMapByCategory)
-            .map(([category, categoryItems]) => (
-              <div className="flex flex-col gap-4 px-2 pr-4">
-                <h2
-                  id={`category-${category.replaceAll(/\s/g, '-')}`}
-                  className="text-xl mt-6 first-of-type:mt-0 capitalize font-bold"
-                >
-                  {category}
-                </h2>
-                {categoryItems.map((item) => (
-                  <KeybindingField
-                    key={category + '-' + item.name}
-                    category={category}
-                    item={item}
-                  />
-                ))}
-              </div>
-            ))}
+          {interactionMapCategoriesInOrder.map((category) =>
+            interactionMap
+              .filter((item) => item.category === category)
+              .map((item, _, categoryItems) => (
+                <div className="flex flex-col gap-4 px-2 pr-4">
+                  <h2
+                    id={`category-${category.replaceAll(/\s/g, '-')}`}
+                    className="text-xl mt-6 first-of-type:mt-0 capitalize font-bold"
+                  >
+                    {category}
+                  </h2>
+                  {categoryItems.map((item) => (
+                    <KeybindingField
+                      key={category + '-' + item.name}
+                      category={category}
+                      item={item}
+                    />
+                  ))}
+                </div>
+              ))
+          )}
         </div>
       </div>
     )
