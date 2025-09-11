@@ -123,7 +123,7 @@ async fn inner_extrude(
 
     if (length.is_some() || twist_angle.is_some()) && to.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "You cannot give `length` or `twist` params with `to` params, you have to choose one or the other"
+            "You cannot give `length` or `twist` params with the `to` param, you have to choose one or the other"
                 .to_owned(),
             vec![args.source_range],
         )));
