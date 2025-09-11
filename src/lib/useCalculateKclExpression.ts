@@ -25,11 +25,13 @@ export function useCalculateKclExpression({
   initialVariableName: valueName = '',
   sourceRange,
   selectionRanges,
+  allowArrays = false,
 }: {
   value: string
   initialVariableName?: string
   sourceRange?: SourceRange
   selectionRanges: Selections
+  allowArrays?: boolean
 }): {
   inputRef: React.RefObject<HTMLInputElement>
   valueNode: Expr | null
@@ -126,7 +128,7 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
-      const result = await getCalculatedKclExpressionValue(value)
+      const result = await getCalculatedKclExpressionValue(value, allowArrays)
       setIsExecuting(false)
       if (result instanceof Error || 'errors' in result || !result.astNode) {
         setCalcResult('NAN')
@@ -146,7 +148,7 @@ export function useCalculateKclExpression({
       setValueNode(null)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [value, availableVarInfo, code, kclManager.variables])
+  }, [value, availableVarInfo, code, kclManager.variables, allowArrays])
 
   return {
     valueNode,
