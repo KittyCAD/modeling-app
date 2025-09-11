@@ -265,7 +265,7 @@ async fn inner_extrude(
                     })
                 }
             },
-            (Some(twist_angle), _, _, None, None) => {
+            (Some(_), _, _, None, None) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "The `length` parameter must be provided when using twist angle for extrusion.".to_owned(),
                     vec![args.source_range],
@@ -274,6 +274,13 @@ async fn inner_extrude(
             (_, _, _, None, None) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "Either `length` or `to` parameter must be provided for extrusion.".to_owned(),
+                    vec![args.source_range],
+                )));
+            }
+            (_, _, _, Some(_), Some(_)) => {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "You cannot give both `length` and `to` params, you have to choose one or the other"
+                        .to_owned(),
                     vec![args.source_range],
                 )));
             }
