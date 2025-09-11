@@ -1,5 +1,10 @@
 import { INTERACTION_MAP_SEPARATOR } from '@src/lib/constants'
 import { isModifierKey, mapKey, sortKeys } from '@src/lib/keyboard'
+import {
+  type InteractionMapItem,
+  type MouseOrKeyboardEvent,
+  mouseButtonToName,
+} from '@src/lib/settings/initialKeybindings'
 import { platform } from '@src/lib/utils'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
@@ -12,33 +17,10 @@ const globalInteractionMapItems: InteractionMapItem[] = [
     guard: () => true,
     action: () => alert('BRING THE PAIN!'),
     ownerId: 'blah',
+    description: "A goofy test keybinding that's always available",
+    category: 'Miscellaneous',
   },
 ]
-
-export type MouseButtonName = `${'Left' | 'Middle' | 'Right'}Button`
-type MouseOrKeyboardEvent = MouseEvent | KeyboardEvent
-function mouseButtonToName(button: MouseEvent['button']): MouseButtonName {
-  switch (button) {
-    case 0:
-      return 'LeftButton'
-    case 1:
-      return 'MiddleButton'
-    case 2:
-      return 'RightButton'
-    default:
-      return 'LeftButton'
-  }
-}
-
-export type InteractionMapItem = {
-  name: string
-  title: string
-  sequence: string
-  userDefinedSequence?: string
-  guard?: (e: MouseOrKeyboardEvent) => boolean
-  action: () => void | Promise<() => void>
-  ownerId: string
-}
 
 type InteractionMapMachineEvent =
   | {
