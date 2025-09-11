@@ -302,6 +302,8 @@ export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
 export const interactionMapActor = appActor.system.get(
   INTERACTION_MAP
 ) as ActorRefFrom<(typeof appMachineActors)[typeof INTERACTION_MAP]>
+export const useInteractionMap = () =>
+  useSelector(interactionMapActor, (state) => state.context.interactionMap)
 export const useCurrentInteractionSequence = () =>
   useSelector(interactionMapActor, (state) => state.context.currentSequence)
 

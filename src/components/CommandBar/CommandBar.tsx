@@ -46,6 +46,8 @@ export const CommandBar = () => {
         name: 'toggle-cmd-palette',
         sequence: COMMAND_PALETTE_HOTKEY,
         title: 'Toggle Command Palette',
+        description: 'Toggle the command palette open and closed',
+        category: 'Command Palette',
         action: () => {
           const s = commandBarActor.getSnapshot()
           console.log('what is the current state?', s.value)
