@@ -353,7 +353,7 @@ const fromDataToComponent = (
       // Prepare to have this type come down the pipeline.
       // We have to shut-up tsc.
       // @ts-expect-error
-      case 'nothing_inparticular': {
+      case 'markdown': {
         return (
           <>
             <NothingInParticular
