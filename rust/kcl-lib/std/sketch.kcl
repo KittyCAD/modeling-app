@@ -534,8 +534,8 @@ export fn ellipse(
 /// // extrude a circle to a tagged edge (cyan cylinder)
 /// sketch005 = startSketchOn(offsetPlane(YZ, offset = 4))
 /// cylinder3 = circle(sketch005, center = [0.5, 0.5], radius = 0.25)
-///   |> extrude(to = getCommonEdge(faces= [facetag0, facetag1]))
-///   |> appearance(color ='#00FFFF')
+///   |> extrude(to = getCommonEdge(faces = [facetag0, facetag1]))
+///   |> appearance(color = '#00FFFF')
 /// 
 /// // extrude a circle to a plane (magenta cylinder)
 /// sketch006 = startSketchOn(cube, face = facetag1)

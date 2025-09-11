@@ -123,7 +123,7 @@ async fn inner_extrude(
 
     if (length.is_some() || twist_angle.is_some()) && to.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "You cannot give `length` or `twist` params with `to` params, you have to choose one or the other"
+            "You cannot give `length` or `twist` params with the `to` param, you have to choose one or the other"
                 .to_owned(),
             vec![args.source_range],
         )));
@@ -156,14 +156,14 @@ async fn inner_extrude(
                     tolerance,
                 })
             }
-            (None, _, _, Some(length), _) => ModelingCmd::from(mcmd::Extrude {
+            (None, _, _, Some(length), None) => ModelingCmd::from(mcmd::Extrude {
                 target: sketch.id.into(),
                 distance: LengthUnit(length.to_mm()),
                 faces: Default::default(),
                 opposite: opposite.clone(),
                 extrude_method,
             }),
-            (_, _, _, _, Some(to)) => match to {
+            (_, _, _, None, Some(to)) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(mcmd::ExtrudeToReference {
                     target: sketch.id.into(),
                     reference: ExtrudeReference::Point {
