@@ -156,7 +156,7 @@ async fn inner_extrude(
                     tolerance,
                 })
             }
-            (None, _, _, Some(length), _) => ModelingCmd::from(mcmd::Extrude {
+            (None, _, _, Some(length), None) => ModelingCmd::from(mcmd::Extrude {
                 target: sketch.id.into(),
                 distance: LengthUnit(length.to_mm()),
                 faces: Default::default(),
