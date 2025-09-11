@@ -17,7 +17,7 @@ const DUMMY_VARIABLE_NAME = '__result__'
  */
 export async function getCalculatedKclExpressionValue(
   value: string,
-  allowArrays: boolean = false
+  allowArrays: boolean = false // If true, allows numeric arrays only (e.g., [1, 2, 3])
 ) {
   // Create a one-line program that assigns the value to a variable
   const dummyProgramCode = `${DUMMY_VARIABLE_NAME} = ${value}`
@@ -48,6 +48,19 @@ export async function getCalculatedKclExpressionValue(
     varValue &&
     (varValue.type === 'Tuple' || varValue.type === 'HomArray')
   ) {
+    // Validate that ALL array elements are numbers (required for geometric operations like patternCircular3d)
+    // This ensures arrays like [0, true, 0] are rejected, while [0, 1, 0] or [1mm, 2mm, 3mm] are accepted
+    const allElementsAreNumbers = varValue.value.every((item: any) => item.type === 'Number')
+    
+    if (!allElementsAreNumbers) {
+      // If array contains non-numeric values, treat as invalid expression
+      const valueAsString = 'NAN'
+      return {
+        astNode: variableDeclaratorAstNode,
+        valueAsString,
+      }
+    }
+
     const arrayValues = varValue.value.map((item: any) => {
       if (item.type === 'Number') {
         const formatted = formatNumberValue(item.value, item.ty)

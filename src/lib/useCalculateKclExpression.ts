@@ -25,13 +25,13 @@ export function useCalculateKclExpression({
   initialVariableName: valueName = '',
   sourceRange,
   selectionRanges,
-  allowArrays = false,
+  allowArrays = false, // If true, allows numeric arrays only (e.g., [1, 2, 3]). Mixed-type arrays are rejected.
 }: {
   value: string
   initialVariableName?: string
   sourceRange?: SourceRange
   selectionRanges: Selections
-  allowArrays?: boolean
+  allowArrays?: boolean // Whether to allow numeric arrays (for geometric operations)
 }): {
   inputRef: React.RefObject<HTMLInputElement>
   valueNode: Expr | null
