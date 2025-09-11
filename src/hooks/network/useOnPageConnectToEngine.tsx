@@ -154,7 +154,7 @@ async function tryConnecting({
 
         numberOfConnectionAtttempts.current =
           numberOfConnectionAtttempts.current + 1
-        console.log('# attempts', numberOfConnectionAtttempts.current)
+
         const cancelTimeout = setTimeout(() => {
           isConnecting.current = false
           successfullyConnected.current = false
@@ -185,9 +185,7 @@ async function tryConnecting({
             numberOfConnectionAtttempts.current = 0
             return reject(e)
           }
-          setTimeout(() => {
-            attempt().catch(reportRejection)
-          }, 1)
+          attempt().catch(reportRejection)
         }
       }
       await attempt()
