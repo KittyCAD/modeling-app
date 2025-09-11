@@ -47,8 +47,8 @@ async-recursion = "1.1.1"
 async-trait = { workspace = true }
 base64 = "0.22.1"
 bson = { workspace = true }
-chrono = "0.4.41"
-clap = { version = "4.5.45", default-features = false, optional = true, features = [
+chrono = "0.4.42"
+clap = { version = "4.5.47", default-features = false, optional = true, features = [
   "std",
   "derive",
 ] }
@@ -62,7 +62,7 @@ futures = { version = "0.3.31" }
 git_rev = "0.1.0"
 gltf-json = "1.4.1"
 http = { workspace = true }
-image = { version = "0.25.6", default-features = false, features = ["png"] }
+image = { version = "0.25.8", default-features = false, features = ["png"] }
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.14.0"
 kcl-api = { version = "0.1", path = "../kcl-api" }
@@ -142,8 +142,8 @@ base64 = "0.22.1"
 criterion = { version = "0.7.0", features = ["async_tokio"] }
 expectorate = "1.2.0"
 handlebars = "6.3.2"
-image = { version = "0.25.6", default-features = false, features = ["png"] }
-insta = { version = "1.43.1", features = ["json", "filters", "redactions"] }
+image = { version = "0.25.8", default-features = false, features = ["png"] }
+insta = { version = "1.43.2", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
