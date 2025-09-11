@@ -1693,6 +1693,65 @@ const CustomIconMap = {
       <circle cx="10" cy="10" r="3" fill="currentColor" />
     </svg>
   ),
+  brain: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="-3 0 28 28"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+    >
+      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+      <g
+        id="SVGRepo_tracerCarrier"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      ></g>
+      <g id="SVGRepo_iconCarrier">
+        {' '}
+        <defs>
+          {' '}
+          <style>
+            {
+              '.cls-1{fill: none;stroke: currentColor;stroke-miterlimit:10;stroke-width:1.5px;}'
+            }
+          </style>{' '}
+        </defs>{' '}
+        <g id="brain">
+          {' '}
+          <path
+            className="cls-1"
+            d="M12,4.36V20.59a1.92,1.92,0,0,1-1.91,1.91,1.93,1.93,0,0,1-1.91-1.91v0a2.45,2.45,0,0,1-.48,0,3.35,3.35,0,0,1-3.34-3.34,3.19,3.19,0,0,1,.08-.7A4.29,4.29,0,0,1,3.6,8.79,3.24,3.24,0,0,1,3.41,7.7,3.34,3.34,0,0,1,6.27,4.4v0a2.87,2.87,0,0,1,5.73,0Z"
+          ></path>{' '}
+          <path className="cls-1" d="M6.75,11.05a3.35,3.35,0,0,1,0-6.69"></path>{' '}
+          <path
+            className="cls-1"
+            d="M8.18,13.91h0A3.82,3.82,0,0,1,12,17.73h0"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M9.14,7.23h0A2.86,2.86,0,0,0,12,4.36h0"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M12,4.36V20.59a1.92,1.92,0,0,0,1.91,1.91,1.93,1.93,0,0,0,1.91-1.91v0a2.45,2.45,0,0,0,.48,0,3.35,3.35,0,0,0,3.34-3.34,3.19,3.19,0,0,0-.08-.7,4.29,4.29,0,0,0,.84-7.76,3.24,3.24,0,0,0,.19-1.09,3.34,3.34,0,0,0-2.86-3.3v0a2.87,2.87,0,0,0-5.73,0Z"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M17.25,11.05a3.35,3.35,0,0,0,0-6.69"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M15.82,13.91h0A3.82,3.82,0,0,0,12,17.73h0"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M14.86,7.23h0A2.86,2.86,0,0,1,12,4.36h0"
+          ></path>{' '}
+        </g>{' '}
+      </g>
+    </svg>
+  ),
 } as const
 
 export type CustomIconName = keyof typeof CustomIconMap
