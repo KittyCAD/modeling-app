@@ -25,6 +25,13 @@ export interface FileExplorerEntry extends FileEntry {
 }
 
 /**
+ * A limited version of a file entry for drag-and-drop purposes
+ */
+export type FileExplorerDropData = Omit<FileEntry, 'children'> & {
+  parentPath: string
+}
+
+/**
  * Pass this to the FileExplorer to render
  */
 export interface FileExplorerRow extends FileExplorerEntry {

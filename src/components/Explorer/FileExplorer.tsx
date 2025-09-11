@@ -5,13 +5,14 @@ import {
   type FileExplorerRender,
   type FileExplorerRow,
   type FileExplorerRowContextMenuProps,
+  type FileExplorerDropData,
   isRowFake,
 } from '@src/components/Explorer/utils'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
 import type { Dispatch } from 'react'
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export const StatusDot = () => {
   return <span className="text-primary hue-rotate-90">•</span>
@@ -242,6 +243,41 @@ export const FileExplorerRowElement = ({
   isRenaming: boolean
   isCopying: boolean
 }) => {
+  const dragPreviewId = `drag-preview-${row.name}`
+  const createDragPreviewElem = useCallback(() => {
+    if (!window) {
+      return
+    }
+    const elem = window.document.createElement('div')
+    elem.id = dragPreviewId
+    elem.classList.add(
+      'text-xs',
+      'py-1',
+      'px-2',
+      'rounded-full',
+      'border-primary',
+      'border',
+      'bg-default'
+    )
+    elem.style.position = 'fixed'
+    elem.style.top = '-1000px'
+    elem.innerText = row.name
+    document.body.appendChild(elem)
+    return elem
+  }, [row.name, dragPreviewId])
+  const removeDragPreviewElem = useCallback(() => {
+    if (!window) {
+      return
+    }
+    const dragPreviewElem = window.document.getElementById(dragPreviewId)
+    if (dragPreviewElem) {
+      window.document.removeChild(dragPreviewElem)
+    }
+  }, [dragPreviewId])
+  // Clean up any missed drag preview elements
+  useEffect(() => {
+    return removeDragPreviewElem()
+  }, [removeDragPreviewElem])
   const rowElementRef = useRef(null)
   const isSelected =
     row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
@@ -277,17 +313,63 @@ export const FileExplorerRowElement = ({
       draggable="true"
       onDragOver={(event) => {
         // TODO: the onDrag work is for dragging the DOM element to move folders and files
-        // if (!row.isOpen && row.isFolder) {
-        //   // on drag over, open!
-        //   row.onOpen()
-        // }
-        // event.preventDefault()
+        if (!row.isOpen && row.isFolder) {
+          // on drag over, open!
+          row.onOpen()
+        }
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'move'
+        event.currentTarget.classList.add('bg-primary/10')
+      }}
+      onDragLeave={(event) => {
+        event.currentTarget.classList.remove('bg-primary/10')
       }}
       onDragStart={(event) => {
-        // TODO console.log(event.target.innerText, 'onDragStart')
+        console.log(event.currentTarget.innerText, row.name, 'onDragStart')
+        event.dataTransfer.effectAllowed = 'move'
+        event.dataTransfer.setData(
+          'json',
+          JSON.stringify({
+            name: row.name,
+            path: row.path,
+            parentPath: row.parentPath,
+          } satisfies FileExplorerDropData)
+        )
+        const previewElem = createDragPreviewElem()
+        if (previewElem) {
+          event.dataTransfer.setDragImage(previewElem, 0, 0)
+        }
       }}
       onDrop={(event) => {
-        // TODO console.log(event.target.innerText, 'onDrop')
+        event.preventDefault()
+        let droppedData: FileExplorerDropData
+        try {
+          droppedData = JSON.parse(event.dataTransfer.getData('json'))
+          if (!('name' in droppedData) || !('path' in droppedData)) {
+            throw Error('malformed drop data', droppedData)
+          }
+        } catch (e) {
+          console.error('invalid JSON in drop event', e)
+          return
+        }
+
+        console.log('Valid drop data!', droppedData)
+        console.log('Got dropped on this!', row)
+
+        const targetIsFileInDifferentFolder =
+          !row.isFolder && row.parentPath !== droppedData.parentPath
+        const targetIsDroppedEntryParent = row.path.endsWith(
+          droppedData.parentPath
+        )
+        const shouldDroppedEntryBeMoved =
+          (!targetIsDroppedEntryParent && row.isFolder) ||
+          targetIsFileInDifferentFolder
+
+        // Now move the thing!
+        if (shouldDroppedEntryBeMoved) {
+        }
+
+        removeDragPreviewElem()
       }}
     >
       <div style={{ width: '0.5rem' }}></div>
