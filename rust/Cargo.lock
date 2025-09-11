@@ -2824,8 +2824,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.133"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena/extrude-to#4a36d8147cf585a9617e53975e9e3a98f0cb5c8c"
+version = "0.2.136"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77c3c1181ee6fa1d9c84bf2e0c33f7039b1340591806b9504f1d135f4bf681d6"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2852,7 +2853,8 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena/extrude-to#4a36d8147cf585a9617e53975e9e3a98f0cb5c8c"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb9bb1a594541b878adc1c8dcb821328774bf7aa09b65b104a206b1291a5235c"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2863,7 +2865,8 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena/extrude-to#4a36d8147cf585a9617e53975e9e3a98f0cb5c8c"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fdb4ee23cc996aa2dca7584d410e8826e08161e1ac4335bb646d5ede33f37cb3"
 dependencies = [
  "proc-macro2",
  "quote",

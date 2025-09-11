@@ -972,13 +972,13 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrPoint3d {
 
 impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryReference {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let case1 = <[TyF64; 3]>::from_kcl_val;
-        let case2 = |arg: &KclValue| {
+        let case1 = |arg: &KclValue| {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
             let_field_of!(obj, origin);
             Some(Self::Axis { direction, origin })
         };
+        let case2 = <[TyF64; 3]>::from_kcl_val;
         let case3 = super::fillet::EdgeReference::from_kcl_val;
         let case4 = FaceTag::from_kcl_val;
         let case5 = Box::<Solid>::from_kcl_val;
@@ -986,8 +986,8 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
         let case7 = Box::<Plane>::from_kcl_val;
         let case8 = Box::<Sketch>::from_kcl_val;
 
-        case2(arg)
-            .or_else(|| case1(arg).map(Self::Point))
+        case1(arg)
+            .or_else(|| case2(arg).map(Self::Point))
             .or_else(|| case3(arg).map(Self::Edge))
             .or_else(|| case4(arg).map(Self::Face))
             .or_else(|| case5(arg).map(Self::Solid))

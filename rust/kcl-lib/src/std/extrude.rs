@@ -196,25 +196,26 @@ async fn inner_extrude(
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Plane(plane) => {
-                    let plane = if plane.value == crate::exec::PlaneType::Uninit {
+                    let plane_id = if plane.value == crate::exec::PlaneType::Uninit {
                         if plane.info.origin.units == UnitLen::Unknown {
                             return Err(KclError::new_semantic(KclErrorDetails::new(
                                 "Origin of plane has unknown units".to_string(),
                                 vec![args.source_range],
                             )));
                         }
-                        crate::std::sketch::make_sketch_plane_from_orientation(
+                        let sketch_plane = crate::std::sketch::make_sketch_plane_from_orientation(
                             plane.clone().info.into_plane_data(),
                             exec_state,
                             &args,
                         )
-                        .await?
+                        .await?;
+                        sketch_plane.id
                     } else {
-                        plane.clone()
+                        plane.id
                     };
                     ModelingCmd::from(mcmd::ExtrudeToReference {
                         target: sketch.id.into(),
-                        reference: ExtrudeReference::EntityReference { entity_id: plane.id },
+                        reference: ExtrudeReference::EntityReference { entity_id: plane_id },
                         faces: Default::default(),
                         extrude_method,
                     })
@@ -264,7 +265,12 @@ async fn inner_extrude(
                     })
                 }
             },
-
+            (Some(twist_angle), _, _, None, None) => {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "The `length` parameter must be provided when using twist angle for extrusion.".to_owned(),
+                    vec![args.source_range],
+                )));
+            }
             (_, _, _, None, None) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "Either `length` or `to` parameter must be provided for extrusion.".to_owned(),
