@@ -632,81 +632,6 @@ description: Operations executed spur-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 15.282157688846944,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "VariableDeclaration",
       "name": "x",
       "value": {
@@ -751,44 +676,37 @@ description: Operations executed spur-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 0.13297746681861558,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
+      "type": "StdLibCall",
+      "name": "polar",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Radians"
+            }
           },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 17.25,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 15.282157688846944,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
               }
-            },
-            "sourceRange": []
-          }
+            }
+          },
+          "sourceRange": []
         }
       },
       "nodePath": {
@@ -818,7 +736,7 @@ description: Operations executed spur-gear.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 3
+            "index": 1
           },
           {
             "type": "CallKwArg",
@@ -873,44 +791,37 @@ description: Operations executed spur-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 0.299199300341885,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
+      "type": "StdLibCall",
+      "name": "polar",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.13297746681861558,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Radians"
+            }
           },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 15.282157688846944,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 17.25,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
               }
-            },
-            "sourceRange": []
-          }
+            }
+          },
+          "sourceRange": []
         }
       },
       "nodePath": {
@@ -940,7 +851,7 @@ description: Operations executed spur-gear.kcl
           },
           {
             "type": "PipeBodyItem",
-            "index": 5
+            "index": 3
           },
           {
             "type": "CallKwArg",
@@ -995,7 +906,75 @@ description: Operations executed spur-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "StdLibCall",
+      "name": "polar",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.299199300341885,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Radians"
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 15.282157688846944,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 5
+          },
+          {
+            "type": "CallKwArg",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
     },
     {
       "type": "StdLibCall",

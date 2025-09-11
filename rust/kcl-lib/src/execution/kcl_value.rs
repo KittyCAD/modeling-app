@@ -1,20 +1,21 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use indexmap::IndexMap;
 use serde::Serialize;
 
 use crate::{
     CompilationError, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::{
-        EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, MetaSettings,
-        Metadata, Plane, Sketch, Solid, TagIdentifier,
-        annotations::{self, SETTINGS, SETTINGS_UNIT_LENGTH},
+        EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, Metadata,
+        Plane, Sketch, Solid, TagIdentifier,
+        annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, NumericLiteral, TagDeclarator,
-        TagNode,
+        TagNode, Type,
     },
     std::{StdFnProps, args::TyF64},
 };
@@ -86,7 +87,7 @@ pub enum KclValue {
     Function {
         #[serde(serialize_with = "function_value_stub")]
         #[ts(type = "null")]
-        value: FunctionSource,
+        value: Box<FunctionSource>,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
@@ -117,25 +118,91 @@ where
     serializer.serialize_unit()
 }
 
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FunctionSource {
+    pub input_arg: Option<(String, Option<Type>)>,
+    pub named_args: IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
+    pub return_type: Option<Node<Type>>,
+    pub deprecated: bool,
+    pub experimental: bool,
+    pub include_in_feature_tree: bool,
+    pub is_std: bool,
+    pub body: FunctionBody,
+    pub ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
+}
+
+impl FunctionSource {
+    pub fn rust(
+        func: crate::std::StdFn,
+        ast: Box<Node<FunctionExpression>>,
+        props: StdFnProps,
+        attrs: FnAttrs,
+    ) -> Self {
+        let (input_arg, named_args) = Self::args_from_ast(&ast);
+
+        FunctionSource {
+            input_arg,
+            named_args,
+            return_type: ast.return_type.clone(),
+            deprecated: attrs.deprecated,
+            experimental: attrs.experimental,
+            include_in_feature_tree: props.include_in_feature_tree,
+            is_std: true,
+            body: FunctionBody::Rust(func),
+            ast,
+        }
+    }
+
+    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, is_std: bool) -> Self {
+        let (input_arg, named_args) = Self::args_from_ast(&ast);
+        FunctionSource {
+            input_arg,
+            named_args,
+            return_type: ast.return_type.clone(),
+            deprecated: false,
+            experimental: false,
+            include_in_feature_tree: true,
+            is_std,
+            body: FunctionBody::Kcl(memory),
+            ast,
+        }
+    }
+
+    #[allow(clippy::type_complexity)]
+    fn args_from_ast(
+        ast: &FunctionExpression,
+    ) -> (
+        Option<(String, Option<Type>)>,
+        IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
+    ) {
+        let mut input_arg = None;
+        let mut named_args = IndexMap::new();
+        for p in &ast.params {
+            if !p.labeled {
+                input_arg = Some((
+                    p.identifier.name.clone(),
+                    p.param_type.as_ref().map(|t| t.inner.clone()),
+                ));
+                continue;
+            }
+
+            named_args.insert(
+                p.identifier.name.clone(),
+                (p.default_value.clone(), p.param_type.as_ref().map(|t| t.inner.clone())),
+            );
+        }
+
+        (input_arg, named_args)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
 // If you try to compare two `crate::std::StdFn` the results will be meaningless and arbitrary,
 // because they're just function pointers.
-// TODO: Add a newtype around crate::std::StdFn which manually impls PartialEq and sets it to false.
 #[allow(unpredictable_function_pointer_comparisons)]
-pub enum FunctionSource {
-    #[default]
-    None,
-    Std {
-        func: crate::std::StdFn,
-        ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        props: StdFnProps,
-        attrs: crate::execution::annotations::FnAttrs,
-    },
-    User {
-        ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        settings: MetaSettings,
-        memory: EnvironmentRef,
-    },
+pub enum FunctionBody {
+    Rust(crate::std::StdFn),
+    Kcl(EnvironmentRef),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -407,13 +474,15 @@ impl KclValue {
 
     pub(crate) fn map_env_ref(&self, old_env: usize, new_env: usize) -> Self {
         let mut result = self.clone();
-        if let KclValue::Function {
-            value: FunctionSource::User { ref mut memory, .. },
-            ..
-        } = result
+        if let KclValue::Function { ref mut value, .. } = result
+            && let FunctionSource {
+                body: FunctionBody::Kcl(memory),
+                ..
+            } = &mut **value
         {
             memory.replace_env(old_env, new_env);
         }
+
         result
     }
 
