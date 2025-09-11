@@ -7,6 +7,7 @@ import { SystemIOMachineLogicListenerWeb } from '@src/components/Providers/Syste
 import { RouteProvider } from '@src/components/RouteProvider'
 import { KclContextProvider } from '@src/lang/KclProvider'
 import { isDesktop } from '@src/lib/isDesktop'
+import { InteractionListener } from '@src/components/InteractionListener'
 import { Outlet } from 'react-router-dom'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
 import { useToken } from '@src/lib/singletons'
@@ -20,35 +21,37 @@ function RootLayout() {
 
   return (
     <OpenInDesktopAppHandler>
-      <RouteProvider>
-        {/* It's possible the ML agent will interact with the user
+      <InteractionListener>
+        <RouteProvider>
+          {/* It's possible the ML agent will interact with the user
         on the project view or anywhere else in the app in the future. It should
         work regardless of the LSP or sketching being available, as users
         may simply want to ask it questions. */}
-        <MlEphantManagerReactContext.Provider
-          options={{
-            input: {
-              apiToken,
-            },
-          }}
-        >
-          <LspProvider>
-            <KclContextProvider>
-              <AppStateProvider>
-                <MachineManagerProvider>
-                  {isDesktop() ? (
-                    <SystemIOMachineLogicListenerDesktop />
-                  ) : (
-                    <SystemIOMachineLogicListenerWeb />
-                  )}
-                  <Outlet />
-                </MachineManagerProvider>
-              </AppStateProvider>
-            </KclContextProvider>
-          </LspProvider>
-        </MlEphantManagerReactContext.Provider>
-      </RouteProvider>
-    </OpenInDesktopAppHandler>
+          <MlEphantManagerReactContext.Provider
+            options={{
+              input: {
+                apiToken,
+              },
+            }}
+          >
+            <LspProvider>
+              <KclContextProvider>
+                <AppStateProvider>
+                  <MachineManagerProvider>
+                    {isDesktop() ? (
+                      <SystemIOMachineLogicListenerDesktop />
+                    ) : (
+                      <SystemIOMachineLogicListenerWeb />
+                    )}
+                    <Outlet />
+                  </MachineManagerProvider>
+                </AppStateProvider>
+              </KclContextProvider>
+            </LspProvider>
+          </MlEphantManagerReactContext.Provider >
+        </RouteProvider>
+      </InteractionListener>
+    </OpenInDesktopAppHandler >
   )
 }
 

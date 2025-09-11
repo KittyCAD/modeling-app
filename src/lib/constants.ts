@@ -285,3 +285,6 @@ export const NUMBER_OF_ENGINE_RETRIES = 5
  *Global timeout on pending commands, it will be bad if we hit this case.
  */
 export const PENDING_COMMAND_TIMEOUT = 60_000
+/** The separator between keys/buttons in an InteractionMapItem's step */
+export const INTERACTION_MAP_SEPARATOR = '+'
+export const COMMAND_PALETTE_HOTKEY = 'mod+k'
