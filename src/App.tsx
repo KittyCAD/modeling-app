@@ -57,6 +57,7 @@ import {
   kclManager,
   sceneInfra,
   settingsActor,
+  useCurrentInteractionSequence,
 } from '@src/lib/singletons'
 import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
@@ -82,6 +83,7 @@ if (window.electron) {
 }
 
 export function App() {
+  const currentInteractionSequence = useCurrentInteractionSequence()
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -299,6 +301,12 @@ export function App() {
             ...defaultGlobalStatusBarItems({ location, filePath }),
           ]}
           localItems={[
+            {
+              id: 'key-sequence',
+              element: 'text',
+              label: currentInteractionSequence,
+              toolTip: { children: 'The current interaction sequence' },
+            } satisfies StatusBarItemType,
             ...(getSettings().app.showDebugPanel.current
               ? ([
                   {

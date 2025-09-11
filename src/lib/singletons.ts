@@ -38,6 +38,7 @@ import {
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
+import { interactionMapMachine } from '@src/machines/interactionMapMachine'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -140,6 +141,7 @@ const {
   MLEPHANT_MANAGER,
   COMMAND_BAR,
   BILLING,
+  INTERACTION_MAP,
 } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
@@ -149,6 +151,7 @@ const appMachineActors = {
   [MLEPHANT_MANAGER]: mlEphantManagerMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
+  [INTERACTION_MAP]: interactionMapMachine,
 } as const
 
 const appMachine = setup({
@@ -199,6 +202,10 @@ const appMachine = setup({
         ...BILLING_CONTEXT_DEFAULTS,
         urlUserService: () => withAPIBaseURL(''),
       },
+    }),
+    spawnChild(appMachineActors[INTERACTION_MAP], {
+      systemId: INTERACTION_MAP,
+      input: {},
     }),
   ],
 })
@@ -267,6 +274,11 @@ export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
 export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
   (typeof appMachineActors)[typeof BILLING]
 >
+export const interactionMapActor = appActor.system.get(
+  INTERACTION_MAP
+) as ActorRefFrom<(typeof appMachineActors)[typeof INTERACTION_MAP]>
+export const useCurrentInteractionSequence = () =>
+  useSelector(interactionMapActor, (state) => state.context.currentSequence)
 
 const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
   state

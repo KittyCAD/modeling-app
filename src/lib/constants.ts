@@ -267,3 +267,6 @@ export const VALID_PANE_IDS = [
   'variables',
   'text-to-cad',
 ] as const
+/** The separator between keys/buttons in an InteractionMapItem's step */
+export const INTERACTION_MAP_SEPARATOR = '+'
+export const COMMAND_PALETTE_HOTKEY = 'mod+k'

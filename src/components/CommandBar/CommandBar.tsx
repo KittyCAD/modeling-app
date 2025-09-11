@@ -9,12 +9,11 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { engineCommandManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
-
-export const COMMAND_PALETTE_HOTKEY = 'mod+k'
+import { COMMAND_PALETTE_HOTKEY } from '@src/lib/constants'
+import { useShortcuts } from '@src/lib/useShortcuts'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
@@ -60,14 +59,26 @@ export const CommandBar = () => {
   }, [immediateState, commandBarActor])
 
   // Hook up keyboard shortcuts
-  useHotkeyWrapper([COMMAND_PALETTE_HOTKEY], () => {
-    if (commandBarState.context.commands.length === 0) return
-    if (commandBarState.matches('Closed')) {
-      commandBarActor.send({ type: 'Open' })
-    } else {
-      commandBarActor.send({ type: 'Close' })
-    }
-  })
+  useShortcuts(
+    [
+      {
+        name: 'toggle-cmd-palette',
+        sequence: COMMAND_PALETTE_HOTKEY,
+        title: 'Toggle Command Palette',
+        action: () => {
+          const s = commandBarActor.getSnapshot()
+          console.log('what is the current state?', s.value)
+          if (s.context.commands.length === 0) return
+          if (s.matches('Closed')) {
+            commandBarActor.send({ type: 'Open' })
+          } else {
+            commandBarActor.send({ type: 'Close' })
+          }
+        },
+      },
+    ],
+    []
+  )
 
   function stepBack() {
     const entries = Object.entries(selectedCommand?.args || {}).filter(
