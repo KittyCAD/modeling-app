@@ -48,6 +48,15 @@ export async function getCalculatedKclExpressionValue(
     varValue &&
     (varValue.type === 'Tuple' || varValue.type === 'HomArray')
   ) {
+    // Reject empty arrays as they're not useful for geometric operations
+    if (varValue.value.length === 0) {
+      const valueAsString = 'NAN'
+      return {
+        astNode: variableDeclaratorAstNode,
+        valueAsString,
+      }
+    }
+
     // Validate that ALL array elements are numbers (required for geometric operations like patternCircular3d)
     // This ensures arrays like [0, true, 0] are rejected, while [0, 1, 0] or [1mm, 2mm, 3mm] are accepted
     const allElementsAreNumbers = varValue.value.every(
