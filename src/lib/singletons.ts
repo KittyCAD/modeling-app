@@ -36,6 +36,7 @@ import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import { interactionMapMachine } from '@src/machines/interactionMapMachine'
 
 export const engineCommandManager = new ConnectionManager()
 export const rustContext = new RustContext(engineCommandManager)
@@ -121,35 +122,42 @@ export const sceneEntitiesManager = new SceneEntities(
 )
 
 if (typeof window !== 'undefined') {
-  ;(window as any).engineCommandManager = engineCommandManager
-  ;(window as any).kclManager = kclManager
-  ;(window as any).sceneInfra = sceneInfra
-  ;(window as any).sceneEntitiesManager = sceneEntitiesManager
-  ;(window as any).editorManager = editorManager
-  ;(window as any).codeManager = codeManager
-  ;(window as any).rustContext = rustContext
-  ;(window as any).engineDebugger = EngineDebugger
-  ;(window as any).enableMousePositionLogs = () =>
-    document.addEventListener('mousemove', (e) =>
-      console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
-    )
-  ;(window as any).enableFillet = () => {
-    ;(window as any)._enableFillet = true
-  }
-  ;(window as any).zoomToFit = () =>
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'zoom_to_fit',
-        object_ids: [], // leave empty to zoom to all objects
-        padding: 0.2, // padding around the objects
-        animated: false, // don't animate the zoom for now
-      },
-    })
+  ; (window as any).engineCommandManager = engineCommandManager
+    ; (window as any).kclManager = kclManager
+    ; (window as any).sceneInfra = sceneInfra
+    ; (window as any).sceneEntitiesManager = sceneEntitiesManager
+    ; (window as any).editorManager = editorManager
+    ; (window as any).codeManager = codeManager
+    ; (window as any).rustContext = rustContext
+    ; (window as any).engineDebugger = EngineDebugger
+    ; (window as any).enableMousePositionLogs = () =>
+      document.addEventListener('mousemove', (e) =>
+        console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
+      )
+    ; (window as any).enableFillet = () => {
+      ; (window as any)._enableFillet = true
+    }
+    ; (window as any).zoomToFit = () =>
+      engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'zoom_to_fit',
+          object_ids: [], // leave empty to zoom to all objects
+          padding: 0.2, // padding around the objects
+          animated: false, // don't animate the zoom for now
+        },
+      })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, MLEPHANT_MANAGER, COMMAND_BAR, BILLING } =
-  ACTOR_IDS
+const {
+  AUTH,
+  SETTINGS,
+  SYSTEM_IO,
+  MLEPHANT_MANAGER,
+  COMMAND_BAR,
+  BILLING,
+  INTERACTION_MAP,
+} = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
@@ -157,6 +165,7 @@ const appMachineActors = {
   [MLEPHANT_MANAGER]: mlEphantManagerMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
+  [INTERACTION_MAP]: interactionMapMachine,
 } as const
 
 const appMachine = setup({
@@ -205,6 +214,10 @@ const appMachine = setup({
         ...BILLING_CONTEXT_DEFAULTS,
         urlUserService: () => withAPIBaseURL(''),
       },
+    }),
+    spawnChild(appMachineActors[INTERACTION_MAP], {
+      systemId: INTERACTION_MAP,
+      input: {},
     }),
   ],
   on: {
@@ -286,6 +299,11 @@ sceneEntitiesManager.commandBarActor = commandBarActor
 export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
   (typeof appMachineActors)[typeof BILLING]
 >
+export const interactionMapActor = appActor.system.get(
+  INTERACTION_MAP
+) as ActorRefFrom<(typeof appMachineActors)[typeof INTERACTION_MAP]>
+export const useCurrentInteractionSequence = () =>
+  useSelector(interactionMapActor, (state) => state.context.currentSequence)
 
 const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
   state

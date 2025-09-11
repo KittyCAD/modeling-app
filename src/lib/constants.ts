@@ -294,3 +294,7 @@ export const LAYOUT_PERSIST_PREFIX = 'layout-'
 
 // Copilot input
 export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
+
+/** The separator between keys/buttons in an InteractionMapItem's step */
+export const INTERACTION_MAP_SEPARATOR = '+'
+export const COMMAND_PALETTE_HOTKEY = 'mod+k'

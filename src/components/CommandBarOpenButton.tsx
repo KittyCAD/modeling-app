@@ -1,4 +1,4 @@
-import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/CommandBar'
+import { COMMAND_PALETTE_HOTKEY } from '@src/lib/constants'
 import { CustomIcon } from '@src/components/CustomIcon'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'

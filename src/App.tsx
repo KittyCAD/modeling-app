@@ -44,6 +44,7 @@ import {
   useLayout,
   setLayout,
   getLayout,
+  useCurrentInteractionSequence,
 } from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
@@ -63,11 +64,12 @@ import { getResolvedTheme } from '@src/lib/theme'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
-    .then(() => {})
+    .then(() => { })
     .catch(reportRejection)
 }
 
 export function App() {
+  const currentInteractionSequence = useCurrentInteractionSequence()
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -249,20 +251,26 @@ export function App() {
             ...defaultGlobalStatusBarItems({ location, filePath }),
           ]}
           localItems={[
+            {
+              id: 'key-sequence',
+              element: 'text',
+              label: currentInteractionSequence,
+              toolTip: { children: 'The current interaction sequence' },
+            } satisfies StatusBarItemType,
             ...(getSettings().app.showDebugPanel.current
               ? ([
-                  {
-                    id: 'modeling-state',
-                    element: 'text',
-                    label:
-                      modelingState.value instanceof Object
-                        ? (xStateValueToString(modelingState.value) ?? '')
-                        : modelingState.value,
-                    toolTip: {
-                      children: 'The current state of the modeler',
-                    },
+                {
+                  id: 'modeling-state',
+                  element: 'text',
+                  label:
+                    modelingState.value instanceof Object
+                      ? (xStateValueToString(modelingState.value) ?? '')
+                      : modelingState.value,
+                  toolTip: {
+                    children: 'The current state of the modeler',
                   },
-                ] satisfies StatusBarItemType[])
+                },
+              ] satisfies StatusBarItemType[])
               : []),
             {
               id: 'selection',
