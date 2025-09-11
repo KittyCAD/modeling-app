@@ -50,8 +50,10 @@ export async function getCalculatedKclExpressionValue(
   ) {
     // Validate that ALL array elements are numbers (required for geometric operations like patternCircular3d)
     // This ensures arrays like [0, true, 0] are rejected, while [0, 1, 0] or [1mm, 2mm, 3mm] are accepted
-    const allElementsAreNumbers = varValue.value.every((item: any) => item.type === 'Number')
-    
+    const allElementsAreNumbers = varValue.value.every(
+      (item: any) => item.type === 'Number'
+    )
+
     if (!allElementsAreNumbers) {
       // If array contains non-numeric values, treat as invalid expression
       const valueAsString = 'NAN'
