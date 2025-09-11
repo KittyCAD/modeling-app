@@ -1,5 +1,6 @@
 import {
   addPlaceHoldersForNewFileAndFolder,
+  copyPasteSourceAndTarget,
   getUniqueCopyPath,
   isRowFake,
 } from '@src/components/Explorer/utils'
@@ -398,6 +399,27 @@ describe('Explorer utils.ts', () => {
           false
         )
         expect(actual).toBe(expected)
+      })
+      it('should copy file into folder', () => {
+        const expected = {
+          src: '/somefile.kcl',
+          target: '/folder/somefile.kcl',
+        }
+
+        // Folder structure:
+        // |-/folder
+        // |   |-a.kcl
+        // |  |-b.wtf      <-- target
+        // |-somefile.kcl  <-- src
+        const actual = copyPasteSourceAndTarget(
+          ['/folder/a.kcl', '/folder/b.wtf'],
+          ['/somefile.kcl'],
+          { path: '/somefile.kcl', name: 'somefile.kcl', children: null },
+          { path: '/folder/b.wtf', name: '/folder/b.wtf', children: null },
+          '-copy-'
+        )
+
+        expect(actual).toStrictEqual(expected)
       })
     })
     describe('Files with different extensions', () => {
