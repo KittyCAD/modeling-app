@@ -1,19 +1,15 @@
 import type { MouseEventHandler } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import {
-  codeManager,
   engineCommandManager,
   kclManager,
-  rustContext,
   useSettings,
 } from '@src/lib/singletons'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { sceneInfra } from '@src/lib/singletons'
 import { btnName } from '@src/lib/cameraControls'
-import { getDimensions } from '@src/network/utils'
 import { err, reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
 import Loading from '@src/components/Loading'
 import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
@@ -24,126 +20,8 @@ import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
-import { EngineDebugger } from '@src/lib/debugger'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-
-let didUseEffectRunOnce = false
-
-const onEngineConnectionReadyForRequests = ({
-  authToken,
-  videoWrapperRef,
-  setAppState,
-  videoRef,
-  setIsSceneReady,
-}: {
-  authToken: string
-  videoWrapperRef: React.RefObject<HTMLDivElement>
-  setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
-  videoRef: React.RefObject<HTMLVideoElement>
-  setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
-  // video wrapper ref
-  if (!engineCommandManager.started) {
-    if (!authToken) {
-      console.error('authToken is not ready on connection initialization')
-      return
-    }
-
-    if (videoWrapperRef.current) {
-      const { width, height } = getDimensions(
-        videoWrapperRef.current.clientWidth,
-        videoWrapperRef.current.clientHeight
-      )
-
-      // TODO: Make sure pool works in the url.
-      engineCommandManager
-        .start({
-          width,
-          height,
-          token: authToken,
-          setStreamIsReady: () => {
-            setAppState({ isStreamReady: true })
-          },
-        })
-        .then((result) => {
-          if (!videoRef.current) {
-            EngineDebugger.addLog({
-              label: 'ConnectionStream.tsx',
-              message: 'Unable to reference the video',
-            })
-            engineCommandManager.tearDown()
-            return
-          }
-
-          if (!engineCommandManager.connection?.mediaStream) {
-            EngineDebugger.addLog({
-              label: 'ConnectionStream.tsx',
-              message:
-                'Unable to reference the mediaStream, calling tearDown()',
-            })
-            engineCommandManager.tearDown()
-            return
-          }
-
-          videoRef.current.srcObject =
-            engineCommandManager.connection?.mediaStream
-          setIsSceneReady(true)
-        })
-        .then(() => {
-          jsAppSettings()
-            .then((result) => {
-              EngineDebugger.addLog({
-                label: 'onEngineConnectionReadyForRequests',
-                message: 'rustContext.clearSceneAndBustCache()',
-                metadata: {
-                  jsAppSettings: result,
-                  filePath: codeManager.currentFilePath || undefined,
-                },
-              })
-              rustContext
-                .clearSceneAndBustCache(
-                  result,
-                  codeManager.currentFilePath || undefined
-                )
-                .then(() => {
-                  EngineDebugger.addLog({
-                    label: 'onEngineConnectionReadyForRequests',
-                    message: 'kclManager.executeCode()',
-                  })
-                  kclManager
-                    .executeCode()
-                    .then((result) => {
-                      // It makes sense to also call zoom to fit here, when a new file is
-                      // loaded for the first time, but not overtaking the work kevin did
-                      // so the camera isn't moving all the time.
-                      engineCommandManager
-                        .sendSceneCommand({
-                          type: 'modeling_cmd_req',
-                          cmd_id: uuidv4(),
-                          cmd: {
-                            type: 'zoom_to_fit',
-                            object_ids: [], // leave empty to zoom to all objects
-                            padding: 0.1, // padding around the objects
-                            animated: false, // don't animate the zoom for now
-                          },
-                        })
-                        .catch(reportRejection)
-                    })
-                    .catch(reportRejection)
-                })
-                .catch(reportRejection)
-            })
-            .catch(reportRejection)
-        })
-        .catch((error) => {
-          console.error('Failed to start engine connection', error)
-        })
-    } else {
-      console.error('DOM is not initialized for the stream.')
-      return
-    }
-  }
-}
+import { useOnPageConnectToEngine } from '@src/hooks/network/useOnPageConnectToEngine'
+import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -163,6 +41,12 @@ export const ConnectionStream = (props: {
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
+  const {
+    tryConnecting,
+    isConnecting,
+    successfullyConnected,
+    numberOfConnectionAtttempts,
+  } = useOnPageConnectToEngine()
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
@@ -217,31 +101,27 @@ export const ConnectionStream = (props: {
       .catch(reportRejection)
   }
 
-  // Run once on initialization
-  useEffect(() => {
-    if (!didUseEffectRunOnce) {
-      didUseEffectRunOnce = true
-      onEngineConnectionReadyForRequests({
+  // TODO: Handle 15 second connection window
+  // TODO: Handle global 3 retry connection on any connection attempts
+  // TODO: Handle global disconnections. 1. Websocket closed, 2. Run time initializations
+  // TODO: Handle PingPong checks
+  const { resetGlobalEngineCommandManager } = useOnPageMounted({
+    callback: () => {
+      tryConnecting({
         authToken: props.authToken || '',
         videoWrapperRef,
         setAppState,
         videoRef,
         setIsSceneReady,
+        isConnecting,
+        successfullyConnected,
+        numberOfConnectionAtttempts,
+        timeToConnect: 30_000,
+      }).catch((e) => {
+        console.error(e)
       })
-    }
-  }, [props.authToken, setAppState])
-
-  // TODO: Handle 15 second connection window
-  // TODO: Handle global 3 retry connection on any connection attempts
-  // TODO: Handle global disconnections. 1. Websocket closed, 2. Run time initializations
-  // TODO: Handle PingPong checks
-
-  const resetGlobalEngineCommandManager = useCallback(() => {
-    // reset the ability to initialize
-    engineCommandManager.started = false
-    didUseEffectRunOnce = false
-  }, [])
-
+    },
+  })
   // TODO: When exiting the page via the router teardown the engineCommandManager
   // Gotcha: If you do it too quickly listenToDarkModeMatcher will complain.
   useOnPageExit({
@@ -251,30 +131,22 @@ export const ConnectionStream = (props: {
   useOnPageIdle({
     startCallback: () => {
       if (!videoWrapperRef.current) return
-
       if (!props.authToken) return
       if (engineCommandManager.started) return
-      // Trick the executor to cache bust scene.
 
-      jsAppSettings()
-        .then((result) => {
-          rustContext
-            .clearSceneAndBustCache(
-              result,
-              codeManager.currentFilePath || undefined
-            )
-            .then(() => {
-              onEngineConnectionReadyForRequests({
-                authToken: props.authToken || '',
-                videoWrapperRef,
-                setAppState,
-                videoRef,
-                setIsSceneReady,
-              })
-            })
-            .catch(reportRejection)
-        })
-        .catch(reportRejection)
+      tryConnecting({
+        authToken: props.authToken || '',
+        videoWrapperRef,
+        setAppState,
+        videoRef,
+        setIsSceneReady,
+        isConnecting,
+        successfullyConnected,
+        numberOfConnectionAtttempts,
+        timeToConnect: 30_000,
+      }).catch((e) => {
+        console.error(e)
+      })
     },
   })
 
