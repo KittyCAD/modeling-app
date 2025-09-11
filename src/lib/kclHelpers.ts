@@ -15,7 +15,10 @@ const DUMMY_VARIABLE_NAME = '__result__'
  * Calculate the value of the KCL expression,
  * given the value and the variables that are available in memory.
  */
-export async function getCalculatedKclExpressionValue(value: string) {
+export async function getCalculatedKclExpressionValue(
+  value: string,
+  allowArrays: boolean = false
+) {
   // Create a one-line program that assigns the value to a variable
   const dummyProgramCode = `${DUMMY_VARIABLE_NAME} = ${value}`
   const pResult = parse(dummyProgramCode)
@@ -38,6 +41,32 @@ export async function getCalculatedKclExpressionValue(value: string) {
     resultDeclaration?.type === 'VariableDeclaration' &&
     resultDeclaration?.declaration.init
   const varValue = execState.variables[DUMMY_VARIABLE_NAME]
+
+  // Handle array values when allowArrays is true
+  if (
+    allowArrays &&
+    varValue &&
+    (varValue.type === 'Tuple' || varValue.type === 'HomArray')
+  ) {
+    const arrayValues = varValue.value.map((item: any) => {
+      if (item.type === 'Number') {
+        const formatted = formatNumberValue(item.value, item.ty)
+        if (!err(formatted)) {
+          return formatted
+        }
+        return String(item.value)
+      }
+      return String(item.value)
+    })
+
+    const valueAsString = `[${arrayValues.join(', ')}]`
+
+    return {
+      astNode: variableDeclaratorAstNode,
+      valueAsString,
+    }
+  }
+
   // If the value is a number, attempt to format it with units.
   const resultValueWithUnits = (() => {
     if (!varValue || varValue.type !== 'Number') {
@@ -61,8 +90,14 @@ export async function getCalculatedKclExpressionValue(value: string) {
   }
 }
 
-export async function stringToKclExpression(value: string) {
-  const calculatedResult = await getCalculatedKclExpressionValue(value)
+export async function stringToKclExpression(
+  value: string,
+  allowArrays: boolean = false
+) {
+  const calculatedResult = await getCalculatedKclExpressionValue(
+    value,
+    allowArrays
+  )
   if (err(calculatedResult) || 'errors' in calculatedResult) {
     return calculatedResult
   } else if (!calculatedResult.astNode) {
