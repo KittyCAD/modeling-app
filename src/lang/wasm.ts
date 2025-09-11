@@ -23,12 +23,20 @@ import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import type { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 
+import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import { KCLError } from '@src/lang/errors'
+import {
+  ARG_INDEX_FIELD,
+  LABELED_ARG_FIELD,
+  UNLABELED_ARG,
+} from '@src/lang/queryAstConstants'
+import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   type Artifact,
   defaultArtifactGraph,
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/std/sketch'
+import { isTopLevelModule } from '@src/lang/util'
 import {
   DEFAULT_DEFAULT_ANGLE_UNIT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -61,14 +69,6 @@ import {
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
-import {
-  ARG_INDEX_FIELD,
-  LABELED_ARG_FIELD,
-  UNLABELED_ARG,
-} from '@src/lang/queryAstConstants'
-import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
-import { isTopLevelModule } from '@src/lang/util'
-import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -690,6 +690,9 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
         break
       case 'SketchBlock':
         // TODO: sketch-api: implement arguments and body.
+        break
+      case 'SketchVar':
+        // TODO: sketch-api: implement initial.
         break
       default:
         const _exhaustiveCheck: never = step

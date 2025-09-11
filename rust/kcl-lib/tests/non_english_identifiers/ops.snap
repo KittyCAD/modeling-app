@@ -246,6 +246,7 @@ description: Operations executed non_english_identifiers.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -1,19 +1,19 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { topLevelRange } from '@src/lang/util'
 import type { ParseResult } from '@src/lang/wasm'
 import {
+  assertParse,
+  errFromErrWithOutputs,
   formatNumberLiteral,
   parse,
-  errFromErrWithOutputs,
   rustImplPathToNode,
-  assertParse,
 } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { topLevelRange } from '@src/lang/util'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 
 beforeEach(async () => {
   await initPromise

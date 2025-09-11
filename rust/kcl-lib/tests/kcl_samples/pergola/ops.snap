@@ -1866,6 +1866,7 @@ description: Operations executed pergola.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

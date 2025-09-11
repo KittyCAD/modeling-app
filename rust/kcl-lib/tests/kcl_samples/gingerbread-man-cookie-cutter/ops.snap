@@ -494,6 +494,7 @@ description: Operations executed gingerbread-man-cookie-cutter.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

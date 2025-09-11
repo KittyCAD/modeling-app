@@ -1,9 +1,17 @@
-import type { Models } from '@kittycad/lib'
-import env, { updateEnvironment, updateEnvironmentPool } from '@src/env'
+import type { User } from '@kittycad/lib'
+import { users, oauth2 } from '@kittycad/lib'
+import env, {
+  updateEnvironment,
+  updateEnvironmentPool,
+  generateDomainsFromBaseDomain,
+} from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
-import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
 import {
-  getUser as getUserDesktop,
+  LEGACY_COOKIE_NAME,
+  OAUTH2_DEVICE_CLIENT_ID,
+  COOKIE_NAME_PREFIX,
+} from '@src/lib/constants'
+import {
   listAllEnvironments,
   readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
@@ -12,12 +20,13 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 
 export interface UserContext {
-  user?: Models['User_type']
+  user?: User
   token: string
 }
 
@@ -38,7 +47,7 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 /**
  * Determine which token do we have persisted to initialize the auth machine
  */
-const persistedCookie = getCookie(COOKIE_NAME)
+const persistedCookie = getCookie()
 const persistedDevToken = env().VITE_KITTYCAD_API_TOKEN
 export const persistedToken = persistedDevToken || persistedCookie || ''
 console.log('Initial persisted token')
@@ -55,7 +64,7 @@ export const authMachine = setup({
       | {
           type: 'xstate.done.actor.check-logged-in'
           output: {
-            user: Models['User_type']
+            user: User
             token: string
           }
         }
@@ -183,10 +192,7 @@ async function getUser(input: { token?: string }) {
   } catch (e) {
     console.error(e)
   }
-  const url = withAPIBaseURL('/user')
-  const headers: { [key: string]: string } = {
-    'Content-Type': 'application/json',
-  }
+  const client = createKCClient(token)
 
   /**
    * We do not want to store a token or a user since the developer is running
@@ -200,39 +206,36 @@ async function getUser(input: { token?: string }) {
   }
 
   if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
-  if (token) headers['Authorization'] = `Bearer ${token}`
 
-  const userPromise = isDesktop()
-    ? getUserDesktop(token)
-    : fetch(url, {
-        method: 'GET',
-        credentials: 'include',
-        headers,
-      })
-        .then((res) => res.json())
-        .catch((err) => console.error('error from Browser getUser', err))
-
-  const user = await userPromise
+  const me = await kcCall(() => users.get_user_self({ client }))
+  if (me instanceof Error) return Promise.reject(me)
 
   // Necessary here because we use Kurt's API key in CI
   if (localStorage.getItem('FORCE_NO_IMAGE')) {
-    user.image = ''
+    me.image = ''
   }
-
-  if ('error_code' in user) return Promise.reject(new Error(user.message))
 
   markOnce('code/didAuth')
   return {
-    user: user as Models['User_type'],
+    user: me,
     token,
   }
 }
 
-export function getCookie(cname: string): string | null {
+export function getCookie(): string | null {
   if (isDesktop()) {
     return null
   }
 
+  const baseDomain = env().VITE_KITTYCAD_BASE_DOMAIN
+  if (baseDomain === 'zoo.dev' || baseDomain === 'zoogov.dev') {
+    return getCookieByName(LEGACY_COOKIE_NAME)
+  } else {
+    return getCookieByName(COOKIE_NAME_PREFIX + baseDomain)
+  }
+}
+
+function getCookieByName(cname: string): string | null {
   let name = cname + '='
   let decodedCookie = decodeURIComponent(document.cookie)
   let ca = decodedCookie.split(';')
@@ -263,7 +266,7 @@ async function getAndSyncStoredToken(input: {
 
   // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
-  const cookieToken = getCookie(COOKIE_NAME)
+  const cookieToken = getCookie()
   const fileToken =
     window.electron && environmentName
       ? await readEnvironmentConfigurationToken(
@@ -330,17 +333,26 @@ async function logoutEnvironment(requestedDomain?: string) {
 
       if (token) {
         try {
-          await fetch(domain + '/oauth2/token/revoke', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-              token: token,
-              client_id: OAUTH2_DEVICE_CLIENT_ID,
-            }).toString(),
-          })
+          const apiUrlBase = (() => {
+            try {
+              const u = new URL(domain)
+              return u.origin
+            } catch {
+              const d = generateDomainsFromBaseDomain(domain)
+              return d.API_URL
+            }
+          })()
+
+          const client = createKCClient(token, apiUrlBase)
+          await kcCall(() =>
+            oauth2.oauth2_token_revoke({
+              client,
+              body: {
+                token,
+                client_id: OAUTH2_DEVICE_CLIENT_ID,
+              },
+            })
+          )
         } catch (e) {
           console.error('Error revoking token:', e)
         }

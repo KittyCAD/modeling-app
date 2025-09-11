@@ -1,7 +1,7 @@
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 import Tooltip from '@src/components/Tooltip'
+import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 
 export const GenerateWithTTCButton = (props: {
   hasBorder?: true

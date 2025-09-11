@@ -1,10 +1,10 @@
 // Polyfill window.electron fs functions as needed when in a nodejs context
 // (INTENDED FOR VITEST SHENANIGANS.)
 
-import type { IElectronAPI } from '@root/interface'
-import type { ObjectEncodingOptions, OpenMode } from 'fs'
 import type { Abortable } from 'events'
+import type { ObjectEncodingOptions, OpenMode } from 'fs'
 import * as nodePath from '@chainner/node-path'
+import type { IElectronAPI } from '@root/interface'
 
 export interface IFs {
   readdir: IElectronAPI['readdir']

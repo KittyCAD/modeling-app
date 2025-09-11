@@ -13,7 +13,8 @@ use crate::{
         types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
     },
     parsing::ast::types::{
-        DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
+        DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, NumericLiteral, TagDeclarator,
+        TagNode,
     },
     std::{StdFnProps, args::TyF64},
 };
@@ -60,6 +61,7 @@ pub enum KclValue {
     },
     Object {
         value: KclObjectFields,
+        constrainable: bool,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
@@ -97,6 +99,7 @@ pub enum KclValue {
     Type {
         #[serde(skip)]
         value: TypeDef,
+        experimental: bool,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
@@ -246,7 +249,7 @@ impl KclValue {
             KclValue::String { value: _, meta } => meta.clone(),
             KclValue::Tuple { value: _, meta } => meta.clone(),
             KclValue::HomArray { value, .. } => value.iter().flat_map(|v| v.metadata()).collect(),
-            KclValue::Object { value: _, meta } => meta.clone(),
+            KclValue::Object { meta, .. } => meta.clone(),
             KclValue::TagIdentifier(x) => x.meta.clone(),
             KclValue::TagDeclarator(x) => vec![x.metadata()],
             KclValue::Plane { value } => value.meta.clone(),
@@ -348,6 +351,16 @@ impl KclValue {
                     result
                 }
             }
+        }
+    }
+
+    pub(crate) fn from_numeric_literal(literal: &Node<NumericLiteral>, exec_state: &mut ExecState) -> Self {
+        let meta = vec![literal.metadata()];
+        let ty = NumericType::from_parsed(literal.suffix, &exec_state.mod_local.settings);
+        KclValue::Number {
+            value: literal.value,
+            meta,
+            ty,
         }
     }
 

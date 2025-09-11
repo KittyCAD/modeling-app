@@ -3,10 +3,10 @@ import ms from 'ms'
 import { SafeRenderer } from '@src/lib/markdown'
 import { Marked, escape, unescape } from '@ts-stack/markdown'
 
+import type { MlCopilotServerMessage } from '@kittycad/lib'
+import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { useEffect, useState, useRef, type ReactNode } from 'react'
-import type { Models } from '@kittycad/lib'
-import type { PlanStep_type } from '@kittycad/lib/dist/types/src/models'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 export const Generic = (props: {
   content: string
@@ -140,7 +140,7 @@ export const FeatureTreeOutline = (props: { content: string }) => {
   )
 }
 
-export const DesignPlan = (props: { steps: PlanStep_type[] }) => {
+export const DesignPlan = (props: { steps: PlanStep[] }) => {
   return (
     <ThoughtContainer
       heading={
@@ -153,7 +153,7 @@ export const DesignPlan = (props: { steps: PlanStep_type[] }) => {
     >
       <ThoughtContent>
         <ul>
-          {props.steps.map((step: PlanStep_type) => (
+          {props.steps.map((step: PlanStep) => (
             <li>
               {step.filepath_to_edit}: {step.edit_instructions}
             </li>
@@ -302,7 +302,7 @@ interface Range {
 }
 
 const fromDataToComponent = (
-  thought: Models['MlCopilotServerMessage_type'],
+  thought: MlCopilotServerMessage,
   options: { key?: string | number }
 ) => {
   if ('end_of_stream' in thought) {
@@ -404,7 +404,7 @@ const fromDataToComponent = (
 }
 
 export const Thinking = (props: {
-  thoughts?: Models['MlCopilotServerMessage_type'][]
+  thoughts?: MlCopilotServerMessage[]
   onlyShowImmediateThought: boolean
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)

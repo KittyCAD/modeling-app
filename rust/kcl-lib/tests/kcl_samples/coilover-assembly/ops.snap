@@ -2533,6 +2533,7 @@ description: Operations executed coilover-assembly.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

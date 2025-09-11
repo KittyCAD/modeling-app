@@ -1,38 +1,38 @@
-import type { FileEntry, Project } from '@src/lib/project'
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { FILE_EXT } from '@src/lib/constants'
 import { FileExplorer, StatusDot } from '@src/components/Explorer/FileExplorer'
 import {
-  constructPath,
-  flattenProject,
-  NOTHING_IS_SELECTED,
   CONTAINER_IS_SELECTED,
-  STARTING_INDEX_TO_SELECT,
   FILE_PLACEHOLDER_NAME,
   FOLDER_PLACEHOLDER_NAME,
+  NOTHING_IS_SELECTED,
+  STARTING_INDEX_TO_SELECT,
+  constructPath,
   copyPasteSourceAndTarget,
+  flattenProject,
 } from '@src/components/Explorer/utils'
 import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
-import { useState, useRef, useEffect } from 'react'
-import { systemIOActor, useSettings } from '@src/lib/singletons'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { useKclContext } from '@src/lang/KclProvider'
+import { kclErrorsByFilename } from '@src/lang/errors'
+import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import {
-  enforceFileEXT,
   desktopSafePathJoin,
   desktopSafePathSplit,
+  enforceFileEXT,
   getEXTWithPeriod,
   getParentAbsolutePath,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import { kclErrorsByFilename } from '@src/lang/errors'
-import { useKclContext } from '@src/lang/KclProvider'
+import type { FileEntry, Project } from '@src/lib/project'
+import { systemIOActor, useSettings } from '@src/lib/singletons'
 import type { MaybePressOrBlur } from '@src/lib/types'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const isFileExplorerEntryOpened = (

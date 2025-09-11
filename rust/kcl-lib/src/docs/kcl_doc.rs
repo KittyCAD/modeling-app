@@ -85,13 +85,29 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
     }
     result.description = description;
 
-    for n in &parsed.body {
+    'items: for n in &parsed.body {
         if n.visibility() != ItemVisibility::Export {
             continue;
         }
         match n {
             crate::parsing::ast::types::BodyItem::ImportStatement(import) => match &import.path {
                 crate::parsing::ast::types::ImportPath::Std { path } => {
+                    // Just hide modules where the import is marked as experimental.
+                    for attr in &import.outer_attrs {
+                        if let Annotation {
+                            name: None,
+                            properties: Some(props),
+                            ..
+                        } = &attr.inner
+                        {
+                            for p in props {
+                                if p.key.name == annotations::EXPERIMENTAL {
+                                    continue 'items;
+                                }
+                            }
+                        }
+                    }
+
                     let m = match &import.selector {
                         ImportSelector::Glob(..) => Some(visit_module(&path[1], "", names.clone())?),
                         ImportSelector::None { .. } => {

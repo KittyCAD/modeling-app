@@ -741,6 +741,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -23,6 +23,12 @@
 @(impl = primitive)
 export type any
 
+/// The type of the none (aka null) value.
+///
+/// Note that this is not the empty type, i.e., a type which represents no values.
+@(impl = primitive, experimental = true)
+export type none
+
 /// A number.
 ///
 /// May be signed or unsigned, an integer or decimal value.

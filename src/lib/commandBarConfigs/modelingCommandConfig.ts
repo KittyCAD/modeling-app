@@ -1,5 +1,4 @@
-import type { Models } from '@kittycad/lib'
-import type { EntityType_type } from '@kittycad/lib/dist/types/src/models'
+import type { EntityType, OutputFormat3d } from '@kittycad/lib'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
@@ -35,7 +34,7 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 
-type OutputFormat = Models['OutputFormat3d_type']
+type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
 type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
 type StorageUnion = ExtractStorageTypes<OutputFormat>
@@ -64,7 +63,7 @@ const nodeToEditProps = {
 // For all transforms and boolean commands
 const objectsTypesAndFilters: {
   selectionTypes: Artifact['type'][]
-  selectionFilter: EntityType_type[]
+  selectionFilter: EntityType[]
 } = {
   selectionTypes: ['path', 'sweep', 'compositeSolid'],
   selectionFilter: ['object'],

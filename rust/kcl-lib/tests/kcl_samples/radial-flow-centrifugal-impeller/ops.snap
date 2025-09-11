@@ -1243,6 +1243,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { ActionButton } from '@src/components/ActionButton'
 import { SafeRenderer } from '@src/lib/markdown'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { getReleaseUrl, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { IS_STAGING_OR_DEBUG, getReleaseUrl } from '@src/routes/utils'
 
 export function ToastUpdate({
   version,

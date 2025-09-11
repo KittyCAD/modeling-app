@@ -7,12 +7,12 @@ import { ActionButton } from '@src/components/ActionButton'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import { ProjectCardRenameForm } from '@src/components/ProjectCard/ProjectCardRenameForm'
 import Tooltip from '@src/components/Tooltip'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 
 function ProjectCard({
   project,

@@ -17,8 +17,8 @@ import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import type { IndexLoaderData } from '@src/lib/types'
 import { commandBarActor } from '@src/lib/singletons'
+import type { IndexLoaderData } from '@src/lib/types'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean

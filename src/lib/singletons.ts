@@ -15,29 +15,29 @@ import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
 import { createActor, setup, spawnChild } from 'xstate'
 
+import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
+import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
 import { createSettings } from '@src/lib/settings/initialSettings'
+import type { AppMachineContext } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
 import {
   engineStreamContextCreate,
   engineStreamMachine,
 } from '@src/machines/engineStreamMachine'
+import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
   mlEphantDefaultContext,
   mlEphantManagerMachine,
 } from '@src/machines/mlEphantManagerMachine'
-import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
-import type { AppMachineContext } from '@src/lib/types'
-import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
-import { commandBarMachine } from '@src/machines/commandBarMachine'
-import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -67,9 +67,9 @@ export const kclManager = new KclManager(engineCommandManager, {
   sceneInfra,
 })
 
+import { initPromise } from '@src/lang/wasmUtils'
 // Initialize KCL version
 import { setKclVersion } from '@src/lib/kclVersion'
-import { initPromise } from '@src/lang/wasmUtils'
 initPromise
   .then(() => {
     setKclVersion(kclManager.kclVersion)

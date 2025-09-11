@@ -972,6 +972,7 @@ pub enum Expr {
     LabelledExpression(BoxNode<LabelledExpression>),
     AscribedExpression(BoxNode<AscribedExpression>),
     SketchBlock(BoxNode<SketchBlock>),
+    SketchVar(BoxNode<SketchVar>),
     None(Node<KclNone>),
 }
 
@@ -1022,6 +1023,7 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::AscribedExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::SketchBlock(expr) => Some(&expr.non_code_meta),
+            Expr::SketchVar(_) => None,
             Expr::None(_none) => None,
         }
     }
@@ -1050,6 +1052,7 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::AscribedExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::SketchBlock(e) => e.replace_value(source_range, new_value),
+            Expr::SketchVar(_) => {}
             Expr::None(_) => {}
         }
     }
@@ -1073,6 +1076,7 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.start,
             Expr::AscribedExpression(expr) => expr.start,
             Expr::SketchBlock(sketch_block) => sketch_block.start,
+            Expr::SketchVar(expr) => expr.start,
             Expr::None(none) => none.start,
         }
     }
@@ -1096,6 +1100,7 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.end,
             Expr::AscribedExpression(expr) => expr.end,
             Expr::SketchBlock(expr) => expr.end,
+            Expr::SketchVar(expr) => expr.end,
             Expr::None(none) => none.end,
         }
     }
@@ -1125,6 +1130,7 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
             Expr::AscribedExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
             Expr::SketchBlock(expr) => expr.rename_identifiers(old_name, new_name),
+            Expr::SketchVar(_) => {}
             Expr::None(_) => {}
         }
     }
@@ -1154,6 +1160,7 @@ impl Expr {
             Expr::SketchBlock(expr) => ConstraintLevel::Ignore {
                 source_ranges: vec![expr.into()],
             },
+            Expr::SketchVar(expr) => expr.get_constraint_level(),
             Expr::None(none) => none.get_constraint_level(),
         }
     }
@@ -1222,6 +1229,7 @@ impl From<&BinaryPart> for Expr {
             BinaryPart::ObjectExpression(e) => Expr::ObjectExpression(e.clone()),
             BinaryPart::IfExpression(e) => Expr::IfExpression(e.clone()),
             BinaryPart::AscribedExpression(e) => Expr::AscribedExpression(e.clone()),
+            BinaryPart::SketchVar(e) => Expr::SketchVar(e.clone()),
         }
     }
 }
@@ -1379,6 +1387,27 @@ impl Block {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
+pub struct SketchVar {
+    pub initial: Option<BoxNode<NumericLiteral>>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl Node<SketchVar> {
+    /// Get the constraint level for this variable.
+    /// Variables are always not constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::None {
+            source_ranges: vec![self.into()],
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub enum BinaryPart {
     Literal(BoxNode<Literal>),
     Name(BoxNode<Name>),
@@ -1391,6 +1420,7 @@ pub enum BinaryPart {
     ObjectExpression(BoxNode<ObjectExpression>),
     IfExpression(BoxNode<IfExpression>),
     AscribedExpression(BoxNode<AscribedExpression>),
+    SketchVar(BoxNode<SketchVar>),
 }
 
 impl From<BinaryPart> for SourceRange {
@@ -1420,6 +1450,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.get_constraint_level(),
             BinaryPart::IfExpression(e) => e.get_constraint_level(),
             BinaryPart::AscribedExpression(e) => e.expr.get_constraint_level(),
+            BinaryPart::SketchVar(e) => e.get_constraint_level(),
         }
     }
 
@@ -1436,6 +1467,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.replace_value(source_range, new_value),
             BinaryPart::IfExpression(e) => e.replace_value(source_range, new_value),
             BinaryPart::AscribedExpression(e) => e.expr.replace_value(source_range, new_value),
+            BinaryPart::SketchVar(_) => {}
         }
     }
 
@@ -1452,6 +1484,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.start,
             BinaryPart::IfExpression(e) => e.start,
             BinaryPart::AscribedExpression(e) => e.start,
+            BinaryPart::SketchVar(e) => e.start,
         }
     }
 
@@ -1468,6 +1501,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.end,
             BinaryPart::IfExpression(e) => e.end,
             BinaryPart::AscribedExpression(e) => e.end,
+            BinaryPart::SketchVar(e) => e.end,
         }
     }
 
@@ -1485,6 +1519,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.rename_identifiers(old_name, new_name),
             BinaryPart::IfExpression(if_expression) => if_expression.rename_identifiers(old_name, new_name),
             BinaryPart::AscribedExpression(e) => e.expr.rename_identifiers(old_name, new_name),
+            BinaryPart::SketchVar(_) => {}
         }
     }
 }
@@ -2362,6 +2397,29 @@ impl VariableDeclarator {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
+pub struct NumericLiteral {
+    pub value: f64,
+    pub suffix: NumericSuffix,
+    pub raw: String,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl Node<NumericLiteral> {
+    /// Get the constraint level for this literal.
+    /// Literals are always not constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::None {
+            source_ranges: vec![self.into()],
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct Literal {
     pub value: LiteralValue,
     pub raw: String,
@@ -3216,6 +3274,8 @@ impl PipeExpression {
 pub enum PrimitiveType {
     /// The super type of all other types.
     Any,
+    /// `none`, the type of none values.
+    None,
     /// A string type.
     String,
     /// A number type.
@@ -3237,6 +3297,7 @@ impl PrimitiveType {
     pub fn primitive_from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
         match (s, suffix) {
             ("any", None) => Some(PrimitiveType::Any),
+            ("none", None) => Some(PrimitiveType::None),
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
             ("TagDecl", None) => Some(PrimitiveType::TagDecl),
@@ -3250,6 +3311,7 @@ impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
             PrimitiveType::Any => "values".to_owned(),
+            PrimitiveType::None => "none".to_owned(),
             PrimitiveType::Number(_) => "numbers".to_owned(),
             PrimitiveType::String => "strings".to_owned(),
             PrimitiveType::Boolean => "bools".to_owned(),
@@ -3265,6 +3327,7 @@ impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             PrimitiveType::Any => write!(f, "any"),
+            PrimitiveType::None => write!(f, "none"),
             PrimitiveType::Number(suffix) => {
                 write!(f, "number")?;
                 if *suffix != NumericSuffix::None {

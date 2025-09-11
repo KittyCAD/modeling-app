@@ -1,8 +1,8 @@
-import { v4, NIL as uuidNIL } from 'uuid'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import { default_app_settings } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { NIL as uuidNIL, v4 } from 'uuid'
 
 import {
   defaultAppSettings,
@@ -194,15 +194,14 @@ function deepPartialNamedViewsToNamedViews(
 export function projectConfigurationToSettingsPayload(
   configuration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<SaveSettingsPayload> {
+  const color = configuration?.settings?.app?.appearance?.color
   return {
     meta: {
       id: configuration?.settings?.meta?.id,
     },
     app: {
       // do not read in `theme`, because it is blocked on the project level
-      themeColor: configuration?.settings?.app?.appearance?.color
-        ? configuration?.settings?.app?.appearance?.color.toString()
-        : undefined,
+      themeColor: color !== undefined ? color.toString() : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
       allowOrbitInSketchMode:
@@ -210,10 +209,11 @@ export function projectConfigurationToSettingsPayload(
       namedViews: deepPartialNamedViewsToNamedViews(
         configuration?.settings?.app?.named_views
       ),
-      showDebugPanel: configuration?.settings?.app?.show_debug_panel,
+      showDebugPanel:
+        configuration?.settings?.app?.show_debug_panel ?? undefined,
     },
     modeling: {
-      defaultUnit: configuration?.settings?.modeling?.base_unit,
+      defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       fixedSizeGrid: toUndefinedIfNull(
@@ -233,11 +233,14 @@ export function projectConfigurationToSettingsPayload(
       ),
     },
     textEditor: {
-      textWrapping: configuration?.settings?.text_editor?.text_wrapping,
-      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor,
+      textWrapping:
+        configuration?.settings?.text_editor?.text_wrapping ?? undefined,
+      blinkingCursor:
+        configuration?.settings?.text_editor?.blinking_cursor ?? undefined,
     },
     commandBar: {
-      includeSettings: configuration?.settings?.command_bar?.include_settings,
+      includeSettings:
+        configuration?.settings?.command_bar?.include_settings ?? undefined,
     },
   }
 }

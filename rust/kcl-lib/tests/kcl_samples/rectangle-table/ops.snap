@@ -847,6 +847,7 @@ description: Operations executed rectangle-table.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

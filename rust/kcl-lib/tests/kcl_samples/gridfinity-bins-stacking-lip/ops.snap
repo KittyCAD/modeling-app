@@ -4737,6 +4737,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

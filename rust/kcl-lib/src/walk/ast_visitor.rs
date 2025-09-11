@@ -144,12 +144,20 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
                 children.push((&n.body).into());
                 children
             }
+            Node::SketchVar(n) => {
+                if let Some(initial) = &n.initial {
+                    vec![initial.as_ref().into()]
+                } else {
+                    vec![]
+                }
+            }
             Node::Block(n) => n.items.iter().map(|node| node.into()).collect(),
             Node::PipeSubstitution(_)
             | Node::TagDeclarator(_)
             | Node::Identifier(_)
             | Node::ImportStatement(_)
             | Node::KclNone(_)
+            | Node::NumericLiteral(_)
             | Node::Literal(_) => vec![],
         }
     }
