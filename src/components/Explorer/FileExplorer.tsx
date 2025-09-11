@@ -7,6 +7,7 @@ import {
   type FileExplorerRowContextMenuProps,
   type FileExplorerDropData,
   isRowFake,
+  shouldDroppedEntryBeMoved,
 } from '@src/components/Explorer/utils'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
@@ -244,6 +245,7 @@ export const FileExplorerRowElement = ({
   isCopying: boolean
 }) => {
   const dragPreviewId = `drag-preview-${row.name}`
+  // Adds a preview element that is a pill-shaped element with the row's name
   const createDragPreviewElem = useCallback(() => {
     if (!window) {
       return
@@ -265,6 +267,8 @@ export const FileExplorerRowElement = ({
     document.body.appendChild(elem)
     return elem
   }, [row.name, dragPreviewId])
+
+  // Removes the drag preview element from the DOM
   const removeDragPreviewElem = useCallback(() => {
     if (!window) {
       return
@@ -274,10 +278,26 @@ export const FileExplorerRowElement = ({
       document.body.removeChild(dragPreviewElem)
     }
   }, [dragPreviewId])
+
+  const delayRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const delayedRowOpen = useCallback(
+    (timeout: number) => {
+      const handler = () => row.onOpen()
+      delayRef.current = setTimeout(handler, timeout)
+    },
+    [row]
+  )
+
   // Clean up any missed drag preview elements
   useEffect(() => {
-    return removeDragPreviewElem()
+    return () => {
+      removeDragPreviewElem()
+      if (delayRef.current) {
+        clearTimeout(delayRef.current)
+      }
+    }
   }, [removeDragPreviewElem])
+
   const rowElementRef = useRef(null)
   const isSelected =
     row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
@@ -314,19 +334,17 @@ export const FileExplorerRowElement = ({
       onDragOver={(event) => {
         // TODO: the onDrag work is for dragging the DOM element to move folders and files
         if (!row.isOpen && row.isFolder) {
-          // on drag over, open!
-          row.onOpen()
+          delayedRowOpen(400)
         }
         event.preventDefault()
-        event.dataTransfer.dropEffect = 'copy'
+        event.dataTransfer.dropEffect = 'move'
         event.currentTarget.classList.add('bg-primary/10')
       }}
       onDragLeave={(event) => {
         event.currentTarget.classList.remove('bg-primary/10')
       }}
       onDragStart={(event) => {
-        console.log(event.currentTarget.innerText, row.name, 'onDragStart')
-        event.dataTransfer.effectAllowed = 'copy'
+        event.dataTransfer.effectAllowed = 'move'
         event.dataTransfer.setData(
           'json',
           JSON.stringify({
@@ -354,21 +372,8 @@ export const FileExplorerRowElement = ({
           return
         }
 
-        console.log('Valid drop data!', droppedData)
-        console.log('Got dropped on this!', row)
-
-        const targetIsFileInDifferentFolder =
-          !row.isFolder && row.parentPath !== droppedData.parentPath
-        const targetIsDroppedEntryParent = row.path.endsWith(
-          droppedData.parentPath
-        )
-        const shouldDroppedEntryBeMoved =
-          (!targetIsDroppedEntryParent && row.isFolder) ||
-          targetIsFileInDifferentFolder
-        console.log('Should we move it?', shouldDroppedEntryBeMoved)
-
         // Now move the thing!
-        if (shouldDroppedEntryBeMoved) {
+        if (shouldDroppedEntryBeMoved(droppedData, row)) {
           row.onDrop({ src: droppedData })
         }
 

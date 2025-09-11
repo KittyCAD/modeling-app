@@ -380,6 +380,27 @@ export const copyPasteSourceAndTarget = (
   }
 }
 
+/**
+ * When dropping one file explorer item onto another, should we fire events?
+ * - not if the dragged item is an ancestor of the target
+ * - not if it would result in no movement: the target is a sibling file or the parent directory
+ */
+export function shouldDroppedEntryBeMoved(
+  src: FileExplorerDropData,
+  target: FileExplorerRow
+) {
+  const targetIsFileInDifferentFolder =
+    !target.isFolder && target.parentPath !== src.parentPath
+  const targetIsDroppedEntryParent = target.path.endsWith(src.parentPath)
+  const droppedEntryIsTargetParent = target.path.includes(src.path)
+  const shouldDroppedEntryBeMoved =
+    !droppedEntryIsTargetParent &&
+    ((!targetIsDroppedEntryParent && target.isFolder) ||
+      targetIsFileInDifferentFolder)
+
+  return shouldDroppedEntryBeMoved
+}
+
 // Used for focused which is different from the selection when you mouse click.
 export const NOTHING_IS_SELECTED: number = -2
 export const CONTAINER_IS_SELECTED: number = -1

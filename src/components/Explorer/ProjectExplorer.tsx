@@ -378,6 +378,11 @@ export const ProjectExplorer = ({
             copyToClipBoard.current = null
             setIsCopying(false)
           },
+          /**
+           * For now this mimics {onPaste} and does not destroy the previous location.
+           * Once we have absolute confidence in the system and rolling back, we will make this
+           * a true move behavior.
+           */
           onDrop: ({ src }) => {
             if (src) {
               const absoluteParentPath = getParentAbsolutePath(row.path)
@@ -401,9 +406,7 @@ export const ProjectExplorer = ({
                 },
                 '-copy-'
               )
-              console.log('FRANK', { row, parent, src, result })
               if (result && result.src && result.target) {
-                console.log('result', result)
                 systemIOActor.send({
                   type: SystemIOMachineEvents.copyRecursive,
                   data: {
