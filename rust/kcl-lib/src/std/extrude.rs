@@ -279,8 +279,7 @@ async fn inner_extrude(
             }
             (_, _, _, Some(_), Some(_)) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "You cannot give both `length` and `to` params, you have to choose one or the other"
-                        .to_owned(),
+                    "You cannot give both `length` and `to` params, you have to choose one or the other".to_owned(),
                     vec![args.source_range],
                 )));
             }
