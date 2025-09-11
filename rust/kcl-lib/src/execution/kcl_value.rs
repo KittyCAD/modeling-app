@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
 use crate::{
@@ -11,7 +12,7 @@ use crate::{
         EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, Metadata,
         Plane, Sketch, Solid, TagIdentifier,
         annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
-        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
+        types::{NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, NumericLiteral, TagDeclarator,
@@ -438,7 +439,7 @@ impl KclValue {
                 let ty = NumericType::from_parsed(suffix, &exec_state.mod_local.settings);
                 if let NumericType::Default { len, .. } = &ty
                     && !exec_state.mod_local.explicit_length_units
-                    && *len != UnitLen::Mm
+                    && *len != UnitLength::Millimeters
                 {
                     exec_state.warn(
                         CompilationError::err(
@@ -803,7 +804,7 @@ mod tests {
     fn test_human_friendly_type() {
         let len = KclValue::Number {
             value: 1.0,
-            ty: NumericType::Known(UnitType::Length(UnitLen::Unknown)),
+            ty: NumericType::Known(UnitType::GenericLength),
             meta: vec![],
         };
         assert_eq!(len.human_friendly_type(), "a number (Length)".to_string());
@@ -817,7 +818,7 @@ mod tests {
 
         let mm = KclValue::Number {
             value: 1.0,
-            ty: NumericType::Known(UnitType::Length(UnitLen::Mm)),
+            ty: NumericType::Known(UnitType::Length(UnitLength::Millimeters)),
             meta: vec![],
         };
         assert_eq!(mm.human_friendly_type(), "a number (mm)".to_string());
@@ -851,7 +852,7 @@ mod tests {
 
         let inches = KclValue::Number {
             value: 1.0,
-            ty: NumericType::Known(UnitType::Length(UnitLen::Inches)),
+            ty: NumericType::Known(UnitType::Length(UnitLength::Inches)),
             meta: vec![],
         };
         let array4 = KclValue::HomArray {

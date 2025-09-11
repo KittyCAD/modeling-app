@@ -12,12 +12,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 1.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 52.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.2,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -196,12 +184,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -381,9 +365,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": -750.0,
             "ty": {
+              "mm": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Mm"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -465,12 +449,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "M"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "m",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -478,12 +458,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "M"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "m",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -496,12 +472,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "M"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "m",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -509,12 +481,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.65,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "M"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "m",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -562,9 +530,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -578,12 +546,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -591,12 +555,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -604,12 +564,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -625,12 +581,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -638,12 +590,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -651,12 +599,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -894,12 +838,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "M"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "m",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -907,12 +847,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "M"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "m",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -925,12 +861,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "M"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "m",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -938,12 +870,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.65,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "M"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "m",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -991,9 +919,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -1007,12 +935,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1020,12 +944,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1033,12 +953,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1054,12 +970,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1067,12 +979,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1080,12 +988,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1148,12 +1052,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1270,12 +1170,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": -30.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1286,12 +1182,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 1.4,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1302,12 +1194,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 17.333333333333332,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1318,12 +1206,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 0.75,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1354,12 +1238,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 2.15,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1409,12 +1289,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 17.333333333333332,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1508,12 +1384,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": -0.5745333323392336,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1530,12 +1402,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.48209070726490444,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1554,9 +1422,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": -3.839724354387525,
             "ty": {
+              "radians": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Radians"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -1567,12 +1435,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 0.75,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1634,12 +1498,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": -30.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1686,12 +1546,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.95,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1732,12 +1588,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 2.35,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1787,12 +1639,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 17.333333333333332,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1886,12 +1734,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": -0.7277422209630292,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1908,12 +1752,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.6106482292022123,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1932,9 +1772,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": -3.839724354387525,
             "ty": {
+              "radians": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Radians"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -1945,12 +1785,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 0.95,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2068,12 +1904,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": -30.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2129,12 +1961,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": -20.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2145,12 +1973,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 0.4,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2161,12 +1985,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 51.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2177,12 +1997,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 0.75,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2213,12 +2029,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 1.15,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2268,12 +2080,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 51.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2367,12 +2175,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": -0.5745333323392336,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2389,12 +2193,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.48209070726490444,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2413,9 +2213,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": -3.839724354387525,
             "ty": {
+              "radians": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Radians"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -2426,12 +2226,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 0.75,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2493,12 +2289,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": -20.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2545,12 +2337,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.95,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2591,12 +2379,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 1.3499999999999999,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2646,12 +2430,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 51.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2745,12 +2525,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": -0.7277422209630292,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2767,12 +2543,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.6106482292022123,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2791,9 +2563,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": -3.839724354387525,
             "ty": {
+              "radians": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Radians"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -2804,12 +2576,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 0.95,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2927,12 +2695,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": -20.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3073,12 +2837,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": -20.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3089,12 +2849,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 0.4,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3105,12 +2861,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 51.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3121,12 +2873,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 0.75,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3157,12 +2905,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 1.15,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3203,12 +2947,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.95,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3249,12 +2989,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 1.3499999999999999,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3304,12 +3040,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 51.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3403,12 +3135,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": -0.7277422209630292,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3425,12 +3153,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.6106482292022123,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3449,9 +3173,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": -3.839724354387525,
             "ty": {
+              "radians": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Radians"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -3462,12 +3186,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 0.95,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3529,12 +3249,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": -20.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3590,12 +3306,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": -20.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3606,12 +3318,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 0.1,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3622,12 +3330,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 52.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3638,12 +3342,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
               "value": 0.075,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3674,12 +3374,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.175,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3720,12 +3416,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.275,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3766,12 +3458,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.375,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3821,12 +3509,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 52.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3920,12 +3604,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": -0.210662221857719,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3942,12 +3622,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.17676659266379832,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3966,9 +3642,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": -3.839724354387525,
             "ty": {
+              "radians": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Radians"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -3979,12 +3655,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 0.275,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4046,12 +3718,8 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": -20.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
