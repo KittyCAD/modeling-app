@@ -1,11 +1,10 @@
 import { executeAstMock } from '@src/lang/langHelpers'
 import {
   type SourceRange,
+  type KclValue,
   formatNumberValue,
   parse,
   resultIsOk,
-  type SourceRange,
-  type KclValue,
 } from '@src/lang/wasm'
 import type { KclExpression } from '@src/lib/commandTypes'
 import { rustContext } from '@src/lib/singletons'
