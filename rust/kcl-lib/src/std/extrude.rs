@@ -15,7 +15,6 @@ use kcmc::{
 use kittycad_modeling_cmds::{
     self as kcmc,
     shared::{Angle, ExtrudeMethod, Point2d},
-    units::UnitLength,
 };
 use uuid::Uuid;
 
