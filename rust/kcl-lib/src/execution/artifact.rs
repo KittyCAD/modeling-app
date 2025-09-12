@@ -10,7 +10,10 @@ use serde::{Serialize, ser::SerializeSeq};
 use uuid::Uuid;
 
 use crate::{
-    errors::KclErrorDetails, execution::{id_generator::generate_engine_id, ArtifactId}, parsing::ast::types::{Node, Program}, KclError, NodePath, SourceRange
+    KclError, NodePath, SourceRange,
+    errors::KclErrorDetails,
+    execution::{ArtifactId, id_generator::generate_engine_id},
+    parsing::ast::types::{Node, Program},
 };
 
 #[cfg(test)]
@@ -1045,16 +1048,16 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
-        ModelingCmd::Solid3dGetExtrusionFaceInfo(kcmc::Solid3dGetExtrusionFaceInfo{object_id, ..}) => {
+        ModelingCmd::Solid3dGetExtrusionFaceInfo(kcmc::Solid3dGetExtrusionFaceInfo { object_id, .. }) => {
             let Some(OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info)) = response else {
                 return Ok(Vec::new());
             };
             let mut return_arr = Vec::new();
             let mut last_path = None;
-            
+
             let base = *object_id;
             let mut pi: u32 = 0;
-            
+
             for face in &face_info.faces {
                 if face.cap != ExtrusionFaceCapType::None {
                     continue;
@@ -1168,10 +1171,13 @@ fn artifacts_to_update(
                         // TODO: If we didn't find it, it's probably a bug.
                         .unwrap_or_default();
                     return_arr.push(Artifact::Cap(Cap {
-                        id: ArtifactId::new(generate_engine_id(base, match sub_type {
-                            CapSubType::Start => "face_bottom",
-                            CapSubType::End => "face_top",
-                        })),
+                        id: ArtifactId::new(generate_engine_id(
+                            base,
+                            match sub_type {
+                                CapSubType::Start => "face_bottom",
+                                CapSubType::End => "face_top",
+                            },
+                        )),
                         sub_type,
                         edge_cut_edge_ids: Vec::new(),
                         sweep_id: path_sweep_id,
