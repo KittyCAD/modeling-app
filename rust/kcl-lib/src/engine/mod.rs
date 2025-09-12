@@ -29,7 +29,7 @@ use kcmc::{
         WebSocketResponse,
     },
 };
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{self as kcmc, units::UnitLength};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
@@ -39,7 +39,7 @@ use web_time::Instant;
 use crate::{
     SourceRange,
     errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator, PlaneInfo, Point3d, types::UnitLen},
+    execution::{DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
 };
 
 lazy_static::lazy_static! {
@@ -51,55 +51,55 @@ lazy_static::lazy_static! {
             (
                 PlaneName::Xy,
                 PlaneInfo {
-                    origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+                    origin: Point3d::new(0.0, 0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(1.0, 0.0, 0.0, None),
+                    y_axis: Point3d::new(0.0, 1.0, 0.0, None),
+                    z_axis: Point3d::new(0.0, 0.0, 1.0, None),
                 },
             ),
             (
                 PlaneName::NegXy,
                 PlaneInfo {
-                    origin: Point3d::new( 0.0, 0.0,  0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(-1.0, 0.0,  0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new( 0.0, 1.0,  0.0, UnitLen::Unknown),
-                    z_axis: Point3d::new( 0.0, 0.0, -1.0, UnitLen::Unknown),
+                    origin: Point3d::new( 0.0, 0.0,  0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(-1.0, 0.0,  0.0, None),
+                    y_axis: Point3d::new( 0.0, 1.0,  0.0, None),
+                    z_axis: Point3d::new( 0.0, 0.0, -1.0, None),
                 },
             ),
             (
                 PlaneName::Xz,
                 PlaneInfo {
-                    origin: Point3d::new(0.0,  0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(1.0,  0.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new(0.0,  0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new(0.0,  0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(1.0,  0.0, 0.0, None),
+                    y_axis: Point3d::new(0.0,  0.0, 1.0, None),
+                    z_axis: Point3d::new(0.0, -1.0, 0.0, None),
                 },
             ),
             (
                 PlaneName::NegXz,
                 PlaneInfo {
-                    origin: Point3d::new( 0.0, 0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new( 0.0, 0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new( 0.0, 1.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new( 0.0, 0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(-1.0, 0.0, 0.0, None),
+                    y_axis: Point3d::new( 0.0, 0.0, 1.0, None),
+                    z_axis: Point3d::new( 0.0, 1.0, 0.0, None),
                 },
             ),
             (
                 PlaneName::Yz,
                 PlaneInfo {
-                    origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new(0.0, 0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(0.0, 1.0, 0.0, None),
+                    y_axis: Point3d::new(0.0, 0.0, 1.0, None),
+                    z_axis: Point3d::new(1.0, 0.0, 0.0, None),
                 },
             ),
             (
                 PlaneName::NegYz,
                 PlaneInfo {
-                    origin: Point3d::new( 0.0,  0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new( 0.0, -1.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new( 0.0,  0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(-1.0,  0.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new( 0.0,  0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new( 0.0, -1.0, 0.0, None),
+                    y_axis: Point3d::new( 0.0,  0.0, 1.0, None),
+                    z_axis: Point3d::new(-1.0,  0.0, 0.0, None),
                 },
             ),
         ]);

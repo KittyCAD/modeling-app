@@ -252,3 +252,18 @@ export const MAX_PROJECT_NAME_LENGTH = 240
 export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
 
 export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
+
+/**
+ * Used by the modeling sidebar to validate persisted pane IDs.
+ */
+export const VALID_PANE_IDS = [
+  'code',
+  'debug',
+  'export',
+  'files',
+  'feature-tree',
+  'logs',
+  'lspMessages',
+  'variables',
+  'text-to-cad',
+] as const

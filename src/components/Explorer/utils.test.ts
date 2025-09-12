@@ -1,5 +1,6 @@
 import {
   addPlaceHoldersForNewFileAndFolder,
+  copyPasteSourceAndTarget,
   getUniqueCopyPath,
   isRowFake,
 } from '@src/components/Explorer/utils'
@@ -398,6 +399,91 @@ describe('Explorer utils.ts', () => {
           false
         )
         expect(actual).toBe(expected)
+      })
+      it('should copy file into folder', () => {
+        const expected = {
+          src: '/somefile.kcl',
+          target: '/folder/somefile.kcl',
+        }
+
+        // Folder structure:
+        // |-/folder
+        // |   |-a.kcl
+        // |  |-b.wtf      <-- target
+        // |-somefile.kcl  <-- src
+        const actual = copyPasteSourceAndTarget(
+          ['/folder/a.kcl', '/folder/b.wtf'],
+          ['/somefile.kcl'],
+          { path: '/somefile.kcl', name: 'somefile.kcl', children: null },
+          { path: '/folder/b.wtf', name: '/folder/b.wtf', children: null },
+          '-copy-'
+        )
+
+        expect(actual).toStrictEqual(expected)
+      })
+      it('should copy folder onto itself and make sibling in parent', () => {
+        const expected = {
+          src: '/root/folder',
+          target: '/root/folder-copy-1',
+        }
+
+        // Folder structure:
+        // |-/root
+        // |  |-folder          <-- src & target (same folder)
+        // |  |-folder-copy-1   (expected new sibling)
+        const actual = copyPasteSourceAndTarget(
+          ['/root/folder/a.kcl', '/root/folder/b.kcl'],
+          ['/root/folder', '/root/another'],
+          { path: '/root/folder', name: 'folder', children: [] },
+          { path: '/root/folder', name: 'folder', children: [] },
+          '-copy-'
+        )
+
+        expect(actual).toStrictEqual(expected)
+      })
+      it('should copy folder onto file and make sibling in target parent', () => {
+        const expected = {
+          src: '/a/srcFolder',
+          target: '/b/srcFolder-copy-1',
+        }
+
+        // Folder structure:
+        // |-/a
+        // |  |-srcFolder       <-- src
+        // |-/b
+        // |  |-file.txt        <-- target
+        // |  |-srcFolder       (collision to trigger -copy-1)
+        const actual = copyPasteSourceAndTarget(
+          ['/b/file.txt'],
+          ['/b/srcFolder', '/b/file.txt'],
+          { path: '/a/srcFolder', name: 'srcFolder', children: [] },
+          { path: '/b/file.txt', name: 'file.txt', children: null },
+          '-copy-'
+        )
+
+        expect(actual).toStrictEqual(expected)
+      })
+      it('should copy file onto file and make sibling in target parent', () => {
+        const expected = {
+          src: '/a/srcfile.kcl',
+          target: '/b/srcfile-copy-1.kcl',
+        }
+
+        // Folder structure:
+        // |-/a
+        // |  |-srcfile.kcl     <-- src
+        // |-/b
+        // |  |-target.wtf      <-- target
+        // |  |-srcfile.kcl     (collision to trigger -copy-1)
+        const actual = copyPasteSourceAndTarget(
+          ['/b/target.wtf'],
+          ['/b/srcfile.kcl', '/b/target.wtf'],
+          { path: '/a/srcfile.kcl', name: 'srcfile.kcl', children: null },
+          { path: '/b/target.wtf', name: 'target.wtf', children: null },
+          '-copy-'
+        )
+
+        expect(actual).toStrictEqual(expected)
       })
     })
     describe('Files with different extensions', () => {

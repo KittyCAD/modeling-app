@@ -1,0 +1,62 @@
+// Angle Gauge
+// Simple angle gauge function to generate a gauge given an angle
+
+// Set units in inches (in)
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+cutoutEdgeLength = 2
+cutoutWidth = 0.52
+cutoutAngle = 10 // degrees
+cutoutDepth = 1
+cutoutBaseDepth = 0.5
+totalWidth = 1.25
+blockEdgeLength = 0.5
+flip = 0
+
+fn gauge(cutoutAngle, N, startX, startY, deltaX, deltaY) {
+  gaugeSketch = startSketchOn(XY)
+    |> startProfile(at = [
+         blockEdgeLength + startX + deltaX * N,
+         startY + deltaY * N
+       ])
+    |> xLine(length = cutoutDepth + cutoutBaseDepth)
+    |> yLine(length = (totalWidth - cutoutWidth) / 2 - ((1 - flip) * cutoutDepth * sin(units::toRadians(cutoutAngle))))
+    |> angledLine(angle = 180 - ((1 - flip) * cutoutAngle), lengthX = cutoutDepth)
+    |> yLine(length = cutoutWidth)
+    |> angledLine(angle = flip * cutoutAngle, lengthX = cutoutDepth)
+    |> yLine(endAbsolute = totalWidth)
+    |> xLine(length = -1 * (cutoutDepth + cutoutBaseDepth))
+    |> close()
+    |> extrude(length = 0.05)
+  return gaugeSketch
+}
+
+startX = 0
+startY = 0
+xSpacing = 2
+angleSpacing = 5
+gauge(
+  cutoutAngle = 8,
+  N = 0,
+  startX = startX,
+  startY = startY,
+  deltaX = xSpacing,
+  deltaY = 0,
+)
+gauge(
+  cutoutAngle = 14,
+  N = 1,
+  startX = startX,
+  startY = startY,
+  deltaX = xSpacing,
+  deltaY = 0,
+)
+gauge(
+  cutoutAngle = 15,
+  N = 2,
+  startX = startX,
+  startY = startY,
+  deltaX = xSpacing,
+  deltaY = 0,
+)

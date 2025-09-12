@@ -12,12 +12,8 @@ description: Operations executed t-slot-rail.kcl
         "value": 0.01,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed t-slot-rail.kcl
         "value": 0.018,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed t-slot-rail.kcl
         "value": 0.0275,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed t-slot-rail.kcl
         "value": 0.262,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -150,12 +134,8 @@ description: Operations executed t-slot-rail.kcl
               "value": 1.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -165,9 +145,9 @@ description: Operations executed t-slot-rail.kcl
               "type": "Number",
               "value": 2.0,
               "ty": {
+                "ft": null,
                 "type": "Known",
-                "type": "Length",
-                "type": "Feet"
+                "type": "Length"
               }
             },
             "sourceRange": []
@@ -256,12 +236,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -269,12 +245,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -287,12 +259,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -300,12 +268,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -373,12 +337,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -386,12 +346,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -404,12 +360,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -417,12 +369,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.5,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -490,12 +438,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -503,12 +447,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -521,12 +461,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.5,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -534,12 +470,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -725,9 +657,9 @@ description: Operations executed t-slot-rail.kcl
             "type": "Number",
             "value": -2.0,
             "ty": {
+              "ft": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Feet"
+              "type": "Length"
             }
           },
           "sourceRange": []

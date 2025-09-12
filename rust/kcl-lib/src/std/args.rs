@@ -1,6 +1,7 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
+use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
@@ -12,7 +13,7 @@ use crate::{
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
         TagIdentifier,
         kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
+        types::{NumericType, PrimitiveType, RuntimeType, UnitType},
     },
     parsing::ast::types::TagNode,
     std::{
@@ -39,19 +40,17 @@ impl TyF64 {
     }
 
     pub fn to_mm(&self) -> f64 {
-        self.to_length_units(UnitLen::Mm)
+        self.to_length_units(UnitLength::Millimeters)
     }
 
-    pub fn to_length_units(&self, units: UnitLen) -> f64 {
+    pub fn to_length_units(&self, units: UnitLength) -> f64 {
         let len = match &self.ty {
             NumericType::Default { len, .. } => *len,
             NumericType::Known(UnitType::Length(len)) => *len,
             t => unreachable!("expected length, found {t:?}"),
         };
 
-        debug_assert_ne!(len, UnitLen::Unknown);
-
-        len.adjust_to(self.n, units).0
+        crate::execution::types::adjust_length(len, self.n, units).0
     }
 
     pub fn to_degrees(&self) -> f64 {
@@ -61,9 +60,7 @@ impl TyF64 {
             _ => unreachable!(),
         };
 
-        debug_assert_ne!(angle, UnitAngle::Unknown);
-
-        angle.adjust_to(self.n, UnitAngle::Degrees).0
+        crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Degrees).0
     }
 
     pub fn to_radians(&self) -> f64 {
@@ -73,9 +70,7 @@ impl TyF64 {
             _ => unreachable!(),
         };
 
-        debug_assert_ne!(angle, UnitAngle::Unknown);
-
-        angle.adjust_to(self.n, UnitAngle::Radians).0
+        crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Radians).0
     }
     pub fn count(n: f64) -> Self {
         Self {
@@ -639,7 +634,7 @@ impl<'a> FromKclValue<'a> for crate::execution::Point3d {
                 x: a[0],
                 y: a[1],
                 z: a[2],
-                units: ty.as_length().unwrap_or(UnitLen::Unknown),
+                units: ty.as_length(),
             });
         }
         // Case 2: Array of 3 numbers.
@@ -649,7 +644,7 @@ impl<'a> FromKclValue<'a> for crate::execution::Point3d {
             x: a[0],
             y: a[1],
             z: a[2],
-            units: ty.as_length().unwrap_or(UnitLen::Unknown),
+            units: ty.as_length(),
         })
     }
 }

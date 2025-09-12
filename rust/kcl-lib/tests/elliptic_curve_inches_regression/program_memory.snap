@@ -14,12 +14,8 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -27,12 +23,8 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -40,12 +32,8 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -58,12 +46,8 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -71,12 +55,8 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -84,12 +64,8 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -102,12 +78,8 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -115,12 +87,8 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -128,12 +96,8 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -150,34 +114,26 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": -1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -212,9 +168,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             60.855171
           ],
           "type": "Ellipse",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -231,9 +185,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             34.182681
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -250,9 +202,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             47.374937
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -269,9 +219,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             36.332651
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -288,9 +236,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             60.85517
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -307,9 +253,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             60.85517063645204
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -319,9 +263,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "type": "plane",
         "value": "Custom",
@@ -329,25 +271,19 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": -1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -359,9 +295,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
           90.65875528983305,
           60.85517063645204
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -370,9 +304,7 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   }
 }

@@ -32,12 +32,8 @@ description: Variables in memory after executing cpu-cooler.kcl
     "value": 15.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "fanHeight": {
@@ -45,12 +41,8 @@ description: Variables in memory after executing cpu-cooler.kcl
     "value": 25.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "fanSize": {
@@ -58,12 +50,8 @@ description: Variables in memory after executing cpu-cooler.kcl
     "value": 120.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "heatSinkDepth": {
@@ -71,12 +59,8 @@ description: Variables in memory after executing cpu-cooler.kcl
     "value": 55.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "mountingHoleSize": {
@@ -84,12 +68,8 @@ description: Variables in memory after executing cpu-cooler.kcl
     "value": 4.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "mountingHoleSpacing": {
@@ -97,12 +77,8 @@ description: Variables in memory after executing cpu-cooler.kcl
     "value": 105.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sheetThickness": {
@@ -110,12 +86,8 @@ description: Variables in memory after executing cpu-cooler.kcl
     "value": 2.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "translatePart": {

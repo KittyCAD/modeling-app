@@ -51,9 +51,7 @@ description: Variables in memory after executing sls.kcl
               81.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -70,9 +68,7 @@ description: Variables in memory after executing sls.kcl
               88.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -89,9 +85,7 @@ description: Variables in memory after executing sls.kcl
               88.3
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -108,9 +102,7 @@ description: Variables in memory after executing sls.kcl
               81.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -127,9 +119,7 @@ description: Variables in memory after executing sls.kcl
               81.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -139,9 +129,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -149,25 +137,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -179,9 +161,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             81.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -190,16 +170,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -251,9 +227,7 @@ description: Variables in memory after executing sls.kcl
               81.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -270,9 +244,7 @@ description: Variables in memory after executing sls.kcl
               88.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -289,9 +261,7 @@ description: Variables in memory after executing sls.kcl
               88.3
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -308,9 +278,7 @@ description: Variables in memory after executing sls.kcl
               81.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -327,9 +295,7 @@ description: Variables in memory after executing sls.kcl
               81.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -339,9 +305,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -349,25 +313,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -379,9 +337,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             81.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -390,16 +346,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -424,9 +376,7 @@ description: Variables in memory after executing sls.kcl
             81.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -443,9 +393,7 @@ description: Variables in memory after executing sls.kcl
             88.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -462,9 +410,7 @@ description: Variables in memory after executing sls.kcl
             88.3
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -481,9 +427,7 @@ description: Variables in memory after executing sls.kcl
             81.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -500,9 +444,7 @@ description: Variables in memory after executing sls.kcl
             81.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -512,9 +454,7 @@ description: Variables in memory after executing sls.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -522,25 +462,19 @@ description: Variables in memory after executing sls.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -552,9 +486,7 @@ description: Variables in memory after executing sls.kcl
           0.0,
           81.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -563,9 +495,7 @@ description: Variables in memory after executing sls.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "antennaSketch": {
@@ -577,34 +507,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -689,9 +611,7 @@ description: Variables in memory after executing sls.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -708,9 +628,7 @@ description: Variables in memory after executing sls.kcl
               45.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -727,9 +645,7 @@ description: Variables in memory after executing sls.kcl
               47.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -746,9 +662,7 @@ description: Variables in memory after executing sls.kcl
               53.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -765,9 +679,7 @@ description: Variables in memory after executing sls.kcl
               56.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -784,9 +696,7 @@ description: Variables in memory after executing sls.kcl
               65.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -803,9 +713,7 @@ description: Variables in memory after executing sls.kcl
               65.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -822,9 +730,7 @@ description: Variables in memory after executing sls.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -841,9 +747,7 @@ description: Variables in memory after executing sls.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -853,9 +757,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -863,25 +765,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -893,9 +789,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             10.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -904,16 +798,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -993,9 +883,7 @@ description: Variables in memory after executing sls.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1012,9 +900,7 @@ description: Variables in memory after executing sls.kcl
               45.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1031,9 +917,7 @@ description: Variables in memory after executing sls.kcl
               47.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1050,9 +934,7 @@ description: Variables in memory after executing sls.kcl
               53.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1069,9 +951,7 @@ description: Variables in memory after executing sls.kcl
               56.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1088,9 +968,7 @@ description: Variables in memory after executing sls.kcl
               65.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1107,9 +985,7 @@ description: Variables in memory after executing sls.kcl
               65.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1126,9 +1002,7 @@ description: Variables in memory after executing sls.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1145,9 +1019,7 @@ description: Variables in memory after executing sls.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -1157,9 +1029,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -1167,25 +1037,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1197,9 +1061,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             10.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1208,16 +1070,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -1242,9 +1100,7 @@ description: Variables in memory after executing sls.kcl
             10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1261,9 +1117,7 @@ description: Variables in memory after executing sls.kcl
             45.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1280,9 +1134,7 @@ description: Variables in memory after executing sls.kcl
             47.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1299,9 +1151,7 @@ description: Variables in memory after executing sls.kcl
             53.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1318,9 +1168,7 @@ description: Variables in memory after executing sls.kcl
             56.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1337,9 +1185,7 @@ description: Variables in memory after executing sls.kcl
             65.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1356,9 +1202,7 @@ description: Variables in memory after executing sls.kcl
             65.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1375,9 +1219,7 @@ description: Variables in memory after executing sls.kcl
             10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1394,9 +1236,7 @@ description: Variables in memory after executing sls.kcl
             10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -1406,9 +1246,7 @@ description: Variables in memory after executing sls.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -1416,25 +1254,19 @@ description: Variables in memory after executing sls.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1446,9 +1278,7 @@ description: Variables in memory after executing sls.kcl
           0.0,
           10.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1457,9 +1287,7 @@ description: Variables in memory after executing sls.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "coreStageSketch": {
@@ -1471,34 +1299,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1570,9 +1390,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -1582,9 +1400,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 2900.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1592,25 +1408,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1622,9 +1432,7 @@ description: Variables in memory after executing sls.kcl
             4.2,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1643,16 +1451,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 7.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -1724,9 +1528,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -1736,9 +1538,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 2900.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1746,25 +1546,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1776,9 +1570,7 @@ description: Variables in memory after executing sls.kcl
             4.2,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1797,9 +1589,7 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 7.1,
       "startCapId": "[uuid]",
@@ -1812,21 +1602,15 @@ description: Variables in memory after executing sls.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -1903,9 +1687,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -1915,9 +1697,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 2900.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1925,25 +1705,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1955,9 +1729,7 @@ description: Variables in memory after executing sls.kcl
             4.2,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1976,16 +1748,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 7.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -1998,34 +1766,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 2900.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2063,9 +1823,7 @@ description: Variables in memory after executing sls.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -2075,9 +1833,7 @@ description: Variables in memory after executing sls.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 2900.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2085,25 +1841,19 @@ description: Variables in memory after executing sls.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2115,9 +1865,7 @@ description: Variables in memory after executing sls.kcl
           4.2,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2136,9 +1884,7 @@ description: Variables in memory after executing sls.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "engineSectionSketch": {
@@ -2150,34 +1896,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 2900.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2221,9 +1959,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -2233,9 +1969,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 69000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2243,25 +1977,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2273,9 +2001,7 @@ description: Variables in memory after executing sls.kcl
             2.5,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2284,16 +2010,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -2337,9 +2059,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -2349,9 +2069,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 69000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2359,25 +2077,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2389,9 +2101,7 @@ description: Variables in memory after executing sls.kcl
             2.5,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2400,16 +2110,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -2422,34 +2128,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 69000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2480,9 +2178,7 @@ description: Variables in memory after executing sls.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -2492,9 +2188,7 @@ description: Variables in memory after executing sls.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 69000.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2502,25 +2196,19 @@ description: Variables in memory after executing sls.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2532,9 +2220,7 @@ description: Variables in memory after executing sls.kcl
           2.5,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2543,9 +2229,7 @@ description: Variables in memory after executing sls.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "esaServiceModuleSketch": {
@@ -2557,34 +2241,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 69000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2628,9 +2304,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -2640,9 +2314,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 65000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2650,25 +2322,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2680,9 +2346,7 @@ description: Variables in memory after executing sls.kcl
             2.5,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2691,16 +2355,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -2744,9 +2404,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -2756,9 +2414,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 65000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2766,25 +2422,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2796,9 +2446,7 @@ description: Variables in memory after executing sls.kcl
             2.5,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2807,16 +2455,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -2829,34 +2473,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 65000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2887,9 +2523,7 @@ description: Variables in memory after executing sls.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -2899,9 +2533,7 @@ description: Variables in memory after executing sls.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 65000.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2909,25 +2541,19 @@ description: Variables in memory after executing sls.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2939,9 +2565,7 @@ description: Variables in memory after executing sls.kcl
           2.5,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2950,9 +2574,7 @@ description: Variables in memory after executing sls.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "icpsSectionSketch": {
@@ -2964,34 +2586,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 65000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3043,9 +2657,7 @@ description: Variables in memory after executing sls.kcl
               73.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3062,9 +2674,7 @@ description: Variables in memory after executing sls.kcl
               76.3
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3081,9 +2691,7 @@ description: Variables in memory after executing sls.kcl
               76.3
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3100,9 +2708,7 @@ description: Variables in memory after executing sls.kcl
               73.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3119,9 +2725,7 @@ description: Variables in memory after executing sls.kcl
               73.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -3131,9 +2735,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -3141,25 +2743,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3171,9 +2767,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             73.5
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3182,16 +2776,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -3243,9 +2833,7 @@ description: Variables in memory after executing sls.kcl
               73.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3262,9 +2850,7 @@ description: Variables in memory after executing sls.kcl
               76.3
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3281,9 +2867,7 @@ description: Variables in memory after executing sls.kcl
               76.3
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3300,9 +2884,7 @@ description: Variables in memory after executing sls.kcl
               73.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3319,9 +2901,7 @@ description: Variables in memory after executing sls.kcl
               73.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -3331,9 +2911,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -3341,25 +2919,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3371,9 +2943,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             73.5
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3382,16 +2952,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -3416,9 +2982,7 @@ description: Variables in memory after executing sls.kcl
             73.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3435,9 +2999,7 @@ description: Variables in memory after executing sls.kcl
             76.3
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3454,9 +3016,7 @@ description: Variables in memory after executing sls.kcl
             76.3
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3473,9 +3033,7 @@ description: Variables in memory after executing sls.kcl
             73.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3492,9 +3050,7 @@ description: Variables in memory after executing sls.kcl
             73.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -3504,9 +3060,7 @@ description: Variables in memory after executing sls.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -3514,25 +3068,19 @@ description: Variables in memory after executing sls.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3544,9 +3092,7 @@ description: Variables in memory after executing sls.kcl
           0.0,
           73.5
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3555,9 +3101,7 @@ description: Variables in memory after executing sls.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "orionCrewModuleSketch": {
@@ -3569,34 +3113,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3621,9 +3157,7 @@ description: Variables in memory after executing sls.kcl
             72.98
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3652,9 +3186,7 @@ description: Variables in memory after executing sls.kcl
             77.64
           ],
           "type": "ArcThreePoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3671,9 +3203,7 @@ description: Variables in memory after executing sls.kcl
             81.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3690,9 +3220,7 @@ description: Variables in memory after executing sls.kcl
             81.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3709,9 +3237,7 @@ description: Variables in memory after executing sls.kcl
             72.98
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3728,9 +3254,7 @@ description: Variables in memory after executing sls.kcl
             72.98
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -3740,9 +3264,7 @@ description: Variables in memory after executing sls.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -3750,25 +3272,19 @@ description: Variables in memory after executing sls.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3780,9 +3296,7 @@ description: Variables in memory after executing sls.kcl
           0.0,
           72.98
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3791,9 +3305,7 @@ description: Variables in memory after executing sls.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "revolve001": {
@@ -3851,9 +3363,7 @@ description: Variables in memory after executing sls.kcl
               72.98
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3882,9 +3392,7 @@ description: Variables in memory after executing sls.kcl
               77.64
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3901,9 +3409,7 @@ description: Variables in memory after executing sls.kcl
               81.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3920,9 +3426,7 @@ description: Variables in memory after executing sls.kcl
               81.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3939,9 +3443,7 @@ description: Variables in memory after executing sls.kcl
               72.98
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3958,9 +3460,7 @@ description: Variables in memory after executing sls.kcl
               72.98
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -3970,9 +3470,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -3980,25 +3478,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4010,9 +3502,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             72.98
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4021,16 +3511,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -4082,9 +3568,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4113,9 +3597,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4132,9 +3614,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4151,9 +3631,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4170,9 +3648,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -4182,9 +3658,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -4192,25 +3666,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4222,9 +3690,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4233,16 +3699,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -4272,9 +3734,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4303,9 +3763,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4322,9 +3780,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4341,9 +3797,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4360,9 +3814,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -4372,9 +3824,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -4382,25 +3832,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4412,9 +3856,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4423,16 +3865,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -4462,9 +3900,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4493,9 +3929,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4512,9 +3946,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4531,9 +3963,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4550,9 +3980,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -4562,9 +3990,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -4572,25 +3998,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4602,9 +4022,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4613,16 +4031,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -4674,9 +4088,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4705,9 +4117,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4724,9 +4134,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4743,9 +4151,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4762,9 +4168,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -4774,9 +4178,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -4784,25 +4186,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4814,9 +4210,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4825,16 +4219,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -4886,9 +4276,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4917,9 +4305,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4936,9 +4322,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4955,9 +4339,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4974,9 +4356,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -4986,9 +4366,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -4996,25 +4374,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -5026,9 +4398,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -5037,16 +4407,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -5071,9 +4437,7 @@ description: Variables in memory after executing sls.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -5102,9 +4466,7 @@ description: Variables in memory after executing sls.kcl
             2.9
           ],
           "type": "ArcThreePoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -5121,9 +4483,7 @@ description: Variables in memory after executing sls.kcl
             2.9
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -5140,9 +4500,7 @@ description: Variables in memory after executing sls.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -5159,9 +4517,7 @@ description: Variables in memory after executing sls.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -5171,9 +4527,7 @@ description: Variables in memory after executing sls.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -5181,25 +4535,19 @@ description: Variables in memory after executing sls.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -5211,9 +4559,7 @@ description: Variables in memory after executing sls.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -5222,9 +4568,7 @@ description: Variables in memory after executing sls.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "rs25EngineSketch": {
@@ -5236,34 +4580,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -5293,9 +4629,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5324,9 +4658,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5343,9 +4675,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5362,9 +4692,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5381,9 +4709,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -5393,9 +4719,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -5403,25 +4727,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -5433,9 +4751,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -5444,16 +4760,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -5483,9 +4795,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5514,9 +4824,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5533,9 +4841,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5552,9 +4858,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5571,9 +4875,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -5583,9 +4885,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -5593,25 +4893,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -5623,9 +4917,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -5634,16 +4926,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -5673,9 +4961,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5704,9 +4990,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5723,9 +5007,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5742,9 +5024,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5761,9 +5041,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -5773,9 +5051,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -5783,25 +5059,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -5813,9 +5083,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -5824,16 +5092,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -5863,9 +5127,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5894,9 +5156,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5913,9 +5173,7 @@ description: Variables in memory after executing sls.kcl
               2.9
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5932,9 +5190,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5951,9 +5207,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -5963,9 +5217,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -5973,25 +5225,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -6003,9 +5249,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -6014,16 +5258,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -6036,34 +5276,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -6234,9 +5466,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6253,9 +5483,7 @@ description: Variables in memory after executing sls.kcl
               1.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6272,9 +5500,7 @@ description: Variables in memory after executing sls.kcl
               1.7
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6291,9 +5517,7 @@ description: Variables in memory after executing sls.kcl
               3.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6310,9 +5534,7 @@ description: Variables in memory after executing sls.kcl
               4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6329,9 +5551,7 @@ description: Variables in memory after executing sls.kcl
               7.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6348,9 +5568,7 @@ description: Variables in memory after executing sls.kcl
               8.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6367,9 +5585,7 @@ description: Variables in memory after executing sls.kcl
               9.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6386,9 +5602,7 @@ description: Variables in memory after executing sls.kcl
               10.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6405,9 +5619,7 @@ description: Variables in memory after executing sls.kcl
               11.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6424,9 +5636,7 @@ description: Variables in memory after executing sls.kcl
               12.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6443,9 +5653,7 @@ description: Variables in memory after executing sls.kcl
               13.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6462,9 +5670,7 @@ description: Variables in memory after executing sls.kcl
               18.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6481,9 +5687,7 @@ description: Variables in memory after executing sls.kcl
               26.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6500,9 +5704,7 @@ description: Variables in memory after executing sls.kcl
               34.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6519,9 +5721,7 @@ description: Variables in memory after executing sls.kcl
               42.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6538,9 +5738,7 @@ description: Variables in memory after executing sls.kcl
               47.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6557,9 +5755,7 @@ description: Variables in memory after executing sls.kcl
               48.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6576,9 +5772,7 @@ description: Variables in memory after executing sls.kcl
               50.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6595,9 +5789,7 @@ description: Variables in memory after executing sls.kcl
               54.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6614,9 +5806,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6633,9 +5823,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -6645,9 +5833,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -6655,25 +5841,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -6685,9 +5865,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -6696,16 +5874,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -6735,9 +5909,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6754,9 +5926,7 @@ description: Variables in memory after executing sls.kcl
               1.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6773,9 +5943,7 @@ description: Variables in memory after executing sls.kcl
               1.7
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6792,9 +5960,7 @@ description: Variables in memory after executing sls.kcl
               3.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6811,9 +5977,7 @@ description: Variables in memory after executing sls.kcl
               4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6830,9 +5994,7 @@ description: Variables in memory after executing sls.kcl
               7.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6849,9 +6011,7 @@ description: Variables in memory after executing sls.kcl
               8.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6868,9 +6028,7 @@ description: Variables in memory after executing sls.kcl
               9.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6887,9 +6045,7 @@ description: Variables in memory after executing sls.kcl
               10.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6906,9 +6062,7 @@ description: Variables in memory after executing sls.kcl
               11.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6925,9 +6079,7 @@ description: Variables in memory after executing sls.kcl
               12.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6944,9 +6096,7 @@ description: Variables in memory after executing sls.kcl
               13.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6963,9 +6113,7 @@ description: Variables in memory after executing sls.kcl
               18.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6982,9 +6130,7 @@ description: Variables in memory after executing sls.kcl
               26.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7001,9 +6147,7 @@ description: Variables in memory after executing sls.kcl
               34.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7020,9 +6164,7 @@ description: Variables in memory after executing sls.kcl
               42.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7039,9 +6181,7 @@ description: Variables in memory after executing sls.kcl
               47.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7058,9 +6198,7 @@ description: Variables in memory after executing sls.kcl
               48.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7077,9 +6215,7 @@ description: Variables in memory after executing sls.kcl
               50.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7096,9 +6232,7 @@ description: Variables in memory after executing sls.kcl
               54.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7115,9 +6249,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7134,9 +6266,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -7146,9 +6276,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -7156,25 +6284,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -7186,9 +6308,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -7197,16 +6317,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -7377,9 +6493,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7396,9 +6510,7 @@ description: Variables in memory after executing sls.kcl
               1.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7415,9 +6527,7 @@ description: Variables in memory after executing sls.kcl
               1.7
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7434,9 +6544,7 @@ description: Variables in memory after executing sls.kcl
               3.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7453,9 +6561,7 @@ description: Variables in memory after executing sls.kcl
               4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7472,9 +6578,7 @@ description: Variables in memory after executing sls.kcl
               7.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7491,9 +6595,7 @@ description: Variables in memory after executing sls.kcl
               8.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7510,9 +6612,7 @@ description: Variables in memory after executing sls.kcl
               9.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7529,9 +6629,7 @@ description: Variables in memory after executing sls.kcl
               10.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7548,9 +6646,7 @@ description: Variables in memory after executing sls.kcl
               11.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7567,9 +6663,7 @@ description: Variables in memory after executing sls.kcl
               12.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7586,9 +6680,7 @@ description: Variables in memory after executing sls.kcl
               13.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7605,9 +6697,7 @@ description: Variables in memory after executing sls.kcl
               18.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7624,9 +6714,7 @@ description: Variables in memory after executing sls.kcl
               26.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7643,9 +6731,7 @@ description: Variables in memory after executing sls.kcl
               34.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7662,9 +6748,7 @@ description: Variables in memory after executing sls.kcl
               42.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7681,9 +6765,7 @@ description: Variables in memory after executing sls.kcl
               47.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7700,9 +6782,7 @@ description: Variables in memory after executing sls.kcl
               48.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7719,9 +6799,7 @@ description: Variables in memory after executing sls.kcl
               50.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7738,9 +6816,7 @@ description: Variables in memory after executing sls.kcl
               54.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7757,9 +6833,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7776,9 +6850,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -7788,9 +6860,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -7798,25 +6868,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -7828,9 +6892,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -7839,16 +6901,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -8019,9 +7077,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8038,9 +7094,7 @@ description: Variables in memory after executing sls.kcl
               1.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8057,9 +7111,7 @@ description: Variables in memory after executing sls.kcl
               1.7
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8076,9 +7128,7 @@ description: Variables in memory after executing sls.kcl
               3.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8095,9 +7145,7 @@ description: Variables in memory after executing sls.kcl
               4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8114,9 +7162,7 @@ description: Variables in memory after executing sls.kcl
               7.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8133,9 +7179,7 @@ description: Variables in memory after executing sls.kcl
               8.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8152,9 +7196,7 @@ description: Variables in memory after executing sls.kcl
               9.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8171,9 +7213,7 @@ description: Variables in memory after executing sls.kcl
               10.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8190,9 +7230,7 @@ description: Variables in memory after executing sls.kcl
               11.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8209,9 +7247,7 @@ description: Variables in memory after executing sls.kcl
               12.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8228,9 +7264,7 @@ description: Variables in memory after executing sls.kcl
               13.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8247,9 +7281,7 @@ description: Variables in memory after executing sls.kcl
               18.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8266,9 +7298,7 @@ description: Variables in memory after executing sls.kcl
               26.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8285,9 +7315,7 @@ description: Variables in memory after executing sls.kcl
               34.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8304,9 +7332,7 @@ description: Variables in memory after executing sls.kcl
               42.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8323,9 +7349,7 @@ description: Variables in memory after executing sls.kcl
               47.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8342,9 +7366,7 @@ description: Variables in memory after executing sls.kcl
               48.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8361,9 +7383,7 @@ description: Variables in memory after executing sls.kcl
               50.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8380,9 +7400,7 @@ description: Variables in memory after executing sls.kcl
               54.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8399,9 +7417,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -8418,9 +7434,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -8430,9 +7444,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -8440,25 +7452,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -8470,9 +7476,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -8481,16 +7485,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -8515,9 +7515,7 @@ description: Variables in memory after executing sls.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8534,9 +7532,7 @@ description: Variables in memory after executing sls.kcl
             1.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8553,9 +7549,7 @@ description: Variables in memory after executing sls.kcl
             1.7
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8572,9 +7566,7 @@ description: Variables in memory after executing sls.kcl
             3.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8591,9 +7583,7 @@ description: Variables in memory after executing sls.kcl
             4.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8610,9 +7600,7 @@ description: Variables in memory after executing sls.kcl
             7.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8629,9 +7617,7 @@ description: Variables in memory after executing sls.kcl
             8.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8648,9 +7634,7 @@ description: Variables in memory after executing sls.kcl
             9.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8667,9 +7651,7 @@ description: Variables in memory after executing sls.kcl
             10.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8686,9 +7668,7 @@ description: Variables in memory after executing sls.kcl
             11.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8705,9 +7685,7 @@ description: Variables in memory after executing sls.kcl
             12.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8724,9 +7702,7 @@ description: Variables in memory after executing sls.kcl
             13.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8743,9 +7719,7 @@ description: Variables in memory after executing sls.kcl
             18.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8762,9 +7736,7 @@ description: Variables in memory after executing sls.kcl
             26.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8781,9 +7753,7 @@ description: Variables in memory after executing sls.kcl
             34.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8800,9 +7770,7 @@ description: Variables in memory after executing sls.kcl
             42.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8819,9 +7787,7 @@ description: Variables in memory after executing sls.kcl
             47.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8838,9 +7804,7 @@ description: Variables in memory after executing sls.kcl
             48.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8857,9 +7821,7 @@ description: Variables in memory after executing sls.kcl
             50.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8876,9 +7838,7 @@ description: Variables in memory after executing sls.kcl
             54.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8895,9 +7855,7 @@ description: Variables in memory after executing sls.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -8914,9 +7872,7 @@ description: Variables in memory after executing sls.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -8926,9 +7882,7 @@ description: Variables in memory after executing sls.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -8936,25 +7890,19 @@ description: Variables in memory after executing sls.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -8966,9 +7914,7 @@ description: Variables in memory after executing sls.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -8977,9 +7923,7 @@ description: Variables in memory after executing sls.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "solidRocketBoosterRight": {
@@ -9008,9 +7952,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9027,9 +7969,7 @@ description: Variables in memory after executing sls.kcl
               1.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9046,9 +7986,7 @@ description: Variables in memory after executing sls.kcl
               1.7
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9065,9 +8003,7 @@ description: Variables in memory after executing sls.kcl
               3.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9084,9 +8020,7 @@ description: Variables in memory after executing sls.kcl
               4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9103,9 +8037,7 @@ description: Variables in memory after executing sls.kcl
               7.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9122,9 +8054,7 @@ description: Variables in memory after executing sls.kcl
               8.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9141,9 +8071,7 @@ description: Variables in memory after executing sls.kcl
               9.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9160,9 +8088,7 @@ description: Variables in memory after executing sls.kcl
               10.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9179,9 +8105,7 @@ description: Variables in memory after executing sls.kcl
               11.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9198,9 +8122,7 @@ description: Variables in memory after executing sls.kcl
               12.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9217,9 +8139,7 @@ description: Variables in memory after executing sls.kcl
               13.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9236,9 +8156,7 @@ description: Variables in memory after executing sls.kcl
               18.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9255,9 +8173,7 @@ description: Variables in memory after executing sls.kcl
               26.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9274,9 +8190,7 @@ description: Variables in memory after executing sls.kcl
               34.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9293,9 +8207,7 @@ description: Variables in memory after executing sls.kcl
               42.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9312,9 +8224,7 @@ description: Variables in memory after executing sls.kcl
               47.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9331,9 +8241,7 @@ description: Variables in memory after executing sls.kcl
               48.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9350,9 +8258,7 @@ description: Variables in memory after executing sls.kcl
               50.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9369,9 +8275,7 @@ description: Variables in memory after executing sls.kcl
               54.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9388,9 +8292,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -9407,9 +8309,7 @@ description: Variables in memory after executing sls.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -9419,9 +8319,7 @@ description: Variables in memory after executing sls.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -9429,25 +8327,19 @@ description: Variables in memory after executing sls.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -9459,9 +8351,7 @@ description: Variables in memory after executing sls.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -9470,16 +8360,12 @@ description: Variables in memory after executing sls.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -9492,34 +8378,26 @@ description: Variables in memory after executing sls.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   }

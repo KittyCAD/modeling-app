@@ -6,8 +6,7 @@ use kcmc::{
     length_unit::LengthUnit,
     shared::{Angle, Point2d as KPoint2d},
 };
-use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::{self as kcmc, shared::PathSegment, units::UnitLength};
 use serde::Serialize;
 
 use super::{
@@ -19,7 +18,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface,
-        types::{RuntimeType, UnitLen},
+        types::{RuntimeType, adjust_length},
     },
     parsing::ast::types::TagNode,
     std::{
@@ -86,7 +85,7 @@ async fn inner_rectangle(
             )));
         }
     };
-    let units = ty.expect_length();
+    let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
     let corner_t = [TyF64::new(corner[0], ty), TyF64::new(corner[1], ty)];
 
     // Start the sketch then draw the 4 lines.
@@ -180,7 +179,7 @@ async fn inner_circle(
         SketchOrSurface::Sketch(s) => s.on,
     };
     let (center_u, ty) = untype_point(center.clone());
-    let units = ty.expect_length();
+    let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
 
     let radius = get_radius(radius, diameter, args.source_range)?;
     let from = [center_u[0] + radius.to_length_units(units), center_u[1]];
@@ -271,7 +270,7 @@ async fn inner_circle_three_point(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let ty = p1[0].ty;
-    let units = ty.expect_length();
+    let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
 
     let p1 = point_to_len_unit(p1, units);
     let p2 = point_to_len_unit(p2, units);
@@ -304,7 +303,7 @@ async fn inner_circle_three_point(
                     start: angle_start,
                     end: angle_end,
                     center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
-                    radius: units.adjust_to(radius, UnitLen::Mm).0.into(),
+                    radius: adjust_length(units, radius, UnitLength::Millimeters).0.into(),
                     relative: false,
                 },
             }),
@@ -405,7 +404,7 @@ async fn inner_polygon(
     }
 
     let (sketch_surface, units) = match sketch_surface_or_group {
-        SketchOrSurface::SketchSurface(surface) => (surface, radius.ty.expect_length()),
+        SketchOrSurface::SketchSurface(surface) => (surface, radius.ty.as_length().unwrap_or(UnitLength::Millimeters)),
         SketchOrSurface::Sketch(group) => (group.on, group.units),
     };
 
@@ -564,7 +563,7 @@ async fn inner_ellipse(
         SketchOrSurface::Sketch(group) => group.on,
     };
     let (center_u, ty) = untype_point(center.clone());
-    let units = ty.expect_length();
+    let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
 
     let major_axis = match (major_axis, major_radius) {
         (Some(_), Some(_)) | (None, None) => {

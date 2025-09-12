@@ -1,10 +1,12 @@
-use std::{collections::HashMap, fmt};
+use std::{collections::HashMap, fmt, str::FromStr};
 
 use anyhow::Result;
+use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    CompilationError, SourceRange,
+    CompilationError, KclError, SourceRange,
+    errors::KclErrorDetails,
     execution::{
         ExecState, Plane, PlaneInfo, Point3d, annotations,
         kcl_value::{KclValue, TypeDef},
@@ -118,19 +120,15 @@ impl RuntimeType {
     }
 
     pub fn length() -> Self {
-        RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::Length(
-            UnitLen::Unknown,
-        ))))
+        RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::GenericLength)))
     }
 
-    pub fn known_length(len: UnitLen) -> Self {
+    pub fn known_length(len: UnitLength) -> Self {
         RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::Length(len))))
     }
 
     pub fn angle() -> Self {
-        RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::Angle(
-            UnitAngle::Unknown,
-        ))))
+        RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::GenericAngle)))
     }
 
     pub fn radians() -> Self {
@@ -490,7 +488,7 @@ pub enum NumericType {
     // Specified by the user (directly or indirectly)
     Known(UnitType),
     // Unspecified, using defaults
-    Default { len: UnitLen, angle: UnitAngle },
+    Default { len: UnitLength, angle: UnitAngle },
     // Exceeded the ability of the type system to track.
     Unknown,
     // Type info has been explicitly cast away.
@@ -500,8 +498,8 @@ pub enum NumericType {
 impl Default for NumericType {
     fn default() -> Self {
         NumericType::Default {
-            len: UnitLen::default(),
-            angle: UnitAngle::default(),
+            len: UnitLength::Millimeters,
+            angle: UnitAngle::Degrees,
         }
     }
 }
@@ -512,7 +510,7 @@ impl NumericType {
     }
 
     pub const fn mm() -> Self {
-        NumericType::Known(UnitType::Length(UnitLen::Mm))
+        NumericType::Known(UnitType::Length(UnitLength::Millimeters))
     }
 
     pub const fn radians() -> Self {
@@ -535,8 +533,13 @@ impl NumericType {
             (at, Any) => (a.n, b.n, at),
             (Any, bt) => (a.n, b.n, bt),
 
-            (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, l2.adjust_to(b.n, l1).0, t),
-            (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, a2.adjust_to(b.n, a1).0, t),
+            (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, adjust_length(l2, b.n, l1).0, t),
+            (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, adjust_angle(a2, b.n, a1).0, t),
+
+            (t @ Known(UnitType::Length(_)), Known(UnitType::GenericLength)) => (a.n, b.n, t),
+            (Known(UnitType::GenericLength), t @ Known(UnitType::Length(_))) => (a.n, b.n, t),
+            (t @ Known(UnitType::Angle(_)), Known(UnitType::GenericAngle)) => (a.n, b.n, t),
+            (Known(UnitType::GenericAngle), t @ Known(UnitType::Angle(_))) => (a.n, b.n, t),
 
             (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
                 (a.n, b.n, Known(UnitType::Count))
@@ -565,18 +568,28 @@ impl NumericType {
             (Any, bt) => (a.n, b.n, bt),
 
             // Known types and compatible, but needs adjustment.
-            (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, l2.adjust_to(b.n, l1).0, t),
-            (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, a2.adjust_to(b.n, a1).0, t),
+            (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, adjust_length(l2, b.n, l1).0, t),
+            (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, adjust_angle(a2, b.n, a1).0, t),
+
+            (t @ Known(UnitType::Length(_)), Known(UnitType::GenericLength)) => (a.n, b.n, t),
+            (Known(UnitType::GenericLength), t @ Known(UnitType::Length(_))) => (a.n, b.n, t),
+            (t @ Known(UnitType::Angle(_)), Known(UnitType::GenericAngle)) => (a.n, b.n, t),
+            (Known(UnitType::GenericAngle), t @ Known(UnitType::Angle(_))) => (a.n, b.n, t),
 
             // Known and unknown => we assume the known one, possibly with adjustment
             (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
                 (a.n, b.n, Known(UnitType::Count))
             }
 
-            (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) => (a.n, l2.adjust_to(b.n, l1).0, t),
-            (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) => (l1.adjust_to(a.n, l2).0, b.n, t),
-            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => (a.n, a2.adjust_to(b.n, a1).0, t),
-            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) => (a1.adjust_to(a.n, a2).0, b.n, t),
+            (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) => (a.n, adjust_length(l2, b.n, l1).0, t),
+            (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) => (adjust_length(l1, a.n, l2).0, b.n, t),
+            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => (a.n, adjust_angle(a2, b.n, a1).0, t),
+            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) => (adjust_angle(a1, a.n, a2).0, b.n, t),
+
+            (Default { len: l1, .. }, Known(UnitType::GenericLength)) => (a.n, b.n, l1.into()),
+            (Known(UnitType::GenericLength), Default { len: l2, .. }) => (a.n, b.n, l2.into()),
+            (Default { angle: a1, .. }, Known(UnitType::GenericAngle)) => (a.n, b.n, a1.into()),
+            (Known(UnitType::GenericAngle), Default { angle: a2, .. }) => (a.n, b.n, a2.into()),
 
             (Known(_), Known(_)) | (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => {
                 (a.n, b.n, Unknown)
@@ -676,14 +689,14 @@ impl NumericType {
                 angle: settings.default_angle_units,
             },
             NumericSuffix::Count => NumericType::Known(UnitType::Count),
-            NumericSuffix::Length => NumericType::Known(UnitType::Length(UnitLen::Unknown)),
-            NumericSuffix::Angle => NumericType::Known(UnitType::Angle(UnitAngle::Unknown)),
-            NumericSuffix::Mm => NumericType::Known(UnitType::Length(UnitLen::Mm)),
-            NumericSuffix::Cm => NumericType::Known(UnitType::Length(UnitLen::Cm)),
-            NumericSuffix::M => NumericType::Known(UnitType::Length(UnitLen::M)),
-            NumericSuffix::Inch => NumericType::Known(UnitType::Length(UnitLen::Inches)),
-            NumericSuffix::Ft => NumericType::Known(UnitType::Length(UnitLen::Feet)),
-            NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLen::Yards)),
+            NumericSuffix::Length => NumericType::Known(UnitType::GenericLength),
+            NumericSuffix::Angle => NumericType::Known(UnitType::GenericAngle),
+            NumericSuffix::Mm => NumericType::Known(UnitType::Length(UnitLength::Millimeters)),
+            NumericSuffix::Cm => NumericType::Known(UnitType::Length(UnitLength::Centimeters)),
+            NumericSuffix::M => NumericType::Known(UnitType::Length(UnitLength::Meters)),
+            NumericSuffix::Inch => NumericType::Known(UnitType::Length(UnitLength::Inches)),
+            NumericSuffix::Ft => NumericType::Known(UnitType::Length(UnitLength::Feet)),
+            NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLength::Yards)),
             NumericSuffix::Deg => NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
             NumericSuffix::Rad => NumericType::Known(UnitType::Angle(UnitAngle::Radians)),
             NumericSuffix::Unknown => NumericType::Unknown,
@@ -697,12 +710,16 @@ impl NumericType {
             (_, Any) => true,
             (a, b) if a == b => true,
             (
-                NumericType::Known(UnitType::Length(_)) | NumericType::Default { .. },
-                NumericType::Known(UnitType::Length(UnitLen::Unknown)),
+                NumericType::Known(UnitType::Length(_))
+                | NumericType::Known(UnitType::GenericLength)
+                | NumericType::Default { .. },
+                NumericType::Known(UnitType::GenericLength),
             )
             | (
-                NumericType::Known(UnitType::Angle(_)) | NumericType::Default { .. },
-                NumericType::Known(UnitType::Angle(UnitAngle::Unknown)),
+                NumericType::Known(UnitType::Angle(_))
+                | NumericType::Known(UnitType::GenericAngle)
+                | NumericType::Default { .. },
+                NumericType::Known(UnitType::GenericAngle),
             ) => true,
             (Unknown, _) | (_, Unknown) => false,
             (_, _) => false,
@@ -713,8 +730,8 @@ impl NumericType {
         matches!(
             self,
             NumericType::Unknown
-                | NumericType::Known(UnitType::Angle(UnitAngle::Unknown))
-                | NumericType::Known(UnitType::Length(UnitLen::Unknown))
+                | NumericType::Known(UnitType::GenericAngle)
+                | NumericType::Known(UnitType::GenericLength)
         )
     }
 
@@ -722,8 +739,8 @@ impl NumericType {
         !matches!(
             self,
             NumericType::Unknown
-                | NumericType::Known(UnitType::Angle(UnitAngle::Unknown))
-                | NumericType::Known(UnitType::Length(UnitLen::Unknown))
+                | NumericType::Known(UnitType::GenericAngle)
+                | NumericType::Known(UnitType::GenericLength)
                 | NumericType::Any
                 | NumericType::Default { .. }
         )
@@ -773,7 +790,7 @@ impl NumericType {
 
             // Known types and compatible, but needs adjustment.
             (Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => {
-                let (value, ty) = l1.adjust_to(*value, *l2);
+                let (value, ty) = adjust_length(*l1, *value, *l2);
                 Ok(KclValue::Number {
                     value,
                     ty: Known(UnitType::Length(ty)),
@@ -781,7 +798,7 @@ impl NumericType {
                 })
             }
             (Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => {
-                let (value, ty) = a1.adjust_to(*value, *a2);
+                let (value, ty) = adjust_angle(*a1, *value, *a2);
                 Ok(KclValue::Number {
                     value,
                     ty: Known(UnitType::Angle(ty)),
@@ -800,7 +817,7 @@ impl NumericType {
             }),
 
             (Default { len: l1, .. }, Known(UnitType::Length(l2))) => {
-                let (value, ty) = l1.adjust_to(*value, *l2);
+                let (value, ty) = adjust_length(*l1, *value, *l2);
                 Ok(KclValue::Number {
                     value,
                     ty: Known(UnitType::Length(ty)),
@@ -809,7 +826,7 @@ impl NumericType {
             }
 
             (Default { angle: a1, .. }, Known(UnitType::Angle(a2))) => {
-                let (value, ty) = a1.adjust_to(*value, *a2);
+                let (value, ty) = adjust_angle(*a1, *value, *a2);
                 Ok(KclValue::Number {
                     value,
                     ty: Known(UnitType::Angle(ty)),
@@ -821,14 +838,7 @@ impl NumericType {
         }
     }
 
-    pub fn expect_length(&self) -> UnitLen {
-        match self {
-            Self::Known(UnitType::Length(len)) | Self::Default { len, .. } => *len,
-            _ => unreachable!("Found {self:?}"),
-        }
-    }
-
-    pub fn as_length(&self) -> Option<UnitLen> {
+    pub fn as_length(&self) -> Option<UnitLength> {
         match self {
             Self::Known(UnitType::Length(len)) | Self::Default { len, .. } => Some(*len),
             _ => None,
@@ -842,9 +852,18 @@ impl From<NumericType> for RuntimeType {
     }
 }
 
-impl From<UnitLen> for NumericType {
-    fn from(value: UnitLen) -> Self {
+impl From<UnitLength> for NumericType {
+    fn from(value: UnitLength) -> Self {
         NumericType::Known(UnitType::Length(value))
+    }
+}
+
+impl From<Option<UnitLength>> for NumericType {
+    fn from(value: Option<UnitLength>) -> Self {
+        match value {
+            Some(v) => v.into(),
+            None => NumericType::Unknown,
+        }
     }
 }
 
@@ -859,16 +878,17 @@ impl From<UnitAngle> for NumericType {
 #[serde(tag = "type")]
 pub enum UnitType {
     Count,
-    Length(UnitLen),
+    Length(UnitLength),
+    GenericLength,
     Angle(UnitAngle),
+    GenericAngle,
 }
 
 impl UnitType {
     pub(crate) fn to_suffix(self) -> Option<String> {
         match self {
             UnitType::Count => Some("_".to_owned()),
-            UnitType::Length(UnitLen::Unknown) => None,
-            UnitType::Angle(UnitAngle::Unknown) => None,
+            UnitType::GenericLength | UnitType::GenericAngle => None,
             UnitType::Length(l) => Some(l.to_string()),
             UnitType::Angle(a) => Some(a.to_string()),
         }
@@ -880,180 +900,85 @@ impl std::fmt::Display for UnitType {
         match self {
             UnitType::Count => write!(f, "Count"),
             UnitType::Length(l) => l.fmt(f),
+            UnitType::GenericLength => write!(f, "Length"),
             UnitType::Angle(a) => a.fmt(f),
+            UnitType::GenericAngle => write!(f, "Angle"),
         }
     }
 }
 
-// TODO called UnitLen so as not to clash with UnitLength in settings.
-/// A unit of length.
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum UnitLen {
-    #[default]
-    Mm,
-    Cm,
-    M,
-    Inches,
-    Feet,
-    Yards,
-    Unknown,
+pub fn adjust_length(from: UnitLength, value: f64, to: UnitLength) -> (f64, UnitLength) {
+    use UnitLength::*;
+
+    if from == to {
+        return (value, to);
+    }
+
+    let (base, base_unit) = match from {
+        Millimeters => (value, Millimeters),
+        Centimeters => (value * 10.0, Millimeters),
+        Meters => (value * 1000.0, Millimeters),
+        Inches => (value, Inches),
+        Feet => (value * 12.0, Inches),
+        Yards => (value * 36.0, Inches),
+    };
+    let (base, base_unit) = match (base_unit, to) {
+        (Millimeters, Inches) | (Millimeters, Feet) | (Millimeters, Yards) => (base / 25.4, Inches),
+        (Inches, Millimeters) | (Inches, Centimeters) | (Inches, Meters) => (base * 25.4, Millimeters),
+        _ => (base, base_unit),
+    };
+
+    let value = match (base_unit, to) {
+        (Millimeters, Millimeters) => base,
+        (Millimeters, Centimeters) => base / 10.0,
+        (Millimeters, Meters) => base / 1000.0,
+        (Inches, Inches) => base,
+        (Inches, Feet) => base / 12.0,
+        (Inches, Yards) => base / 36.0,
+        _ => unreachable!(),
+    };
+
+    (value, to)
 }
 
-impl UnitLen {
-    pub fn adjust_to(self, value: f64, to: UnitLen) -> (f64, UnitLen) {
-        use UnitLen::*;
+pub fn adjust_angle(from: UnitAngle, value: f64, to: UnitAngle) -> (f64, UnitAngle) {
+    use std::f64::consts::PI;
 
-        if self == to {
-            return (value, to);
-        }
+    use UnitAngle::*;
 
-        if to == Unknown {
-            return (value, self);
-        }
+    let value = match (from, to) {
+        (Degrees, Degrees) => value,
+        (Degrees, Radians) => (value / 180.0) * PI,
+        (Radians, Degrees) => 180.0 * value / PI,
+        (Radians, Radians) => value,
+    };
 
-        let (base, base_unit) = match self {
-            Mm => (value, Mm),
-            Cm => (value * 10.0, Mm),
-            M => (value * 1000.0, Mm),
-            Inches => (value, Inches),
-            Feet => (value * 12.0, Inches),
-            Yards => (value * 36.0, Inches),
-            Unknown => unreachable!(),
-        };
-        let (base, base_unit) = match (base_unit, to) {
-            (Mm, Inches) | (Mm, Feet) | (Mm, Yards) => (base / 25.4, Inches),
-            (Inches, Mm) | (Inches, Cm) | (Inches, M) => (base * 25.4, Mm),
-            _ => (base, base_unit),
-        };
+    (value, to)
+}
 
-        let value = match (base_unit, to) {
-            (Mm, Mm) => base,
-            (Mm, Cm) => base / 10.0,
-            (Mm, M) => base / 1000.0,
-            (Inches, Inches) => base,
-            (Inches, Feet) => base / 12.0,
-            (Inches, Yards) => base / 36.0,
-            _ => unreachable!(),
-        };
-
-        (value, to)
+pub(super) fn length_from_str(s: &str, source_range: SourceRange) -> Result<UnitLength, KclError> {
+    // We don't use `from_str` here because we want to be more flexible about the input we accept.
+    match s {
+        "mm" => Ok(UnitLength::Millimeters),
+        "cm" => Ok(UnitLength::Centimeters),
+        "m" => Ok(UnitLength::Meters),
+        "inch" | "in" => Ok(UnitLength::Inches),
+        "ft" => Ok(UnitLength::Feet),
+        "yd" => Ok(UnitLength::Yards),
+        value => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `in`, `ft`, `yd`"),
+            vec![source_range],
+        ))),
     }
 }
 
-impl std::fmt::Display for UnitLen {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            UnitLen::Mm => write!(f, "mm"),
-            UnitLen::Cm => write!(f, "cm"),
-            UnitLen::M => write!(f, "m"),
-            UnitLen::Inches => write!(f, "in"),
-            UnitLen::Feet => write!(f, "ft"),
-            UnitLen::Yards => write!(f, "yd"),
-            UnitLen::Unknown => write!(f, "Length"),
-        }
-    }
-}
-
-impl TryFrom<NumericSuffix> for UnitLen {
-    type Error = ();
-
-    fn try_from(suffix: NumericSuffix) -> std::result::Result<Self, Self::Error> {
-        match suffix {
-            NumericSuffix::Mm => Ok(Self::Mm),
-            NumericSuffix::Cm => Ok(Self::Cm),
-            NumericSuffix::M => Ok(Self::M),
-            NumericSuffix::Inch => Ok(Self::Inches),
-            NumericSuffix::Ft => Ok(Self::Feet),
-            NumericSuffix::Yd => Ok(Self::Yards),
-            _ => Err(()),
-        }
-    }
-}
-
-impl From<kittycad_modeling_cmds::units::UnitLength> for UnitLen {
-    fn from(unit: kittycad_modeling_cmds::units::UnitLength) -> Self {
-        match unit {
-            kittycad_modeling_cmds::units::UnitLength::Centimeters => UnitLen::Cm,
-            kittycad_modeling_cmds::units::UnitLength::Feet => UnitLen::Feet,
-            kittycad_modeling_cmds::units::UnitLength::Inches => UnitLen::Inches,
-            kittycad_modeling_cmds::units::UnitLength::Meters => UnitLen::M,
-            kittycad_modeling_cmds::units::UnitLength::Millimeters => UnitLen::Mm,
-            kittycad_modeling_cmds::units::UnitLength::Yards => UnitLen::Yards,
-        }
-    }
-}
-
-impl From<UnitLen> for kittycad_modeling_cmds::units::UnitLength {
-    fn from(unit: UnitLen) -> Self {
-        match unit {
-            UnitLen::Cm => kittycad_modeling_cmds::units::UnitLength::Centimeters,
-            UnitLen::Feet => kittycad_modeling_cmds::units::UnitLength::Feet,
-            UnitLen::Inches => kittycad_modeling_cmds::units::UnitLength::Inches,
-            UnitLen::M => kittycad_modeling_cmds::units::UnitLength::Meters,
-            UnitLen::Mm => kittycad_modeling_cmds::units::UnitLength::Millimeters,
-            UnitLen::Yards => kittycad_modeling_cmds::units::UnitLength::Yards,
-            UnitLen::Unknown => unreachable!(),
-        }
-    }
-}
-
-// Conversions are defined directly against kittycad_modeling_cmds::units::UnitLength.
-
-/// A unit of angle.
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum UnitAngle {
-    #[default]
-    Degrees,
-    Radians,
-    Unknown,
-}
-
-impl UnitAngle {
-    pub fn adjust_to(self, value: f64, to: UnitAngle) -> (f64, UnitAngle) {
-        use std::f64::consts::PI;
-
-        use UnitAngle::*;
-
-        if to == Unknown {
-            return (value, self);
-        }
-
-        let value = match (self, to) {
-            (Degrees, Degrees) => value,
-            (Degrees, Radians) => (value / 180.0) * PI,
-            (Radians, Degrees) => 180.0 * value / PI,
-            (Radians, Radians) => value,
-            (Unknown, _) | (_, Unknown) => unreachable!(),
-        };
-
-        (value, to)
-    }
-}
-
-impl std::fmt::Display for UnitAngle {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            UnitAngle::Degrees => write!(f, "deg"),
-            UnitAngle::Radians => write!(f, "rad"),
-            UnitAngle::Unknown => write!(f, "Angle"),
-        }
-    }
-}
-
-impl TryFrom<NumericSuffix> for UnitAngle {
-    type Error = ();
-
-    fn try_from(suffix: NumericSuffix) -> std::result::Result<Self, Self::Error> {
-        match suffix {
-            NumericSuffix::Deg => Ok(Self::Degrees),
-            NumericSuffix::Rad => Ok(Self::Radians),
-            _ => Err(()),
-        }
-    }
+pub(super) fn angle_from_str(s: &str, source_range: SourceRange) -> Result<UnitAngle, KclError> {
+    UnitAngle::from_str(s).map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!("Unexpected value for angle units: `{s}`; expected one of `deg`, `rad`"),
+            vec![source_range],
+        ))
+    })
 }
 
 #[derive(Debug, Clone)]
@@ -2217,7 +2142,7 @@ mod test {
         };
         let inches = KclValue::Number {
             value: 1.0,
-            ty: NumericType::Known(UnitType::Length(UnitLen::Inches)),
+            ty: NumericType::Known(UnitType::Length(UnitLength::Inches)),
             meta: Vec::new(),
         };
         let rads = KclValue::Number {
@@ -2257,8 +2182,8 @@ mod test {
             default
                 .coerce(
                     &NumericType::Default {
-                        len: UnitLen::Yards,
-                        angle: UnitAngle::default()
+                        len: UnitLength::Yards,
+                        angle: UnitAngle::Degrees,
                     }
                     .into(),
                     true,
@@ -2400,7 +2325,12 @@ u = min([3rad, 4in])
         assert_value_and_type("n", &result, 5.0, NumericType::Unknown);
         assert_value_and_type("o", &result, 1.0, NumericType::mm());
         assert_value_and_type("p", &result, 1.0, NumericType::count());
-        assert_value_and_type("q", &result, 2.0, NumericType::Known(UnitType::Length(UnitLen::Inches)));
+        assert_value_and_type(
+            "q",
+            &result,
+            2.0,
+            NumericType::Known(UnitType::Length(UnitLength::Inches)),
+        );
 
         assert_value_and_type("r", &result, 0.0, NumericType::default());
         assert_value_and_type("s", &result, -42.0, NumericType::mm());

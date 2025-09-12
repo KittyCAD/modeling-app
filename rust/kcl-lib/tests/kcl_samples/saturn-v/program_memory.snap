@@ -44,9 +44,7 @@ description: Variables in memory after executing saturn-v.kcl
               4.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -75,9 +73,7 @@ description: Variables in memory after executing saturn-v.kcl
               -4.5
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -94,9 +90,7 @@ description: Variables in memory after executing saturn-v.kcl
               -4.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -106,9 +100,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 6000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -116,25 +108,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -146,9 +132,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0,
             -4.5
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -157,16 +141,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -191,9 +171,7 @@ description: Variables in memory after executing saturn-v.kcl
             4.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -222,9 +200,7 @@ description: Variables in memory after executing saturn-v.kcl
             -4.5
           ],
           "type": "ArcThreePoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -241,9 +217,7 @@ description: Variables in memory after executing saturn-v.kcl
             -4.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -253,9 +227,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 6000.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -263,25 +235,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -293,9 +259,7 @@ description: Variables in memory after executing saturn-v.kcl
           0.0,
           -4.5
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -304,9 +268,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "blackPanelSketch": {
@@ -318,34 +280,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 6000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -358,34 +312,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 6000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -398,34 +344,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 20000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -438,34 +376,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 20000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -524,9 +454,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -543,9 +471,7 @@ description: Variables in memory after executing saturn-v.kcl
               8.219999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -562,9 +488,7 @@ description: Variables in memory after executing saturn-v.kcl
               11.219999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -581,9 +505,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -600,9 +522,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -612,9 +532,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -622,25 +540,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -652,9 +564,7 @@ description: Variables in memory after executing saturn-v.kcl
             -4.23,
             6.02
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -663,16 +573,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -731,9 +637,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -750,9 +654,7 @@ description: Variables in memory after executing saturn-v.kcl
               8.219999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -769,9 +671,7 @@ description: Variables in memory after executing saturn-v.kcl
               11.219999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -788,9 +688,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -807,9 +705,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -819,9 +715,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -829,25 +723,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -859,9 +747,7 @@ description: Variables in memory after executing saturn-v.kcl
             -4.23,
             6.02
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -870,16 +756,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -938,9 +820,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -957,9 +837,7 @@ description: Variables in memory after executing saturn-v.kcl
               8.219999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -976,9 +854,7 @@ description: Variables in memory after executing saturn-v.kcl
               11.219999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -995,9 +871,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1014,9 +888,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -1026,9 +898,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -1036,25 +906,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1066,9 +930,7 @@ description: Variables in memory after executing saturn-v.kcl
             -4.23,
             6.02
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1077,16 +939,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -1145,9 +1003,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1164,9 +1020,7 @@ description: Variables in memory after executing saturn-v.kcl
               8.219999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1183,9 +1037,7 @@ description: Variables in memory after executing saturn-v.kcl
               11.219999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1202,9 +1054,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1221,9 +1071,7 @@ description: Variables in memory after executing saturn-v.kcl
               6.02
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -1233,9 +1081,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -1243,25 +1089,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1273,9 +1113,7 @@ description: Variables in memory after executing saturn-v.kcl
             -4.23,
             6.02
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1284,16 +1122,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -1318,9 +1152,7 @@ description: Variables in memory after executing saturn-v.kcl
             6.02
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1337,9 +1169,7 @@ description: Variables in memory after executing saturn-v.kcl
             8.219999999999999
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1356,9 +1186,7 @@ description: Variables in memory after executing saturn-v.kcl
             11.219999999999999
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1375,9 +1203,7 @@ description: Variables in memory after executing saturn-v.kcl
             6.02
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -1394,9 +1220,7 @@ description: Variables in memory after executing saturn-v.kcl
             6.02
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -1406,9 +1230,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -1416,25 +1238,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1446,9 +1262,7 @@ description: Variables in memory after executing saturn-v.kcl
           -4.23,
           6.02
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1457,9 +1271,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "finSketch": {
@@ -1471,34 +1283,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1550,9 +1354,7 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1569,9 +1371,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1588,9 +1388,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1607,9 +1405,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -1619,9 +1415,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -1629,25 +1423,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1659,9 +1447,7 @@ description: Variables in memory after executing saturn-v.kcl
             -0.1,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1670,16 +1456,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -1709,9 +1491,7 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1728,9 +1508,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1747,9 +1525,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1766,9 +1542,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -1778,9 +1552,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -1788,25 +1560,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1818,9 +1584,7 @@ description: Variables in memory after executing saturn-v.kcl
             -0.1,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1829,16 +1593,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -1868,9 +1628,7 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1887,9 +1645,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1906,9 +1662,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -1925,9 +1679,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -1937,9 +1689,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -1947,25 +1697,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1977,9 +1721,7 @@ description: Variables in memory after executing saturn-v.kcl
             -0.1,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1988,16 +1730,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -2027,9 +1765,7 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2046,9 +1782,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2065,9 +1799,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2084,9 +1816,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -2096,9 +1826,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -2106,25 +1834,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2136,9 +1858,7 @@ description: Variables in memory after executing saturn-v.kcl
             -0.1,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2147,16 +1867,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -2181,9 +1897,7 @@ description: Variables in memory after executing saturn-v.kcl
             9.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2200,9 +1914,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2219,9 +1931,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2238,9 +1948,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -2250,9 +1958,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -2260,25 +1966,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2290,9 +1990,7 @@ description: Variables in memory after executing saturn-v.kcl
           -0.1,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2301,9 +1999,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "hoodSketch": {
@@ -2315,34 +2011,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2415,9 +2103,7 @@ description: Variables in memory after executing saturn-v.kcl
               80.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2434,9 +2120,7 @@ description: Variables in memory after executing saturn-v.kcl
               87.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2453,9 +2137,7 @@ description: Variables in memory after executing saturn-v.kcl
               91.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2472,9 +2154,7 @@ description: Variables in memory after executing saturn-v.kcl
               92.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2491,9 +2171,7 @@ description: Variables in memory after executing saturn-v.kcl
               99.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2510,9 +2188,7 @@ description: Variables in memory after executing saturn-v.kcl
               100.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2529,9 +2205,7 @@ description: Variables in memory after executing saturn-v.kcl
               80.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2548,9 +2222,7 @@ description: Variables in memory after executing saturn-v.kcl
               80.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -2560,9 +2232,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -2570,25 +2240,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2600,9 +2264,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0,
             80.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2611,16 +2273,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -2645,9 +2303,7 @@ description: Variables in memory after executing saturn-v.kcl
             80.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2664,9 +2320,7 @@ description: Variables in memory after executing saturn-v.kcl
             87.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2683,9 +2337,7 @@ description: Variables in memory after executing saturn-v.kcl
             91.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2702,9 +2354,7 @@ description: Variables in memory after executing saturn-v.kcl
             92.4
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2721,9 +2371,7 @@ description: Variables in memory after executing saturn-v.kcl
             99.4
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2740,9 +2388,7 @@ description: Variables in memory after executing saturn-v.kcl
             100.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2759,9 +2405,7 @@ description: Variables in memory after executing saturn-v.kcl
             80.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -2778,9 +2422,7 @@ description: Variables in memory after executing saturn-v.kcl
             80.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -2790,9 +2432,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -2800,25 +2440,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2830,9 +2464,7 @@ description: Variables in memory after executing saturn-v.kcl
           0.0,
           80.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2841,9 +2473,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "lesSketch": {
@@ -2855,34 +2485,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2927,9 +2549,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2958,9 +2578,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -2977,9 +2595,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -2989,9 +2605,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 38000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2999,25 +2613,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3029,9 +2637,7 @@ description: Variables in memory after executing saturn-v.kcl
             -4.5,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3040,16 +2646,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 9.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -3062,34 +2664,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 38000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3114,9 +2708,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3145,9 +2737,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ArcThreePoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3164,9 +2754,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -3176,9 +2764,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 38000.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -3186,25 +2772,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3216,9 +2796,7 @@ description: Variables in memory after executing saturn-v.kcl
           -4.5,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3227,9 +2805,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "midStripeProfileWhite": {
@@ -3253,9 +2829,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3284,9 +2858,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ArcThreePoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -3303,9 +2875,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -3315,9 +2885,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 38000.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -3325,25 +2893,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3355,9 +2917,7 @@ description: Variables in memory after executing saturn-v.kcl
           -4.5,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3366,9 +2926,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "midStripeSketch": {
@@ -3380,34 +2938,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 38000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3452,9 +3002,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3483,9 +3031,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3502,9 +3048,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -3514,9 +3058,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 38000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -3524,25 +3066,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3554,9 +3090,7 @@ description: Variables in memory after executing saturn-v.kcl
             -4.5,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3565,16 +3099,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 9.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -3626,9 +3156,7 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3645,9 +3173,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3664,9 +3190,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3683,9 +3207,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -3695,9 +3217,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -3705,25 +3225,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3735,9 +3249,7 @@ description: Variables in memory after executing saturn-v.kcl
             -0.1,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3746,16 +3258,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -3785,9 +3293,7 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3804,9 +3310,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3823,9 +3327,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3842,9 +3344,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -3854,9 +3354,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -3864,25 +3362,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3894,9 +3386,7 @@ description: Variables in memory after executing saturn-v.kcl
             -0.1,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3905,16 +3395,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -3944,9 +3430,7 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3963,9 +3447,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -3982,9 +3464,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4001,9 +3481,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -4013,9 +3491,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -4023,25 +3499,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4053,9 +3523,7 @@ description: Variables in memory after executing saturn-v.kcl
             -0.1,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4064,16 +3532,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -4103,9 +3567,7 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4122,9 +3584,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4141,9 +3601,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -4160,9 +3618,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -4172,9 +3628,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -4182,25 +3636,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4212,9 +3660,7 @@ description: Variables in memory after executing saturn-v.kcl
             -0.1,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4223,16 +3669,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -4257,9 +3699,7 @@ description: Variables in memory after executing saturn-v.kcl
             9.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -4276,9 +3716,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -4295,9 +3733,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -4314,9 +3750,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -4326,9 +3760,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -4336,25 +3768,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -4366,9 +3792,7 @@ description: Variables in memory after executing saturn-v.kcl
           -0.1,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -4377,9 +3801,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "nozzleSketch": {
@@ -4391,34 +3813,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -4427,12 +3841,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": 4.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "r2": {
@@ -4440,12 +3850,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": 3.2,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "M"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "m",
+      "angle": "degrees"
     }
   },
   "ringBand": {
@@ -4488,9 +3894,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -4500,9 +3904,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 47000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -4510,25 +3912,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4540,9 +3936,7 @@ description: Variables in memory after executing saturn-v.kcl
             4.5,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4551,16 +3945,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -4573,34 +3963,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 47000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -4631,9 +4013,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -4643,9 +4023,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 47000.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -4653,25 +4031,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -4683,9 +4055,7 @@ description: Variables in memory after executing saturn-v.kcl
           4.5,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -4694,9 +4064,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "ringSketch": {
@@ -4708,34 +4076,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 47000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -4779,9 +4139,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -4791,9 +4149,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 20000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -4801,25 +4157,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4831,9 +4181,7 @@ description: Variables in memory after executing saturn-v.kcl
             4.5,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4842,16 +4190,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 18.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -4882,9 +4226,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -4894,9 +4236,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 20000.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -4904,25 +4244,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -4934,9 +4268,7 @@ description: Variables in memory after executing saturn-v.kcl
           4.5,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -4945,9 +4277,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "stage2Black": {
@@ -4990,9 +4320,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -5002,9 +4330,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 78000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -5012,25 +4338,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -5042,9 +4362,7 @@ description: Variables in memory after executing saturn-v.kcl
             3.2,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -5053,16 +4371,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -5075,34 +4389,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 69000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -5133,9 +4439,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -5145,9 +4449,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 69000.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -5155,25 +4457,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -5185,9 +4481,7 @@ description: Variables in memory after executing saturn-v.kcl
           3.2,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -5196,9 +4490,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "stage2Sketch": {
@@ -5210,34 +4502,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 69000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -5250,34 +4534,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 78000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -5308,9 +4584,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -5320,9 +4594,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 78000.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -5330,25 +4602,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -5360,9 +4626,7 @@ description: Variables in memory after executing saturn-v.kcl
           3.2,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -5371,9 +4635,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "stage2StripeSketch": {
@@ -5385,34 +4647,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 78000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -5456,9 +4710,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -5468,9 +4720,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 69000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -5478,25 +4728,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -5508,9 +4752,7 @@ description: Variables in memory after executing saturn-v.kcl
             3.2,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -5519,16 +4761,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 9.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -5580,9 +4818,7 @@ description: Variables in memory after executing saturn-v.kcl
               64.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5599,9 +4835,7 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5618,9 +4852,7 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5637,9 +4869,7 @@ description: Variables in memory after executing saturn-v.kcl
               64.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -5656,9 +4886,7 @@ description: Variables in memory after executing saturn-v.kcl
               64.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -5668,9 +4896,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -5678,25 +4904,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -5708,9 +4928,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0,
             64.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -5719,16 +4937,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -5753,9 +4967,7 @@ description: Variables in memory after executing saturn-v.kcl
             64.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -5772,9 +4984,7 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -5791,9 +5001,7 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -5810,9 +5018,7 @@ description: Variables in memory after executing saturn-v.kcl
             64.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -5829,9 +5035,7 @@ description: Variables in memory after executing saturn-v.kcl
             64.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -5841,9 +5045,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -5851,25 +5053,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -5881,9 +5077,7 @@ description: Variables in memory after executing saturn-v.kcl
           0.0,
           64.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -5892,9 +5086,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "transitionLowerConeSketch": {
@@ -5906,34 +5098,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -5985,9 +5169,7 @@ description: Variables in memory after executing saturn-v.kcl
               64.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6004,9 +5186,7 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6023,9 +5203,7 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6042,9 +5220,7 @@ description: Variables in memory after executing saturn-v.kcl
               64.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6061,9 +5237,7 @@ description: Variables in memory after executing saturn-v.kcl
               64.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -6073,9 +5247,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -6083,25 +5255,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -6113,9 +5279,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0,
             64.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -6124,16 +5288,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -6158,9 +5318,7 @@ description: Variables in memory after executing saturn-v.kcl
             64.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -6177,9 +5335,7 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -6196,9 +5352,7 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -6215,9 +5369,7 @@ description: Variables in memory after executing saturn-v.kcl
             64.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -6234,9 +5386,7 @@ description: Variables in memory after executing saturn-v.kcl
             64.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -6246,9 +5396,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -6256,25 +5404,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -6286,9 +5428,7 @@ description: Variables in memory after executing saturn-v.kcl
           0.0,
           64.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -6297,9 +5437,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "transitionUpperConeBlack": {
@@ -6350,9 +5488,7 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6369,9 +5505,7 @@ description: Variables in memory after executing saturn-v.kcl
               69.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6388,9 +5522,7 @@ description: Variables in memory after executing saturn-v.kcl
               69.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6407,9 +5539,7 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6426,9 +5556,7 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -6438,9 +5566,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -6448,25 +5574,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -6478,9 +5598,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0,
             66.5
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -6489,16 +5607,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -6523,9 +5637,7 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -6542,9 +5654,7 @@ description: Variables in memory after executing saturn-v.kcl
             69.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -6561,9 +5671,7 @@ description: Variables in memory after executing saturn-v.kcl
             69.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -6580,9 +5688,7 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -6599,9 +5705,7 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -6611,9 +5715,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -6621,25 +5723,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -6651,9 +5747,7 @@ description: Variables in memory after executing saturn-v.kcl
           0.0,
           66.5
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -6662,9 +5756,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "transitionUpperConeSketch": {
@@ -6676,34 +5768,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -6755,9 +5839,7 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6774,9 +5856,7 @@ description: Variables in memory after executing saturn-v.kcl
               69.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6793,9 +5873,7 @@ description: Variables in memory after executing saturn-v.kcl
               69.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6812,9 +5890,7 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -6831,9 +5907,7 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -6843,9 +5917,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -6853,25 +5925,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -6883,9 +5949,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0,
             66.5
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -6894,16 +5958,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -6928,9 +5988,7 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -6947,9 +6005,7 @@ description: Variables in memory after executing saturn-v.kcl
             69.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -6966,9 +6022,7 @@ description: Variables in memory after executing saturn-v.kcl
             69.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -6985,9 +6039,7 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -7004,9 +6056,7 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -7016,9 +6066,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -7026,25 +6074,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -7056,9 +6098,7 @@ description: Variables in memory after executing saturn-v.kcl
           0.0,
           66.5
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -7067,9 +6107,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "upperCylPlane": {
@@ -7081,34 +6119,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 49000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -7139,9 +6169,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -7151,9 +6179,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 49000.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -7161,25 +6187,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -7191,9 +6211,7 @@ description: Variables in memory after executing saturn-v.kcl
           4.5,
           0.0
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -7202,9 +6220,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   },
   "upperCylSketch": {
@@ -7216,34 +6232,26 @@ description: Variables in memory after executing saturn-v.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 49000.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -7287,9 +6295,7 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -7299,9 +6305,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 49000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -7309,25 +6313,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -7339,9 +6337,7 @@ description: Variables in memory after executing saturn-v.kcl
             4.5,
             0.0
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -7350,16 +6346,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 15.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -7404,9 +6396,7 @@ description: Variables in memory after executing saturn-v.kcl
               4.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7435,9 +6425,7 @@ description: Variables in memory after executing saturn-v.kcl
               -4.5
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           },
           {
             "__geoMeta": {
@@ -7454,9 +6442,7 @@ description: Variables in memory after executing saturn-v.kcl
               -4.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "M"
-            }
+            "units": "m"
           }
         ],
         "on": {
@@ -7466,9 +6452,7 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 6000.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -7476,25 +6460,19 @@ description: Variables in memory after executing saturn-v.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -7506,9 +6484,7 @@ description: Variables in memory after executing saturn-v.kcl
             0.0,
             -4.5
           ],
-          "units": {
-            "type": "M"
-          },
+          "units": "m",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -7517,16 +6493,12 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "M"
-        }
+        "units": "m"
       },
       "height": 14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "M"
-      },
+      "units": "m",
       "sectional": false
     }
   },
@@ -7551,9 +6523,7 @@ description: Variables in memory after executing saturn-v.kcl
             4.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -7582,9 +6552,7 @@ description: Variables in memory after executing saturn-v.kcl
             -4.5
           ],
           "type": "ArcThreePoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         },
         {
           "__geoMeta": {
@@ -7601,9 +6569,7 @@ description: Variables in memory after executing saturn-v.kcl
             -4.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "M"
-          }
+          "units": "m"
         }
       ],
       "on": {
@@ -7613,9 +6579,7 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 6000.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -7623,25 +6587,19 @@ description: Variables in memory after executing saturn-v.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -7653,9 +6611,7 @@ description: Variables in memory after executing saturn-v.kcl
           0.0,
           -4.5
         ],
-        "units": {
-          "type": "M"
-        },
+        "units": "m",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -7664,9 +6620,7 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "M"
-      }
+      "units": "m"
     }
   }
 }

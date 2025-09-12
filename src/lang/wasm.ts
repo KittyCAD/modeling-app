@@ -10,7 +10,7 @@ import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
 import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { MetaSettings } from '@rust/kcl-lib/bindings/MetaSettings'
-import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
@@ -20,8 +20,6 @@ import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
-import type { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
-import type { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import { KCLError } from '@src/lang/errors'
@@ -37,10 +35,6 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/std/sketch'
 import { isTopLevelModule } from '@src/lang/util'
-import {
-  DEFAULT_DEFAULT_ANGLE_UNIT,
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-} from '@src/lib/constants'
 import type { CoreDumpManager } from '@src/lib/coredump'
 import openWindow from '@src/lib/openWindow'
 import { Reason, err } from '@src/lib/trap'
@@ -764,7 +758,7 @@ export function kclSettings(
  */
 export function changeDefaultUnits(
   kcl: string,
-  len: UnitLen | null
+  len: UnitLength | null
 ): string | Error {
   try {
     return change_default_units(kcl, JSON.stringify(len))
@@ -790,82 +784,6 @@ export function isKclEmptyOrOnlySettings(kcl: string): boolean {
     console.debug('Caught error checking if KCL is empty', e)
     // If there's a parse error, it can't be empty or auto-generated.
     return false
-  }
-}
-
-/**
- * Convert a `UnitLength` (used in settings and modeling commands) to a
- * `UnitLen` (used in execution).
- */
-export function unitLengthToUnitLen(
-  input: UnitLength | undefined
-): UnitLen | null {
-  switch (input) {
-    case 'mm':
-      return { type: 'Mm' }
-    case 'm':
-      return { type: 'M' }
-    case 'cm':
-      return { type: 'Cm' }
-    case 'yd':
-      return { type: 'Yards' }
-    case 'ft':
-      return { type: 'Feet' }
-    case 'in':
-      return { type: 'Inches' }
-    default:
-      return null
-  }
-}
-
-/**
- * Convert `UnitLen` (used in execution) to `UnitLength` (used in settings
- * and modeling commands).
- */
-export function unitLenToUnitLength(input: UnitLen): UnitLength {
-  switch (input.type) {
-    case 'M':
-      return 'm'
-    case 'Cm':
-      return 'cm'
-    case 'Yards':
-      return 'yd'
-    case 'Feet':
-      return 'ft'
-    case 'Inches':
-      return 'in'
-    default:
-      return DEFAULT_DEFAULT_LENGTH_UNIT
-  }
-}
-
-/**
- * Convert a `UnitAngle` (used in modeling commands) to a `UnitAng` (used in
- * execution).
- */
-export function unitAngleToUnitAng(
-  input: UnitAngle | undefined
-): UnitAng | null {
-  switch (input) {
-    case 'radians':
-      return { type: 'Radians' }
-    case 'degrees':
-      return { type: 'Degrees' }
-    default:
-      return null
-  }
-}
-
-/**
- * Convert `UnitAng` (used in execution) to `UnitAngle` (used in modeling
- * commands).
- */
-export function unitAngToUnitAngle(input: UnitAng): UnitAngle {
-  switch (input.type) {
-    case 'Radians':
-      return 'radians'
-    default:
-      return DEFAULT_DEFAULT_ANGLE_UNIT
   }
 }
 

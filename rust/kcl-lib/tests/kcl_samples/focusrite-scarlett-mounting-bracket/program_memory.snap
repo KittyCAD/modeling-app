@@ -149,9 +149,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               -4.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -175,9 +173,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               -4.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -201,9 +197,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -227,9 +221,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -253,9 +245,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -279,9 +269,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -305,9 +293,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -331,9 +317,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -343,9 +327,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "x": 0.0,
             "y": 44.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -353,25 +335,19 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -383,9 +359,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             -76.0,
             49.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -428,9 +402,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 88.0,
       "startCapId": "[uuid]",
@@ -443,12 +415,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "n": 6.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -461,12 +429,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "n": 6.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -479,12 +443,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "n": 6.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -497,21 +457,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "n": 6.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -526,12 +480,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -539,12 +489,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 44.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -552,12 +498,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -571,12 +513,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -584,12 +522,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -597,12 +531,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -616,12 +546,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -629,12 +555,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -642,12 +564,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -661,12 +579,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -674,12 +588,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -687,12 +597,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -733,9 +639,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             -4.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -759,9 +663,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             -4.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -785,9 +687,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -811,9 +711,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -837,9 +735,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -863,9 +759,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -889,9 +783,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -915,9 +807,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -927,9 +817,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "x": 0.0,
           "y": 44.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -937,25 +825,19 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -967,9 +849,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           -76.0,
           49.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1012,9 +892,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "depth": {
@@ -1022,12 +900,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "value": 45.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "edge1": {
@@ -1115,12 +989,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "length": {
@@ -1128,12 +998,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "radius": {
@@ -1141,12 +1007,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "retBack": {
@@ -1204,9 +1066,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               4.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1223,9 +1083,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               4.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1242,9 +1100,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1261,9 +1117,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1273,9 +1127,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "x": -52.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1283,25 +1135,19 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1313,9 +1159,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             44.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1324,16 +1168,12 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 104.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1385,9 +1225,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               4.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1404,9 +1242,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1423,9 +1259,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1435,9 +1269,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "x": -52.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1445,25 +1277,19 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1475,9 +1301,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             -44.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1486,16 +1310,12 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 104.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1510,12 +1330,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": -52.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -1523,12 +1339,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -1536,12 +1348,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -1555,12 +1363,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -1568,12 +1372,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -1581,12 +1381,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -1600,12 +1396,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -1613,12 +1405,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -1626,12 +1414,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -1645,12 +1429,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -1658,12 +1438,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -1671,12 +1447,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -1690,12 +1462,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "value": 25.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tabPlane": {
@@ -1709,12 +1477,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -1722,12 +1486,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -1735,12 +1495,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 49.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -1754,12 +1510,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -1767,12 +1519,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -1780,12 +1528,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -1799,12 +1543,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -1812,12 +1552,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -1825,12 +1561,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -1844,12 +1576,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -1857,12 +1585,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -1870,12 +1594,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         },
@@ -1889,12 +1609,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tabWidth": {
@@ -1902,12 +1618,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tabsL": {
@@ -2010,9 +1722,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.666666666666664
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2036,9 +1746,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   18.999999999999996
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2062,9 +1770,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.666666666666663
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2088,9 +1794,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "innerPaths": [
@@ -2115,9 +1819,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   27.333333333333332
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2127,9 +1829,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 0.0,
                 "y": 0.0,
                 "z": 49.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -2137,25 +1837,19 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2167,9 +1861,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 -76.0,
                 44.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2196,9 +1888,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": -4.0,
           "startCapId": "[uuid]",
@@ -2211,12 +1901,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "n": 2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -2229,21 +1915,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "n": 2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -2344,9 +2024,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.666666666666664
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2370,9 +2048,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   18.999999999999996
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2396,9 +2072,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.666666666666663
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2422,9 +2096,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "innerPaths": [
@@ -2449,9 +2121,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   27.333333333333332
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2461,9 +2131,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 0.0,
                 "y": 0.0,
                 "z": 49.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -2471,25 +2139,19 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2501,9 +2163,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 -76.0,
                 44.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2530,9 +2190,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": -4.0,
           "startCapId": "[uuid]",
@@ -2545,12 +2203,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "n": 2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -2563,21 +2217,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "n": 2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -2683,9 +2331,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.666666666666664
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2709,9 +2355,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   18.999999999999996
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2735,9 +2379,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.666666666666663
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2761,9 +2403,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "innerPaths": [
@@ -2788,9 +2428,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   27.333333333333332
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2800,9 +2438,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 0.0,
                 "y": 0.0,
                 "z": 49.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -2810,25 +2446,19 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2840,9 +2470,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 76.0,
                 44.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2869,9 +2497,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": -4.0,
           "startCapId": "[uuid]",
@@ -2884,12 +2510,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "n": 2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -2902,21 +2524,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "n": 2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -3017,9 +2633,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.666666666666664
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3043,9 +2657,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   18.999999999999996
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3069,9 +2681,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.666666666666663
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3095,9 +2705,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "innerPaths": [
@@ -3122,9 +2730,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   27.333333333333332
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -3134,9 +2740,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 0.0,
                 "y": 0.0,
                 "z": 49.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -3144,25 +2748,19 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -3174,9 +2772,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 76.0,
                 44.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3203,9 +2799,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": -4.0,
           "startCapId": "[uuid]",
@@ -3218,12 +2812,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "n": 2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -3236,21 +2826,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "n": 2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -3261,12 +2845,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "width": {
@@ -3274,12 +2854,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "value": 144.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

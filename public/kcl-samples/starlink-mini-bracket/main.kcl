@@ -1,0 +1,91 @@
+// Starlink Mini Bracket
+// Bracket for holding a starlink device
+
+// Set units in inches (in)
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+cutoutEdgeLength = 2
+cutoutWidth = 0.52
+cutoutAngleBase = 8 // degrees
+cutoutAngleSide = 14 // degrees
+cutoutDepth = 1
+cutoutBaseDepth = 0.1
+totalWidth = 1.25
+blockEdgeLength = 0.5
+FLIP = 0
+
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0.0, 0.0])
+  |> xLine(length = blockEdgeLength + cutoutEdgeLength)
+  |> yLine(length = blockEdgeLength, tag = $seg01)
+  |> xLine(endAbsolute = blockEdgeLength)
+  |> yLine(endAbsolute = blockEdgeLength + cutoutEdgeLength)
+  |> xLine(endAbsolute = 0, tag = $seg02)
+  |> close()
+  |> extrude(length = totalWidth)
+
+sketch002 = startSketchOn(sketch001, face = seg01)
+  |> startProfile(at = [blockEdgeLength, 0.0])
+  |> xLine(length = cutoutDepth + cutoutBaseDepth)
+  |> yLine(length = (totalWidth - cutoutWidth) / 2 - ((1 - FLIP) * cutoutDepth * sin(units::toRadians(cutoutAngleBase))))
+  |> angledLine(angle = 180 - ((1 - FLIP) * cutoutAngleBase), lengthX = cutoutDepth)
+  |> yLine(length = cutoutWidth)
+  |> angledLine(angle = FLIP * cutoutAngleBase, lengthX = cutoutDepth)
+  |> yLine(endAbsolute = totalWidth)
+  |> xLine(endAbsolute = blockEdgeLength)
+  |> close()
+  |> extrude(length = -1 * cutoutEdgeLength)
+
+sketch003 = startSketchOn(sketch001, face = seg02)
+  |> startProfile(at = [-1 * blockEdgeLength, 0.0])
+  |> xLine(length = -1 * (cutoutDepth + cutoutBaseDepth))
+  |> yLine(length = (totalWidth - cutoutWidth) / 2 - ((1 - FLIP) * cutoutDepth * sin(units::toRadians(cutoutAngleSide))))
+  |> angledLine(angle = (1 - FLIP) * cutoutAngleSide, lengthX = cutoutDepth)
+  |> yLine(length = cutoutWidth)
+  |> angledLine(angle = 180 - (FLIP * cutoutAngleSide), lengthX = cutoutDepth)
+  |> yLine(endAbsolute = totalWidth)
+  |> xLine(endAbsolute = -1 * blockEdgeLength)
+  |> close()
+  |> extrude(length = -1 * cutoutEdgeLength)
+
+barrelD = 0.700
+barrelL = 1.10
+nRidges = 36
+barrelC = 1.25 / 2 // guess
+holeD = 0.253
+ridgeHeight = 1.1135 - barrelL
+ridgeWidth = 0.042
+
+sketch004 = startSketchOn(XY)
+  |> startProfile(at = [
+       -1 * (barrelC + barrelD / 2),
+       -totalWidth / 2
+     ])
+  |> arc(angleStart = 180, angleEnd = 90, radius = barrelD / 2)
+  |> xLine(endAbsolute = 0)
+  |> yLine(endAbsolute = -(totalWidth / 2 + barrelD / 2))
+  |> xLine(endAbsolute = -barrelC)
+  |> arc(angleEnd = 180, angleStart = 270, radius = barrelD / 2)
+  |> close()
+  |> extrude(length = barrelL)
+sketch005 = startSketchOn(sketch004, face = START)
+  |> circle(center = [barrelC, -totalWidth / 2], radius = holeD / 2)
+  |> extrude(length = -1 * barrelL)
+
+ridgePlane = offsetPlane(YZ, offset = -(barrelC + holeD / 2))
+
+sketch006 = startSketchOn(ridgePlane)
+  |> startProfile(at = [-totalWidth / 2, barrelL])
+  |> xLine(length = ridgeWidth / 2)
+  |> line(end = [-ridgeWidth / 2, ridgeHeight])
+  |> line(end = [-ridgeWidth / 2, -ridgeHeight])
+  |> close()
+  |> extrude(length = -((barrelD - holeD) / 2 - .003))
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, barrelL],
+       center = [-barrelC, -totalWidth / 2, barrelL],
+       instances = nRidges,
+       rotateDuplicates = true,
+     )

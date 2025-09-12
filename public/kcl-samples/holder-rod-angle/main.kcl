@@ -1,0 +1,218 @@
+// Holder for (shower) rod at a ~45° angle
+// This is used to mount a rod to a 45° angled ceiling
+
+
+
+
+@settings(defaultLengthUnit = cm)
+
+depth = 1
+
+length_1 = 4
+length = 3
+circle_center = length_1 / 2
+
+hole_radius = 2.25 / 2 // correct size
+
+
+holde_depth = 0.9
+
+radius001 = 0.25
+
+angle = atan(108 / 103)
+
+angled_bracket_sketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> yLine(length = length_1, tag = $seg01)
+  |> angledLine(angle = -90deg + angle, lengthY = length_1, tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg03)
+  |> close()
+angled_bracket = extrude(
+       angled_bracket_sketch,
+       length = length_1,
+       tagStart = $capStart001,
+       tagEnd = $capEnd001,
+     )
+  |> fillet(
+       radius = radius001,
+       tags = [
+         getCommonEdge(faces = [seg03, capStart001]),
+         getCommonEdge(faces = [seg03, capEnd001]),
+         getCommonEdge(faces = [seg01, capStart001]),
+         getCommonEdge(faces = [seg01, capEnd001]),
+         getCommonEdge(faces = [seg03, seg01])
+       ],
+     )
+
+/* holder_sketch = startSketchOn(YZ)
+  |> startProfile(at = [
+       (length_1 - length) / 2,
+       (length_1 - length) / 2
+     ])
+  |> yLine(length = length, tag = $h_seg02)
+  |> xLine(length = length, tag = $h_seg03)
+  |> yLine(length = -length, tag = $h_seg04)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $h_seg05)
+  |> close()
+holder = extrude(
+       holder_sketch,
+       length = -depth,
+       tagStart = $h_capStart001,
+       tagEnd = $h_capEnd002,
+     )
+  |> fillet(
+       radius = radius001,
+       tags = [
+         getCommonEdge(faces = [h_seg02, h_capStart001]),
+         getCommonEdge(faces = [h_seg03, h_capStart001]),
+         getCommonEdge(faces = [h_seg04, h_capStart001]),
+         getCommonEdge(faces = [h_seg05, h_capStart001]),
+         // outside
+         getCommonEdge(faces = [h_seg02, h_seg03]),
+         getCommonEdge(faces = [h_seg03, h_seg04]),
+         getCommonEdge(faces = [h_seg04, h_seg05]),
+         getCommonEdge(faces = [h_seg05, h_seg02])
+       ],
+     ) */
+
+hole_angled_bracket_sketch = startSketchOn(-YZ, face = seg01)
+hole_angled_bracket_profile = circle(hole_angled_bracket_sketch, center = [-circle_center, circle_center], radius = hole_radius)
+hole_angled_bracket = extrude(hole_angled_bracket_profile, length = -holde_depth)
+
+// hole_holder_sketch = startSketchOn(-YZ, face = seg01)  |> circle(center = [-circle_center, circle_center], radius = hole_radius)
+// hold_holder = extrude(hole_holder_sketch, length = 4)
+
+// subtract is broken right now
+subtractedPart1 = subtract([angled_bracket], tools = [hole_angled_bracket])
+// subtractedPart2 = subtract([holder], tools = [hold_holder])
+
+
+long_length = length_1 / cos(angle)
+
+a = cos(angle) * length_1
+
+padding = 0.8
+
+plate_sketch = startSketchOn(subtractedPart1, face = seg02)
+plate = startProfile(plate_sketch, at = [0, -padding])
+  |> xLine(length = a + padding, tag = $p_seg03)
+  |> yLine(length = length_1 + 2 * padding, tag = $seg07)
+  |> xLine(length = -(long_length + 2 * padding), tag = $seg06)
+  |> yLine(length = -(length_1 + 2 * padding), tag = $seg04)
+  |> close(tag = $seg05)
+
+// hole_inset = 0.6
+hole_inset = 0.55
+
+hole_x = a + padding
+
+screw_hole = 0.45 / 2
+
+outerEdge = 0.5
+
+plate_thickness = 0.25
+screw_champfer = (0.86 - 0.45) / 2
+
+extrude001 = extrude(
+       plate,
+       length = plate_thickness,
+       tagStart = $capStart002,
+       tagEnd = $capEnd002,
+     )
+  |> fillet(radius = outerEdge, tags = [getCommonEdge(faces = [seg04, seg05])])
+  |> fillet(radius = outerEdge, tags = [getCommonEdge(faces = [seg06, seg04])])
+  |> fillet(radius = outerEdge, tags = [getCommonEdge(faces = [seg07, seg06])])
+  |> fillet(
+       radius = outerEdge,
+       tags = [
+         getCommonEdge(faces = [p_seg03, seg07])
+       ],
+     )
+hole_1 = startSketchOn(extrude001, face = START)
+  |> circle(
+       center = [
+         -a + long_length + padding - hole_inset,
+         -padding + hole_inset
+       ],
+       radius = screw_hole,
+       tag = $seg12,
+     )
+
+hole_2 = startSketchOn(extrude001, face = START)
+  |> circle(
+       center = [
+         -a - padding + hole_inset,
+         length_1 + padding - hole_inset
+       ],
+       radius = screw_hole,
+       tag = $seg11,
+     )
+
+hole_3 = startSketchOn(extrude001, face = START)
+  |> circle(
+       center = [
+         -a - padding + hole_inset,
+         -padding + hole_inset
+       ],
+       radius = screw_hole,
+       tag = $seg10,
+     )
+
+hole_4 = startSketchOn(extrude001, face = START)
+  |> circle(
+       center = [
+         -a + long_length + padding - hole_inset,
+         length_1 + padding - hole_inset
+       ],
+       radius = screw_hole,
+       tag = $seg08,
+     )
+
+  /* hole = startSketchOn(extrude001, face = END)
+  |> circle(
+       center = [
+         1,1
+       ],
+       radius = screw_hole,
+       tag = $seg09,
+     ) */
+
+  // mounting_holes = extrude([hole_2, hole_1, hole_3, hole_4], length = -1)
+
+/* mounting_hole = extrude(hole, length = -0.2) |>  chamfer(
+       length = 0.1,
+       tags = [
+         getCommonEdge(faces = [capEnd002, seg09])
+       ],
+     ) */
+mounting_hole1 = extrude(hole_1, length = -plate_thickness)
+  |> chamfer(
+       length = screw_champfer,
+       tags = [
+         getCommonEdge(faces = [capStart002, seg12])
+       ],
+     )
+
+mounting_hole2 = extrude(hole_2, length = -plate_thickness)
+  |> chamfer(
+       length = screw_champfer,
+       tags = [
+         getCommonEdge(faces = [capStart002, seg11])
+       ],
+     )
+
+mounting_hole3 = extrude(hole_3, length = -plate_thickness)
+  |> chamfer(
+       length = screw_champfer,
+       tags = [
+         getCommonEdge(faces = [capStart002, seg10])
+       ],
+     )
+
+mounting_hole4 = extrude(hole_4, length = -plate_thickness)
+  |> chamfer(
+       length = screw_champfer,
+       tags = [
+         getCommonEdge(faces = [capStart002, seg08])
+       ],
+     )

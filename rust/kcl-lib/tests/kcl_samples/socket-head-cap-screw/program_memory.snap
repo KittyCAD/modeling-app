@@ -57,9 +57,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -71,17 +69,13 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -135,9 +129,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -147,9 +139,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -157,25 +147,19 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -187,9 +171,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   0.1565,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -204,9 +186,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "height": -0.19,
             "startCapId": "[uuid]",
@@ -219,12 +199,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "n": 0.02,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -237,26 +213,18 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "n": 0.02,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
                 "tag": null
               }
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -267,9 +235,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             0.095,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -284,9 +250,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 1.0,
       "startCapId": null,
@@ -299,21 +263,15 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "n": 0.02,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -322,12 +280,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "value": 0.19,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltHead": {
@@ -384,9 +338,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -396,9 +348,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -406,25 +356,19 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -436,9 +380,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             0.1565,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -453,9 +395,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": -0.19,
       "startCapId": "[uuid]",
@@ -468,12 +408,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "n": 0.02,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -486,21 +422,15 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "n": 0.02,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -509,12 +439,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "value": 0.313,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltHeadLength": {
@@ -522,12 +448,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "value": 0.19,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltHexDrive": {
@@ -535,12 +457,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "value": 0.15625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltHexFlatLength": {
@@ -548,12 +466,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "value": 0.09021097956087902,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltLength": {
@@ -561,12 +475,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "filletEdge": {
@@ -643,9 +553,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               -0.04510548978043951
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -662,9 +570,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               -0.09021097956087903
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -681,9 +587,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               -0.04510548978043953
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -700,9 +604,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               0.04510548978043949
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -719,9 +621,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               0.09021097956087899
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -738,9 +638,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               0.04510548978043951
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -752,17 +650,13 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -816,9 +710,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -828,9 +720,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -838,25 +728,19 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -868,9 +752,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   0.1565,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -885,9 +767,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "height": -0.19,
             "startCapId": "[uuid]",
@@ -900,12 +780,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "n": 0.02,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -918,26 +794,18 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "n": 0.02,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
                 "tag": null
               }
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -948,9 +816,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             0.078125,
             0.04510548978043951
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -959,16 +825,12 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": -0.14250000000000002,
       "startCapId": "[uuid]",
       "endCapId": null,
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },

@@ -12,12 +12,8 @@ description: Variables in memory after executing add_lots.kcl
     "value": 2652.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

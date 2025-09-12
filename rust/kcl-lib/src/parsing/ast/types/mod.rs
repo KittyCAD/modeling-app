@@ -26,10 +26,7 @@ pub use crate::parsing::ast::types::{
 use crate::{
     ModuleId, SourceRange, TypedPath,
     errors::KclError,
-    execution::{
-        KclValue, Metadata, TagIdentifier, annotations,
-        types::{ArrayLen, UnitLen},
-    },
+    execution::{KclValue, Metadata, TagIdentifier, annotations, types::ArrayLen},
     lsp::ToLspRange,
     parsing::{PIPE_OPERATOR, ast::digest::Digest, token::NumericSuffix},
 };
@@ -349,7 +346,10 @@ impl Node<Program> {
         Ok(None)
     }
 
-    pub fn change_default_units(&self, length_units: Option<UnitLen>) -> Result<Self, KclError> {
+    pub fn change_default_units(
+        &self,
+        length_units: Option<kittycad_modeling_cmds::units::UnitLength>,
+    ) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
         for node in &mut new_program.inner_attrs {
@@ -3914,6 +3914,7 @@ impl ConstraintLevels {
 
 #[cfg(test)]
 mod tests {
+    use kittycad_modeling_cmds::units::UnitLength;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -4373,10 +4374,7 @@ startSketchOn(XY)"#;
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(
-            meta_settings.default_length_units,
-            crate::execution::types::UnitLen::Inches
-        );
+        assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4389,21 +4387,16 @@ startSketchOn(XY)"#;
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(
-            meta_settings.default_length_units,
-            crate::execution::types::UnitLen::Inches
-        );
+        assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
 
         // Edit the ast.
-        let new_program = program
-            .change_default_units(Some(crate::execution::types::UnitLen::Mm))
-            .unwrap();
+        let new_program = program.change_default_units(Some(UnitLength::Millimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
+        assert_eq!(meta_settings.default_length_units, UnitLength::Millimeters);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 
@@ -4424,15 +4417,13 @@ startSketchOn(XY)
         assert!(result.is_none());
 
         // Edit the ast.
-        let new_program = program
-            .change_default_units(Some(crate::execution::types::UnitLen::Mm))
-            .unwrap();
+        let new_program = program.change_default_units(Some(UnitLength::Millimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
+        assert_eq!(meta_settings.default_length_units, UnitLength::Millimeters);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 
@@ -4459,15 +4450,13 @@ startSketchOn(XY)
 "#;
         let program = crate::parsing::top_level_parse(code).unwrap();
 
-        let new_program = program
-            .change_default_units(Some(crate::execution::types::UnitLen::Cm))
-            .unwrap();
+        let new_program = program.change_default_units(Some(UnitLength::Centimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Cm);
+        assert_eq!(meta_settings.default_length_units, UnitLength::Centimeters);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 

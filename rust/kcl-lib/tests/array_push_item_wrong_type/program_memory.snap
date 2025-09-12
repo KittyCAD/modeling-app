@@ -47,9 +47,9 @@ description: Variables in memory after executing array_push_item_wrong_type.kcl
         "type": "Number",
         "value": 4.0,
         "ty": {
+          "mm": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Mm"
+          "type": "Length"
         }
       }
     ]

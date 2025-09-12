@@ -93,9 +93,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -119,9 +117,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
               50.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -145,9 +141,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
               50.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -171,9 +165,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -190,9 +182,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -202,9 +192,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -212,25 +200,19 @@ description: Variables in memory after executing tooling-nest-block.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -242,9 +224,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -271,16 +251,12 @@ description: Variables in memory after executing tooling-nest-block.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -312,9 +288,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -338,9 +312,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
             50.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -364,9 +336,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
             50.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -390,9 +360,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -409,9 +377,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -421,9 +387,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -431,25 +395,19 @@ description: Variables in memory after executing tooling-nest-block.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -461,9 +419,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -490,9 +446,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "nest": {
@@ -524,12 +478,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 50.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size01": {
@@ -537,12 +487,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 15.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size02": {
@@ -550,12 +496,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size03": {
@@ -563,48 +505,44 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size04": {
     "type": "Number",
     "value": 0.375,
     "ty": {
+      "in": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Inches"
+      "type": "Length"
     }
   },
   "size05": {
     "type": "Number",
     "value": 0.25,
     "ty": {
+      "in": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Inches"
+      "type": "Length"
     }
   },
   "size06": {
     "type": "Number",
     "value": 0.5,
     "ty": {
+      "in": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Inches"
+      "type": "Length"
     }
   },
   "size07": {
     "type": "Number",
     "value": 0.75,
     "ty": {
+      "in": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Inches"
+      "type": "Length"
     }
   },
   "size08": {
@@ -612,12 +550,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size09": {
@@ -625,12 +559,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 4.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size10": {
@@ -638,12 +568,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size11": {
@@ -651,12 +577,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 3.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size12": {
@@ -664,12 +586,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size13": {
@@ -677,12 +595,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size14": {
@@ -690,12 +604,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size15": {
@@ -703,12 +613,8 @@ description: Variables in memory after executing tooling-nest-block.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

@@ -24,9 +24,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.529411764705884
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -43,9 +41,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -25.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -62,9 +58,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -25.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -81,9 +75,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.529411764705884
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -100,9 +92,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.529411764705884
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -119,9 +109,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -138,9 +126,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -157,9 +143,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.529411764705884
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -169,9 +153,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -179,25 +161,19 @@ description: Variables in memory after executing thermal-block-insert.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -209,9 +185,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
           -200.0,
           -48.529411764705884
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -220,9 +194,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "insertHeight": {
@@ -230,12 +202,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
     "value": 200.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "insertLength": {
@@ -243,12 +211,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
     "value": 400.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "insertShape": {
@@ -337,9 +301,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   25.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -356,9 +318,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.529411764705884
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -375,9 +335,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.529411764705884
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -394,9 +352,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   25.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -413,9 +369,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   25.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -432,9 +386,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -451,9 +403,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -470,9 +420,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   25.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -482,9 +430,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -492,25 +438,19 @@ description: Variables in memory after executing thermal-block-insert.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -522,9 +462,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                 -200.0,
                 25.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -533,16 +471,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 200.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -629,9 +563,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.529411764705884
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -648,9 +580,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -25.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -667,9 +597,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -25.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -686,9 +614,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.529411764705884
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -705,9 +631,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.529411764705884
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -724,9 +648,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -743,9 +665,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -762,9 +682,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.529411764705884
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -774,9 +692,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -784,25 +700,19 @@ description: Variables in memory after executing thermal-block-insert.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -814,9 +724,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
                 -200.0,
                 -48.529411764705884
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -825,16 +733,12 @@ description: Variables in memory after executing thermal-block-insert.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 200.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -845,12 +749,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
     "value": 50.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "setbackFactor": {
@@ -858,12 +758,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tongueBlockFn": {
@@ -875,12 +771,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tongueDepth": {
@@ -888,12 +780,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
     "value": 23.529411764705884,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tongueGap": {
@@ -901,12 +789,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
     "value": 23.529411764705884,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tongueLength": {
@@ -914,12 +798,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
     "value": 47.05882352941177,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tongueSetback": {
@@ -927,12 +807,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
     "value": 11.764705882352942,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tongueShape": {
@@ -956,9 +832,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             25.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -975,9 +849,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.529411764705884
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -994,9 +866,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.529411764705884
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1013,9 +883,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             25.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1032,9 +900,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             25.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1051,9 +917,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1070,9 +934,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1089,9 +951,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             25.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1101,9 +961,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -1111,25 +969,19 @@ description: Variables in memory after executing thermal-block-insert.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1141,9 +993,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
           -200.0,
           25.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1152,9 +1002,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "tongueStep": {
@@ -1162,12 +1010,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
     "value": 70.58823529411765,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tongueTargetCount": {
@@ -1175,12 +1019,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

@@ -44,13 +44,7 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import {
-  kclSettings,
-  recast,
-  sketchFromKclValue,
-  unitAngToUnitAngle,
-  unitLenToUnitLength,
-} from '@src/lang/wasm'
+import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/lib/selections'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
@@ -969,10 +963,8 @@ export function getSettingsAnnotation(
   // No settings in the KCL.
   if (!metaSettings) return settings
 
-  settings.defaultLengthUnit = unitLenToUnitLength(
-    metaSettings.defaultLengthUnits
-  )
-  settings.defaultAngleUnit = unitAngToUnitAngle(metaSettings.defaultAngleUnits)
+  settings.defaultLengthUnit = metaSettings.defaultLengthUnits
+  settings.defaultAngleUnit = metaSettings.defaultAngleUnits
 
   return settings
 }

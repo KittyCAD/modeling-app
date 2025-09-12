@@ -54,12 +54,8 @@ description: Operations executed plane_of.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Yards"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "yd",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -102,12 +98,8 @@ description: Operations executed plane_of.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Yards"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "yd",
+              "angle": "degrees"
             }
           },
           "sourceRange": []

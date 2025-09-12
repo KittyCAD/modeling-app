@@ -753,12 +753,7 @@ impl ExecutorContext {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
-                            value: FunctionSource::Std {
-                                func,
-                                props,
-                                attrs,
-                                ast: function_expression.clone(),
-                            },
+                            value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
                             meta: vec![metadata.to_owned()],
                         }
                     } else {
@@ -772,11 +767,11 @@ impl ExecutorContext {
                     // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
                     KclValue::Function {
-                        value: FunctionSource::User {
-                            ast: function_expression.clone(),
-                            settings: exec_state.mod_local.settings.clone(),
-                            memory: exec_state.mut_stack().snapshot(),
-                        },
+                        value: Box::new(FunctionSource::kcl(
+                            function_expression.clone(),
+                            exec_state.mut_stack().snapshot(),
+                            matches!(&exec_state.mod_local.path, ModulePath::Std { .. }),
+                        )),
                         meta: vec![metadata.to_owned()],
                     }
                 }
@@ -1082,35 +1077,19 @@ impl Node<MemberExpression> {
             (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
                 "zAxis" => {
                     let (p, u) = plane.info.z_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(
-                        p,
-                        NumericType::Known(crate::exec::UnitType::Length(u)),
-                        vec![meta],
-                    ))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
                 }
                 "yAxis" => {
                     let (p, u) = plane.info.y_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(
-                        p,
-                        NumericType::Known(crate::exec::UnitType::Length(u)),
-                        vec![meta],
-                    ))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
                 }
                 "xAxis" => {
                     let (p, u) = plane.info.x_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(
-                        p,
-                        NumericType::Known(crate::exec::UnitType::Length(u)),
-                        vec![meta],
-                    ))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
                 }
                 "origin" => {
                     let (p, u) = plane.info.origin.as_3_dims();
-                    Ok(KclValue::array_from_point3d(
-                        p,
-                        NumericType::Known(crate::exec::UnitType::Length(u)),
-                        vec![meta],
-                    ))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
                 }
                 other => Err(KclError::new_undefined_value(
                     KclErrorDetails::new(
@@ -1898,7 +1877,7 @@ mod test {
 
     use super::*;
     use crate::{
-        ExecutorSettings, UnitLen,
+        ExecutorSettings,
         errors::Severity,
         exec::UnitType,
         execution::{ContextType, parse_execute},
@@ -1932,12 +1911,18 @@ arr1 = [42]: [number(cm)]
             .unwrap();
         if let KclValue::HomArray { value, ty } = arr1 {
             assert_eq!(value.len(), 1, "Expected Vec with specific length: found {value:?}");
-            assert_eq!(*ty, RuntimeType::known_length(UnitLen::Cm));
+            assert_eq!(
+                *ty,
+                RuntimeType::known_length(kittycad_modeling_cmds::units::UnitLength::Centimeters)
+            );
             // Compare, ignoring meta.
             if let KclValue::Number { value, ty, .. } = &value[0] {
                 // It should not convert units.
                 assert_eq!(*value, 42.0);
-                assert_eq!(*ty, NumericType::Known(UnitType::Length(UnitLen::Cm)));
+                assert_eq!(
+                    *ty,
+                    NumericType::Known(UnitType::Length(kittycad_modeling_cmds::units::UnitLength::Centimeters))
+                );
             } else {
                 panic!("Expected a number; found {:?}", value[0]);
             }

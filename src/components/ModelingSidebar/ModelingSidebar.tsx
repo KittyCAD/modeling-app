@@ -2,7 +2,7 @@ import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { type settings } from '@src/lib/settings/initialSettings'
 import { useSelector } from '@xstate/react'
 import { Resizable } from 're-resizable'
-import type { HTMLProps, MouseEventHandler, Ref } from 'react'
+import type { HTMLProps, MouseEventHandler, ComponentProps, Ref } from 'react'
 import {
   useCallback,
   useContext,
@@ -22,11 +22,12 @@ import type {
   SidebarAction,
   SidebarCssOverrides,
   SidebarPane,
-  SidebarType,
+  SidebarId,
 } from '@src/components/ModelingSidebar/ModelingPanes'
 import {
   sidebarPanesLeft,
   sidebarPanesRight,
+  validPaneIds,
 } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -200,6 +201,7 @@ export function ModelingSidebarRight() {
       sidebarActions={sidebarActions.current || []}
       settings={settings}
       align={Alignment.Right}
+      elementProps={{ defaultSize: { width: '25%' } }}
     />
   )
 }
@@ -210,6 +212,7 @@ interface ModelingSidebarProps {
   sidebarPanes: SidebarPane[]
   settings: typeof settings
   align: Alignment
+  elementProps?: Pick<ComponentProps<typeof Resizable>, 'defaultSize'>
 }
 
 export function ModelingSidebar(props: ModelingSidebarProps) {
@@ -243,11 +246,12 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
         : props.sidebarPanes.filter((pane) => pane.id !== 'debug')
       ).filter(
         (pane) =>
-          !pane.hide ||
-          (pane.hide instanceof Function && !pane.hide(paneCallbackProps))
+          validPaneIds.includes(pane.id) &&
+          (!pane.hide ||
+            (pane.hide instanceof Function && !pane.hide(paneCallbackProps)))
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [props.sidebarPanes, paneCallbackProps]
+    [props.sidebarPanes, paneCallbackProps, validPaneIds]
   )
   // Since we store one persisted list of `openPanes`, we should first filter it to ones that have
   // been passed into this instance as props
@@ -259,7 +263,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
       ? 'pointer-events-none '
       : 'pointer-events-auto '
 
-  const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
+  const paneBadgeMap: Record<SidebarId, BadgeInfoComputed> = useMemo(() => {
     return filteredPanes.reduce(
       (acc, pane) => {
         if (pane.showBadge) {
@@ -272,14 +276,14 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
         }
         return acc
       },
-      {} as Record<SidebarType, BadgeInfoComputed>
+      {} as Record<SidebarId, BadgeInfoComputed>
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [paneCallbackProps])
 
   // Clear any hidden panes from the `openPanes` array
   useEffect(() => {
-    const panesToReset: SidebarType[] = []
+    const panesToReset: SidebarId[] = []
 
     props.sidebarPanes.forEach((pane) => {
       if (
@@ -304,7 +308,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
   }, [props.settings.app.showDebugPanel])
 
   const togglePane = useCallback(
-    (newPane: SidebarType) => {
+    (newPane: SidebarId) => {
       send({
         type: 'Set context',
         data: {
@@ -334,11 +338,14 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
   return filteredPanes.length === 0 ? null : (
     <Resizable
       className={`group z-10 flex flex-col ${pointerEventsCssClass} ${openPanesForThisSide.length ? undefined : '!w-auto'}`}
-      defaultSize={{
-        width: '550px',
-        height: 'auto',
-      }}
+      defaultSize={
+        props.elementProps?.defaultSize || {
+          width: '550px',
+          height: 'auto',
+        }
+      }
       minWidth={openPanesForThisSide.length ? 200 : undefined}
+      maxWidth="50%"
       handleWrapperClass="sidebar-resize-handles"
       enable={{
         right: props.align === Alignment.Left,

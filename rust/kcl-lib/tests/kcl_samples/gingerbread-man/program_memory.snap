@@ -112,9 +112,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               96.09
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -143,9 +141,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               96.49
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -174,9 +170,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               96.09
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -198,9 +192,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               92.15
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -222,9 +214,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               72.02
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -246,9 +236,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               89.39
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -270,9 +258,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               87.41
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -294,9 +280,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               77.94
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -318,9 +302,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               100.83
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -342,9 +324,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               99.65
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -361,9 +341,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               99.65
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -373,9 +351,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 50.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -383,25 +359,19 @@ description: Variables in memory after executing gingerbread-man.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -413,9 +383,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             -59.59,
             99.65
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -424,16 +392,12 @@ description: Variables in memory after executing gingerbread-man.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -534,9 +498,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               -112.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -558,9 +520,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               -53.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -577,9 +537,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               57.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -596,9 +554,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               213.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -615,9 +571,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               130.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -639,9 +593,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               195.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -658,9 +610,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               290.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -682,9 +632,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               312.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -701,9 +649,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               335.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -732,9 +678,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               549.0
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -751,9 +695,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -763,9 +705,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -773,25 +713,19 @@ description: Variables in memory after executing gingerbread-man.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -803,9 +737,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -814,16 +746,12 @@ description: Variables in memory after executing gingerbread-man.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -836,34 +764,26 @@ description: Variables in memory after executing gingerbread-man.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -910,9 +830,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   250.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -922,9 +840,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -932,25 +848,19 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -962,9 +872,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 30.0,
                 250.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -973,16 +881,12 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -1026,9 +930,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   250.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1038,9 +940,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -1048,25 +948,19 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1078,9 +972,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 30.0,
                 250.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1089,16 +981,12 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -1188,9 +1076,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   167.5
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1219,9 +1105,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   143.41
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1243,9 +1127,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   145.15
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1267,9 +1149,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   158.31
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1291,9 +1171,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   185.38
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1315,9 +1193,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   184.88
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1334,9 +1210,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   184.88
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1346,9 +1220,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -1356,25 +1228,19 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1386,9 +1252,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 -224.97,
                 184.88
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1397,16 +1261,12 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -1491,9 +1351,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   167.5
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1522,9 +1380,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   143.41
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1546,9 +1402,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   145.15
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1570,9 +1424,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   158.31
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1594,9 +1446,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   185.38
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1618,9 +1468,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   184.88
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1637,9 +1485,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   184.88
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1649,9 +1495,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -1659,25 +1503,19 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1689,9 +1527,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 -224.97,
                 184.88
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1700,16 +1536,12 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -1724,34 +1556,26 @@ description: Variables in memory after executing gingerbread-man.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 50.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1760,12 +1584,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "eyeDiameter": {
@@ -1773,12 +1593,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "eyebrow": {
@@ -1851,9 +1667,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   503.47
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1875,9 +1689,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   514.62
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1899,9 +1711,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   485.0
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1923,9 +1733,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   483.5
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1935,9 +1743,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -1945,25 +1751,19 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1975,9 +1775,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 -73.02,
                 483.5
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1986,16 +1784,12 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -2066,9 +1860,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   503.47
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2090,9 +1882,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   514.62
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2114,9 +1904,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   485.0
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2138,9 +1926,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   483.5
                 ],
                 "type": "TangentialArcTo",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2150,9 +1936,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -2160,25 +1944,19 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2190,9 +1968,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 -73.02,
                 483.5
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2201,16 +1977,12 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -2259,9 +2031,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   440.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2271,9 +2041,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -2281,25 +2049,19 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2311,9 +2073,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 -40.0,
                 440.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2322,16 +2082,12 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -2375,9 +2131,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                   440.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2387,9 +2141,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -2397,25 +2149,19 @@ description: Variables in memory after executing gingerbread-man.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2427,9 +2173,7 @@ description: Variables in memory after executing gingerbread-man.kcl
                 -40.0,
                 440.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2438,16 +2182,12 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -2458,12 +2198,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": 60.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "innermouth": {
@@ -2499,9 +2235,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             399.54
           ],
           "type": "ArcThreePoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2523,9 +2257,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             391.68
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2554,9 +2286,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             391.2
           ],
           "type": "ArcThreePoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2578,9 +2308,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             401.0
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2597,9 +2325,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             401.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2609,9 +2335,7 @@ description: Variables in memory after executing gingerbread-man.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 50.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2619,25 +2343,19 @@ description: Variables in memory after executing gingerbread-man.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2649,9 +2367,7 @@ description: Variables in memory after executing gingerbread-man.kcl
           -41.0,
           401.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2660,9 +2376,7 @@ description: Variables in memory after executing gingerbread-man.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "mouth": {
@@ -2760,9 +2474,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               404.69
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2784,9 +2496,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               389.24
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2808,9 +2518,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               391.48
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2832,9 +2540,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               405.86
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2851,9 +2557,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               405.86
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "innerPaths": [
@@ -2884,9 +2588,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               399.54
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2908,9 +2610,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               391.68
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2939,9 +2639,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               391.2
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2963,9 +2661,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               401.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2982,9 +2678,7 @@ description: Variables in memory after executing gingerbread-man.kcl
               401.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -2994,9 +2688,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 50.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -3004,25 +2696,19 @@ description: Variables in memory after executing gingerbread-man.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3034,9 +2720,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             -37.56,
             405.86
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3045,16 +2729,12 @@ description: Variables in memory after executing gingerbread-man.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -3066,12 +2746,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       {
@@ -3079,12 +2755,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       }
     ]
@@ -3094,12 +2766,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": 50.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

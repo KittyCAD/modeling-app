@@ -10,7 +10,7 @@ import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -502,8 +502,8 @@ export function useOnboardingHighlight(elementId: string) {
  * Utility hook to set the pane state on mount and unmount.
  */
 export function useOnboardingPanes(
-  onMount: SidebarType[] | undefined = [],
-  onUnmount: SidebarType[] | undefined = []
+  onMount: SidebarId[] | undefined = [],
+  onUnmount: SidebarId[] | undefined = []
 ) {
   const { send } = useModelingContext()
   useEffect(() => {

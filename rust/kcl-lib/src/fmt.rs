@@ -72,10 +72,11 @@ pub fn format_number_value(value: f64, ty: NumericType) -> Result<String, Format
 
 #[cfg(test)]
 mod tests {
+    use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::execution::types::{UnitAngle, UnitLen, UnitType};
+    use crate::execution::types::UnitType;
 
     #[test]
     fn test_human_display_number() {
@@ -84,19 +85,19 @@ mod tests {
             "1: number(Count)"
         );
         assert_eq!(
-            human_display_number(1.0, NumericType::Known(UnitType::Length(UnitLen::M))),
+            human_display_number(1.0, NumericType::Known(UnitType::Length(UnitLength::Meters))),
             "1: number(m)"
         );
         assert_eq!(
-            human_display_number(1.0, NumericType::Known(UnitType::Length(UnitLen::Mm))),
+            human_display_number(1.0, NumericType::Known(UnitType::Length(UnitLength::Millimeters))),
             "1: number(mm)"
         );
         assert_eq!(
-            human_display_number(1.0, NumericType::Known(UnitType::Length(UnitLen::Inches))),
+            human_display_number(1.0, NumericType::Known(UnitType::Length(UnitLength::Inches))),
             "1: number(in)"
         );
         assert_eq!(
-            human_display_number(1.0, NumericType::Known(UnitType::Length(UnitLen::Feet))),
+            human_display_number(1.0, NumericType::Known(UnitType::Length(UnitLength::Feet))),
             "1: number(ft)"
         );
         assert_eq!(
@@ -111,7 +112,7 @@ mod tests {
             human_display_number(
                 1.0,
                 NumericType::Default {
-                    len: UnitLen::Mm,
+                    len: UnitLength::Millimeters,
                     angle: UnitAngle::Degrees,
                 }
             ),
@@ -121,7 +122,7 @@ mod tests {
             human_display_number(
                 1.0,
                 NumericType::Default {
-                    len: UnitLen::Feet,
+                    len: UnitLength::Feet,
                     angle: UnitAngle::Radians,
                 }
             ),
@@ -166,50 +167,50 @@ mod tests {
             format_number_value(
                 1.0,
                 NumericType::Default {
-                    len: Default::default(),
-                    angle: Default::default()
+                    len: UnitLength::Millimeters,
+                    angle: UnitAngle::Degrees,
                 }
             ),
             Ok("1".to_owned())
         );
         assert_eq!(
-            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Unknown))),
-            Err(FormatNumericTypeError::Invalid(NumericType::Known(UnitType::Length(
-                UnitLen::Unknown
-            ))))
+            format_number_value(1.0, NumericType::Known(UnitType::GenericLength)),
+            Err(FormatNumericTypeError::Invalid(NumericType::Known(
+                UnitType::GenericLength
+            )))
         );
         assert_eq!(
-            format_number_value(1.0, NumericType::Known(UnitType::Angle(UnitAngle::Unknown))),
-            Err(FormatNumericTypeError::Invalid(NumericType::Known(UnitType::Angle(
-                UnitAngle::Unknown
-            ))))
+            format_number_value(1.0, NumericType::Known(UnitType::GenericAngle)),
+            Err(FormatNumericTypeError::Invalid(NumericType::Known(
+                UnitType::GenericAngle
+            )))
         );
         assert_eq!(
             format_number_value(1.0, NumericType::Known(UnitType::Count)),
             Ok("1_".to_owned())
         );
         assert_eq!(
-            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Mm))),
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLength::Millimeters))),
             Ok("1mm".to_owned())
         );
         assert_eq!(
-            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Cm))),
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLength::Centimeters))),
             Ok("1cm".to_owned())
         );
         assert_eq!(
-            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::M))),
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLength::Meters))),
             Ok("1m".to_owned())
         );
         assert_eq!(
-            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Inches))),
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLength::Inches))),
             Ok("1in".to_owned())
         );
         assert_eq!(
-            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Feet))),
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLength::Feet))),
             Ok("1ft".to_owned())
         );
         assert_eq!(
-            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLen::Yards))),
+            format_number_value(1.0, NumericType::Known(UnitType::Length(UnitLength::Yards))),
             Ok("1yd".to_owned())
         );
         assert_eq!(

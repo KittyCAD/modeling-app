@@ -10,27 +10,27 @@ description: Variables in memory after executing array_range_with_units.kcl
         "type": "Number",
         "value": 1.0,
         "ty": {
+          "cm": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Cm"
+          "type": "Length"
         }
       },
       {
         "type": "Number",
         "value": 2.0,
         "ty": {
+          "cm": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Cm"
+          "type": "Length"
         }
       },
       {
         "type": "Number",
         "value": 3.0,
         "ty": {
+          "cm": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Cm"
+          "type": "Length"
         }
       }
     ]
