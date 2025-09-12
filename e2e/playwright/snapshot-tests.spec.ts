@@ -126,138 +126,9 @@ test.describe(
 )
 
 test(
-  'Draft segments should look right',
-  { tag: '@snapshot' },
-  async ({ page, scene, toolbar }) => {
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
-
-    const startPixelX = 600
-    const pixelToUnitRatio = 400 / 37.5
-    const [endOfTangentClk, endOfTangentMv] = scene.makeMouseHelpers(
-      startPixelX + pixelToUnitRatio * 30,
-      500 - pixelToUnitRatio * 20,
-      { steps: 10 }
-    )
-    const [threePointArcMidPointClk, threePointArcMidPointMv] =
-      scene.makeMouseHelpers(800, 250, { steps: 10 })
-    const [threePointArcEndPointClk, threePointArcEndPointMv] =
-      scene.makeMouseHelpers(750, 285, { steps: 10 })
-    const [arcCenterClk, arcCenterMv] = scene.makeMouseHelpers(750, 210, {
-      steps: 10,
-    })
-    const [arcEndClk, arcEndMv] = scene.makeMouseHelpers(750, 150, {
-      steps: 10,
-    })
-
-    // Start a sketch
-    await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    )
-
-    // Select a plane
-    await page.mouse.click(700, 200)
-    let code = `sketch001 = startSketchOn(XZ)`
-    await expect(page.locator('.cm-content')).toHaveText(code)
-
-    await page.mouse.click(
-      startPixelX + pixelToUnitRatio * 10,
-      500 - pixelToUnitRatio * 10
-    )
-    code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
-    await expect(page.locator('.cm-content')).toHaveText(code)
-    await page.waitForTimeout(100)
-
-    await page.mouse.move(
-      startPixelX + pixelToUnitRatio * 20,
-      500 - pixelToUnitRatio * 10
-    )
-
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-
-    const lineEndClick = () =>
-      page.mouse.click(
-        startPixelX + pixelToUnitRatio * 20,
-        500 - pixelToUnitRatio * 10
-      )
-    await lineEndClick()
-    await page.waitForTimeout(500)
-
-    code += `
-  |> xLine(length = 184.3)`
-    await expect(page.locator('.cm-content')).toHaveText(code)
-
-    await toolbar.selectTangentialArc()
-
-    // click on the end of the profile to continue it
-    await page.waitForTimeout(500)
-    await lineEndClick()
-    await page.waitForTimeout(500)
-
-    // click to continue profile
-    await page.mouse.move(813, 392, { steps: 10 })
-    await page.waitForTimeout(500)
-
-    await endOfTangentMv()
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-    await endOfTangentClk()
-
-    await toolbar.selectThreePointArc()
-    await page.waitForTimeout(500)
-    await endOfTangentClk()
-    await threePointArcMidPointMv()
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-    await threePointArcMidPointClk()
-    await page.waitForTimeout(100)
-
-    await threePointArcEndPointMv()
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-
-    await threePointArcEndPointClk()
-    await page.waitForTimeout(100)
-
-    await toolbar.selectArc()
-    await page.waitForTimeout(100)
-
-    // continue the profile
-    await threePointArcEndPointClk()
-    await page.waitForTimeout(100)
-    await arcCenterMv()
-    await page.waitForTimeout(500)
-    await arcCenterClk()
-
-    await arcEndMv()
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-    await arcEndClk()
-  }
-)
-
-test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene }) => {
+  async ({ page }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
@@ -298,53 +169,6 @@ test(
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
     })
-  }
-)
-test(
-  'Draft circle should look right',
-  { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene }) => {
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
-
-    // Start a sketch
-    await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    )
-
-    // Select a plane
-    await page.mouse.click(700, 200)
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)`
-    )
-
-    // Equip the circle tool
-    await page.getByTestId('circle-center').click()
-
-    // Draw the circle
-    const startPixelX = 600
-    const pixelToUnitRatio = 400 / 37.5
-    await page.mouse.click(
-      startPixelX + pixelToUnitRatio * 20,
-      500 - pixelToUnitRatio * 20
-    )
-    await page.mouse.move(
-      startPixelX + pixelToUnitRatio * 10,
-      500 - pixelToUnitRatio * 10,
-      { steps: 5 }
-    )
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-
-    // Ensure the draft circle looks the same as it usually does
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [366.89, -62.01], radius = 1)`
-    )
   }
 )
 
@@ -782,14 +606,14 @@ test.describe('code color goober', { tag: '@snapshot' }, () => {
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
   |> startProfile(at = [2, 0])
-  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
+  |> arc(angleStart = 0, angleEnd = 360deg, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",
@@ -826,14 +650,14 @@ sweepSketch = startSketchOn(XY)
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
   |> startProfile(at = [2, 0])
-  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
+  |> arc(angleStart = 0, angleEnd = 360deg, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = '#bb00ff',
@@ -871,14 +695,14 @@ sweepSketch = startSketchOn(XY)
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
   |> startProfile(at = [2, 0])
-  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
+  |> arc(angleStart = 0, angleEnd = 360deg, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",

@@ -38,7 +38,13 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "e2e", "packages", "*.ts", "rust"],
-  "exclude": ["node_modules", "./*.grammar", "vite.config.ts", ".vscode-test"],
+  "include": ["src", "e2e", "packages", "*.ts", "rust", "types"],
+  "exclude": [
+    "node_modules",
+    "./*.grammar",
+    "vite.config.ts",
+    ".vscode-test",
+    "rust/kcl-wasm-lib/pkg/**"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

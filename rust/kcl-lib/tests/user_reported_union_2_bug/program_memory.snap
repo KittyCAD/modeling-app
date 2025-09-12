@@ -62,9 +62,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
               -21.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -81,9 +79,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
               23.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -100,9 +96,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
               23.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -119,9 +113,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
               -21.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -131,9 +123,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -141,25 +131,19 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -171,9 +155,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             12.5,
             -21.5
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -182,16 +164,12 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -200,12 +178,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 45.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "cubeSize": {
@@ -213,12 +187,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "cubeSpacing": {
@@ -226,12 +196,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "delta": {
@@ -239,12 +205,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "edge1": {
@@ -261,6 +223,204 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge3"
+  },
+  "intermediateUnion1": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1132,
+            "end": 1138,
+            "moduleId": 0,
+            "start": 1132,
+            "type": "TagDeclarator",
+            "value": "edge1"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1199,
+            "end": 1205,
+            "moduleId": 0,
+            "start": 1199,
+            "type": "TagDeclarator",
+            "value": "edge2"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1224,
+            "end": 1230,
+            "moduleId": 0,
+            "start": 1224,
+            "type": "TagDeclarator",
+            "value": "edge3"
+          },
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -35.0,
+              0.0
+            ],
+            "tag": {
+              "commentStart": 1132,
+              "end": 1138,
+              "moduleId": 0,
+              "start": 1132,
+              "type": "TagDeclarator",
+              "value": "edge1"
+            },
+            "to": [
+              35.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              35.0,
+              0.0
+            ],
+            "tag": {
+              "commentStart": 1199,
+              "end": 1205,
+              "moduleId": 0,
+              "start": 1199,
+              "type": "TagDeclarator",
+              "value": "edge2"
+            },
+            "to": [
+              0.0,
+              60.0
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              60.0
+            ],
+            "tag": {
+              "commentStart": 1224,
+              "end": 1230,
+              "moduleId": 0,
+              "start": 1224,
+              "type": "TagDeclarator",
+              "value": "edge3"
+            },
+            "to": [
+              -35.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          }
+        ],
+        "on": {
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": "mm"
+          },
+          "type": "plane",
+          "value": "XY",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": null
+          }
+        },
+        "start": {
+          "from": [
+            -35.0,
+            0.0
+          ],
+          "to": [
+            -35.0,
+            0.0
+          ],
+          "units": "mm",
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "tags": {
+          "edge1": {
+            "type": "TagIdentifier",
+            "value": "edge1"
+          },
+          "edge2": {
+            "type": "TagIdentifier",
+            "value": "edge2"
+          },
+          "edge3": {
+            "type": "TagIdentifier",
+            "value": "edge3"
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": "mm"
+      },
+      "height": 5.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "units": "mm",
+      "sectional": false
+    }
   },
   "roundedTriangle": {
     "type": "Solid",
@@ -338,9 +498,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -364,9 +522,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
               60.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -390,9 +546,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -402,9 +556,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -412,25 +564,19 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -442,9 +588,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             -35.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -467,16 +611,12 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -485,12 +625,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "triangleHeight": {
@@ -498,12 +634,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 60.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "triangleSide": {
@@ -511,12 +643,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "value": 140.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "triangleSketch": {
@@ -547,9 +675,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -573,9 +699,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             60.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -599,9 +723,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -611,9 +733,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -621,25 +741,19 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -651,9 +765,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           -35.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -676,9 +788,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   }
 }

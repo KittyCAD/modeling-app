@@ -9,8 +9,8 @@ import {
   addToInputHelper,
 } from '@src/components/AvailableVarsHelpers'
 import type { Expr } from '@src/lang/wasm'
-import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import type { Selections } from '@src/lib/selections'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 
 type ModalResolve = {
   value: string
@@ -23,7 +23,7 @@ type ModalResolve = {
 type ModalReject = boolean
 
 type SetAngleLengthModalProps = InstanceProps<ModalResolve, ModalReject> & {
-  value: number
+  value: string
   valueName: string
   shouldCreateVariable?: boolean
   selectionRanges: Selections
@@ -44,8 +44,10 @@ export const SetAngleLengthModal = ({
   shouldCreateVariable: initialShouldCreateVariable = false,
   selectionRanges,
 }: SetAngleLengthModalProps) => {
-  const [sign, setSign] = useState(Math.sign(Number(initialValue)))
-  const [value, setValue] = useState(String(initialValue * sign))
+  const [sign, setSign] = useState(initialValue.startsWith('-') ? -1 : 1)
+  const [value, setValue] = useState(
+    initialValue.startsWith('-') ? initialValue.substring(1) : initialValue
+  )
   const [shouldCreateVariable, setShouldCreateVariable] = useState(
     initialShouldCreateVariable
   )

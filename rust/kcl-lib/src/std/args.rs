@@ -1,22 +1,21 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use schemars::JsonSchema;
+use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
-    ModuleId,
+    ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
         TagIdentifier,
         kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
+        types::{NumericType, PrimitiveType, RuntimeType, UnitType},
     },
     parsing::ast::types::TagNode,
-    source_range::SourceRange,
     std::{
         shapes::{PolygonType, SketchOrSurface},
         sketch::FaceTag,
@@ -41,19 +40,17 @@ impl TyF64 {
     }
 
     pub fn to_mm(&self) -> f64 {
-        self.to_length_units(UnitLen::Mm)
+        self.to_length_units(UnitLength::Millimeters)
     }
 
-    pub fn to_length_units(&self, units: UnitLen) -> f64 {
+    pub fn to_length_units(&self, units: UnitLength) -> f64 {
         let len = match &self.ty {
             NumericType::Default { len, .. } => *len,
             NumericType::Known(UnitType::Length(len)) => *len,
             t => unreachable!("expected length, found {t:?}"),
         };
 
-        debug_assert_ne!(len, UnitLen::Unknown);
-
-        len.adjust_to(self.n, units).0
+        crate::execution::types::adjust_length(len, self.n, units).0
     }
 
     pub fn to_degrees(&self) -> f64 {
@@ -63,9 +60,7 @@ impl TyF64 {
             _ => unreachable!(),
         };
 
-        debug_assert_ne!(angle, UnitAngle::Unknown);
-
-        angle.adjust_to(self.n, UnitAngle::Degrees).0
+        crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Degrees).0
     }
 
     pub fn to_radians(&self) -> f64 {
@@ -75,9 +70,7 @@ impl TyF64 {
             _ => unreachable!(),
         };
 
-        debug_assert_ne!(angle, UnitAngle::Unknown);
-
-        angle.adjust_to(self.n, UnitAngle::Radians).0
+        crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Radians).0
     }
     pub fn count(n: f64) -> Self {
         Self {
@@ -92,16 +85,6 @@ impl TyF64 {
     }
 }
 
-impl JsonSchema for TyF64 {
-    fn schema_name() -> String {
-        "TyF64".to_string()
-    }
-
-    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-        r#gen.subschema_for::<f64>()
-    }
-}
-
 impl Args {
     pub(crate) fn get_kw_arg_opt<T>(
         &self,
@@ -112,7 +95,7 @@ impl Args {
     where
         T: for<'a> FromKclValue<'a>,
     {
-        match self.kw_args.labeled.get(label) {
+        match self.labeled.get(label) {
             None => return Ok(None),
             Some(a) => {
                 if let KclValue::KclNone { .. } = &a.value {
@@ -128,7 +111,7 @@ impl Args {
     where
         T: for<'a> FromKclValue<'a>,
     {
-        let Some(arg) = self.kw_args.labeled.get(label) else {
+        let Some(arg) = self.labeled.get(label) else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument `{label}`"),
                 vec![self.source_range],
@@ -180,7 +163,7 @@ impl Args {
         &self,
         label: &str,
     ) -> Result<Vec<(EdgeReference, SourceRange)>, KclError> {
-        let Some(arg) = self.kw_args.labeled.get(label) else {
+        let Some(arg) = self.labeled.get(label) else {
             let err = KclError::new_semantic(KclErrorDetails::new(
                 format!("This function requires a keyword argument '{label}'"),
                 vec![self.source_range],
@@ -324,10 +307,10 @@ impl Args {
     where
         'e: 'a,
     {
-        if let Some(info) = tag.get_cur_info() {
-            if info.surface.is_some() {
-                return Ok(info);
-            }
+        if let Some(info) = tag.get_cur_info()
+            && info.surface.is_some()
+        {
+            return Ok(info);
         }
 
         self.get_tag_info_from_memory(exec_state, tag)
@@ -651,7 +634,7 @@ impl<'a> FromKclValue<'a> for crate::execution::Point3d {
                 x: a[0],
                 y: a[1],
                 z: a[2],
-                units: ty.as_length().unwrap_or(UnitLen::Unknown),
+                units: ty.as_length(),
             });
         }
         // Case 2: Array of 3 numbers.
@@ -661,7 +644,7 @@ impl<'a> FromKclValue<'a> for crate::execution::Point3d {
             x: a[0],
             y: a[1],
             z: a[2],
-            units: ty.as_length().unwrap_or(UnitLen::Unknown),
+            units: ty.as_length(),
         })
     }
 }
@@ -1002,7 +985,7 @@ impl<'a> FromKclValue<'a> for &'a str {
 
 impl<'a> FromKclValue<'a> for &'a KclObjectFields {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Object { value, meta: _ } = arg else {
+        let KclValue::Object { value, .. } = arg else {
             return None;
         };
         Some(value)

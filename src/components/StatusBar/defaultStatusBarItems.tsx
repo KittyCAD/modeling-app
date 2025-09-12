@@ -1,24 +1,24 @@
-import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
-import type { Location } from 'react-router-dom'
-import { PATHS } from '@src/lib/paths'
-import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
+import { Popover } from '@headlessui/react'
+import { BillingDialog } from '@src/components/BillingDialog'
 import {
   BillingRemaining,
   BillingRemainingMode,
 } from '@src/components/BillingRemaining'
-import { billingActor } from '@src/lib/singletons'
-import { BillingDialog } from '@src/components/BillingDialog'
-import { Popover } from '@headlessui/react'
-import Tooltip from '@src/components/Tooltip'
-import { HelpMenu } from '@src/components/HelpMenu'
-import { isDesktop } from '@src/lib/isDesktop'
-import { APP_DOWNLOAD_PATH } from '@src/lib/constants'
 import { desktopAppPitchMessage } from '@src/components/DownloadAppToast'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { HelpMenu } from '@src/components/HelpMenu'
+import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import Tooltip from '@src/components/Tooltip'
 import {
   EnvironmentChip,
   EnvironmentDescription,
 } from '@src/components/environment/Environment'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import { billingActor } from '@src/lib/singletons'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
+import type { Location } from 'react-router-dom'
 
 export const defaultGlobalStatusBarItems = ({
   location,

@@ -2,8 +2,8 @@ import type { Page } from '@playwright/test'
 import type { LineInputsType } from '@src/lang/std/sketchcombos'
 import { uuidv4 } from '@src/lib/utils'
 
-import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { deg, getUtils, wiggleMove } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -545,7 +545,7 @@ part001 = startSketchOn(XZ)
               'persistCode',
               `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfile(at = [5, 6])
+        |> startProfile(at = [-5, 6])
         |> ${lineToBeDeleted}
         |> line(end = [-10, -15])
         |> angledLine(angle = -176, length = segLen(seg01))`

@@ -1,13 +1,9 @@
-import type { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
+import type { UnitLength } from '@kittycad/lib'
 import toast from 'react-hot-toast'
 
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addModuleImport } from '@src/lang/modifyAst'
-import {
-  changeDefaultUnits,
-  unitAngleToUnitAng,
-  unitLengthToUnitLen,
-} from '@src/lang/wasm'
+import { changeDefaultUnits } from '@src/lang/wasm'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -30,7 +26,7 @@ interface KclCommandConfig {
   projectData: IndexLoaderData
   authToken: string
   settings: {
-    defaultUnit: UnitLength_type
+    defaultUnit: UnitLength
   }
   isRestrictedToOrg?: boolean
   password?: string
@@ -67,11 +63,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'unit' in data) {
-          const newCode = changeDefaultUnits(
-            codeManager.code,
-            unitLengthToUnitLen(data.unit),
-            unitAngleToUnitAng(undefined)
-          )
+          const newCode = changeDefaultUnits(codeManager.code, data.unit)
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
           } else {

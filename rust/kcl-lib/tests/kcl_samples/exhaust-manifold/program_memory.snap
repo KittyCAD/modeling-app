@@ -8,12 +8,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeSketch": {
@@ -28,10 +24,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2009,
-            "end": 2015,
+            "commentStart": 2024,
+            "end": 2030,
             "moduleId": 0,
-            "start": 2009,
+            "start": 2024,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -63,10 +59,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2183,
-            "end": 2189,
+            "commentStart": 2207,
+            "end": 2213,
             "moduleId": 0,
-            "start": 2183,
+            "start": 2207,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -77,10 +73,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2232,
-            "end": 2238,
+            "commentStart": 2256,
+            "end": 2262,
             "moduleId": 0,
-            "start": 2232,
+            "start": 2256,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -91,10 +87,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2271,
-            "end": 2277,
+            "commentStart": 2295,
+            "end": 2301,
             "moduleId": 0,
-            "start": 2271,
+            "start": 2295,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -126,10 +122,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2455,
-            "end": 2461,
+            "commentStart": 2488,
+            "end": 2494,
             "moduleId": 0,
-            "start": 2455,
+            "start": 2488,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -140,10 +136,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2512,
-            "end": 2518,
+            "commentStart": 2545,
+            "end": 2551,
             "moduleId": 0,
-            "start": 2512,
+            "start": 2545,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -154,10 +150,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2562,
-            "end": 2568,
+            "commentStart": 2595,
+            "end": 2601,
             "moduleId": 0,
-            "start": 2562,
+            "start": 2595,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -255,10 +251,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 2009,
-              "end": 2015,
+              "commentStart": 2024,
+              "end": 2030,
               "moduleId": 0,
-              "start": 2009,
+              "start": 2024,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -267,9 +263,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -291,9 +285,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.1798133329356932
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -315,9 +307,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.179813332935693
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -339,9 +329,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.2499999999999996
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -353,10 +341,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.2499999999999996
             ],
             "tag": {
-              "commentStart": 2183,
-              "end": 2189,
+              "commentStart": 2207,
+              "end": 2213,
               "moduleId": 0,
-              "start": 2183,
+              "start": 2207,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -365,9 +353,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.2499999999999996
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -379,10 +365,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.2499999999999996
             ],
             "tag": {
-              "commentStart": 2232,
-              "end": 2238,
+              "commentStart": 2256,
+              "end": 2262,
               "moduleId": 0,
-              "start": 2232,
+              "start": 2256,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -391,9 +377,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.3500000000000005
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -405,10 +389,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.3500000000000005
             ],
             "tag": {
-              "commentStart": 2271,
-              "end": 2277,
+              "commentStart": 2295,
+              "end": 2301,
               "moduleId": 0,
-              "start": 2271,
+              "start": 2295,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -417,9 +401,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.3500000000000005
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -441,9 +423,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.279813332935694
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -465,9 +445,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.2798133329356942
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -489,9 +467,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.3500000000000008
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -503,10 +479,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.3500000000000008
             ],
             "tag": {
-              "commentStart": 2455,
-              "end": 2461,
+              "commentStart": 2488,
+              "end": 2494,
               "moduleId": 0,
-              "start": 2455,
+              "start": 2488,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -515,9 +491,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.3500000000000008
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -529,10 +503,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.3500000000000008
             ],
             "tag": {
-              "commentStart": 2512,
-              "end": 2518,
+              "commentStart": 2545,
+              "end": 2551,
               "moduleId": 0,
-              "start": 2512,
+              "start": 2545,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -541,9 +515,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -555,10 +527,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 2562,
-              "end": 2568,
+              "commentStart": 2595,
+              "end": 2601,
               "moduleId": 0,
-              "start": 2562,
+              "start": 2595,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -567,9 +539,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -591,9 +561,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.1798133329356932
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -615,9 +583,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.1798133329356943
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -639,9 +605,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -658,9 +622,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "innerPaths": [
@@ -685,9 +647,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -710,9 +670,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -735,9 +693,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -760,9 +716,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -785,9 +739,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -0.975
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -810,9 +762,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               0.975
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -835,9 +785,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               0.975
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -860,9 +808,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -0.975
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -872,9 +818,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -882,25 +826,19 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -912,9 +850,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             4.3,
             -1.25
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -953,9 +889,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 0.125,
       "startCapId": "[uuid]",
@@ -968,12 +902,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "n": 1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -986,12 +916,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "n": 1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -1004,12 +930,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "n": 0.25,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -1022,21 +944,15 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "n": 0.25,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1045,12 +961,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "primaryTube": {
@@ -1062,12 +974,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": 1.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "seg01": {
@@ -1110,12 +1018,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": 0.08,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

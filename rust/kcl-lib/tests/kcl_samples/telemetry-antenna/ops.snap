@@ -12,12 +12,8 @@ description: Operations executed telemetry-antenna.kcl
         "value": 0.08,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed telemetry-antenna.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed telemetry-antenna.kcl
         "value": 0.65,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed telemetry-antenna.kcl
         "value": 95.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -144,12 +128,8 @@ description: Operations executed telemetry-antenna.kcl
         "value": 1.36,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -177,12 +157,8 @@ description: Operations executed telemetry-antenna.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -210,12 +186,8 @@ description: Operations executed telemetry-antenna.kcl
         "value": 2.14,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -243,12 +215,8 @@ description: Operations executed telemetry-antenna.kcl
         "value": 0.196,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -276,12 +244,8 @@ description: Operations executed telemetry-antenna.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -347,12 +311,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": 360.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -369,12 +329,8 @@ description: Operations executed telemetry-antenna.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -382,12 +338,8 @@ description: Operations executed telemetry-antenna.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -400,12 +352,8 @@ description: Operations executed telemetry-antenna.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -413,12 +361,8 @@ description: Operations executed telemetry-antenna.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -452,12 +396,8 @@ description: Operations executed telemetry-antenna.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -492,12 +432,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": 1.25,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -505,12 +441,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -603,12 +535,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": -0.08,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -663,12 +591,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": 0.04,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -735,12 +659,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": 0.625,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -748,12 +668,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": 1.08253175,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -846,12 +762,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": -0.08,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -906,12 +818,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": 0.04,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -978,12 +886,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": -0.625,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -991,12 +895,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": 1.08253175,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1089,12 +989,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": -0.08,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1149,12 +1045,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": 0.04,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1221,12 +1113,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": -1.25,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1234,12 +1122,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1332,12 +1216,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": -0.08,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1392,12 +1272,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": 0.04,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1464,12 +1340,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": -0.625,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1477,12 +1349,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": -1.08253175,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1575,12 +1443,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": -0.08,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1635,12 +1499,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": 0.04,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1707,12 +1567,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": 0.625,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1720,12 +1576,8 @@ description: Operations executed telemetry-antenna.kcl
                 "value": -1.08253175,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1818,12 +1670,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": -0.08,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1878,12 +1726,8 @@ description: Operations executed telemetry-antenna.kcl
             "value": 0.04,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2045,6 +1889,7 @@ description: Operations executed telemetry-antenna.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -136,11 +136,28 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
                 .into_iter()
                 .chain(n.path.iter().map(|n| n.into()))
                 .collect(),
+            Node::SketchBlock(n) => {
+                let mut children: Vec<Node<'_>> = Vec::with_capacity(n.arguments.len() + 1);
+
+                // TODO: The label. See CallExpressionKw.
+                children.extend(n.arguments.iter().map(|a| Node::from(&a.arg)));
+                children.push((&n.body).into());
+                children
+            }
+            Node::SketchVar(n) => {
+                if let Some(initial) = &n.initial {
+                    vec![initial.as_ref().into()]
+                } else {
+                    vec![]
+                }
+            }
+            Node::Block(n) => n.items.iter().map(|node| node.into()).collect(),
             Node::PipeSubstitution(_)
             | Node::TagDeclarator(_)
             | Node::Identifier(_)
             | Node::ImportStatement(_)
             | Node::KclNone(_)
+            | Node::NumericLiteral(_)
             | Node::Literal(_) => vec![],
         }
     }
@@ -179,10 +196,10 @@ fn crow3() {
             type Error = ();
 
             fn visit_node(&self, node: Node<'tree>) -> Result<bool, Self::Error> {
-                if let Node::VariableDeclarator(vd) = node {
-                    if vd.id.name.starts_with("crow") {
-                        *self.n.lock().unwrap() += 1;
-                    }
+                if let Node::VariableDeclarator(vd) = node
+                    && vd.id.name.starts_with("crow")
+                {
+                    *self.n.lock().unwrap() += 1;
                 }
 
                 for child in node.children().iter() {

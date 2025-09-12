@@ -44,24 +44,18 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import {
-  kclSettings,
-  recast,
-  sketchFromKclValue,
-  unitAngToUnitAngle,
-  unitLenToUnitLength,
-} from '@src/lang/wasm'
+import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/lib/selections'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
+import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
+import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
-import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
-import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -969,10 +963,8 @@ export function getSettingsAnnotation(
   // No settings in the KCL.
   if (!metaSettings) return settings
 
-  settings.defaultLengthUnit = unitLenToUnitLength(
-    metaSettings.defaultLengthUnits
-  )
-  settings.defaultAngleUnit = unitAngToUnitAngle(metaSettings.defaultAngleUnits)
+  settings.defaultLengthUnit = metaSettings.defaultLengthUnits
+  settings.defaultAngleUnit = metaSettings.defaultAngleUnits
 
   return settings
 }

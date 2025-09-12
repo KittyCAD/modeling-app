@@ -39,12 +39,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": -70.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -61,12 +57,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -74,12 +66,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -92,12 +80,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -105,12 +89,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -210,12 +190,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": 0.25,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -319,12 +295,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -409,12 +381,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": -0.75,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -547,12 +515,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -608,12 +572,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": 0.25,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -698,12 +658,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": -0.25,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -854,12 +810,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -944,12 +896,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": -0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1034,12 +982,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": -0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1170,12 +1114,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -1183,12 +1123,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -1201,12 +1137,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -1214,12 +1146,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -1336,12 +1264,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": 0.475,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1425,12 +1349,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": 0.95,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1515,12 +1435,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": -0.95,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1605,12 +1521,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": -0.475,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1739,12 +1651,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -1752,12 +1660,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -1770,12 +1674,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -1783,12 +1683,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -1892,12 +1788,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -1905,12 +1797,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -1923,12 +1811,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -1936,12 +1820,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2018,12 +1898,8 @@ description: Operations executed car-wheel-assembly.kcl
               "value": 0.02,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2034,12 +1910,8 @@ description: Operations executed car-wheel-assembly.kcl
               "value": 0.2,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2050,12 +1922,8 @@ description: Operations executed car-wheel-assembly.kcl
               "value": 0.95,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2102,12 +1970,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": 0.95,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2136,9 +2000,9 @@ description: Operations executed car-wheel-assembly.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -2152,12 +2016,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2165,12 +2025,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2178,12 +2034,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -2199,12 +2051,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2212,12 +2060,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": -2000.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2225,12 +2069,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -2361,12 +2201,8 @@ description: Operations executed car-wheel-assembly.kcl
               "value": -0.02,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2377,12 +2213,8 @@ description: Operations executed car-wheel-assembly.kcl
               "value": -0.2,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2393,12 +2225,8 @@ description: Operations executed car-wheel-assembly.kcl
               "value": -0.95,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2445,12 +2273,8 @@ description: Operations executed car-wheel-assembly.kcl
             "value": -0.95,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2479,9 +2303,9 @@ description: Operations executed car-wheel-assembly.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -2495,12 +2319,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2508,12 +2328,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2521,12 +2337,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -2542,12 +2354,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2555,12 +2363,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": -2000.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2568,12 +2372,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -2731,12 +2531,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2744,12 +2540,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2762,12 +2554,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2775,12 +2563,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2858,9 +2642,9 @@ description: Operations executed car-wheel-assembly.kcl
               "type": "Number",
               "value": 24.0,
               "ty": {
+                "mm": null,
                 "type": "Known",
-                "type": "Length",
-                "type": "Mm"
+                "type": "Length"
               }
             },
             "sourceRange": []
@@ -2870,9 +2654,9 @@ description: Operations executed car-wheel-assembly.kcl
               "type": "Number",
               "value": 30.0,
               "ty": {
+                "mm": null,
                 "type": "Known",
-                "type": "Length",
-                "type": "Mm"
+                "type": "Length"
               }
             },
             "sourceRange": []
@@ -2888,18 +2672,18 @@ description: Operations executed car-wheel-assembly.kcl
                       "type": "Number",
                       "value": 57.15,
                       "ty": {
+                        "mm": null,
                         "type": "Known",
-                        "type": "Length",
-                        "type": "Mm"
+                        "type": "Length"
                       }
                     },
                     "y": {
                       "type": "Number",
                       "value": -30.0,
                       "ty": {
+                        "mm": null,
                         "type": "Known",
-                        "type": "Length",
-                        "type": "Mm"
+                        "type": "Length"
                       }
                     },
                     "z": {
@@ -2907,12 +2691,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "value": 0.0,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     }
                   }
@@ -2925,12 +2705,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "value": 1.0,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "y": {
@@ -2938,12 +2714,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "value": 0.0,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "z": {
@@ -2951,12 +2723,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "value": 0.0,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     }
                   }
@@ -2969,12 +2737,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "value": 0.0,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "y": {
@@ -2982,12 +2746,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "value": -1.0,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "z": {
@@ -2995,12 +2755,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "value": 0.0,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     }
                   }
@@ -3013,12 +2769,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "value": 0.0,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "y": {
@@ -3026,12 +2778,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "value": 0.0,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "z": {
@@ -3039,12 +2787,8 @@ description: Operations executed car-wheel-assembly.kcl
                       "value": 1.0,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     }
                   }
@@ -3101,12 +2845,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -3114,12 +2854,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -3132,12 +2868,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -3145,12 +2877,8 @@ description: Operations executed car-wheel-assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -3375,50 +3103,14 @@ description: Operations executed car-wheel-assembly.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "x": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
         "y": {
           "value": {
             "type": "Number",
-            "value": 0.5,
+            "value": 0.055,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "z": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3459,9 +3151,9 @@ description: Operations executed car-wheel-assembly.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -3475,12 +3167,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3488,12 +3176,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3501,12 +3185,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -3522,12 +3202,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3535,12 +3211,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3548,12 +3220,8 @@ description: Operations executed car-wheel-assembly.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -3609,50 +3277,14 @@ description: Operations executed car-wheel-assembly.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "x": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
         "y": {
           "value": {
             "type": "Number",
-            "value": 0.5,
+            "value": 0.055,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "z": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3685,12 +3317,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -3706,9 +3334,9 @@ description: Operations executed car-wheel-assembly.kcl
         "type": "Number",
         "value": 114.3,
         "ty": {
+          "mm": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Mm"
+          "type": "Length"
         }
       },
       "visibility": "export",
@@ -3724,9 +3352,9 @@ description: Operations executed car-wheel-assembly.kcl
         "type": "Number",
         "value": -35.0,
         "ty": {
+          "mm": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Mm"
+          "type": "Length"
         }
       },
       "visibility": "export",
@@ -3743,12 +3371,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 6.38,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -3765,12 +3389,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 9.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -3787,12 +3407,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 19.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -3809,12 +3425,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -3831,12 +3443,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.2,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -3853,12 +3461,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -3875,12 +3479,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.95,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -3896,9 +3496,9 @@ description: Operations executed car-wheel-assembly.kcl
         "type": "Number",
         "value": 24.0,
         "ty": {
+          "mm": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Mm"
+          "type": "Length"
         }
       },
       "visibility": "export",
@@ -3914,9 +3514,9 @@ description: Operations executed car-wheel-assembly.kcl
         "type": "Number",
         "value": 12.0,
         "ty": {
+          "mm": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Mm"
+          "type": "Length"
         }
       },
       "visibility": "export",
@@ -3932,9 +3532,9 @@ description: Operations executed car-wheel-assembly.kcl
         "type": "Number",
         "value": 10.2,
         "ty": {
+          "mm": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Mm"
+          "type": "Length"
         }
       },
       "visibility": "export",
@@ -3950,9 +3550,9 @@ description: Operations executed car-wheel-assembly.kcl
         "type": "Number",
         "value": 30.0,
         "ty": {
+          "mm": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Mm"
+          "type": "Length"
         }
       },
       "visibility": "export",
@@ -3968,9 +3568,9 @@ description: Operations executed car-wheel-assembly.kcl
         "type": "Number",
         "value": 17.3,
         "ty": {
+          "mm": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Mm"
+          "type": "Length"
         }
       },
       "visibility": "export",
@@ -3987,12 +3587,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 12.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4009,12 +3605,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4031,12 +3623,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.25,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4053,12 +3641,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4075,12 +3659,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4097,12 +3677,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4119,12 +3695,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 11.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4141,12 +3713,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.25,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4163,12 +3731,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4185,12 +3749,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 16.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4207,12 +3767,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4229,12 +3785,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4251,12 +3803,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 19.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4273,12 +3821,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 24.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4295,12 +3839,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 11.02,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4317,12 +3857,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 1.6,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4339,12 +3875,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.39,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4361,12 +3893,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.39,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4383,12 +3911,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 3.15,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4405,12 +3929,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4427,12 +3947,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 1.6,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4449,12 +3965,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.39,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4471,12 +3983,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.39,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4493,12 +4001,8 @@ description: Operations executed car-wheel-assembly.kcl
         "value": 0.12,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -4617,6 +4121,7 @@ description: Operations executed car-wheel-assembly.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

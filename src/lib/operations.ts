@@ -1,7 +1,10 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { retrieveFaceSelectionsFromOpArgs } from '@src/lang/modifyAst/faces'
+import {
+  retrieveFaceSelectionsFromOpArgs,
+  retrieveNonDefaultPlaneSelectionFromOpArg,
+} from '@src/lang/modifyAst/faces'
 import { retrieveAxisOrEdgeSelectionsFromOpArg } from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
@@ -16,8 +19,8 @@ import {
   type CallExpressionKw,
   type PipeExpression,
   type Program,
-  pathToNodeFromRustNodePath,
   type VariableDeclaration,
+  pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
@@ -400,8 +403,8 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
   // 2. Convert the thickness argument from a string to a KCL expression
   const thickness = await stringToKclExpression(
     codeManager.code.slice(
-      operation.labeledArgs?.['thickness']?.sourceRange[0],
-      operation.labeledArgs?.['thickness']?.sourceRange[1]
+      operation.labeledArgs?.thickness?.sourceRange[0],
+      operation.labeledArgs?.thickness?.sourceRange[1]
     )
   )
   if (err(thickness) || 'errors' in thickness) {
@@ -429,58 +432,58 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     name: 'Offset plane',
     groupId: 'modeling',
   }
-  if (
-    operation.type !== 'StdLibCall' ||
-    !operation.labeledArgs ||
-    !operation.unlabeledArg ||
-    !('offset' in operation.labeledArgs) ||
-    !operation.labeledArgs.offset
-  ) {
-    return baseCommand
-  }
-  // TODO: Implement conversion to arbitrary plane selection
-  // once the Offset Plane command supports it.
-  const stdPlane = operation.unlabeledArg
-  const planeName = getStringValue(codeManager.code, stdPlane.sourceRange)
-
-  if (!isDefaultPlaneStr(planeName)) {
-    // TODO: error handling
-    return baseCommand
-  }
-  const planeId = rustContext.getDefaultPlaneId(planeName)
-  if (err(planeId)) {
-    // TODO: error handling
-    return baseCommand
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
   }
 
-  const plane: Selections = {
-    graphSelections: [],
-    otherSelections: [
-      {
-        name: planeName,
-        id: planeId,
-      },
-    ],
+  // 1. Map the plane and faces arguments to plane or face selections
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  // Convert the distance argument from a string to a KCL expression
-  const distanceResult = await stringToKclExpression(
+  let plane: Selections | undefined
+  const maybeDefaultPlaneName = getStringValue(
+    codeManager.code,
+    operation.unlabeledArg.sourceRange
+  )
+  if (isDefaultPlaneStr(maybeDefaultPlaneName)) {
+    const id = rustContext.getDefaultPlaneId(maybeDefaultPlaneName)
+    if (err(id)) {
+      return { reason: "Couldn't retrieve default plane ID" }
+    }
+
+    plane = {
+      graphSelections: [],
+      otherSelections: [{ id, name: maybeDefaultPlaneName }],
+    }
+  } else {
+    const result = retrieveNonDefaultPlaneSelectionFromOpArg(
+      operation.unlabeledArg,
+      kclManager.artifactGraph
+    )
+    if (err(result)) {
+      return { reason: result.message }
+    }
+    plane = result
+  }
+
+  // 2. Convert the offset argument from a string to a KCL expression
+  const offset = await stringToKclExpression(
     codeManager.code.slice(
-      operation.labeledArgs.offset.sourceRange[0],
-      operation.labeledArgs.offset.sourceRange[1]
+      operation.labeledArgs?.offset?.sourceRange[0],
+      operation.labeledArgs?.offset?.sourceRange[1]
     )
   )
-
-  if (err(distanceResult) || 'errors' in distanceResult) {
-    return baseCommand
+  if (err(offset) || 'errors' in offset) {
+    return { reason: "Couldn't retrieve thickness argument" }
   }
 
   // Assemble the default argument values for the Offset Plane command,
   // with `nodeToEdit` set, which will let the Offset Plane actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Offset plane'] = {
-    distance: distanceResult,
     plane,
+    offset,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 

@@ -1,5 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
-import type { Models } from '@kittycad/lib'
+import type { User } from '@kittycad/lib'
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -7,18 +7,16 @@ import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import env from '@src/env'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
+import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import env from '@src/env'
-import { commandBarActor } from '@src/lib/singletons'
-import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
-
-type User = Models['User_type']
 
 let didListEnvironments = false
 
@@ -36,11 +34,13 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   useEffect(() => {
     if (!didListEnvironments) {
       didListEnvironments = true
-      listAllEnvironmentsWithTokens()
-        .then((environmentsWithTokens) => {
-          setHasMultipleEnvironments(environmentsWithTokens.length > 1)
-        })
-        .catch(reportRejection)
+      if (window.electron) {
+        listAllEnvironmentsWithTokens(window.electron)
+          .then((environmentsWithTokens) => {
+            setHasMultipleEnvironments(environmentsWithTokens.length > 1)
+          })
+          .catch(reportRejection)
+      }
     }
   }, [])
 
@@ -157,7 +157,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           hide: !isDesktop(),
           onClick: () => {
-            window.electron.appCheckForUpdates().catch(reportRejection)
+            window.electron?.appCheckForUpdates().catch(reportRejection)
           },
           children: <span className="flex-1">Check for updates</span>,
         },
@@ -246,14 +246,14 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               <img
                 src={user?.image || ''}
                 alt={user?.name || ''}
-                className="h-7 w-7 rounded-full"
+                className="h-6 w-6 rounded-full"
                 referrerPolicy="no-referrer"
                 onError={() => setImageLoadFailed(true)}
               />
             ) : (
               <CustomIcon
                 name="person"
-                className="w-7 h-7 text-chalkboard-70 dark:text-chalkboard-40 bg-chalkboard-20 dark:bg-chalkboard-80"
+                className="w-6 h-6 text-chalkboard-70 dark:text-chalkboard-40 bg-chalkboard-20 dark:bg-chalkboard-80"
               />
             )}
           </div>

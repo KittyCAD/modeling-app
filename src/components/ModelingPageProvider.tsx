@@ -6,14 +6,13 @@ import { useMenuListener } from '@src/hooks/useMenu'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { codeManager, kclManager } from '@src/lib/singletons'
-import { type IndexLoaderData } from '@src/lib/types'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
+import { type IndexLoaderData } from '@src/lib/types'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
 /**
@@ -107,18 +106,12 @@ export const ModelingPageProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [location])
 
-  const cb = modelingMenuCallbackMostActions(
-    settings,
-    navigate,
-    filePath,
-    project,
-    token
-  )
+  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath)
   useMenuListener(cb)
 
   const kclCommandMemo = useMemo(() => {
     const providedOptions = []
-    if (isDesktop() && project?.children && file?.path) {
+    if (window.electron && project?.children && file?.path) {
       const projectPath = project.path
       const filePath = file.path
       let children = project.children

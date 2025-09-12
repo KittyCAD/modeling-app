@@ -1,18 +1,14 @@
+import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
+import type { AsyncFn } from '@src/lib/types'
 import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { AsyncFn } from '@src/lib/types'
 
 import * as THREE from 'three'
 
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import type {
-  CameraViewState_type,
-  UnitLength_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { CameraViewState, UnitLength } from '@kittycad/lib'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 
 export const uuidv4 = v4
 
@@ -36,6 +32,19 @@ export async function refreshPage(method = 'UI button') {
 
   // Window may not be available in some environments
   window?.location.reload()
+}
+
+export function activeFocusIsInput() {
+  return document.activeElement && isInputElement(document.activeElement)
+}
+
+function isInputElement(
+  element: EventTarget
+): element is HTMLInputElement | HTMLTextAreaElement {
+  return (
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement
+  )
 }
 
 /**
@@ -232,7 +241,7 @@ export function getNormalisedCoordinates(
 export type Platform = 'macos' | 'windows' | 'linux' | ''
 
 export function platform(): Platform {
-  if (isDesktop()) {
+  if (window.electron) {
     const platform = window.electron.platform ?? ''
     // https://nodejs.org/api/process.html#processplatform
     switch (platform) {
@@ -675,7 +684,7 @@ export async function engineViewIsometricWithoutGeometryPresent({
   cameraProjection,
 }: {
   engineCommandManager: EngineCommandManager
-  unit: UnitLength_type
+  unit: UnitLength
   cameraProjection: CameraProjectionType
 }) {
   // When the video first loads, if the scene is empty (has no sketches/solids/etc defined)
@@ -710,7 +719,7 @@ export async function engineViewIsometricWithoutGeometryPresent({
   // If you load an empty scene with any file unit it will have an eye offset of this
   const magicEngineEyeOffset = 1378.0057 / scaleFactor
   const quat = computeIsometricQuaternionForEmptyScene()
-  const isometricView: CameraViewState_type = {
+  const isometricView: CameraViewState = {
     pivot_rotation: {
       x: quat.x,
       y: quat.y,

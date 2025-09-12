@@ -10,8 +10,8 @@ import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type {
@@ -22,19 +22,19 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
-import { reportRejection } from '@src/lib/trap'
-import { toSync } from '@src/lib/utils'
 import {
   codeManager,
   kclManager,
   settingsActor,
   useSettings,
 } from '@src/lib/singletons'
-import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
 import {
   acceptOnboarding,
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
+import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -197,7 +197,7 @@ export const AllSettingsFields = forwardRef(
                     if (!finalPath) {
                       return new Error('finalPath undefined')
                     }
-                    window.electron.showInFolder(finalPath)
+                    window.electron?.showInFolder(finalPath)
                   }, reportRejection)}
                   iconStart={{
                     icon: 'folder',
@@ -250,7 +250,7 @@ export const AllSettingsFields = forwardRef(
               <ActionButton
                 Element="button"
                 onClick={() => {
-                  window.electron.appCheckForUpdates().catch(reportRejection)
+                  window.electron?.appCheckForUpdates().catch(reportRejection)
                 }}
                 iconStart={{
                   icon: 'refresh',

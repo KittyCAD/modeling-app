@@ -1,7 +1,8 @@
 import fs from 'fs'
 import path from 'path'
-import { DEFAULT_PROJECT_KCL_FILE } from '@src/lib/constants'
+import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import fsp from 'fs/promises'
+import { NIL as uuidNIL } from 'uuid'
 
 import {
   createProject,
@@ -292,7 +293,9 @@ test(
 
 test(
   'when code with error first loads you get errors in console',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, editor }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(path.join(dir, 'broken-code'), { recursive: true })
@@ -323,7 +326,9 @@ test(
 
 test(
   'Rename and delete projects, also spam arrow keys when renaming',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
@@ -539,7 +544,9 @@ test(
 
 test(
   'pressing "delete" on home screen should do nothing',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
@@ -910,7 +917,9 @@ test(
 
 test(
   'Nested directories in project without main.kcl do not create main.kcl',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     let testDir: string | undefined
     await context.folderSetupFn(async (dir) => {
@@ -967,7 +976,9 @@ test(
 
 test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
@@ -1045,7 +1056,9 @@ test(
 
 test(
   'Can load a file with CRLF line endings',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, scene, cmdBar }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
@@ -1077,7 +1090,9 @@ test(
 
 test(
   'Can sort projects on home page',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
@@ -1184,7 +1199,9 @@ test(
 
 test(
   'When the project folder is empty, user can create new project and open it.',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ page }, testInfo) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1280,7 +1297,9 @@ extrude001 = extrude(sketch001, length = 200)`)
 
 test(
   'You can change the root projects directory and nothing is lost',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, tronApp, homePage }, testInfo) => {
     if (!tronApp) {
       fail()
@@ -1387,7 +1406,9 @@ test(
 
 test(
   'Search projects on desktop home',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['basic bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
@@ -1443,7 +1464,9 @@ test(
 
 test(
   'file pane is scrollable when there are many files',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const testDir = path.join(dir, 'testProject')
@@ -1545,7 +1568,9 @@ test(
 
 test(
   'select all in code editor does not actually select all, just what is visible (regression)',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       // rust/kcl-lib/e2e/executor/inputs/mike_stress_test.kcl
@@ -1603,7 +1628,9 @@ test(
 
 test(
   'Settings persist across restarts',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ page, toolbar }, testInfo) => {
     await test.step('We can change a user setting like theme', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1635,7 +1662,9 @@ test(
 
 test(
   'Original project name persist after onboarding',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ page, toolbar }, testInfo) => {
     const nextButton = page.getByTestId('onboarding-next')
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1799,3 +1828,68 @@ profile001 = startProfile(sketch001, at = [0, 0])
     })
   }
 )
+
+test.describe('Project id', () => {
+  // Should work on both web and desktop.
+  test(
+    'is created on new project',
+    {
+      tag: ['@desktop', '@web'],
+    },
+    async ({ page, toolbar, context, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+
+      const inputProjectId = page.getByTestId('project-id')
+
+      await test.step('Open the project settings modal', async () => {
+        await toolbar.projectSidebarToggle.click()
+        await page.getByTestId('project-settings').click()
+        // Give time to system for writing to a persistent store
+        await page.waitForTimeout(1000)
+      })
+
+      await test.step('Check project id is not the NIL UUID and not empty', async () => {
+        await expect(inputProjectId).not.toHaveValue(uuidNIL)
+        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      })
+    }
+  )
+  test(
+    'is created on existing project without one',
+    { tag: '@desktop' },
+    async ({ page, toolbar, context, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      await context.folderSetupFn(async (rootDir) => {
+        const projectDir = path.join(rootDir, 'hoohee')
+        await fsp.mkdir(projectDir, { recursive: true })
+        await fsp.writeFile(
+          path.join(projectDir, 'project.toml'),
+          `[settings.app]
+themeColor = "255"
+`
+        )
+      })
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+
+      const inputProjectId = page.getByTestId('project-id')
+
+      await test.step('Open the project settings modal', async () => {
+        await toolbar.projectSidebarToggle.click()
+        await page.getByTestId('project-settings').click()
+        // Give time to system for writing to a persistent store
+        await page.waitForTimeout(1000)
+      })
+
+      await test.step('Check project id is not the NIL UUID and not empty', async () => {
+        await expect(inputProjectId).not.toHaveValue(uuidNIL)
+        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      })
+    }
+  )
+})

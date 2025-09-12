@@ -13,9 +13,11 @@ import { useKclContext } from '@src/lang/KclProvider'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
+import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { editorManager, kclManager } from '@src/lib/singletons'
+import { codeManager, commandBarActor } from '@src/lib/singletons'
 import type {
   ToolbarDropdown,
   ToolbarItem,
@@ -25,8 +27,6 @@ import type {
   ToolbarModeName,
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
-import { codeManager, commandBarActor } from '@src/lib/singletons'
-import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 
 export function Toolbar({
   className = '',
@@ -207,7 +207,7 @@ export function Toolbar({
     <menu
       data-current-mode={currentMode}
       data-onboarding-id="toolbar"
-      className="z-[19] max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
+      className="z-[19] max-w-full whitespace-nowrap rounded-b px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
     >
       <ul
         {...props}

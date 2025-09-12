@@ -18,12 +18,8 @@ description: Operations executed spur-gear.kcl
               "value": 6.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -34,12 +30,8 @@ description: Operations executed spur-gear.kcl
               "value": 1.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -50,12 +42,8 @@ description: Operations executed spur-gear.kcl
               "value": 21.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -65,13 +53,9 @@ description: Operations executed spur-gear.kcl
               "type": "Number",
               "value": 14.0,
               "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -99,12 +83,8 @@ description: Operations executed spur-gear.kcl
         "value": 31.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -145,12 +125,8 @@ description: Operations executed spur-gear.kcl
         "value": 1.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -191,12 +167,8 @@ description: Operations executed spur-gear.kcl
         "value": 1.875,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -237,12 +209,8 @@ description: Operations executed spur-gear.kcl
         "value": 30.564315377693887,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -283,12 +251,8 @@ description: Operations executed spur-gear.kcl
         "value": 34.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -329,12 +293,8 @@ description: Operations executed spur-gear.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -375,12 +335,8 @@ description: Operations executed spur-gear.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -421,12 +377,8 @@ description: Operations executed spur-gear.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -467,12 +419,8 @@ description: Operations executed spur-gear.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -512,9 +460,9 @@ description: Operations executed spur-gear.kcl
         "type": "Number",
         "value": 0.41151684606748806,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -636,41 +584,69 @@ description: Operations executed spur-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
+      "type": "VariableDeclaration",
+      "name": "x",
+      "value": {
+        "type": "Number",
+        "value": 15.282157688846944,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "y",
+      "value": {
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "polar",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "radians": null,
+              "type": "Known",
+              "type": "Angle"
+            }
           },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 15.282157688846944,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 15.282157688846944,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
         }
       },
       "nodePath": {
@@ -715,15 +691,11 @@ description: Operations executed spur-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 15.282157688846944,
+        "value": 17.09770867996297,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -737,15 +709,11 @@ description: Operations executed spur-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 0.0,
+        "value": 2.287106883186467,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -755,44 +723,33 @@ description: Operations executed spur-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 0.13297746681861558,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
+      "type": "StdLibCall",
+      "name": "polar",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.13297746681861558,
+            "ty": {
+              "radians": null,
+              "type": "Known",
+              "type": "Angle"
+            }
           },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 17.25,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 17.25,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
         }
       },
       "nodePath": {
@@ -837,15 +794,11 @@ description: Operations executed spur-gear.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 17.09770867996297,
+        "value": 14.603214301197719,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -859,15 +812,11 @@ description: Operations executed spur-gear.kcl
       "name": "y",
       "value": {
         "type": "Number",
-        "value": 2.287106883186467,
+        "value": 4.504495054951021,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -877,44 +826,33 @@ description: Operations executed spur-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 0.299199300341885,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
+      "type": "StdLibCall",
+      "name": "polar",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.299199300341885,
+            "ty": {
+              "radians": null,
+              "type": "Known",
+              "type": "Angle"
+            }
           },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 15.282157688846944,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 15.282157688846944,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
         }
       },
       "nodePath": {
@@ -953,53 +891,6 @@ description: Operations executed spur-gear.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 14.603214301197719,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 4.504495054951021,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1076,12 +967,8 @@ description: Operations executed spur-gear.kcl
             "value": 6.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1233,6 +1120,7 @@ description: Operations executed spur-gear.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

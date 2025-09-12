@@ -1,12 +1,12 @@
 import CommandArgOptionInput from '@src/components/CommandBar/CommandArgOptionInput'
 import CommandBarBasicInput from '@src/components/CommandBar/CommandBarBasicInput'
+import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import CommandBarKclInput from '@src/components/CommandBar/CommandBarKclInput'
 import CommandBarPathInput from '@src/components/CommandBar/CommandBarPathInput'
 import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelectionInput'
 import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
 import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
-import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
@@ -63,6 +63,7 @@ function ArgumentInput({
   stepBack: () => void
   onSubmit: (event: any) => void
 }) {
+  // @ts-ignore
   switch (arg.inputType) {
     case 'options':
       return (
@@ -123,6 +124,15 @@ function ArgumentInput({
       return (
         <CommandBarPathInput
           arg={arg}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+        />
+      )
+    case 'number':
+      console.error("'number' input is not implemented for CommandBar yet")
+      return (
+        <CommandBarBasicInput
+          arg={arg as any}
           stepBack={stepBack}
           onSubmit={onSubmit}
         />

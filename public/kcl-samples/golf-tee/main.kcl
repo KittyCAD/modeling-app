@@ -1,0 +1,36 @@
+// Golf Tee
+// A parametric model of a golf tee with realistic proportions, including a pointed tip, cylindrical shaft, and flared cup to hold the ball. Designed for prototyping, printing, or sports equipment simulations.
+
+
+
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// --- Main Dimensions ---
+teeHeight = 70 // total height of the tee
+tipHeight = 10 // height of the pointed section inserted into the ground
+cupHeight = 14.6 // height of the flared cup section
+shaftHeight = teeHeight - tipHeight - cupHeight // derived height of the cylindrical shaft
+cupDepth = 2 // depth of the inner cup (how far the ball sits in)
+
+
+shaftDiameter = 4.5 // diameter of the shaft
+cupDiameter = 14.6 // outer diameter of the cup (typically wider than the shaft)
+
+
+shaftRadius = shaftDiameter / 2
+cupRadius = cupDiameter / 2
+
+// --- Tee Profile ---
+teeSketch = startSketchOn(YZ)
+
+teeProfile = startProfile(teeSketch, at = [0, 0])
+  |> line(end = [shaftRadius, tipHeight]) // conical tip
+  |> yLine(length = shaftHeight) // straight shaft
+  |> line(end = [cupRadius, cupHeight]) // flared transition to cup
+  |> line(endAbsolute = [0, teeHeight - cupDepth]) // inner wall of the cup
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)]) // close shape
+  |> close()
+
+// --- Solid Revolve ---
+golfTee = revolve(teeProfile, axis = Y, angle = 360)

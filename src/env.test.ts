@@ -1,11 +1,11 @@
 import env from '@src/env'
-import { vi } from 'vitest'
 import {
+  generateDomainsFromBaseDomain,
+  processEnv,
   viteEnv,
   windowElectronProcessEnv,
-  processEnv,
-  generateDomainsFromBaseDomain,
 } from '@src/env'
+import { vi } from 'vitest'
 
 describe('@src/env', () => {
   describe('default export', () => {

@@ -9,7 +9,7 @@
 /// You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide](https://zoo.dev/docs/kcl-book/intro.html).
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 // Note that everything in the prelude is treated as exported.
 
@@ -18,6 +18,8 @@ export import "std::units"
 export import * from "std::array"
 export import * from "std::math"
 export import * from "std::sketch"
+@(experimental = true)
+export import "std::sketch2"
 export import * from "std::solid"
 export import * from "std::transform"
 export import "std::turns"
@@ -79,7 +81,7 @@ export MERGE = "merge": string
 
 /// Create a helix.
 ///
-/// ```
+/// ```no3d
 /// // Create a helix around the Z axis.
 /// helixPath = helix(
 ///     angleStart = 0,
@@ -96,7 +98,7 @@ export MERGE = "merge": string
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```
+/// ```no3d
 /// // Create a helix around an edge.
 /// helper001 = startSketchOn(XZ)
 ///  |> startProfile(at = [0, 0])
@@ -117,7 +119,7 @@ export MERGE = "merge": string
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```
+/// ```no3d
 /// // Create a helix around a custom axis.
 /// helixPath = helix(
 ///     angleStart = 0,
@@ -137,7 +139,7 @@ export MERGE = "merge": string
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```
+/// ```no3d
 /// // Create a helix on a cylinder.
 ///
 /// part001 = startSketchOn(XY)

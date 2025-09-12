@@ -3,7 +3,7 @@ import type { Options } from 'react-hotkeys-hook'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { codeManager } from '@src/lib/singletons'
-import { isArray, type Platform } from '@src/lib/utils'
+import { type Platform, isArray } from '@src/lib/utils'
 
 // Hotkey wrapper wraps hotkeys for the app (outside of the editor)
 // with hotkeys inside the editor.

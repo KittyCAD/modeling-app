@@ -11,9 +11,9 @@ description: Operations executed helium-tank.kcl
         "type": "Number",
         "value": 2.5,
         "ty": {
+          "ft": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Feet"
+          "type": "Length"
         }
       },
       "visibility": "default",
@@ -41,12 +41,8 @@ description: Operations executed helium-tank.kcl
         "value": 9.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -74,12 +70,8 @@ description: Operations executed helium-tank.kcl
         "value": 0.125,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -107,12 +99,8 @@ description: Operations executed helium-tank.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -140,12 +128,8 @@ description: Operations executed helium-tank.kcl
         "value": 0.09,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -173,12 +157,8 @@ description: Operations executed helium-tank.kcl
         "value": 0.25,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -247,13 +227,9 @@ description: Operations executed helium-tank.kcl
             "type": "Number",
             "value": 220.0,
             "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "degrees": null,
+              "type": "Known",
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -270,12 +246,8 @@ description: Operations executed helium-tank.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -283,12 +255,8 @@ description: Operations executed helium-tank.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -301,12 +269,8 @@ description: Operations executed helium-tank.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -314,12 +278,8 @@ description: Operations executed helium-tank.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -361,9 +321,9 @@ description: Operations executed helium-tank.kcl
             "type": "Number",
             "value": 2.4583333333333335,
             "ty": {
+              "ft": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Feet"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -442,12 +402,8 @@ description: Operations executed helium-tank.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -499,12 +455,8 @@ description: Operations executed helium-tank.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -635,12 +587,8 @@ description: Operations executed helium-tank.kcl
             "value": 1.3,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -767,9 +715,9 @@ description: Operations executed helium-tank.kcl
             "type": "Number",
             "value": 1.675,
             "ty": {
+              "ft": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Feet"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -854,12 +802,8 @@ description: Operations executed helium-tank.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -867,12 +811,8 @@ description: Operations executed helium-tank.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -885,12 +825,8 @@ description: Operations executed helium-tank.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -898,12 +834,8 @@ description: Operations executed helium-tank.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -949,9 +881,9 @@ description: Operations executed helium-tank.kcl
             "type": "Number",
             "value": 1.675,
             "ty": {
+              "ft": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Feet"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -1036,12 +968,8 @@ description: Operations executed helium-tank.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -1049,12 +977,8 @@ description: Operations executed helium-tank.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -1067,12 +991,8 @@ description: Operations executed helium-tank.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -1080,12 +1000,8 @@ description: Operations executed helium-tank.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -1177,12 +1093,8 @@ description: Operations executed helium-tank.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1231,9 +1143,9 @@ description: Operations executed helium-tank.kcl
             "type": "Number",
             "value": 1.675,
             "ty": {
+              "ft": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Feet"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -1355,12 +1267,8 @@ description: Operations executed helium-tank.kcl
             "value": 0.8,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1459,12 +1367,8 @@ description: Operations executed helium-tank.kcl
             "value": -4.736842105263158,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1543,12 +1447,8 @@ description: Operations executed helium-tank.kcl
             "value": -5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1596,12 +1496,8 @@ description: Operations executed helium-tank.kcl
                 "value": -1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1609,12 +1505,8 @@ description: Operations executed helium-tank.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1622,12 +1514,8 @@ description: Operations executed helium-tank.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1640,12 +1528,8 @@ description: Operations executed helium-tank.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1842,9 +1726,9 @@ description: Operations executed helium-tank.kcl
             "type": "Number",
             "value": 1.675,
             "ty": {
+              "ft": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Feet"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -1966,12 +1850,8 @@ description: Operations executed helium-tank.kcl
             "value": 0.75,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2078,12 +1958,8 @@ description: Operations executed helium-tank.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2091,12 +1967,8 @@ description: Operations executed helium-tank.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2104,12 +1976,8 @@ description: Operations executed helium-tank.kcl
                 "value": -1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -2121,9 +1989,9 @@ description: Operations executed helium-tank.kcl
             "type": "Number",
             "value": 0.8250000000000001,
             "ty": {
+              "ft": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Feet"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -2267,6 +2135,7 @@ description: Operations executed helium-tank.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

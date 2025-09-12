@@ -4,6 +4,7 @@ import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { KclManagerEvents } from '@src/lang/KclSingleton'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import {
   EngineCommandManagerEvents,
@@ -17,25 +18,24 @@ import {
   kclManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { KclManagerEvents } from '@src/lang/KclSingleton'
+import { engineStreamActor, useSettings } from '@src/lib/singletons'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
-import { engineStreamActor, useSettings } from '@src/lib/singletons'
 import {
   EngineStreamState,
   EngineStreamTransition,
 } from '@src/machines/engineStreamMachine'
 
 import Loading from '@src/components/Loading'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
 import type { MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useRouteLoaderData } from 'react-router-dom'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
-import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 const TIME_1_SECOND = 1000
 
@@ -92,6 +92,16 @@ export const EngineStream = (props: {
     setStreamIdleMode(settings.app.streamIdleMode.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings.app.streamIdleMode.current])
+
+  useEffect(() => {
+    // Will cause a useEffect loop if not checked for.
+    if (engineStreamState.context.containerElementRef.current !== null) return
+    engineStreamActor.send({
+      type: EngineStreamTransition.SetContainerElementRef,
+      containerElementRef: { current: videoWrapperRef.current },
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [videoWrapperRef.current, engineStreamState])
 
   useEffect(() => {
     // Will cause a useEffect loop if not checked for.
@@ -303,6 +313,8 @@ export const EngineStream = (props: {
     // But if the user resizes, and we're stopped or paused, then we want
     // to try to restart the stream!
 
+    const wrapper = engineStreamState.context.containerElementRef?.current
+    if (!wrapper) return
     const video = engineStreamState.context.videoRef?.current
     if (!video) return
     const canvas = engineStreamState.context.canvasRef?.current
@@ -317,8 +329,8 @@ export const EngineStream = (props: {
         last.current = Date.now()
 
         if (
-          (Math.abs(video.width - window.innerWidth) > 4 ||
-            Math.abs(video.height - window.innerHeight) > 4) &&
+          (Math.abs(video.width - wrapper.clientWidth) > 4 ||
+            Math.abs(video.height - wrapper.clientHeight) > 4) &&
           engineStreamState.matches(EngineStreamState.Playing)
         ) {
           timeoutStart.current = Date.now()
@@ -327,7 +339,7 @@ export const EngineStream = (props: {
       })
     })
 
-    observer.observe(document.body)
+    observer.observe(wrapper)
 
     return () => {
       observer.disconnect()
@@ -570,7 +582,7 @@ export const EngineStream = (props: {
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={videoWrapperRef}
-      className="fixed inset-0 z-0"
+      className="absolute inset-[-4px] z-0"
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
@@ -610,6 +622,7 @@ export const EngineStream = (props: {
       />
       {![
         EngineStreamState.Playing,
+        EngineStreamState.Pausing,
         EngineStreamState.Paused,
         EngineStreamState.Resuming,
       ].some((s) => s === engineStreamState.value) && (
@@ -617,7 +630,7 @@ export const EngineStream = (props: {
           isRetrying={timeoutId !== undefined && !firstRun}
           retryAttemptCountdown={attemptTimes[1]}
           dataTestId="loading-engine"
-          className="fixed inset-0 h-screen"
+          className="absolute inset-0 h-screen"
         >
           Connecting and setting up scene...
         </Loading>

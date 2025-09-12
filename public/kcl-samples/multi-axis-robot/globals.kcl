@@ -35,21 +35,13 @@ export plane001 = {
 
 export plane002 = {
   origin = [0.0, 0.0, 0.0],
-  xAxis = [
-    sin(axisJ1): number(in),
-    cos(axisJ1): number(in),
-    0.0
-  ],
+  xAxis = [sin(axisJ1): in, cos(axisJ1): in, 0.0],
   yAxis = [0.0, 0.0, 1.0]
 }
 
 // Define Plane to Move J2 Axis Robot Arm
 export plane003 = {
   origin = [-0.1, 0.0, 0.0],
-  xAxis = [
-    sin(axisJ1): number(in),
-    cos(axisJ1): number(in),
-    0.0
-  ],
+  xAxis = [sin(axisJ1): in, cos(axisJ1): in, 0.0],
   yAxis = [0.0, 0.0, 1.0]
 }

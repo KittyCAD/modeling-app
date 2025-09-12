@@ -8,22 +8,22 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   ARG_ANGLE,
   ARG_ANGLE_END,
-  ARG_AT,
   ARG_ANGLE_START,
+  ARG_AT,
   ARG_CIRCLE_CENTER,
-  ARG_RADIUS,
   ARG_END,
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
+  ARG_INTERIOR_ABSOLUTE,
   ARG_INTERSECT_TAG,
   ARG_LENGTH,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
   ARG_OFFSET,
+  ARG_RADIUS,
   ARG_TAG,
   DETERMINING_ARGS,
-  ARG_INTERIOR_ABSOLUTE,
 } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -31,7 +31,6 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
-  createLiteralMaybeSuffix,
   createLocalName,
   createPipeExpression,
   createTagDeclarator,
@@ -94,8 +93,8 @@ import {
   getLength,
   roundOff,
 } from '@src/lib/utils'
-import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
+import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')
@@ -1570,9 +1569,12 @@ export const arc: SketchLineHelperKw = {
       createLabeledArg('radius', createLiteral(roundOff(radius))),
       createLabeledArg(
         'angleStart',
-        createLiteral(roundOff(startAngleDegrees))
+        createLiteral(roundOff(startAngleDegrees), 'Deg')
       ),
-      createLabeledArg('angleEnd', createLiteral(roundOff(endAngleDegrees))),
+      createLabeledArg(
+        'angleEnd',
+        createLiteral(roundOff(endAngleDegrees), 'Deg')
+      ),
     ])
 
     if (
@@ -1623,13 +1625,13 @@ export const arc: SketchLineHelperKw = {
           type: 'objectProperty',
           key: 'angle',
           argType: 'angle',
-          expr: createLiteral(roundOff(startAngleDegrees)),
+          expr: createLiteral(roundOff(startAngleDegrees), 'Deg'),
         },
         {
           type: 'objectProperty',
           key: 'angle',
           argType: 'angle',
-          expr: createLiteral(roundOff(endAngleDegrees)),
+          expr: createLiteral(roundOff(endAngleDegrees), 'Deg'),
         },
       ])
       if (err(result)) return result
@@ -1689,8 +1691,8 @@ export const arc: SketchLineHelperKw = {
     const endAngleDegrees = (endAngle * 180) / Math.PI
 
     const newRadius = createLiteral(roundOff(radius))
-    const newAngleStart = createLiteral(roundOff(startAngleDegrees))
-    const newAngleEnd = createLiteral(roundOff(endAngleDegrees))
+    const newAngleStart = createLiteral(roundOff(startAngleDegrees), 'Deg')
+    const newAngleEnd = createLiteral(roundOff(endAngleDegrees), 'Deg')
     mutateKwArg('radius', callExpression, newRadius)
     mutateKwArg('angleStart', callExpression, newAngleStart)
     mutateKwArg('angleEnd', callExpression, newAngleEnd)
@@ -2409,7 +2411,7 @@ export const angledLine: SketchLineHelperKw = {
             createLocalName(snaps?.previousArcTag),
             []
           )
-      : createLiteral(roundOff(getAngle(from, to), 0))
+      : createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
     const newLine = createCallExpressionStdLibKw('angledLine', null, [
       createLabeledArg(ARG_ANGLE, newAngleVal),
@@ -2463,7 +2465,7 @@ export const angledLine: SketchLineHelperKw = {
     const angle = roundOff(getAngle(from, to), 0)
     const lineLength = roundOff(getLength(from, to), 2)
 
-    const angleLit = createLiteral(angle)
+    const angleLit = createLiteral(angle, 'Deg')
     const lengthLit = createLiteral(lineLength)
 
     mutateKwArg(ARG_ANGLE, callExpression, angleLit)
@@ -2520,7 +2522,7 @@ export const angledLineOfXLength: SketchLineHelperKw = {
     if (err(sketch)) {
       return sketch
     }
-    const angle = createLiteral(roundOff(getAngle(from, to), 0))
+    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
     const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
     let newLine: Expr
     if (replaceExistingCallback) {
@@ -2579,7 +2581,7 @@ export const angledLineOfXLength: SketchLineHelperKw = {
       ? Math.abs(xLength)
       : xLength // todo make work for variable angle > 180
 
-    const angleLit = createLiteral(angle)
+    const angleLit = createLiteral(angle, 'Deg')
     const lengthLit = createLiteral(adjustedXLength)
 
     removeDeterminingArgs(callExpression)
@@ -2632,7 +2634,7 @@ export const angledLineOfYLength: SketchLineHelperKw = {
     const sketch = sketchFromKclValue(variables[variableName], variableName)
     if (err(sketch)) return sketch
 
-    const angle = createLiteral(roundOff(getAngle(from, to), 0))
+    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
     const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
     let newLine: Expr
     if (replaceExistingCallback) {
@@ -2691,7 +2693,7 @@ export const angledLineOfYLength: SketchLineHelperKw = {
       ? Math.abs(yLength)
       : yLength // todo make work for variable angle > 180
 
-    const angleLit = createLiteral(angle)
+    const angleLit = createLiteral(angle, 'Deg')
     const lengthLit = createLiteral(adjustedYLength)
 
     removeDeterminingArgs(callExpression)
@@ -2728,7 +2730,7 @@ export const angledLineToX: SketchLineHelperKw = {
     if (err(nodeMeta)) return nodeMeta
 
     const { node: pipe } = nodeMeta
-    const angle = createLiteral(roundOff(getAngle(from, to), 0))
+    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
     const xArg = createLiteral(roundOff(to[0], 2))
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
@@ -2779,7 +2781,7 @@ export const angledLineToX: SketchLineHelperKw = {
 
     const adjustedXLength = xLength
 
-    const angleLit = createLiteral(angle)
+    const angleLit = createLiteral(angle, 'Deg')
     const lengthLit = createLiteral(adjustedXLength)
 
     removeDeterminingArgs(callExpression)
@@ -2816,7 +2818,7 @@ export const angledLineToY: SketchLineHelperKw = {
 
     const { node: pipe } = nodeMeta
 
-    const angle = createLiteral(roundOff(getAngle(from, to), 0))
+    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
     const yArg = createLiteral(roundOff(to[1], 2))
 
     if (replaceExistingCallback) {
@@ -2868,7 +2870,7 @@ export const angledLineToY: SketchLineHelperKw = {
 
     const adjustedXLength = xLength
 
-    const angleLit = createLiteral(angle)
+    const angleLit = createLiteral(angle, 'Deg')
     const lengthLit = createLiteral(adjustedXLength)
 
     removeDeterminingArgs(callExpression)
@@ -2911,7 +2913,7 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
 
     const { node: pipe } = nodeMeta
 
-    const angle = createLiteral(roundOff(getAngle(from, to), 0))
+    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
     if (!referencedSegment) {
       return new Error('referencedSegment must be provided')
     }
@@ -2994,7 +2996,7 @@ export const angledLineThatIntersects: SketchLineHelperKw = {
       )
     }
 
-    mutateKwArg(ARG_ANGLE, callExpression, createLiteral(angle))
+    mutateKwArg(ARG_ANGLE, callExpression, createLiteral(angle, 'Deg'))
     mutateKwArg(ARG_OFFSET, callExpression, createLiteral(offset))
     return {
       modifiedAst: _node,
@@ -3504,7 +3506,7 @@ export function replaceSketchLine({
 }):
   | {
       modifiedAst: Node<Program>
-      valueUsedInTransform?: number
+      valueUsedInTransform?: string
       pathToNode: PathToNode
     }
   | Error {
@@ -4223,13 +4225,8 @@ const tangentialArcHelpers = {
             callExpression,
             createLiteral(roundOff(radius, 2))
           )
-          const angleValue = createLiteralMaybeSuffix({
-            value: roundOff(angle, 2),
-            suffix: 'Deg',
-          })
-          if (!err(angleValue)) {
-            mutateKwArg(ARG_ANGLE, callExpression, angleValue)
-          }
+          const angleValue = createLiteral(roundOff(angle, 2), 'Deg')
+          mutateKwArg(ARG_ANGLE, callExpression, angleValue)
         } else {
           console.debug('Invalid center calculated for tangential arc')
         }

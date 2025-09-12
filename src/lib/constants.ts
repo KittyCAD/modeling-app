@@ -1,9 +1,8 @@
-import type { Models } from '@kittycad/lib/dist/types/src'
+import type { WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 export const APP_NAME = 'Design Studio'
-export const APP_DOWNLOAD_PATH = 'design-studio/download'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
 /** The maximum number of 0's to pad a default project name's index with */
@@ -54,6 +53,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   HELIX: 'helix',
   CLONE: 'clone',
   SOLID: 'solid',
+  PATTERN: 'pattern',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
@@ -62,20 +62,18 @@ export const KCL_DEFAULT_LENGTH = `5`
 export const KCL_DEFAULT_TRANSFORM = `0`
 
 /** The default KCL degree expression */
-export const KCL_DEFAULT_DEGREE = `360`
+export const KCL_DEFAULT_DEGREE = `360deg`
 
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
-export const COOKIE_NAME = '__Secure-next-auth.session-token'
+export const LEGACY_COOKIE_NAME = '__Secure-next-auth.session-token'
+export const COOKIE_NAME_PREFIX = '__Secure-session-token-'
 export const TELEMETRY_FILE_NAME = 'boot.txt'
 export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
 export const ENVIRONMENT_FILE_NAME = 'environment.txt'
-
-/** localStorage key to determine if we're in Playwright tests */
-export const PLAYWRIGHT_KEY = 'playwright'
 
 /** Custom error message to match when rejectAllModelCommands is called
  * allows us to match if the execution of executeAst was interrupted
@@ -84,7 +82,7 @@ export const PLAYWRIGHT_KEY = 'playwright'
  * */
 export const EXECUTE_AST_INTERRUPT_ERROR_STRING =
   'Force interrupt, executionIsStale, new AST requested'
-const EXECUTE_AST_INTERRUPT_ERROR: Models['WebSocketResponse_type'] = {
+const EXECUTE_AST_INTERRUPT_ERROR: WebSocketResponse = {
   success: false,
   errors: [
     {
@@ -249,3 +247,23 @@ export type EnvironmentConfigurationRuntime = {
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'
 
 export const MAX_PROJECT_NAME_LENGTH = 240
+
+// It's so ugh that `uuid` package doesn't export this.
+export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
+
+export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
+
+/**
+ * Used by the modeling sidebar to validate persisted pane IDs.
+ */
+export const VALID_PANE_IDS = [
+  'code',
+  'debug',
+  'export',
+  'files',
+  'feature-tree',
+  'logs',
+  'lspMessages',
+  'variables',
+  'text-to-cad',
+] as const

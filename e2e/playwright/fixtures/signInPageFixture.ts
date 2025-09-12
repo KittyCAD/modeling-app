@@ -1,5 +1,5 @@
-import type { Locator, Page } from '@playwright/test'
 import { token } from '@e2e/playwright/test-utils'
+import type { Locator, Page } from '@playwright/test'
 
 export class SignInPageFixture {
   public page: Page

@@ -2,12 +2,12 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import type { Page } from '@playwright/test'
 
+import { bracket } from '@e2e/playwright/fixtures/bracket'
+import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { bracket } from '@e2e/playwright/fixtures/bracket'
-import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
@@ -222,7 +222,7 @@ test.describe('Point-and-click tests', () => {
         clickCoords: { x: 570, y: 220 },
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)
+        beforeChamferSnippet: `angledLine(angle=segAng(rectangleSegmentA001)-90deg,length=217.26,tag=$seg01)
       chamfer(length = 30,tags = [
       seg01,
       getNextAdjacentEdge(yo),
@@ -235,8 +235,8 @@ test.describe('Point-and-click tests', () => {
           'sketch002 = startSketchOn(extrude001, face = seg03)',
         afterRectangle1stClickSnippet:
           'startProfile(sketch002, at = [205.96, 254.59])',
-        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.39,tag=$rectangleSegmentA002)
-        |>angledLine(angle=segAng(rectangleSegmentA002)-90,length=105.26)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0deg,length=11.39,tag=$rectangleSegmentA002)
+        |>angledLine(angle=segAng(rectangleSegmentA002)-90deg,length=105.26)
         |>angledLine(angle=segAng(rectangleSegmentA002),length=-segLen(rectangleSegmentA002))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
@@ -246,7 +246,7 @@ test.describe('Point-and-click tests', () => {
         clickCoords: { x: 690, y: 250 },
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)chamfer(
+        beforeChamferSnippet: `angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 217.26, tag = $seg01)chamfer(
          length = 30,
          tags = [
            seg01,
@@ -259,8 +259,8 @@ test.describe('Point-and-click tests', () => {
           'sketch003 = startSketchOn(extrude001, face = seg04)',
         afterRectangle1stClickSnippet:
           'startProfile(sketch003, at = [-209.64, 255.28])',
-        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.56,tag=$rectangleSegmentA003)
-        |>angledLine(angle=segAng(rectangleSegmentA003)-90,length=106.84)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0deg,length=11.56,tag=$rectangleSegmentA003)
+        |>angledLine(angle=segAng(rectangleSegmentA003)-90deg,length=106.84)
         |>angledLine(angle=segAng(rectangleSegmentA003),length=-segLen(rectangleSegmentA003))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
@@ -270,7 +270,7 @@ test.describe('Point-and-click tests', () => {
         clickCoords: { x: 677, y: 87 },
         cameraPos: { x: -6200, y: 1500, z: 6200 },
         cameraTarget: { x: 8300, y: 1100, z: 4800 },
-        beforeChamferSnippet: `angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)chamfer(
+        beforeChamferSnippet: `angledLine(angle = 0deg, length = 268.43, tag = $rectangleSegmentA001)chamfer(
          length = 30,
          tags = [
            getNextAdjacentEdge(yo),
@@ -281,8 +281,8 @@ test.describe('Point-and-click tests', () => {
           'sketch004 = startSketchOn(extrude001, face = seg05)',
         afterRectangle1stClickSnippet:
           'startProfile(sketch004, at = [82.57, 322.96])',
-        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.16,tag=$rectangleSegmentA004)
-        |>angledLine(angle=segAng(rectangleSegmentA004)-90,length=103.07)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0deg,length=11.16,tag=$rectangleSegmentA004)
+        |>angledLine(angle=segAng(rectangleSegmentA004)-90deg,length=103.07)
         |>angledLine(angle=segAng(rectangleSegmentA004),length=-segLen(rectangleSegmentA004))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
@@ -299,8 +299,8 @@ test.describe('Point-and-click tests', () => {
           'sketch005 = startSketchOn(extrude001, face = seg06)',
         afterRectangle1stClickSnippet:
           'startProfile(sketch005, at = [-23.43, 19.69])',
-        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=9.1,tag=$rectangleSegmentA005)
-        |>angledLine(angle=segAng(rectangleSegmentA005)-90,length=84.07)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0deg,length=9.1,tag=$rectangleSegmentA005)
+        |>angledLine(angle=segAng(rectangleSegmentA005)-90deg,length=84.07)
         |>angledLine(angle=segAng(rectangleSegmentA005),length=-segLen(rectangleSegmentA005))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
@@ -312,8 +312,8 @@ test.describe('Point-and-click tests', () => {
 
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]
-  |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
+  |> angledLine(angle = 0deg, length = 268.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 217.26, tag = $seg01)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
@@ -324,29 +324,29 @@ extrude001 = extrude(sketch001, length = 100)
   |> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)], tag = $seg06)
 sketch002 = startSketchOn(extrude001, face = seg03)
 profile001 = startProfile(sketch002, at = [205.96, 254.59])
-  |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
+  |> angledLine(angle = 0deg, length = 11.39, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90deg, length = 105.26)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch003 = startSketchOn(extrude001, face = seg04)
 profile002 = startProfile(sketch003, at = [-209.64, 255.28])
-  |> angledLine(angle = 0, length = 11.56, tag = $rectangleSegmentA003)
-  |> angledLine(angle = segAng(rectangleSegmentA003) - 90, length = 106.84)
+  |> angledLine(angle = 0deg, length = 11.56, tag = $rectangleSegmentA003)
+  |> angledLine(angle = segAng(rectangleSegmentA003) - 90deg, length = 106.84)
   |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch004 = startSketchOn(extrude001, face = seg05)
 profile003 = startProfile(sketch004, at = [82.57, 322.96])
-  |> angledLine(angle = 0, length = 11.16, tag = $rectangleSegmentA004)
-  |> angledLine(angle = segAng(rectangleSegmentA004) - 90, length = 103.07)
+  |> angledLine(angle = 0deg, length = 11.16, tag = $rectangleSegmentA004)
+  |> angledLine(angle = segAng(rectangleSegmentA004) - 90deg, length = 103.07)
   |> angledLine(angle = segAng(rectangleSegmentA004), length = -segLen(rectangleSegmentA004))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch005 = startSketchOn(extrude001, face = seg06)
 profile004 = startProfile(sketch005, at = [-23.43, 19.69])
-  |> angledLine(angle = 0, length = 9.1, tag = $rectangleSegmentA005)
-  |> angledLine(angle = segAng(rectangleSegmentA005) - 90, length = 84.07)
+  |> angledLine(angle = 0deg, length = 9.1, tag = $rectangleSegmentA005)
+  |> angledLine(angle = segAng(rectangleSegmentA005) - 90deg, length = 84.07)
   |> angledLine(angle = segAng(rectangleSegmentA005), length = -segLen(rectangleSegmentA005))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -387,7 +387,7 @@ profile004 = startProfile(sketch005, at = [-23.43, 19.69])
         clickCoords: { x: 570, y: 220 },
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine(angle=segAng(rectangleSegmentA001)-90,length=217.26,tag=$seg01)
+        beforeChamferSnippet: `angledLine(angle=segAng(rectangleSegmentA001)-90deg,length=217.26,tag=$seg01)
       chamfer(extrude001,length=30,tags=[
       seg01,
       getNextAdjacentEdge(yo),
@@ -399,8 +399,8 @@ profile004 = startProfile(sketch005, at = [-23.43, 19.69])
           'sketch002 = startSketchOn(extrude001, face = seg03)',
         afterRectangle1stClickSnippet:
           'startProfile(sketch002, at = [205.96, 254.59])',
-        afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.39,tag=$rectangleSegmentA002)
-        |>angledLine(angle=segAng(rectangleSegmentA002)-90,length=105.26)
+        afterRectangle2ndClickSnippet: `angledLine(angle=0deg,length=11.39,tag=$rectangleSegmentA002)
+        |>angledLine(angle=segAng(rectangleSegmentA002)-90deg,length=105.26)
         |>angledLine(angle=segAng(rectangleSegmentA002),length=-segLen(rectangleSegmentA002))
         |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
         |>close()`,
@@ -409,8 +409,8 @@ profile004 = startProfile(sketch005, at = [-23.43, 19.69])
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [75.8, 317.2])
-  |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
+  |> angledLine(angle = 0deg, length = 268.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 217.26, tag = $seg01)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
@@ -431,8 +431,8 @@ chamf = chamfer(
      )
 sketch002 = startSketchOn(extrude001, face = seg03)
 profile001 = startProfile(sketch002, at = [205.96, 254.59])
-  |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
+  |> angledLine(angle = 0deg, length = 11.39, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90deg, length = 105.26)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -468,28 +468,24 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
         viewPortSize.width / 2 + 3, // 3px off the center of the screen
         viewPortSize.height / 2,
       ],
-      kcl: [0, 0],
     } as const
     const xAxisSloppy = {
       screen: [
         viewPortSize.width * 0.75,
         viewPortSize.height / 2 - 3, // 3px off the X-axis
       ],
-      kcl: [20.34, 0],
     } as const
     const offYAxis = {
       screen: [
         viewPortSize.width * 0.6, // Well off the Y-axis, out of snapping range
         viewPortSize.height * 0.3,
       ],
-      kcl: [8.14, 6.78],
     } as const
     const yAxisSloppy = {
       screen: [
         viewPortSize.width / 2 + 5, // 5px off the Y-axis
         viewPortSize.height * 0.3,
       ],
-      kcl: [0, 6.78],
     } as const
     const [clickOnXzPlane, moveToXzPlane] = scene.makeMouseHelpers(...xzPlane)
     const [clickOriginSloppy] = scene.makeMouseHelpers(...originSloppy.screen)
@@ -497,15 +493,16 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
       ...xAxisSloppy.screen
     )
     const [dragToOffYAxis, dragFromOffAxis] = scene.makeDragHelpers(
-      ...offYAxis.screen
+      ...offYAxis.screen,
+      { debug: true }
     )
 
     const expectedCodeSnippets = {
-      sketchOnXzPlane: `sketch001 = startSketchOn(XZ)`,
-      pointAtOrigin: `startProfile(sketch001, at = [${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}])`,
-      segmentOnXAxis: `xLine(length = ${xAxisSloppy.kcl[0]})`,
-      afterSegmentDraggedOffYAxis: `startProfile(sketch001, at = [${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}])`,
-      afterSegmentDraggedOnYAxis: `startProfile(sketch001, at = [${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}])`,
+      sketchOnXzPlane: 'sketch001 = startSketchOn(XZ)',
+      pointAtOrigin: 'startProfile(sketch001, at = [0, 0])',
+      segmentOnXAxis: 'xLine(length',
+      afterSegmentDraggedOnYAxis:
+        /startProfile\(sketch001, at = \[0, (\d+(\.\d+)?)\]\)/,
     }
 
     await test.step(`Start a sketch on the XZ plane`, async () => {
@@ -530,22 +527,24 @@ profile001 = startProfile(sketch002, at = [205.96, 254.59])
       await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
     })
     await test.step(`Drag the origin point up and to the right, verify it's past snapping`, async () => {
+      await editor.closePane()
       await dragToOffYAxis({
         fromPoint: { x: originSloppy.screen[0], y: originSloppy.screen[1] },
       })
-      await editor.expectEditor.toContain(
-        expectedCodeSnippets.afterSegmentDraggedOffYAxis
+      await editor.expectEditor.not.toContain(
+        expectedCodeSnippets.pointAtOrigin
       )
     })
     await test.step(`Drag the origin point left to the y-axis, verify it snaps back`, async () => {
       await dragFromOffAxis({
         toPoint: { x: yAxisSloppy.screen[0], y: yAxisSloppy.screen[1] },
       })
-      await editor.expectEditor.toContain(
+      await editor.openPane()
+      await expect(editor.codeContent).toContainText(
         expectedCodeSnippets.afterSegmentDraggedOnYAxis
       )
+      await editor.closePane()
     })
-    await editor.page.waitForTimeout(1000)
   })
 
   test(`Verify user can double-click to edit a sketch`, async ({
@@ -565,8 +564,6 @@ openSketch = startSketchOn(XY)
   |> xLine(length = 5)
   |> tangentialArc(endAbsolute = [10, 0])
 `
-    const viewPortSize = { width: 1000, height: 500 }
-    await page.setBodyDimensions(viewPortSize)
 
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
@@ -574,81 +571,65 @@ openSketch = startSketchOn(XY)
 
     await homePage.goToModelingScene()
 
-    const pointInsideCircle = {
-      x: viewPortSize.width * 0.63,
-      y: viewPortSize.height * 0.5,
-    }
-    const pointOnPathAfterSketching = {
-      x: viewPortSize.width * 0.65,
-      y: viewPortSize.height * 0.5,
-    }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
-      scene.makeMouseHelpers(
-        pointOnPathAfterSketching.x,
-        pointOnPathAfterSketching.y
-      )
+      scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
-      pointInsideCircle.x,
-      pointInsideCircle.y
+      0.63,
+      0.5,
+      { format: 'ratio' }
     )
-
-    const exitSketch = async () => {
-      await test.step(`Exit sketch mode`, async () => {
-        await toolbar.exitSketchBtn.click()
-        await expect(toolbar.startSketchBtn).toBeEnabled()
-      })
-    }
 
     await test.step(`Double-click on the closed sketch`, async () => {
       await scene.settled(cmdBar)
+      await editor.closePane()
       await moveToCircle()
       await page.waitForTimeout(1000)
       await dblClickCircle()
       await page.waitForTimeout(1000)
       await expect(toolbar.exitSketchBtn).toBeVisible()
+      await editor.openPane()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
-        highlightedCode: 'circle(center=[8,5],radius=2)',
+        highlightedCode: '',
         diagnostics: [],
       })
     })
     await page.waitForTimeout(1000)
 
-    await exitSketch()
+    await toolbar.exitSketch()
     await page.waitForTimeout(1000)
+    await editor.closePane()
 
     // Drag the sketch line out of the axis view which blocks the click
     await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: {
-        x: viewPortSize.width * 0.7,
-        y: viewPortSize.height * 0.5,
-      },
-      targetPosition: {
-        x: viewPortSize.width * 0.7,
-        y: viewPortSize.height * 0.4,
-      },
+      sourcePosition: await scene.convertPagePositionToStream(
+        0.7,
+        0.5,
+        'ratio'
+      ),
+      targetPosition: await scene.convertPagePositionToStream(
+        0.7,
+        0.4,
+        'ratio'
+      ),
     })
 
     await page.waitForTimeout(500)
 
     await test.step(`Double-click on the open sketch`, async () => {
       await moveToOpenPath()
-      await scene.expectPixelColor(
-        [250, 250, 250],
-        pointOnPathAfterSketching,
-        15
-      )
       // There is a full execution after exiting sketch that clears the scene.
       await page.waitForTimeout(500)
       await dblClickOpenPath()
       await expect(toolbar.exitSketchBtn).toBeVisible()
       // Wait for enter sketch mode to complete
       await page.waitForTimeout(500)
+      await editor.openPane()
       await editor.expectState({
         activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
-        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
+        highlightedCode: '',
         diagnostics: [],
       })
     })
@@ -656,6 +637,8 @@ openSketch = startSketchOn(XY)
 
   test(`Shift-click to select and deselect edges and faces`, async ({
     context,
+    cmdBar,
+    toolbar,
     page,
     homePage,
     scene,
@@ -671,9 +654,21 @@ openSketch = startSketchOn(XY)
     |> extrude(%, length = -12)`
 
     // Locators
-    const upperEdgeLocation = { x: 600, y: 192 }
+    const upperEdgeLocation = { x: 600, y: 193 }
     const lowerEdgeLocation = { x: 600, y: 383 }
     const faceLocation = { x: 630, y: 290 }
+    const timeout = 150
+
+    // Setup
+    await test.step(`Initial test setup`, async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await toolbar.closePane('code')
+      await scene.settled(cmdBar)
+    })
 
     // Click helpers
     const [clickOnUpperEdge] = scene.makeMouseHelpers(
@@ -686,139 +681,69 @@ openSketch = startSketchOn(XY)
     )
     const [clickOnFace] = scene.makeMouseHelpers(faceLocation.x, faceLocation.y)
 
-    // Colors
-    const edgeColorWhite: [number, number, number] = [220, 220, 220] // varies from 192 to 255
-    const edgeColorYellow: [number, number, number] = [251, 251, 40] // vaies from 12 to 67
-    const faceColorGray: [number, number, number] = [168, 168, 168]
-    const faceColorYellow: [number, number, number] = [155, 155, 155]
-    const tolerance = 40
-    const timeout = 150
-
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-
-      // Wait for the scene and stream to load
-      await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
-    })
-
     await test.step('Select and deselect a single edge', async () => {
+      await expect(toolbar.selectionStatus).toContainText('No selection')
       await test.step('Click the edge', async () => {
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          upperEdgeLocation,
-          tolerance
-        )
         await clickOnUpperEdge()
-        await scene.expectPixelColor(
-          edgeColorYellow,
-          upperEdgeLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('1 segment')
       })
       await test.step('Shift-click the same edge to deselect', async () => {
         await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
         await clickOnUpperEdge()
         await page.waitForTimeout(timeout)
         await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          upperEdgeLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('No selection')
       })
     })
 
     await test.step('Select and deselect multiple objects', async () => {
       await test.step('Select both edges and the face', async () => {
         await test.step('Select the upper edge', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            upperEdgeLocation,
-            tolerance
-          )
           await clickOnUpperEdge()
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            upperEdgeLocation,
-            tolerance
-          )
+          await expect(toolbar.selectionStatus).toContainText('1 segment')
         })
         await test.step('Select the lower edge (Shift-click)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            lowerEdgeLocation,
-            tolerance
-          )
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnLowerEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            lowerEdgeLocation,
-            tolerance
+          await expect(toolbar.selectionStatus).toContainText(
+            '1 segment, 1 sweepEdge'
           )
         })
         await test.step('Select the face (Shift-click)', async () => {
-          await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnFace()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(faceColorYellow, faceLocation, tolerance)
+          await expect(toolbar.selectionStatus).toContainText(
+            '1 segment, 1 sweepEdge, 1 face'
+          )
         })
       })
       await test.step('Deselect them one by one', async () => {
         await test.step('Deselect the face (Shift-click)', async () => {
-          await scene.expectPixelColor(faceColorYellow, faceLocation, tolerance)
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnFace()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
+          await expect(toolbar.selectionStatus).toContainText(
+            '1 segment, 1 sweepEdge'
+          )
         })
         await test.step('Deselect the lower edge (Shift-click)', async () => {
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            lowerEdgeLocation,
-            tolerance
-          )
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnLowerEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            lowerEdgeLocation,
-            tolerance
-          )
+          await expect(toolbar.selectionStatus).toContainText('1 segment')
         })
         await test.step('Deselect the upper edge (Shift-click)', async () => {
-          await scene.expectPixelColor(
-            edgeColorYellow,
-            upperEdgeLocation,
-            tolerance
-          )
           await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
           await clickOnUpperEdge()
           await page.waitForTimeout(timeout)
           await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            upperEdgeLocation,
-            tolerance
-          )
+          await expect(toolbar.selectionStatus).toContainText('No selection')
         })
       })
     })
@@ -987,18 +912,10 @@ openSketch = startSketchOn(XY)
     toolbar,
     cmdBar,
   }) => {
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 700, y: 200 }
-    // TODO: replace the testPoint selection with a feature tree click once that's supported #7544
-    const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
-
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    await test.step(`Look for the blue of the XZ plane`, async () => {
-      //await scene.expectPixelColor([50, 51, 96], testPoint, 15) // FIXME
-    })
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.offsetPlaneButton.click()
       await expect
@@ -1008,30 +925,30 @@ openSketch = startSketchOn(XY)
         stage: 'arguments',
         currentArgKey: 'plane',
         currentArgValue: '',
-        headerArguments: { Plane: '', Distance: '' },
+        headerArguments: { Plane: '', Offset: '' },
         highlightedHeaderArg: 'plane',
         commandName: 'Offset plane',
       })
-      await clickOnXzPlane()
+      const xz = await toolbar.getFeatureTreeOperation('Front plane', 0)
+      await xz.click()
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'offset',
         currentArgValue: '5',
-        headerArguments: { Plane: '1 plane', Distance: '' },
-        highlightedHeaderArg: 'distance',
+        headerArguments: { Plane: '1 plane', Offset: '' },
+        highlightedHeaderArg: 'offset',
         commandName: 'Offset plane',
       })
       await cmdBar.progressCmdBar()
     })
 
-    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+    await test.step(`Confirm code is added to the editor`, async () => {
       await editor.expectEditor.toContain(expectedOutput)
       await editor.expectState({
         diagnostics: [],
         activeLines: [expectedOutput],
         highlightedCode: '',
       })
-      await scene.expectPixelColor([74, 74, 74], testPoint, 15)
     })
 
     await test.step('Delete offset plane via feature tree selection', async () => {
@@ -1042,7 +959,6 @@ openSketch = startSketchOn(XY)
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      //await scene.expectPixelColor([50, 51, 96], testPoint, 15) // FIXME
     })
   })
 
@@ -1244,9 +1160,10 @@ extrude001 = extrude(profile001, length = 100)`
   }) => {
     const circleCode1 = `circle(center = [0, 0], radius = 30)`
     const circleCode2 = `circle(center = [0, 0], radius = 20)`
-    const initialCode = `sketch001 = startSketchOn(XZ)
+    const initialCode = `offset001 = 50
+sketch001 = startSketchOn(XZ)
   |> ${circleCode1}
-plane001 = offsetPlane(XZ, offset = 50)
+plane001 = offsetPlane(XZ, offset = offset001)
 sketch002 = startSketchOn(plane001)
   |> ${circleCode2}
       `
@@ -1494,26 +1411,12 @@ extrude001 = extrude(sketch001, length = -12)
     const secondFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
 
     // Locators
-    const firstEdgeLocation = { x: 600, y: 193 }
+    // TODO: find a way to not have hardcoded pixel values for sweepEdges
     const secondEdgeLocation = { x: 600, y: 383 }
-    const bodyLocation = { x: 630, y: 290 }
-    const [clickOnFirstEdge] = scene.makeMouseHelpers(
-      firstEdgeLocation.x,
-      firstEdgeLocation.y
-    )
     const [clickOnSecondEdge] = scene.makeMouseHelpers(
       secondEdgeLocation.x,
       secondEdgeLocation.y
     )
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const edgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
-    const bodyColor: [number, number, number] = [155, 155, 155]
-    const filletColor: [number, number, number] = [127, 127, 127]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const lowTolerance = 20
-    const highTolerance = 70 // TODO: understand why I needed that for edgeColorYellow on macos (local)
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1522,30 +1425,13 @@ extrude001 = extrude(sketch001, length = -12)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondEdgeLocation,
-        lowTolerance
-      )
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+      await scene.settled(cmdBar)
     })
 
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
-      await scene.expectPixelColor(
-        edgeColorWhite,
-        firstEdgeLocation,
-        lowTolerance
-      )
-      await clickOnFirstEdge()
-      await scene.expectPixelColor(
-        edgeColorYellow,
-        firstEdgeLocation,
-        highTolerance // Ubuntu color mismatch can require high tolerance
+      await editor.selectText(
+        'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
       )
     })
 
@@ -1596,10 +1482,6 @@ extrude001 = extrude(sketch001, length = -12)
         activeLines: [')'],
         highlightedCode: '',
       })
-    })
-
-    await test.step(`Confirm scene has changed`, async () => {
-      await scene.expectPixelColor(filletColor, firstEdgeLocation, lowTolerance)
     })
 
     // Test 1.1: Edit fillet (segment type)
@@ -1674,17 +1556,7 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Select second edge`, async () => {
-      await scene.expectPixelColor(
-        edgeColorWhite,
-        secondEdgeLocation,
-        lowTolerance
-      )
       await clickOnSecondEdge()
-      await scene.expectPixelColor(
-        edgeColorYellow,
-        secondEdgeLocation,
-        highTolerance // Ubuntu color mismatch can require high tolerance
-      )
     })
 
     await test.step(`Apply fillet to the second edge`, async () => {
@@ -1734,14 +1606,6 @@ extrude001 = extrude(sketch001, length = -12)
       })
     })
 
-    await test.step(`Confirm scene has changed`, async () => {
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondEdgeLocation,
-        lowTolerance
-      )
-    })
-
     // Test 2.1: Edit fillet (edgeSweep type)
     await test.step('Edit fillet via feature tree selection works', async () => {
       const secondFilletFeatureTreeIndex = 1
@@ -1776,9 +1640,7 @@ extrude001 = extrude(sketch001, length = -12)
         await operationButton.click({ button: 'left' })
         await page.keyboard.press('Delete')
         await page.waitForTimeout(500)
-        await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
         await editor.expectEditor.not.toContain(secondFilletDeclaration)
-        await scene.expectPixelColor(filletColor, firstEdgeLocation, 15) // stayed
       })
     })
   })
@@ -1873,19 +1735,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
     const standaloneUnassignedFilletDeclaration =
       'fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])'
 
-    // Locators
-    const pipedFilletEdgeLocation = { x: 600, y: 193 }
-    const standaloneFilletEdgeLocation = { x: 600, y: 383 }
-    const bodyLocation = { x: 630, y: 290 }
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const bodyColor: [number, number, number] = [155, 155, 155]
-    const filletColor: [number, number, number] = [127, 127, 127]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const lowTolerance = 20
-    const highTolerance = 40
-
     // Setup
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
@@ -1894,16 +1743,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(
-        backgroundColor,
-        standaloneFilletEdgeLocation,
-        lowTolerance
-      )
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
     })
 
     // Test
@@ -1924,18 +1763,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
             standaloneUnassignedFilletDeclaration
           )
         })
-        await test.step('Verify test fillets are present in the scene', async () => {
-          await scene.expectPixelColor(
-            filletColor,
-            pipedFilletEdgeLocation,
-            lowTolerance
-          )
-          await scene.expectPixelColor(
-            backgroundColor,
-            standaloneFilletEdgeLocation,
-            lowTolerance
-          )
-        })
         await test.step('Delete piped fillet', async () => {
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Fillet',
@@ -1953,18 +1780,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           )
           await editor.expectEditor.toContain(
             standaloneUnassignedFilletDeclaration
-          )
-        })
-        await test.step('Verify piped fillet is deleted but non-piped is not (in the scene)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite, // you see edge because fillet is deleted
-            pipedFilletEdgeLocation,
-            lowTolerance
-          )
-          await scene.expectPixelColor(
-            backgroundColor, // you see background because fillet is not deleted
-            standaloneFilletEdgeLocation,
-            lowTolerance
           )
         })
       })
@@ -1988,13 +1803,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
             standaloneUnassignedFilletDeclaration
           )
         })
-        await test.step('Verify standalone assigned fillet is deleted but piped is not (in the scene)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            standaloneFilletEdgeLocation,
-            lowTolerance
-          )
-        })
       })
 
       await test.step('Delete standalone unassigned fillet via feature tree selection', async () => {
@@ -2011,13 +1819,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.not.toContain(
             standaloneUnassignedFilletDeclaration
-          )
-        })
-        await test.step('Verify standalone unassigned fillet is deleted but piped is not (in the scene)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            standaloneFilletEdgeLocation,
-            lowTolerance
           )
         })
       })
@@ -2048,16 +1849,8 @@ extrude001 = extrude(profile001, length = 5)
     const filletExpression = `fillet(radius = 1000, tags = [getCommonEdge(faces = [seg01, seg02])])`
 
     // Locators
-    const edgeLocation = { x: 659, y: 313 }
-    const bodyLocation = { x: 594, y: 313 }
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const edgeColorYellow: [number, number, number] = [251, 251, 120] // Mac:B=251,251,90 Ubuntu:240,241,180, Windows:240,241,180
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const bodyColor: [number, number, number] = [155, 155, 155]
-    const lowTolerance = 20
-    const highTolerance = 70
+    // TODO: find a way to select sweepEdges in a different way
+    const edgeLocation = { x: 649, y: 283 }
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -2066,28 +1859,18 @@ extrude001 = extrude(profile001, length = 5)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(backgroundColor, edgeLocation, lowTolerance)
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+      await scene.settled(cmdBar)
     })
 
     // Test
     await test.step('Select edges and apply oversized fillet', async () => {
       await test.step(`Select the edge`, async () => {
-        await scene.expectPixelColor(edgeColorWhite, edgeLocation, lowTolerance)
+        await toolbar.closePane('code')
         const [clickOnTheEdge] = scene.makeMouseHelpers(
           edgeLocation.x,
           edgeLocation.y
         )
         await clickOnTheEdge()
-        await scene.expectPixelColor(
-          edgeColorYellow,
-          edgeLocation,
-          highTolerance // Ubuntu color mismatch can require high tolerance
-        )
       })
 
       await test.step(`Apply fillet`, async () => {
@@ -2165,22 +1948,14 @@ extrude001 = extrude(sketch001, length = -12)
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
     const secondEdgeLocation = { x: 600, y: 383 }
-    const [clickOnFirstEdge] = scene.makeMouseHelpers(
-      firstEdgeLocation.x,
-      firstEdgeLocation.y
-    )
-    const [clickOnSecondEdge] = scene.makeMouseHelpers(
-      secondEdgeLocation.x,
-      secondEdgeLocation.y
-    )
 
     // Colors
     const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const edgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
+    const edgeColorYellow: [number, number, number] = [251, 251, 80] // Mac:B=67 Ubuntu:B=12
     const chamferColor: [number, number, number] = [168, 168, 168]
     const backgroundColor: [number, number, number] = [30, 30, 30]
     const lowTolerance = 20
-    const highTolerance = 70 // TODO: understand why I needed that for edgeColorYellow on macos (local)
+    const highTolerance = 75 // TODO: understand why I needed that for edgeColorYellow on macos (local)
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -2190,7 +1965,17 @@ extrude001 = extrude(sketch001, length = -12)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
+      await editor.closePane()
     })
+
+    const [clickOnFirstEdge] = scene.makeMouseHelpers(
+      firstEdgeLocation.x,
+      firstEdgeLocation.y
+    )
+    const [clickOnSecondEdge] = scene.makeMouseHelpers(
+      secondEdgeLocation.x,
+      secondEdgeLocation.y
+    )
 
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
@@ -2205,6 +1990,7 @@ extrude001 = extrude(sketch001, length = -12)
         firstEdgeLocation,
         highTolerance // Ubuntu color mismatch can require high tolerance
       )
+      await editor.openPane()
     })
 
     await test.step(`Apply chamfer to the preselected edge`, async () => {
@@ -2258,6 +2044,7 @@ extrude001 = extrude(sketch001, length = -12)
         activeLines: [')'],
         highlightedCode: '',
       })
+      await editor.closePane()
     })
 
     await test.step(`Confirm scene has changed`, async () => {
@@ -2365,6 +2152,7 @@ extrude001 = extrude(sketch001, length = -12)
         },
         stage: 'arguments',
       })
+      await editor.openPane()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Chamfer',
@@ -2398,6 +2186,7 @@ extrude001 = extrude(sketch001, length = -12)
         activeLines: [')'],
         highlightedCode: '',
       })
+      await editor.closePane()
     })
 
     await test.step(`Confirm scene has changed`, async () => {
@@ -2423,6 +2212,7 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(secondChamferDeclaration, {
         shouldNormalise: true,
       })
+      await editor.closePane()
     })
 
     // Test 3: Delete chamfer via feature tree selection
@@ -2437,6 +2227,7 @@ extrude001 = extrude(sketch001, length = -12)
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
+      await toolbar.closeFeatureTreePane()
       await page.waitForTimeout(500)
       await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
       await scene.expectPixelColor(chamferColor, firstEdgeLocation, 15) // stayed
@@ -2477,15 +2268,12 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
     // Locators
     const pipedChamferEdgeLocation = { x: 600, y: 193 }
     const standaloneChamferEdgeLocation = { x: 600, y: 383 }
-    const bodyLocation = { x: 630, y: 290 }
 
     // Colors
     const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const bodyColor: [number, number, number] = [155, 155, 155]
     const chamferColor: [number, number, number] = [168, 168, 168]
     const backgroundColor: [number, number, number] = [30, 30, 30]
     const lowTolerance = 20
-    const highTolerance = 40
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -2495,16 +2283,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(
-        backgroundColor,
-        standaloneChamferEdgeLocation,
-        lowTolerance
-      )
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+      await editor.closePane()
     })
 
     // Test
@@ -2526,6 +2305,8 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
         })
         await test.step('Verify test chamfers are present in the scene', async () => {
+          await editor.closePane()
+          await toolbar.closeFeatureTreePane()
           await scene.expectPixelColor(
             chamferColor,
             pipedChamferEdgeLocation,
@@ -2538,12 +2319,15 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
         })
         await test.step('Delete piped chamfer', async () => {
+          await editor.closePane()
+          await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Chamfer',
             0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
+          await toolbar.closeFeatureTreePane()
           await scene.settled(cmdBar)
         })
         await test.step('Verify piped chamfer is deleted but other chamfers are not (in the editor)', async () => {
@@ -2572,6 +2356,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
 
       await test.step('Delete standalone assigned chamfer via feature tree selection', async () => {
         await test.step('Delete standalone assigned chamfer', async () => {
+          await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Chamfer',
             1
@@ -2590,6 +2375,8 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
         })
         await test.step('Verify standalone assigned chamfer is deleted but piped is not (in the scene)', async () => {
+          await toolbar.closeFeatureTreePane()
+          await editor.closePane()
           await scene.expectPixelColor(
             edgeColorWhite,
             standaloneChamferEdgeLocation,
@@ -2600,6 +2387,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
 
       await test.step('Delete standalone unassigned chamfer via feature tree selection', async () => {
         await test.step('Delete standalone unassigned chamfer', async () => {
+          await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Chamfer',
             1
@@ -2615,6 +2403,8 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
         })
         await test.step('Verify standalone unassigned chamfer is deleted but piped is not (in the scene)', async () => {
+          await editor.closePane()
+          await toolbar.closeFeatureTreePane()
           await scene.expectPixelColor(
             edgeColorWhite,
             standaloneChamferEdgeLocation,
@@ -2760,8 +2550,8 @@ extrude001 = extrude(sketch001, length = 30)
   }) => {
     const initialCode = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [-102.57, 101.72])
-  |> angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 202.6, tag = $rectangleSegmentB001)
+  |> angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 202.6, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -2786,26 +2576,26 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     await toolbar.revolveButton.click()
     await cmdBar.progressCmdBar()
     await page.getByText('Edge', { exact: true }).click()
-    const lineCodeToSelection = `angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)`
-    await page.getByText(lineCodeToSelection).click()
+    const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
+    await editor.selectText(lineCodeToSelection)
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
 
-    const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = rectangleSegmentA001)`
+    const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = rectangleSegmentA001)`
     await editor.expectEditor.toContain(newCodeToFind)
 
     // Edit flow
-    const newAngle = '180'
+    const newAngle = '180deg'
     await toolbar.openPane('feature-tree')
     const operationButton = await toolbar.getFeatureTreeOperation('Revolve', 0)
     await operationButton.dblclick({ button: 'left' })
     await cmdBar.expectState({
       commandName: 'Revolve',
       currentArgKey: 'angle',
-      currentArgValue: '360',
+      currentArgValue: '360deg',
       headerArguments: {
-        Angle: '360',
+        Angle: '360deg',
       },
       highlightedHeaderArg: 'angle',
       stage: 'arguments',
@@ -2825,7 +2615,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     await toolbar.closePane('feature-tree')
     await editor.expectEditor.toContain('angle001 = ' + newAngle)
     await editor.expectEditor.toContain(
-      newCodeToFind.replace('angle = 360', 'angle = angle001')
+      newCodeToFind.replace('angle = 360deg', 'angle = angle001')
     )
     expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
   })

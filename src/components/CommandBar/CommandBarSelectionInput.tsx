@@ -4,16 +4,16 @@ import type { StateFrom } from 'xstate'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
+  type Selections,
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
-  type Selections,
 } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 
 const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
@@ -53,10 +53,7 @@ function CommandBarSelectionInput({
   useEffect(() => {
     if (arg.selectionTypes.includes('plane') && !canSubmitSelection) {
       toSync(() => {
-        return Promise.all([
-          kclManager.showPlanes(),
-          kclManager.setSelectionFilter(['plane', 'object']),
-        ])
+        return kclManager.showPlanes()
       }, reportRejection)()
     }
 
@@ -177,7 +174,7 @@ function CommandBarSelectionInput({
           placeholder="Select an entity with your mouse"
           className="absolute inset-0 w-full h-full opacity-0 cursor-default"
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.shiftKey) {
+            if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             } else if (event.key === 'Escape') {
               commandBarActor.send({ type: 'Close' })

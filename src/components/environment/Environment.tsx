@@ -1,7 +1,7 @@
 import { ActionButton } from '@src/components/ActionButton'
-import { commandBarActor } from '@src/lib/singletons'
 import env from '@src/env'
 import { writeEnvironmentConfigurationPool } from '@src/lib/desktop'
+import { commandBarActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 
 export function EnvironmentChip() {
@@ -104,7 +104,15 @@ export function EnvironmentDescription() {
                   onClick={() => {
                     const environment = env().VITE_KITTYCAD_BASE_DOMAIN
                     if (environment) {
-                      writeEnvironmentConfigurationPool(environment, '')
+                      if (!window.electron) {
+                        console.error("Can't access electron")
+                        return
+                      }
+                      writeEnvironmentConfigurationPool(
+                        window.electron,
+                        environment,
+                        ''
+                      )
                         .then(() => {
                           window.location.reload()
                         })

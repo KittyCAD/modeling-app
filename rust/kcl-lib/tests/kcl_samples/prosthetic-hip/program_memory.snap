@@ -72,9 +72,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               4.7
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -91,9 +89,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               5.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -115,9 +111,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               14.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -134,9 +128,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               12.56
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -153,9 +145,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               12.56
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -177,9 +167,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               4.7
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -196,9 +184,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               4.7
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -208,9 +194,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -218,25 +202,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -248,9 +226,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             8.84,
             4.7
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -259,16 +235,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -341,9 +313,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -365,9 +335,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               3.0
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -389,9 +357,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               11.0
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -408,9 +374,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -432,9 +396,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               9.9
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -456,9 +418,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               0.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -475,9 +435,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -487,9 +445,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -497,25 +453,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -527,9 +477,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             4.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -538,16 +486,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -572,10 +516,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -8.0
             ],
             "tag": {
-              "commentStart": 1889,
-              "end": 1895,
+              "commentStart": 1925,
+              "end": 1931,
               "moduleId": 0,
-              "start": 1889,
+              "start": 1925,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -584,9 +528,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -608,9 +550,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               12.330127018922191
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -627,9 +567,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               4.330127018922192
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -651,9 +589,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -4.3301270189221945
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -670,9 +606,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -12.330127018922195
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -694,9 +628,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -8.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -713,9 +645,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -725,9 +655,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -735,25 +663,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -765,9 +687,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -23.0,
             -8.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -782,16 +702,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -878,9 +794,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               0.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -902,9 +816,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               3.0980762113533156
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -921,9 +833,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               2.5980762113533156
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -945,9 +855,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -2.5980762113533165
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -964,9 +872,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -3.0980762113533165
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -988,9 +894,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1007,9 +911,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1019,9 +921,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -1029,25 +929,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1059,9 +953,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -3.0,
             -0.5
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1076,16 +968,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1094,12 +982,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "l2": {
@@ -1107,12 +991,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 19.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "l3": {
@@ -1120,12 +1000,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 32.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "l4": {
@@ -1133,12 +1009,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 16.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "l5": {
@@ -1146,12 +1018,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 1.6,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "l6": {
@@ -1159,12 +1027,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "p3A": {
@@ -1172,12 +1036,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 25.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "p3Z": {
@@ -1185,12 +1045,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 110.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "p4A": {
@@ -1198,12 +1054,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 36.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "p4Z": {
@@ -1211,12 +1063,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 130.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "p5A": {
@@ -1224,12 +1072,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 36.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "p5Z": {
@@ -1237,12 +1081,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 140.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "p6A": {
@@ -1250,12 +1090,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 36.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "p6Z": {
@@ -1263,12 +1099,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 145.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "polyethyleneInsert": {
@@ -1340,9 +1172,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               3.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1359,9 +1189,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               3.1
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1383,9 +1211,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               12.55
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1402,9 +1228,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               11.700000000000001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1421,9 +1245,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               11.700000000000001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1445,9 +1267,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               3.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1464,9 +1284,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               3.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1476,9 +1294,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -1486,25 +1302,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1516,9 +1326,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             8.36,
             3.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1527,16 +1335,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1545,12 +1349,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "r2": {
@@ -1558,12 +1358,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "r3": {
@@ -1571,12 +1367,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "r4": {
@@ -1584,12 +1376,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "r5": {
@@ -1597,12 +1385,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 1.6,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "r6": {
@@ -1610,12 +1394,8 @@ description: Variables in memory after executing prosthetic-hip.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "seg01": {
@@ -1676,9 +1456,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             0.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1700,9 +1478,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             3.0980762113533156
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1719,9 +1495,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             2.5980762113533156
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1743,9 +1517,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -2.5980762113533165
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1762,9 +1534,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -3.0980762113533165
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1786,9 +1556,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.5
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1805,9 +1573,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1817,9 +1583,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -1827,25 +1591,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1857,9 +1615,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           -3.0,
           -0.5
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1874,9 +1630,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "stemLoftProfile2": {
@@ -1895,10 +1649,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -9.5
           ],
           "tag": {
-            "commentStart": 879,
-            "end": 885,
+            "commentStart": 891,
+            "end": 897,
             "moduleId": 0,
-            "start": 879,
+            "start": 891,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1907,9 +1661,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             9.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1931,9 +1683,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             12.098076211353316
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1950,9 +1700,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             2.598076211353318
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1974,9 +1722,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -2.5980762113533142
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1993,9 +1739,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -12.098076211353312
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2017,9 +1761,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -9.5
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2036,9 +1778,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -9.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2048,9 +1788,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 75.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2058,25 +1796,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2088,9 +1820,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           -8.0,
           -9.5
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2105,9 +1835,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "stemLoftProfile3": {
@@ -2126,10 +1854,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -16.0
           ],
           "tag": {
-            "commentStart": 1359,
-            "end": 1365,
+            "commentStart": 1383,
+            "end": 1389,
             "moduleId": 0,
-            "start": 1359,
+            "start": 1383,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2138,9 +1866,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             16.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2162,9 +1888,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             19.464101615137753
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2181,9 +1905,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             3.4641016151377553
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2205,9 +1927,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -3.464101615137754
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2224,9 +1944,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -19.464101615137753
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2248,9 +1966,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -16.0
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2267,9 +1983,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -16.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2279,9 +1993,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -2289,25 +2001,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2319,9 +2025,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           -15.5,
           -16.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2336,9 +2040,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "stemLoftProfile4": {
@@ -2357,10 +2059,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -8.0
           ],
           "tag": {
-            "commentStart": 1889,
-            "end": 1895,
+            "commentStart": 1925,
+            "end": 1931,
             "moduleId": 0,
-            "start": 1889,
+            "start": 1925,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2369,9 +2071,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             8.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2393,9 +2093,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             12.330127018922191
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2412,9 +2110,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             4.330127018922192
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2436,9 +2132,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -4.3301270189221945
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2455,9 +2149,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -12.330127018922195
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2479,9 +2171,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -8.0
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2498,9 +2188,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -8.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2510,9 +2198,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -2520,25 +2206,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2550,9 +2230,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           -23.0,
           -8.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2567,9 +2245,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "stemLoftProfile5": {
@@ -2588,10 +2264,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.8
           ],
           "tag": {
-            "commentStart": 2423,
-            "end": 2429,
+            "commentStart": 2471,
+            "end": 2477,
             "moduleId": 0,
-            "start": 2423,
+            "start": 2471,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -2600,9 +2276,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             0.8
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2624,9 +2298,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             2.1856406460551017
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2643,9 +2315,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             1.3856406460551018
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2667,9 +2337,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -1.3856406460551018
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2686,9 +2354,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -2.1856406460551017
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2710,9 +2376,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.8
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2729,9 +2393,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.8
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2741,9 +2403,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -2751,25 +2411,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2781,9 +2435,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           -19.5,
           -0.8
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2798,9 +2450,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "stemLoftProfile6": {
@@ -2819,10 +2469,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.5
           ],
           "tag": {
-            "commentStart": 2954,
-            "end": 2960,
+            "commentStart": 3014,
+            "end": 3020,
             "moduleId": 0,
-            "start": 2954,
+            "start": 3014,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -2831,9 +2481,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             0.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2855,9 +2503,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             3.0980762113533156
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2874,9 +2520,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             2.5980762113533156
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2898,9 +2542,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -2.5980762113533165
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2917,9 +2559,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -3.0980762113533165
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2941,9 +2581,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.5
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2960,9 +2598,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2972,9 +2608,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -2982,25 +2616,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3012,9 +2640,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
           -23.4,
           -0.5
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3029,9 +2655,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "stemTab": {
@@ -3046,10 +2670,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2954,
-            "end": 2960,
+            "commentStart": 3014,
+            "end": 3020,
             "moduleId": 0,
-            "start": 2954,
+            "start": 3014,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -3105,10 +2729,10 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "tag": {
-              "commentStart": 2954,
-              "end": 2960,
+              "commentStart": 3014,
+              "end": 3020,
               "moduleId": 0,
-              "start": 2954,
+              "start": 3014,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -3117,9 +2741,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               0.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3141,9 +2763,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               3.0980762113533156
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3160,9 +2780,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               2.5980762113533156
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3184,9 +2802,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -2.5980762113533165
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3203,9 +2819,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -3.0980762113533165
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3227,9 +2841,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3246,9 +2858,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -3258,9 +2868,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -3268,25 +2876,19 @@ description: Variables in memory after executing prosthetic-hip.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3298,9 +2900,7 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -23.4,
             -0.5
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3315,16 +2915,12 @@ description: Variables in memory after executing prosthetic-hip.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   }
