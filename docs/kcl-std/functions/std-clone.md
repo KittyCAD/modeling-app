@@ -45,7 +45,8 @@ exampleSketch = startSketchOn(XY)
 clonedSketch = clone(exampleSketch)
   |> scale(x = 1.0, y = 1.0, z = 2.5)
   |> translate(x = 15.0, y = 0, z = 0)
-  |> extrude(length = 5)
+
+extrude(clonedSketch, length = 5)
 
 ```
 
@@ -135,13 +136,23 @@ sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> xLine(length = 20)
   |> yLine(length = -20)
-  |> xLine(length = -20, tag = $filletTag)
-  |> close()
-  |> extrude(length = 5)
+  |> xLine(length = -20, tag = $face0)
+  |> line(endAbsolute = [profileStart()], tag = $face1)
+  |> extrude(length = 5, tagEnd = $end1)
 
 sketch002 = clone(sketch001)
   |> translate(x = 0, y = 0, z = 20)
-  |> fillet(radius = 2, tags = [getNextAdjacentEdge(filletTag)])
+
+fillet(
+  sketch002,
+  radius = 2,
+  tags = [
+    getCommonEdge(faces = [
+  sketch002.sketch.tags.face0,
+  sketch002.sketch.tags.face1
+])
+  ],
+)
 
 ```
 
@@ -171,16 +182,16 @@ sketch001 = startSketchOn(XY)
   |> close()
 
 sketch002 = clone(sketch001)
-  |> translate(x = 10, y = 20, z = 0)
+  |> translate(x = 15, y = 0, z = 5)
   |> extrude(length = 5)
 
-startSketchOn(sketch002, face = sketchingFace)
-  |> startProfile(at = [1, 1])
-  |> line(end = [8, 0])
-  |> line(end = [0, 8])
-  |> line(end = [-8, 0])
-  |> close(tag = $sketchingFace002)
-  |> extrude(length = 10)
+startSketchOn(sketch002, face = sketch002.sketch.tags.sketchingFace)
+  |> startProfile(at = [4, 6])
+  |> line(end = [3, 0])
+  |> line(end = [0, 3])
+  |> line(end = [-3, 0])
+  |> close()
+  |> extrude(length = 5)
 
 ```
 
@@ -217,13 +228,15 @@ mountingPlateSketch = startSketchOn(XY)
 mountingPlate = extrude(mountingPlateSketch, length = thickness)
 
 clonedMountingPlate = clone(mountingPlate)
-  |> fillet(
+
+fillet(
+       clonedMountingPlate,
        radius = filletRadius,
        tags = [
-         getNextAdjacentEdge(edge1),
-         getNextAdjacentEdge(edge2),
-         getNextAdjacentEdge(edge3),
-         getNextAdjacentEdge(edge4)
+         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge1),
+         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge2),
+         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge3),
+         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge4)
        ],
      )
   |> translate(x = 0, y = 50, z = 0)
@@ -334,7 +347,7 @@ example001 = revolve(
 
 
 // Sketch on the cloned face.
-// exampleSketch002 = startSketchOn(example002, face = end01)
+// exampleSketch002 = startSketchOn(example002, face = example002.sketch.tags.end01)
 // |> startProfile(at = [4.5, -5])
 // |> line(end = [0, 5])
 // |> line(end = [5, 0])
