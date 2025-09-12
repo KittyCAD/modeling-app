@@ -165,6 +165,24 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     bidirectionalLength = result
   }
 
+  // tagStart argument from a string to a string
+  let tagStart: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = codeManager.code.slice(
+      operation.labeledArgs.tagStart.sourceRange[0],
+      operation.labeledArgs.tagStart.sourceRange[1]
+    )
+  }
+
+  // tagEnd argument from a string to a string
+  let tagEnd: string | undefined
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = codeManager.code.slice(
+      operation.labeledArgs.tagEnd.sourceRange[0],
+      operation.labeledArgs.tagEnd.sourceRange[1]
+    )
+  }
+
   // twistAngle argument from a string to a KCL expression
   let twistAngle: KclCommandValue | undefined
   if (
@@ -184,6 +202,47 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     twistAngle = result
   }
 
+  // twistAngleStep argument from a string to a KCL expression
+  let twistAngleStep: KclCommandValue | undefined
+  if (
+    'twistAngleStep' in operation.labeledArgs &&
+    operation.labeledArgs.twistAngleStep
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.twistAngleStep.sourceRange[0],
+        operation.labeledArgs.twistAngleStep.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve twistAngleStep argument" }
+    }
+
+    twistAngleStep = result
+  }
+
+  // twistCenter argument from a Point2d to two KCL expression
+  let twistCenterX: KclCommandValue | undefined
+  let twistCenterY: KclCommandValue | undefined
+  if (
+    'twistCenter' in operation.labeledArgs &&
+    operation.labeledArgs.twistCenter
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.twistCenter.sourceRange[0],
+        operation.labeledArgs.twistCenter.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve twistCenter argument" }
+    }
+
+    twistCenterX = result
+    twistCenterY = result
+    // FIXME: this will not work
+  }
+
   // method argument from a string to boolean
   let method: string | undefined
   if ('method' in operation.labeledArgs && operation.labeledArgs.method) {
@@ -201,7 +260,12 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     length,
     symmetric,
     bidirectionalLength,
+    tagStart,
+    tagEnd,
     twistAngle,
+    twistAngleStep,
+    twistCenterX,
+    twistCenterY,
     method,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
