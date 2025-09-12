@@ -179,7 +179,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 500.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -279,7 +278,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -382,7 +380,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -482,7 +479,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -582,7 +578,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -682,7 +677,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -782,7 +776,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -882,7 +875,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -982,7 +974,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1082,7 +1073,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1182,7 +1172,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1282,7 +1271,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",

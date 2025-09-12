@@ -143,7 +143,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -575,7 +574,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -758,7 +756,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -941,7 +938,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -1124,7 +1120,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -1458,7 +1453,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -1595,7 +1589,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -1732,7 +1725,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -1869,7 +1861,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -2275,7 +2266,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -2648,7 +2638,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 9.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -3101,7 +3090,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 9.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -3260,7 +3248,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -3397,7 +3384,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -3534,7 +3520,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -3671,7 +3656,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -3947,7 +3931,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -4192,7 +4175,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 18.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -4373,7 +4355,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -4763,7 +4744,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 9.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -4939,7 +4919,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -5290,7 +5269,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -5609,7 +5587,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -5960,7 +5937,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -6348,7 +6324,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 15.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -6495,7 +6470,6 @@ description: Variables in memory after executing saturn-v.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
