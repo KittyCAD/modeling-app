@@ -24,6 +24,7 @@ const _INPUT_TYPES = [
   'selection',
   'selectionMixed',
   'boolean',
+  'vector3d',
 ] as const
 type INPUT_TYPE = typeof _INPUT_TYPES
 export interface KclExpression {
@@ -274,6 +275,23 @@ export type CommandArgumentConfig<
         context: CommandBarContext
       }) => Promise<boolean | string>
     }
+  | {
+      inputType: 'vector3d'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => OutputType)
+      defaultValueFromContext?: (context: C) => OutputType
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+    }
 )
 
 export type CommandArgument<
@@ -420,6 +438,22 @@ export type CommandArgument<
     }
   | {
       inputType: 'number'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+    }
+  | {
+      inputType: 'vector3d'
       defaultValue?:
         | OutputType
         | ((
