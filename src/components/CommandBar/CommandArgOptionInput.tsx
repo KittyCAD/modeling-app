@@ -8,7 +8,7 @@ import type {
   CommandArgument,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useCommandBarState } from '@src/lib/singletons'
 
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context
@@ -150,12 +150,6 @@ function CommandArgOptionInput({
             }
             className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
             onKeyDown={(event) => {
-              if (event.metaKey && event.key === 'k')
-                commandBarActor.send({ type: 'Close' })
-              if (event.key === 'Backspace' && event.metaKey) {
-                stepBack()
-              }
-
               if (event.key === 'Enter') {
                 setShouldSubmitOnChange(true)
               } else {

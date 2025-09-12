@@ -15,6 +15,26 @@ import toast from 'react-hot-toast'
 import { COMMAND_PALETTE_HOTKEY } from '@src/lib/constants'
 import { useShortcuts } from '@src/lib/useShortcuts'
 
+const commandBarShortcuts = [
+  {
+    name: 'toggle-cmd-palette',
+    sequence: COMMAND_PALETTE_HOTKEY,
+    title: 'Toggle Command Palette',
+    description: 'Toggle the command palette open and closed',
+    category: 'Command Palette',
+    action: () => {
+      const s = commandBarActor.getSnapshot()
+      console.log('what is the current state?', s.value)
+      if (s.context.commands.length === 0) return
+      if (s.matches('Closed')) {
+        commandBarActor.send({ type: 'Open' })
+      } else {
+        commandBarActor.send({ type: 'Close' })
+      }
+    },
+  },
+]
+
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const commandBarState = useCommandBarState()
@@ -59,28 +79,7 @@ export const CommandBar = () => {
   }, [immediateState, commandBarActor])
 
   // Hook up keyboard shortcuts
-  useShortcuts(
-    [
-      {
-        name: 'toggle-cmd-palette',
-        sequence: COMMAND_PALETTE_HOTKEY,
-        title: 'Toggle Command Palette',
-        description: 'Toggle the command palette open and closed',
-        category: 'Command Palette',
-        action: () => {
-          const s = commandBarActor.getSnapshot()
-          console.log('what is the current state?', s.value)
-          if (s.context.commands.length === 0) return
-          if (s.matches('Closed')) {
-            commandBarActor.send({ type: 'Open' })
-          } else {
-            commandBarActor.send({ type: 'Close' })
-          }
-        },
-      },
-    ],
-    []
-  )
+  useShortcuts(commandBarShortcuts, [])
 
   function stepBack() {
     const entries = Object.entries(selectedCommand?.args || {}).filter(
