@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { changeDefaultUnits, unitLengthToUnitLen } from '@src/lang/wasm'
+import { changeDefaultUnits } from '@src/lang/wasm'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { codeManager, kclManager, sceneInfra } from '@src/lib/singletons'
@@ -96,10 +96,7 @@ export function UnitsMenu() {
                   <button
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
-                      const newCode = changeDefaultUnits(
-                        codeManager.code,
-                        unitLengthToUnitLen(unit)
-                      )
+                      const newCode = changeDefaultUnits(codeManager.code, unit)
                       if (err(newCode)) {
                         toast.error(
                           `Failed to set per-file units: ${newCode.message}`

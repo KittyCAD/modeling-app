@@ -8,12 +8,8 @@ description: Variables in memory after executing t-slot-rail.kcl
     "value": 0.0275,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "holeDiameter": {
@@ -21,12 +17,8 @@ description: Variables in memory after executing t-slot-rail.kcl
     "value": 0.262,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "interiorRadius": {
@@ -34,12 +26,8 @@ description: Variables in memory after executing t-slot-rail.kcl
     "value": 0.01,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "railTslot": {
@@ -51,12 +39,8 @@ description: Variables in memory after executing t-slot-rail.kcl
     "value": 0.018,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

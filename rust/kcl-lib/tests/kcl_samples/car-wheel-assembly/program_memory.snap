@@ -28,12 +28,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 6.38,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "bendRadius": {
@@ -41,12 +37,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 1.6,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "c1": {
@@ -59,12 +51,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.12,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "caliperOuterEdgeRadius": {
@@ -72,12 +60,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.39,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "caliperPadLength": {
@@ -85,12 +69,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 1.6,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "caliperThickness": {
@@ -98,12 +78,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.39,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "caliperTolerance": {
@@ -111,12 +87,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "drillAndSlotCount": {
@@ -124,12 +96,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "lugCount": {
@@ -137,30 +105,26 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "lugDiameter": {
     "type": "Number",
     "value": 24.0,
     "ty": {
+      "mm": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Mm"
+      "type": "Length"
     }
   },
   "lugHeadLength": {
     "type": "Number",
     "value": 12.0,
     "ty": {
+      "mm": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Mm"
+      "type": "Length"
     }
   },
   "lugHolePatternDia": {
@@ -168,57 +132,53 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "lugLength": {
     "type": "Number",
     "value": 30.0,
     "ty": {
+      "mm": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Mm"
+      "type": "Length"
     }
   },
   "lugSpacing": {
     "type": "Number",
     "value": 114.3,
     "ty": {
+      "mm": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Mm"
+      "type": "Length"
     }
   },
   "lugThreadDepth": {
     "type": "Number",
     "value": 17.3,
     "ty": {
+      "mm": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Mm"
+      "type": "Length"
     }
   },
   "lugThreadDiameter": {
     "type": "Number",
     "value": 10.2,
     "ty": {
+      "mm": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Mm"
+      "type": "Length"
     }
   },
   "offset": {
     "type": "Number",
     "value": -35.0,
     "ty": {
+      "mm": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Mm"
+      "type": "Length"
     }
   },
   "rotorDiameter": {
@@ -226,12 +186,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "rotorInnerDiameter": {
@@ -239,12 +195,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "rotorInnerDiameterThickness": {
@@ -252,12 +204,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "rotorSinglePlateThickness": {
@@ -265,12 +213,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "rotorTotalThickness": {
@@ -278,12 +222,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "spacerCount": {
@@ -291,12 +231,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 16.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "spacerDiameter": {
@@ -304,12 +240,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "spacerLength": {
@@ -317,12 +249,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "spacerPatternDiameter": {
@@ -330,12 +258,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 11.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "spokeAngle": {
@@ -343,12 +267,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.02,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "spokeCount": {
@@ -356,12 +276,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "spokeGap": {
@@ -369,12 +285,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.2,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "spokeThickness": {
@@ -382,12 +294,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.95,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tireDepth": {
@@ -395,12 +303,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 11.02,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tireInnerDiameter": {
@@ -408,12 +312,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 19.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tireOuterDiameter": {
@@ -421,12 +321,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 24.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tireTreadDepth": {
@@ -434,12 +330,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.39,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tireTreadOffset": {
@@ -447,12 +339,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 3.15,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tireTreadWidth": {
@@ -460,12 +348,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.39,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "wheelDiameter": {
@@ -473,12 +357,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 19.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "wheelWidth": {
@@ -486,12 +366,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 9.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "yAxisOffset": {
@@ -499,12 +375,8 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }
