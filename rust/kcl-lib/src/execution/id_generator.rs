@@ -8,7 +8,7 @@ const ENGINE_NAMESPACE_KCL: uuid::Uuid = uuid::uuid!("22b85cda-1c8d-57c4-88b5-3f
 // Generate predictive ids similar to the engine to avoid having to wait for the engine's id generation.
 // This has to match the implementation in the engine!
 // This is also duplicated in the engine's tests/triangle.rs
-pub(crate) fn generate_engine_id(base: uuid::Uuid, modifier: &str) -> uuid::Uuid {
+pub fn generate_engine_id(base: uuid::Uuid, modifier: &str) -> uuid::Uuid {
     let name = format!("{}_{}", base, modifier);
     uuid::Uuid::new_v5(&ENGINE_NAMESPACE_KCL, name.as_bytes())
 }
