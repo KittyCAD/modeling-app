@@ -332,16 +332,20 @@ export const FileExplorerRowElement = ({
       }}
       draggable="true"
       onDragOver={(event) => {
-        // TODO: the onDrag work is for dragging the DOM element to move folders and files
-        if (!row.isOpen && row.isFolder) {
+        event.preventDefault()
+        if (!row.isOpen && row.isFolder && !delayRef.current) {
           delayedRowOpen(400)
         }
-        event.preventDefault()
         event.dataTransfer.dropEffect = 'move'
         event.currentTarget.classList.add('bg-primary/10')
       }}
       onDragLeave={(event) => {
+        event.preventDefault()
         event.currentTarget.classList.remove('bg-primary/10')
+        if (delayRef.current) {
+          clearTimeout(delayRef.current)
+          delayRef.current = undefined
+        }
       }}
       onDragStart={(event) => {
         event.dataTransfer.effectAllowed = 'move'
