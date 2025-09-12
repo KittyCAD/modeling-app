@@ -1,18 +1,14 @@
-import { isDesktop } from '@src/lib/isDesktop'
-import { platform } from '@src/lib/utils'
-
 export type MouseButtonName = `${'Left' | 'Middle' | 'Right'}Button`
 export type MouseOrKeyboardEvent = MouseEvent | KeyboardEvent
 
 export type InteractionMapItem = {
-  name: string
+  id: string
   title: string
   description: string
   sequence: string
   userDefinedSequence?: string
   guard?: (e: MouseOrKeyboardEvent) => boolean
   action: () => void | Promise<() => void>
-  ownerId: string
   category: InteractionMapCategory
 }
 
