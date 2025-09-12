@@ -442,6 +442,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -469,6 +470,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -133.5,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -877,6 +879,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -904,6 +907,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -133.5,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -1312,6 +1316,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -1339,6 +1344,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -133.5,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -1747,6 +1753,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -1774,6 +1781,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -133.5,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -2182,6 +2190,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -2209,6 +2218,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -133.5,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -2617,6 +2627,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -2644,6 +2655,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -133.5,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -3052,6 +3064,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -3079,6 +3092,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -133.5,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -3487,6 +3501,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -3514,6 +3529,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -133.5,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -3927,6 +3943,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -3954,6 +3971,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -4362,6 +4380,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -4389,6 +4408,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -4797,6 +4817,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -4824,6 +4845,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -5232,6 +5254,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -5259,6 +5282,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -5667,6 +5691,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -5694,6 +5719,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -6102,6 +6128,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -6129,6 +6156,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -6537,6 +6565,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -6564,6 +6593,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -6972,6 +7002,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -6999,6 +7030,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -7407,6 +7439,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -7434,6 +7467,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -7842,6 +7876,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -7869,6 +7904,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -8277,6 +8313,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -8304,6 +8341,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -8712,6 +8750,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -8739,6 +8778,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -9147,6 +9187,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -9174,6 +9215,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -9582,6 +9624,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -9609,6 +9652,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -10017,6 +10061,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -10044,6 +10089,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -10452,6 +10498,7 @@ description: Variables in memory after executing spool.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -10479,6 +10526,7 @@ description: Variables in memory after executing spool.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -10741,6 +10789,7 @@ description: Variables in memory after executing spool.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -10858,6 +10907,7 @@ description: Variables in memory after executing spool.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

@@ -245,6 +245,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 8.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [

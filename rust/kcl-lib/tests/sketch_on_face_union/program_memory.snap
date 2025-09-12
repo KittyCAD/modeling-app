@@ -224,6 +224,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -589,6 +590,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 2.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "in",
@@ -616,6 +618,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 48.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -859,6 +862,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "originalId": "[uuid]",
           "units": "in"
         },
+        "height": 2.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": "in",
@@ -1178,6 +1182,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1427,6 +1432,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -2248,6 +2254,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -2413,6 +2420,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",

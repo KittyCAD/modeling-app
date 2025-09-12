@@ -249,6 +249,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": -15.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -286,6 +287,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 45.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -329,6 +331,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -60.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -572,6 +575,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 15.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -609,6 +613,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 45.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -652,6 +657,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -60.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -751,6 +757,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 100.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -850,6 +857,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -100.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -976,6 +984,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -15.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1075,6 +1084,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 15.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1527,6 +1537,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 30.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1754,6 +1765,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1971,6 +1983,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -2453,6 +2466,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 30.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -2711,6 +2725,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -15.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -2748,6 +2763,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 45.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -2949,6 +2965,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 15.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -2986,6 +3003,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 45.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "edgeCuts": [

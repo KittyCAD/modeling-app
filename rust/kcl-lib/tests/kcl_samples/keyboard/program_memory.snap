@@ -604,6 +604,7 @@ description: Variables in memory after executing keyboard.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -985,6 +986,7 @@ description: Variables in memory after executing keyboard.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1366,6 +1368,7 @@ description: Variables in memory after executing keyboard.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1747,6 +1750,7 @@ description: Variables in memory after executing keyboard.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2157,6 +2161,7 @@ description: Variables in memory after executing keyboard.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 13.6,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -2487,6 +2492,7 @@ description: Variables in memory after executing keyboard.kcl
           "originalId": "[uuid]",
           "units": "in"
         },
+        "height": 13.6,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [

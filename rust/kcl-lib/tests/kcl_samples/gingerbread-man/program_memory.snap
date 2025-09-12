@@ -394,6 +394,7 @@ description: Variables in memory after executing gingerbread-man.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -747,6 +748,7 @@ description: Variables in memory after executing gingerbread-man.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -881,6 +883,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -980,6 +983,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1259,6 +1263,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1533,6 +1538,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1780,6 +1786,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1972,6 +1979,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2076,6 +2084,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2175,6 +2184,7 @@ description: Variables in memory after executing gingerbread-man.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2721,6 +2731,7 @@ description: Variables in memory after executing gingerbread-man.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

@@ -346,6 +346,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 200.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -759,6 +760,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -3.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -786,6 +788,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 7.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1157,6 +1160,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -3.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -1184,6 +1188,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 7.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1499,6 +1504,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 200.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1833,6 +1839,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 200.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -2276,6 +2283,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -2468,6 +2476,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

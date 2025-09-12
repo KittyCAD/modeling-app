@@ -197,6 +197,7 @@ description: Variables in memory after executing property_access_not_found_on_so
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

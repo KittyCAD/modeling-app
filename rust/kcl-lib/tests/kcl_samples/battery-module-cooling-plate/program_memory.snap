@@ -215,6 +215,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "originalId": "[uuid]",
           "units": "mm"
         },
+        "height": 10.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": "mm",
@@ -419,6 +420,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -762,6 +764,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -789,6 +792,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -5.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -1132,6 +1136,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -1159,6 +1164,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -5.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1889,6 +1895,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 10.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -1916,6 +1923,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -2626,6 +2634,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 10.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -2653,6 +2662,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -3363,6 +3373,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 10.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -3390,6 +3401,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -4100,6 +4112,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 10.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -4127,6 +4140,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -4837,6 +4851,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 10.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -4864,6 +4879,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -5579,6 +5595,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 10.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -5606,6 +5623,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6316,6 +6334,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 10.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -6343,6 +6362,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7053,6 +7073,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 10.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -7080,6 +7101,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7790,6 +7812,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 10.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -7817,6 +7840,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8527,6 +8551,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 10.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -8554,6 +8579,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9241,6 +9267,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -9268,6 +9295,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -5.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -9596,6 +9624,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -9623,6 +9652,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -10.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -9883,6 +9913,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -9910,6 +9941,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -10.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -10170,6 +10202,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -10197,6 +10230,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -10.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -10457,6 +10491,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -10484,6 +10519,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -10.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",

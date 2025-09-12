@@ -155,6 +155,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": -1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -346,6 +347,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": 3.8500000000000005,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -720,6 +722,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": -1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -1028,6 +1031,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": -1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -1421,6 +1425,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -1814,6 +1819,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -2027,6 +2033,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": -0.405,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -2240,6 +2247,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": -0.405,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -2431,6 +2439,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": -0.05,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -2909,6 +2918,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": -0.405,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -3131,6 +3141,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": -0.405,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -3322,6 +3333,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": 0.05,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -3739,6 +3751,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3838,6 +3851,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3974,6 +3988,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4073,6 +4088,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4209,6 +4225,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4308,6 +4325,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4444,6 +4462,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4543,6 +4562,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": -0.27,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",

@@ -96,6 +96,7 @@ description: Variables in memory after executing round-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 30.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -326,6 +327,7 @@ description: Variables in memory after executing round-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 700.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -588,6 +590,7 @@ description: Variables in memory after executing round-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

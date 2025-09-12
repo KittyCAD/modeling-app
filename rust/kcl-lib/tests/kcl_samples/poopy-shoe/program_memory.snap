@@ -758,6 +758,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1471,6 +1472,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.875,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1617,6 +1619,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -2358,6 +2361,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 0.875,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "in",
@@ -2391,6 +2395,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -2634,6 +2639,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -3001,6 +3007,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 0.125,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "in",
@@ -3028,6 +3035,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -3893,6 +3901,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "originalId": "[uuid]",
                     "units": "in"
                   },
+                  "height": 0.875,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "in",
@@ -3926,6 +3935,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 0.125,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "in",
@@ -3953,6 +3963,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 2.75,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -4118,6 +4129,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": -0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",

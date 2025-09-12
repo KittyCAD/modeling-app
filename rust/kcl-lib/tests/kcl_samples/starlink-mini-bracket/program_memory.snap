@@ -425,6 +425,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 1.25,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -896,6 +897,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 1.25,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "in",
@@ -923,6 +925,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1394,6 +1397,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 1.25,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "in",
@@ -1421,6 +1425,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1639,6 +1644,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 1.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1915,6 +1921,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 1.1,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "in",
@@ -1942,6 +1949,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": -1.1,
       "startCapId": null,
       "endCapId": null,
       "units": "in",
@@ -2110,6 +2118,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -2275,6 +2284,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -2440,6 +2450,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -2605,6 +2616,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -2770,6 +2782,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -2935,6 +2948,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -3100,6 +3114,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -3265,6 +3280,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -3430,6 +3446,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -3595,6 +3612,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -3760,6 +3778,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -3925,6 +3944,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -4090,6 +4110,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -4255,6 +4276,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -4420,6 +4442,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -4585,6 +4608,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -4750,6 +4774,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -4915,6 +4940,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -5080,6 +5106,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -5245,6 +5272,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -5410,6 +5438,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -5575,6 +5604,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -5740,6 +5770,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -5905,6 +5936,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -6070,6 +6102,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -6235,6 +6268,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -6400,6 +6434,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -6565,6 +6600,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -6730,6 +6766,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -6895,6 +6932,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -7060,6 +7098,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -7225,6 +7264,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -7390,6 +7430,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -7555,6 +7596,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -7720,6 +7762,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -7885,6 +7928,7 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.22049999999999997,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",

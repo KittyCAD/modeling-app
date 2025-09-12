@@ -96,6 +96,7 @@ description: Variables in memory after executing multi_target_csg.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": -1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -450,6 +451,7 @@ description: Variables in memory after executing multi_target_csg.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.0625,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -666,6 +668,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -879,6 +882,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",

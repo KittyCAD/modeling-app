@@ -188,6 +188,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": -0.19,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -251,6 +252,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 1.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -395,6 +397,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": -0.19,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -766,6 +769,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": -0.19,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -823,6 +827,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": -0.14250000000000002,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "in",

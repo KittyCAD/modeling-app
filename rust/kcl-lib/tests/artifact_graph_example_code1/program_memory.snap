@@ -217,6 +217,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -570,6 +571,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -613,6 +615,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 5.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1100,6 +1103,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [

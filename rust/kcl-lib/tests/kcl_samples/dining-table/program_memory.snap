@@ -251,6 +251,7 @@ description: Variables in memory after executing dining-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 730.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -433,6 +434,7 @@ description: Variables in memory after executing dining-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 730.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -615,6 +617,7 @@ description: Variables in memory after executing dining-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 730.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -797,6 +800,7 @@ description: Variables in memory after executing dining-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 730.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1181,6 +1185,7 @@ description: Variables in memory after executing dining-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -120.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1363,6 +1368,7 @@ description: Variables in memory after executing dining-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -120.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1840,6 +1846,7 @@ description: Variables in memory after executing dining-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -120.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -2022,6 +2029,7 @@ description: Variables in memory after executing dining-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -120.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -2581,6 +2589,7 @@ description: Variables in memory after executing dining-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

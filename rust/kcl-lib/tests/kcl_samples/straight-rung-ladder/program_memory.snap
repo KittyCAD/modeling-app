@@ -521,6 +521,7 @@ description: Variables in memory after executing straight-rung-ladder.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 30.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -892,6 +893,7 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 30.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1057,6 +1059,7 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 30.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1222,6 +1225,7 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 30.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1387,6 +1391,7 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 30.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1552,6 +1557,7 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 30.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1739,6 +1745,7 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1892,6 +1899,7 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",

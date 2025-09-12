@@ -186,6 +186,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -351,6 +352,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -516,6 +518,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.2,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -681,6 +684,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.3,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -846,6 +850,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.4,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1011,6 +1016,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1176,6 +1182,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1341,6 +1348,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.7,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1506,6 +1514,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.8,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1671,6 +1680,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.9,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1836,6 +1846,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.1100000000001,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -2001,6 +2012,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 2000.12,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",

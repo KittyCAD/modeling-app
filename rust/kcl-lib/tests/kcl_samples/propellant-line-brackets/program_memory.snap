@@ -469,6 +469,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 1.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -554,6 +555,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": -0.125,
       "startCapId": null,
       "endCapId": null,
       "units": "in",
@@ -991,6 +993,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
+                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -1104,6 +1107,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.25,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -1538,6 +1542,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
+                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -1651,6 +1656,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.25,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -2085,6 +2091,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
+                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -2198,6 +2205,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.25,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -2576,6 +2584,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -3187,6 +3196,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
+                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -3300,6 +3310,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.25,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -3734,6 +3745,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
+                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -3847,6 +3859,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": -0.25,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -4337,6 +4350,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -5101,6 +5115,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -5630,6 +5645,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6159,6 +6175,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6688,6 +6705,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7217,6 +7235,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8057,6 +8076,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8587,6 +8607,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -9109,6 +9130,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "originalId": "[uuid]",
           "units": "in"
         },
+        "height": 4.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -9589,6 +9611,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "originalId": "[uuid]",
           "units": "in"
         },
+        "height": 4.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -10098,6 +10121,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "originalId": "[uuid]",
           "units": "in"
         },
+        "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -10579,6 +10603,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "originalId": "[uuid]",
           "units": "in"
         },
+        "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -11111,6 +11136,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 1.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -11196,6 +11222,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": -0.125,
       "startCapId": null,
       "endCapId": null,
       "units": "in",
