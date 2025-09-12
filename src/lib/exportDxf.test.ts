@@ -38,10 +38,7 @@ const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
   } as any,
   uuidv4: vi.fn().mockReturnValue('test-uuid'),
   base64Decode: vi.fn(),
-  isDesktop: vi.fn(),
   browserSaveFile: vi.fn(),
-  writeFile: vi.fn(),
-  showSaveDialog: vi.fn(),
 })
 
 const createMockOperation = (): StdLibCallOp =>
@@ -115,8 +112,9 @@ describe('DXF Export', () => {
       const mockDecodedData = new ArrayBuffer(8)
       vi.mocked(mockDeps.base64Decode).mockReturnValue(mockDecodedData)
 
-      // Mock browser environment
-      vi.mocked(mockDeps.isDesktop).mockReturnValue(false)
+      // Mock browser environment - no window.electron
+      // @ts-ignore
+      globalThis.window.electron = undefined
       vi.mocked(mockDeps.browserSaveFile).mockResolvedValue(undefined)
 
       const result = await exportSketchToDxf(mockOperation, mockDeps)
@@ -185,18 +183,21 @@ describe('DXF Export', () => {
       const mockDecodedData = new ArrayBuffer(8)
       vi.mocked(mockDeps.base64Decode).mockReturnValue(mockDecodedData)
 
-      // Mock desktop environment
-      vi.mocked(mockDeps.isDesktop).mockReturnValue(true)
-      vi.mocked(mockDeps.showSaveDialog!).mockResolvedValue({
-        canceled: false,
-        filePath: '/path/to/sketch.dxf',
-      })
-      vi.mocked(mockDeps.writeFile!).mockResolvedValue(undefined)
+      // Mock desktop environment - restore window.electron
+      // @ts-ignore
+      globalThis.window.electron = {
+        ...mockElectron,
+        save: vi.fn().mockResolvedValue({
+          canceled: false,
+          filePath: '/path/to/sketch.dxf',
+        }),
+        writeFile: vi.fn().mockResolvedValue(undefined),
+      }
 
       const result = await exportSketchToDxf(mockOperation, mockDeps)
 
       expect(result.success).toBe(true)
-      expect(mockDeps.showSaveDialog!).toHaveBeenCalledWith({
+      expect(globalThis.window.electron!.save).toHaveBeenCalledWith({
         defaultPath: 'sketch.dxf',
         filters: [
           {
@@ -205,7 +206,7 @@ describe('DXF Export', () => {
           },
         ],
       })
-      expect(mockDeps.writeFile!).toHaveBeenCalledWith(
+      expect(globalThis.window.electron!.writeFile).toHaveBeenCalledWith(
         '/path/to/sketch.dxf',
         expect.any(Uint8Array)
       )
@@ -362,18 +363,22 @@ describe('DXF Export', () => {
       vi.mocked(mockDeps.base64Decode).mockReturnValue(mockDecodedData)
 
       // Mock desktop environment with user cancellation
-      vi.mocked(mockDeps.isDesktop).mockReturnValue(true)
-      vi.mocked(mockDeps.showSaveDialog!).mockResolvedValue({
-        canceled: true,
-        filePath: '',
-      })
+      // @ts-ignore
+      globalThis.window.electron = {
+        ...mockElectron,
+        save: vi.fn().mockResolvedValue({
+          canceled: true,
+          filePath: '',
+        }),
+        writeFile: vi.fn(),
+      }
 
       const result = await exportSketchToDxf(mockOperation, mockDeps)
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('User canceled save')
       expect(mockDeps.toast.dismiss).toHaveBeenCalledWith('toast-id')
-      expect(mockDeps.writeFile!).not.toHaveBeenCalled()
+      expect(globalThis.window.electron!.writeFile).not.toHaveBeenCalled()
     })
   })
 })

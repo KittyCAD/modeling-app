@@ -50,17 +50,9 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
-import {
-  selectDefaultSketchPlane,
-  selectOffsetSketchPlane,
-} from '@src/lib/selections'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
-import { err } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { base64Decode } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
-import { isDesktop } from '@src/lib/isDesktop'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 
 export const FeatureTreePane = () => {
@@ -617,10 +609,7 @@ const OperationItem = (props: {
                     toast,
                     uuidv4,
                     base64Decode,
-                    isDesktop,
                     browserSaveFile,
-                    writeFile: window.electron?.writeFile,
-                    showSaveDialog: window.electron?.save,
                   })
                 }
                 void exportDxf()

@@ -21,16 +21,11 @@ export async function exportSketchToDxf(
     }
     uuidv4: () => string
     base64Decode: (input: string) => ArrayBuffer | Error
-    isDesktop: () => boolean
     browserSaveFile: (
       blob: Blob,
       filename: string,
       toastId: string
     ) => Promise<void>
-    writeFile?: (path: string, data: Uint8Array) => Promise<void>
-    showSaveDialog?: (
-      options: any
-    ) => Promise<{ canceled: boolean; filePath: string }>
   }
 ): Promise<{ success: boolean; error?: string }> {
   const {
@@ -39,10 +34,7 @@ export async function exportSketchToDxf(
     toast,
     uuidv4,
     base64Decode,
-    isDesktop,
     browserSaveFile,
-    writeFile,
-    showSaveDialog,
   } = dependencies
 
   let toastId: string | undefined = undefined
@@ -114,13 +106,29 @@ export async function exportSketchToDxf(
       'data' in response.resp &&
       response.resp.data &&
       'modeling_response' in response.resp.data &&
+      response.resp.data.modeling_response &&
+      typeof response.resp.data.modeling_response === 'object' &&
+      'type' in response.resp.data.modeling_response &&
       response.resp.data.modeling_response.type === 'export2d' &&
       'data' in response.resp.data.modeling_response &&
+      response.resp.data.modeling_response.data &&
+      typeof response.resp.data.modeling_response.data === 'object' &&
       'files' in response.resp.data.modeling_response.data
     ) {
-      const files = response.resp.data.modeling_response.data.files
+      const modelingResponse = response.resp.data.modeling_response as {
+        type: 'export2d'
+        data: {
+          files: Array<{ contents: string }> | undefined
+        }
+      }
+      const files = modelingResponse.data.files
 
-      if (!files || files.length === 0 || !files[0]?.contents) {
+      if (
+        !files ||
+        !isArray(files) ||
+        files.length === 0 ||
+        !files[0]?.contents
+      ) {
         console.error('DXF export failed: no files or empty contents')
         toast.error('Failed to export sketch to DXF', { id: toastId })
         return { success: false, error: 'Engine command failed' }
@@ -148,14 +156,8 @@ export async function exportSketchToDxf(
       const sketchName = getOperationVariableName(operation, kclManager.ast)
       const fileName = `${sketchName || 'sketch'}.dxf`
 
-      if (isDesktop()) {
-        // Early validation for desktop operations
-        if (!writeFile || !showSaveDialog) {
-          toast.error('File operations not available', { id: toastId })
-          return { success: false, error: 'File operations not available' }
-        }
-
-        if (window.electron?.process.env.NODE_ENV === 'test') {
+      if (window.electron) {
+        if (window.electron.process.env.NODE_ENV === 'test') {
           // In test environment (Playwright), skip the file picker dialog and save directly
           // to a designated test downloads directory to avoid blocking automated tests
           const testSettingsPath = await window.electron.getAppTestProperty(
@@ -168,7 +170,7 @@ export async function exportSketchToDxf(
           await window.electron.mkdir(downloadDir, { recursive: true })
 
           try {
-            await writeFile(
+            await window.electron.writeFile(
               window.electron.join(downloadDir, fileName),
               uint8Array
             )
@@ -182,7 +184,7 @@ export async function exportSketchToDxf(
           return { success: true }
         }
 
-        const filePathMeta = await showSaveDialog({
+        const filePathMeta = await window.electron.save({
           defaultPath: fileName,
           filters: [
             {
@@ -198,7 +200,7 @@ export async function exportSketchToDxf(
         }
 
         try {
-          await writeFile(filePathMeta.filePath, uint8Array)
+          await window.electron.writeFile(filePathMeta.filePath, uint8Array)
         } catch (e: any) {
           console.error('Write file failed:', e)
           toast.error('Failed to save file', { id: toastId })
