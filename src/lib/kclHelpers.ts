@@ -14,6 +14,9 @@ const DUMMY_VARIABLE_NAME = '__result__'
 /**
  * Calculate the value of the KCL expression,
  * given the value and the variables that are available in memory.
+ * @param value - KCL expression to evaluate
+ * @param allowArrays - Allow array values in result
+ * @returns AST node and formatted value, or error
  */
 export async function getCalculatedKclExpressionValue(
   value: string,
