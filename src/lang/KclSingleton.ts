@@ -17,7 +17,6 @@ import {
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
@@ -45,8 +44,11 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, uuidv4 } from '@src/lib/utils'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
+
 import type { PlaneVisibilityMap } from '@src/machines/modelingMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
+
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -129,7 +131,7 @@ export class KclManager extends EventTarget {
   // In the future this could be a setting.
   public longExecutionTimeMs = 1000 * 60 * 5
 
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Node<Program>) => void = () => {}
@@ -269,10 +271,7 @@ export class KclManager extends EventTarget {
     this._wasmInitFailedCallback(wasmInitFailed)
   }
 
-  constructor(
-    engineCommandManager: EngineCommandManager,
-    singletons: Singletons
-  ) {
+  constructor(engineCommandManager: ConnectionManager, singletons: Singletons) {
     super()
     this.engineCommandManager = engineCommandManager
     this.singletons = singletons
@@ -447,7 +446,6 @@ export class KclManager extends EventTarget {
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
       // Exit early if we are already executing.
-
       return
     }
 
@@ -606,7 +604,6 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return
     }
-
     clearTimeout(this.executionTimeoutId)
 
     // We consider anything taking longer than 5 minutes a long execution.
@@ -831,7 +828,7 @@ const defaultSelectionFilter: EntityType[] = [
 
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilterToDefault(
-  engineCommandManager: EngineCommandManager,
+  engineCommandManager: ConnectionManager,
   selectionsToRestore?: Selections
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -845,7 +842,7 @@ function setSelectionFilterToDefault(
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilter(
   filter: EntityType[],
-  engineCommandManager: EngineCommandManager,
+  engineCommandManager: ConnectionManager,
   selectionsToRestore?: Selections
 ) {
   const { engineEvents } = selectionsToRestore

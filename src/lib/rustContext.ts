@@ -11,7 +11,7 @@ import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { BSON } from 'bson'
 
 import type { WebSocketResponse } from '@kittycad/lib'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
 import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
@@ -25,12 +25,14 @@ import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule } from '@src/lib/wasm_lib_wrapper'
 
+import type { ConnectionManager } from '@src/network/connectionManager'
+
 export default class RustContext {
   private wasmInitFailed: boolean = true
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
-  private engineCommandManager: EngineCommandManager
+  private engineCommandManager: ConnectionManager
   private projectId = 0
 
   /** Initialize the WASM module */
@@ -46,7 +48,7 @@ export default class RustContext {
     }
   }
 
-  constructor(engineCommandManager: EngineCommandManager) {
+  constructor(engineCommandManager: ConnectionManager) {
     this.engineCommandManager = engineCommandManager
 
     this.ensureWasmInit()
@@ -100,7 +102,6 @@ export default class RustContext {
     path?: string
   ): Promise<ExecState> {
     const instance = await this._checkInstance()
-
     try {
       const result = await instance.execute(
         JSON.stringify(node),
@@ -196,12 +197,12 @@ export default class RustContext {
     path?: string
   ): Promise<ExecState> {
     const instance = await this._checkInstance()
-
     try {
       const result = await instance.bustCacheAndResetScene(
         JSON.stringify(settings),
         path
       )
+
       /* Set the default planes, safe to call after execute. */
       const outcome = execStateFromRust(result)
 

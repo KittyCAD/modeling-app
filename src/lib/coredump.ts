@@ -5,11 +5,13 @@ import type { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
 
 import type CodeManager from '@src/lang/codeManager'
 import type { CommandLog } from '@src/lang/std/commandLog'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { isDesktop } from '@src/lib/isDesktop'
 import type RustContext from '@src/lib/rustContext'
 import screenshot from '@src/lib/screenshot'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
+
+import type { ConnectionManager } from '@src/network/connectionManager'
+
 import { APP_VERSION } from '@src/routes/utils'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
@@ -31,14 +33,14 @@ import { APP_VERSION } from '@src/routes/utils'
 // them to so the toast handler in ModelingMachineProvider can show the user an error message toast
 // TODO: Throw more
 export class CoreDumpManager {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   codeManager: CodeManager
   rustContext: RustContext
   token: string | undefined
   baseUrl: string = withAPIBaseURL('')
 
   constructor(
-    engineCommandManager: EngineCommandManager,
+    engineCommandManager: ConnectionManager,
     codeManager: CodeManager,
     rustContext: RustContext,
     token: string | undefined
@@ -115,17 +117,17 @@ export class CoreDumpManager {
   }
 
   getWebrtcStats(): Promise<string> {
-    if (!this.engineCommandManager.engineConnection) {
+    if (!this.engineCommandManager.connection) {
       // when the engine connection is not available, return an empty object.
       return Promise.resolve(JSON.stringify({}))
     }
 
-    if (!this.engineCommandManager.engineConnection.webrtcStatsCollector) {
+    if (!this.engineCommandManager.connection.webrtcStatsCollector) {
       // when the engine connection is not available, return an empty object.
       return Promise.resolve(JSON.stringify({}))
     }
 
-    return this.engineCommandManager.engineConnection
+    return this.engineCommandManager.connection
       .webrtcStatsCollector()
       .catch((error: any) => {
         throw new Error(`Error getting webrtc stats: ${error}`)
@@ -226,14 +228,15 @@ export class CoreDumpManager {
       }
 
       // engine connection state
-      if (this.engineCommandManager?.engineConnection?.state) {
-        debugLog(
-          'CoreDump: Engine Command Manager engine connection state',
-          this.engineCommandManager.engineConnection.state
-        )
-        clientState.engine_command_manager.engine_connection.state =
-          this.engineCommandManager.engineConnection.state
-      }
+      // TODO: Kevin replace with engine debugger logs
+      // if (this.engineCommandManager?.connection?.state) {
+      //   debugLog(
+      //     'CoreDump: Engine Command Manager engine connection state',
+      //     this.engineCommandManager.connection.state
+      //   )
+      //   clientState.engine_command_manager.engine_connection.state =
+      //     this.engineCommandManager.connection.state
+      // }
 
       // in sequence - this.engineCommandManager.inSequence
       if (this.engineCommandManager?.inSequence) {

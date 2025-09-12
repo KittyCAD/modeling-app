@@ -202,9 +202,10 @@ export const settingsMachine = setup({
       const rootContext = self.system.get('root').getSnapshot().context
       const engineCommandManager = rootContext.engineCommandManager
       if (engineCommandManager && context.app.theme.current) {
-        engineCommandManager
-          .setTheme(context.app.theme.current)
-          .catch(reportRejection)
+        // TODO: Way too early dude.
+        // engineCommandManager
+        //   .setTheme(context.app.theme.current)
+        //   .catch(reportRejection)
       }
     },
     setClientTheme: ({ context, self }) => {

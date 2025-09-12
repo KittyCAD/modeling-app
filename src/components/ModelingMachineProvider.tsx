@@ -44,11 +44,8 @@ import {
   getNodeFromPath,
   traverse,
 } from '@src/lang/queryAst'
-import {
-  EngineConnectionEvents,
-  EngineConnectionStateType,
-} from '@src/lang/std/engineConnection'
-import { err, reject, reportRejection, trap } from '@src/lib/trap'
+
+import { err, reportRejection, trap, reject } from '@src/lib/trap'
 
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
@@ -105,6 +102,12 @@ import {
   modelingMachineDefaultContext,
 } from '@src/machines/modelingMachine'
 import { useFolders } from '@src/machines/systemIO/hooks'
+
+import {
+  EngineConnectionEvents,
+  EngineConnectionStateType,
+} from '@src/network/utils'
+
 import type { WebContentSendPayload } from '@src/menu/channels'
 
 const OVERLAY_TIMEOUT_MS = 1_000
@@ -405,13 +408,13 @@ export const ModelingMachineProvider = ({
             // Due to our use of singeton pattern, we need to do this to reliably
             // update this object across React and non-React boundary.
             // We need to do this eagerly because of the exportToEngine call below.
-            if (engineCommandManager.machineManager === null) {
+            if (machineManager === null) {
               console.warn(
-                "engineCommandManager.machineManager is null. It shouldn't be at this point. Aborting operation."
+                "machineManager is null. It shouldn't be at this point. Aborting operation."
               )
               return new Error('Machine manager is not set')
             } else {
-              engineCommandManager.machineManager.currentMachine = input.machine
+              machineManager.currentMachine = input.machine
             }
 
             // Update the rest of the UI that needs to know the current machine
@@ -453,7 +456,7 @@ export const ModelingMachineProvider = ({
               files,
               toastId,
               name,
-              machineManager: engineCommandManager.machineManager,
+              machineManager: machineManager,
             })
           }
         ),
@@ -1369,12 +1372,17 @@ export const ModelingMachineProvider = ({
   // the up vector otherwise the conconical orientation for the camera modes will be
   // wrong
   useEffect(() => {
-    sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+    engineCommandManager.connection?.deferredPeerConnection?.promise
+      .then(() => {
+        sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+      })
+      .catch(reportRejection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [cameraOrbit.current])
 
   useEffect(() => {
     const onConnectionStateChanged = ({ detail }: CustomEvent) => {
+      // TODO: Kevin Fix this workflow for sketch engine connection.
       // If we are in sketch mode we need to exit it.
       // TODO: how do i check if we are in a sketch mode, I only want to call
       // this then.
@@ -1382,18 +1390,18 @@ export const ModelingMachineProvider = ({
         modelingSend({ type: 'Cancel' })
       }
     }
-    engineCommandManager.engineConnection?.addEventListener(
+    engineCommandManager.connection?.addEventListener(
       EngineConnectionEvents.ConnectionStateChanged,
       onConnectionStateChanged as EventListener
     )
     return () => {
-      engineCommandManager.engineConnection?.removeEventListener(
+      engineCommandManager.connection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChanged as EventListener
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager.engineConnection, modelingSend])
+  }, [engineCommandManager.connection, modelingSend])
 
   useEffect(() => {
     const inSketchMode = modelingState.matches('Sketch')

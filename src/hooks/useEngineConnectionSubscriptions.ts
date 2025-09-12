@@ -30,10 +30,9 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { engineStreamActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { getModuleId } from '@src/lib/utils'
-import { EngineStreamState } from '@src/machines/engineStreamMachine'
+
 import type {
   EdgeCutInfo,
   ExtrudeFacePlane,
@@ -45,11 +44,8 @@ export function useEngineConnectionSubscriptions() {
   const stateRef = useRef(state)
   stateRef.current = state
 
-  const engineStreamState = engineStreamActor.getSnapshot()
-
   useEffect(() => {
     if (!engineCommandManager) return
-    if (engineStreamState.value !== EngineStreamState.Playing) return
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
       // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
@@ -88,11 +84,10 @@ export function useEngineConnectionSubscriptions() {
       unSubClick()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, engineStreamState, context?.sketchEnginePathId])
+  }, [engineCommandManager, context?.sketchEnginePathId])
 
   useEffect(() => {
     if (!engineCommandManager) return
-    if (engineStreamState.value !== EngineStreamState.Playing) return
 
     const unSub = engineCommandManager.subscribeTo({
       event: 'select_with_point',
@@ -283,5 +278,5 @@ export function useEngineConnectionSubscriptions() {
     })
     return unSub
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, engineStreamState, state])
+  }, [engineCommandManager, state])
 }
