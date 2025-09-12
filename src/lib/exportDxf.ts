@@ -97,130 +97,121 @@ export async function exportSketchToDxf(
       true
     )
 
-    if (
-      response &&
-      !isArray(response) &&
-      response.success &&
-      'resp' in response &&
-      response.resp &&
-      'data' in response.resp &&
-      response.resp.data &&
-      'modeling_response' in response.resp.data &&
-      response.resp.data.modeling_response &&
-      typeof response.resp.data.modeling_response === 'object' &&
-      'type' in response.resp.data.modeling_response &&
-      response.resp.data.modeling_response.type === 'export2d' &&
-      'data' in response.resp.data.modeling_response &&
-      response.resp.data.modeling_response.data &&
-      typeof response.resp.data.modeling_response.data === 'object' &&
-      'files' in response.resp.data.modeling_response.data
-    ) {
-      const modelingResponse = response.resp.data.modeling_response as {
-        type: 'export2d'
-        data: {
-          files: Array<{ contents: string }> | undefined
-        }
-      }
-      const files = modelingResponse.data.files
-
-      if (
-        !files ||
-        !isArray(files) ||
-        files.length === 0 ||
-        !files[0]?.contents
-      ) {
-        console.error('DXF export failed: no files or empty contents')
-        toast.error('Failed to export sketch to DXF', { id: toastId })
-        return { success: false, error: 'Engine command failed' }
-      }
-
-      // Decode (handle throws or Error return)
-      let decodedBuf: ArrayBuffer
+    // Helper function to safely extract files from engine response
+    const extractExportFiles = (response: any): Array<{ contents: string }> | null => {
       try {
-        const decoded = base64Decode(files[0].contents)
-        if (decoded instanceof Error) {
-          console.error('Base64 decode failed:', decoded)
-          toast.error('Failed to decode DXF file data', { id: toastId })
-          return { success: false, error: 'Base64 decode failed' }
+        // Basic response validation
+        if (!response?.success || isArray(response)) {
+          return null
         }
-        decodedBuf = decoded
-      } catch (e) {
-        console.error('Base64 decode failed:', e)
+
+        // Navigate to the modeling response
+        const modelingResponse = response.resp?.data?.modeling_response
+        if (modelingResponse?.type !== 'export2d') {
+          return null
+        }
+
+        // Extract files array
+        const files = modelingResponse.data?.files
+        if (!isArray(files) || files.length === 0) {
+          return null
+        }
+
+        return files as Array<{ contents: string }>
+      } catch {
+        return null
+      }
+    }
+
+    const files = extractExportFiles(response)
+    if (!files || !files[0]?.contents) {
+      console.error('DXF export failed:', response)
+      toast.error('Failed to export sketch to DXF', { id: toastId })
+      return { success: false, error: 'Engine command failed' }
+    }
+
+    // Decode (handle throws or Error return)
+    let decodedBuf: ArrayBuffer
+    try {
+      const decoded = base64Decode(files[0].contents)
+      if (decoded instanceof Error) {
+        console.error('Base64 decode failed:', decoded)
         toast.error('Failed to decode DXF file data', { id: toastId })
         return { success: false, error: 'Base64 decode failed' }
       }
+      decodedBuf = decoded
+    } catch (e) {
+      console.error('Base64 decode failed:', e)
+      toast.error('Failed to decode DXF file data', { id: toastId })
+      return { success: false, error: 'Base64 decode failed' }
+    }
 
-      const uint8Array = new Uint8Array(decodedBuf)
+    const uint8Array = new Uint8Array(decodedBuf)
 
-      // Generate meaningful filename from sketch name
-      const sketchName = getOperationVariableName(operation, kclManager.ast)
-      const fileName = `${sketchName || 'sketch'}.dxf`
+    // Generate meaningful filename from sketch name
+    const sketchName = getOperationVariableName(operation, kclManager.ast)
+    const fileName = `${sketchName || 'sketch'}.dxf`
 
-      if (window.electron) {
-        if (window.electron.process.env.NODE_ENV === 'test') {
-          // In test environment (Playwright), skip the file picker dialog and save directly
-          // to a designated test downloads directory to avoid blocking automated tests
-          const testSettingsPath = await window.electron.getAppTestProperty(
-            'TEST_SETTINGS_FILE_KEY'
-          )
-          const downloadDir = window.electron.join(
-            testSettingsPath,
-            'downloads-during-playwright'
-          )
-          await window.electron.mkdir(downloadDir, { recursive: true })
-
-          try {
-            await window.electron.writeFile(
-              window.electron.join(downloadDir, fileName),
-              uint8Array
-            )
-          } catch (e: any) {
-            console.error('Write file failed:', e)
-            toast.error('Failed to save file', { id: toastId })
-            return { success: false, error: e?.message ?? 'Write failed' }
-          }
-
-          toast.success('DXF export completed [TEST]', { id: toastId })
-          return { success: true }
-        }
-
-        const filePathMeta = await window.electron.save({
-          defaultPath: fileName,
-          filters: [
-            {
-              name: 'DXF files',
-              extensions: ['dxf'],
-            },
-          ],
-        })
-
-        if (filePathMeta.canceled) {
-          toast.dismiss(toastId)
-          return { success: false, error: 'User canceled save' }
-        }
+    if (window.electron) {
+      if (window.electron.process.env.NODE_ENV === 'test') {
+        // In test environment (Playwright), skip the file picker dialog and save directly
+        // to a designated test downloads directory to avoid blocking automated tests
+        const testSettingsPath = await window.electron.getAppTestProperty(
+          'TEST_SETTINGS_FILE_KEY'
+        )
+        const downloadDir = window.electron.join(
+          testSettingsPath,
+          'downloads-during-playwright'
+        )
+        await window.electron.mkdir(downloadDir, { recursive: true })
 
         try {
-          await window.electron.writeFile(filePathMeta.filePath, uint8Array)
+          await window.electron.writeFile(
+            window.electron.join(downloadDir, fileName),
+            uint8Array
+          )
         } catch (e: any) {
           console.error('Write file failed:', e)
           toast.error('Failed to save file', { id: toastId })
           return { success: false, error: e?.message ?? 'Write failed' }
         }
 
-        toast.success('DXF export completed', { id: toastId })
-        return { success: true }
-      } else {
-        // Browser: download file
-        const blob = new Blob([uint8Array], {
-          type: 'application/dxf',
-        })
-        await browserSaveFile(blob, fileName, toastId)
+        toast.success('DXF export completed [TEST]', { id: toastId })
         return { success: true }
       }
+
+      const filePathMeta = await window.electron.save({
+        defaultPath: fileName,
+        filters: [
+          {
+            name: 'DXF files',
+            extensions: ['dxf'],
+          },
+        ],
+      })
+
+      if (filePathMeta.canceled) {
+        toast.dismiss(toastId)
+        return { success: false, error: 'User canceled save' }
+      }
+
+      try {
+        await window.electron.writeFile(filePathMeta.filePath, uint8Array)
+      } catch (e: any) {
+        console.error('Write file failed:', e)
+        toast.error('Failed to save file', { id: toastId })
+        return { success: false, error: e?.message ?? 'Write failed' }
+      }
+
+      toast.success('DXF export completed', { id: toastId })
+      return { success: true }
     } else {
-      console.error('DXF export failed:', response)
-      toast.error('Failed to export sketch to DXF', { id: toastId })
-      return { success: false, error: 'Engine command failed' }
+      // Browser: download file
+      const blob = new Blob([uint8Array], {
+        type: 'application/dxf',
+      })
+      await browserSaveFile(blob, fileName, toastId)
+      return { success: true }
     }
   } catch (error: any) {
     console.error('DXF export error:', error)
