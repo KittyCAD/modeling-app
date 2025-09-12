@@ -4,12 +4,18 @@ import {
   parse,
   resultIsOk,
   type SourceRange,
+  type KclValue,
 } from '@src/lang/wasm'
 import type { KclExpression } from '@src/lib/commandTypes'
 import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 
 const DUMMY_VARIABLE_NAME = '__result__'
+
+// Type guard for number value items
+function isNumberValueItem(item: KclValue): item is KclValue & { type: 'Number' } {
+  return item.type === 'Number'
+}
 
 /**
  * Calculate the value of the KCL expression,
@@ -60,14 +66,10 @@ export async function getCalculatedKclExpressionValue(
       }
     }
 
-    // Validate that ALL array elements are numbers (required for geometric operations like patternCircular3d)
-    // This ensures arrays like [0, true, 0] are rejected, while [0, 1, 0] or [1mm, 2mm, 3mm] are accepted
-    const allElementsAreNumbers = varValue.value.every(
-      (item: any) => item.type === 'Number'
-    )
+    // Validate that all array elements are numbers
+    const allElementsAreNumbers = varValue.value.every(isNumberValueItem)
 
     if (!allElementsAreNumbers) {
-      // If array contains non-numeric values, treat as invalid expression
       const valueAsString = 'NAN'
       return {
         astNode: variableDeclaratorAstNode,
@@ -75,15 +77,15 @@ export async function getCalculatedKclExpressionValue(
       }
     }
 
-    const arrayValues = varValue.value.map((item: any) => {
-      if (item.type === 'Number') {
+    const arrayValues = varValue.value.map((item: KclValue) => {
+      if (isNumberValueItem(item)) {
         const formatted = formatNumberValue(item.value, item.ty)
         if (!err(formatted)) {
           return formatted
         }
         return String(item.value)
       }
-      return String(item.value)
+      return String(item)
     })
 
     const valueAsString = `[${arrayValues.join(', ')}]`
