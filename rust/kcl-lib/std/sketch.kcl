@@ -498,12 +498,59 @@ export fn ellipse(
 /// // the cube.
 /// translate(cylinder, x = 1)
 /// ```
+///
+/// ```kcl
+/// // You could also use the 'to' parameter if you want extrusions
+/// // to end at a reference point, axis, scene geometry, tagged geometry, or plane.
+/// 
+/// 
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [2, 2])
+///   |> yLine(length = 1)
+///   |> xLine(length = 1)
+///   |> yLine(length = -1, tag = $facetag0)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $facetag1)
+///   |> close()
+/// cube = extrude(profile001, length = 1)
+/// 
+/// // extrude a circle to a point reference (red cylinder)
+/// sketch002 = startSketchOn(XZ)
+/// cylinder0 = circle(sketch002, center = [0.5, 0.5], radius = 0.25)
+///   |> extrude(to = [-2, -3, -4])
+///   |> appearance(color='#FF0000')
+/// 
+/// // extrude a circle to an axis reference (green cylinder)
+/// sketch003 = startSketchOn(offsetPlane(XY, offset = -2))
+/// cylinder1 = circle(sketch003, center = [0.5, 0.5], radius = 0.25)
+///   |> extrude(to = Y)
+///   |> appearance(color ='#00FF00')
+/// 
+/// // extrude a circle to a solid reference (blue cylinder)
+/// sketch004 = startSketchOn(offsetPlane(YZ, offset = -1))
+/// cylinder2 = circle(sketch004, center = [0.5, 0.5], radius = 0.25)
+///   |> extrude(to = cube)
+///   |> appearance(color ='#0000FF')
+/// 
+/// // extrude a circle to a tagged edge (cyan cylinder)
+/// sketch005 = startSketchOn(offsetPlane(YZ, offset = 4))
+/// cylinder3 = circle(sketch005, center = [0.5, 0.5], radius = 0.25)
+///   |> extrude(to = getCommonEdge(faces = [facetag0, facetag1]))
+///   |> appearance(color = '#00FFFF')
+/// 
+/// // extrude a circle to a plane (magenta cylinder)
+/// sketch006 = startSketchOn(cube, face = facetag1)
+/// cylinder4 = circle(sketch006, center = [2.5, 0.5], radius = 0.25)
+///   |> extrude(to = XZ, method = NEW)
+///   |> appearance(color ='#FF00FF')
+/// ```
 @(impl = std_rust)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
   @sketches: [Sketch; 1+],
-  /// How far to extrude the given sketches.
-  length: number(Length),
+  /// How far to extrude the given sketches. Incompatible with `to`.
+  length?: number(Length),
+  /// Reference to extrude to. Incompatible with `length` and `twistAngle`.
+  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
   /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
   symmetric?: bool,
   /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
@@ -512,7 +559,7 @@ export fn extrude(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
   tagEnd?: TagDecl,
-  /// If given, the sketch will be twisted around this angle while being extruded.
+  /// If given, the sketch will be twisted around this angle while being extruded. Incompatible with `to`.
   twistAngle?: number(Angle),
   /// The size of each intermediate angle as the sketch twists around.
   /// Must be between 4 and 90 degrees.
