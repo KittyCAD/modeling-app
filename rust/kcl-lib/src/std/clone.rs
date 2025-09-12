@@ -15,7 +15,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{NumericType, PrimitiveType, RuntimeType},
+        types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{Args, extrude::NamedCapTags},

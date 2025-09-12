@@ -13,7 +13,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{NumericType, PrimitiveType, RuntimeType},
+        types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{Args, axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude},
