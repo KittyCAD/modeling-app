@@ -21,7 +21,7 @@ export const ShareButton = memo(function ShareButton() {
 
   const billingContext = useSelector(billingActor, ({ context }) => context)
 
-  const allowOrgRestrict = !!billingContext.isOrganization
+  const allowOrgRestrict = !!billingContext.isOrg
   const allowPassword = !!billingContext.hasSubscription
   const hasOptions = allowOrgRestrict || allowPassword
 

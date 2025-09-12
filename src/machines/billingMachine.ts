@@ -18,7 +18,7 @@ export enum BillingTransition {
 export interface BillingContext {
   credits: undefined | number
   allowance: undefined | number
-  isOrganization?: boolean
+  isOrg?: boolean
   hasSubscription?: boolean
   error: undefined | Error
   urlUserService: () => string
@@ -34,7 +34,7 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   credits: undefined,
   allowance: undefined,
   error: undefined,
-  isOrganization: undefined,
+  isOrg: undefined,
   hasSubscription: undefined,
   urlUserService: () => '',
   lastFetch: undefined,
@@ -66,7 +66,10 @@ export const billingMachine = setup({
         }
 
         return {
-          ...billing,
+          credits: billing.credits,
+          allowance: billing.allowance,
+          isOrg: billing.isOrg,
+          hasSubscription: billing.hasSubscription,
           lastFetch: new Date(),
         }
       }
