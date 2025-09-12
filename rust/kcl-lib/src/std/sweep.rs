@@ -8,7 +8,10 @@ use serde::Serialize;
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::KclError,
-    execution::{ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid, types::RuntimeType},
+    execution::{
+        ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid,
+        types::{NumericType, RuntimeType},
+    },
     parsing::ast::types::TagNode,
     std::{Args, extrude::do_post_extrude},
 };
