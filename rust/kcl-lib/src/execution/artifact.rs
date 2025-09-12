@@ -1189,17 +1189,23 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
-        ModelingCmd::Solid3dGetAdjacencyInfo(kcmc::Solid3dGetAdjacencyInfo { .. }) => {
+        ModelingCmd::Solid3dGetAdjacencyInfo(kcmc::Solid3dGetAdjacencyInfo { object_id,.. }) => {
             let Some(OkModelingCmdResponse::Solid3dGetAdjacencyInfo(info)) = response else {
                 return Ok(Vec::new());
             };
+
+            let base = *object_id;
 
             let mut return_arr = Vec::new();
             for (index, edge) in info.edges.iter().enumerate() {
                 let Some(original_info) = &edge.original_info else {
                     continue;
                 };
-                let edge_id = ArtifactId::new(original_info.edge_id);
+                //let edge_id = ArtifactId::new(original_info.edge_id);
+
+                let path_modifier = format!("path_{}", index);
+                let edge_id = ArtifactId::new(generate_engine_id(base, &path_modifier));
+                
                 let Some(artifact) = artifacts.get(&edge_id) else {
                     continue;
                 };
@@ -1222,9 +1228,11 @@ fn artifacts_to_update(
                 let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
                     continue;
                 };
-                let Some(surface_id) = segment.surface_id else {
-                    continue;
-                };
+                // let Some(surface_id) = segment.surface_id else {
+                //     continue;
+                // };
+                let surface_id = ArtifactId::new(generate_engine_id(base, &format!("{}_face", path_modifier)));
+
                 let Some(Artifact::Wall(wall)) = artifacts.get(&surface_id) else {
                     continue;
                 };
@@ -1237,7 +1245,7 @@ fn artifacts_to_update(
 
                 if let Some(opposite_info) = &edge.opposite_info {
                     return_arr.push(Artifact::SweepEdge(SweepEdge {
-                        id: opposite_info.edge_id.into(),
+                        id: ArtifactId::new(generate_engine_id(base, &format!("{}_opp", path_modifier))), //opposite_info.edge_id.into(),
                         sub_type: SweepEdgeSubType::Opposite,
                         seg_id: edge_id,
                         cmd_id: artifact_command.cmd_id,
@@ -1257,7 +1265,7 @@ fn artifacts_to_update(
                 }
                 if let Some(adjacent_info) = &edge.adjacent_info {
                     return_arr.push(Artifact::SweepEdge(SweepEdge {
-                        id: adjacent_info.edge_id.into(),
+                        id: ArtifactId::new(generate_engine_id(base, &format!("{}_adj", path_modifier))), //adjacent_info.edge_id.into(),
                         sub_type: SweepEdgeSubType::Adjacent,
                         seg_id: edge_id,
                         cmd_id: artifact_command.cmd_id,
