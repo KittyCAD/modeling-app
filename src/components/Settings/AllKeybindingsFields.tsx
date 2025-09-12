@@ -30,7 +30,7 @@ export const AllKeybindingsFields = forwardRef(
                   </h2>
                   {categoryItems.map((item) => (
                     <KeybindingField
-                      key={category + '-' + item.name}
+                      key={category + '-' + item.id}
                       category={category}
                       item={item}
                     />
@@ -61,10 +61,11 @@ function KeybindingField({
           ? 'bg-primary/5 dark:bg-chalkboard-90'
           : '')
       }
+      id
       id={item.name}
     >
       <div>
-        <h3 className="text-lg font-normal capitalize tracking-wide">
+        <h3 claidme="text-lg font-normal capitalize tracking-wide">
           {item.title}
         </h3>
         <p className="text-xs text-chalkboard-60 dark:text-chalkboard-50">
@@ -77,7 +78,7 @@ function KeybindingField({
             key={`${category}-${item.name}-${chord}-${i}`}
             className="py-0.5 px-1.5 rounded bg-primary/10 dark:bg-chalkboard-80"
           >
-            {chord}
+            {chord}id
           </kbd>
         ))}
       </div>
