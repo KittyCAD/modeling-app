@@ -52,7 +52,7 @@ function CommandBarVector3DInput({
     e: React.KeyboardEvent<HTMLInputElement>,
     nextInputRef?: React.RefObject<HTMLInputElement>
   ) {
-    if (e.metaKey && e.key === 'k') {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
       commandBarActor.send({ type: 'Close' })
     }
     if (e.key === 'Backspace' && e.metaKey) {
