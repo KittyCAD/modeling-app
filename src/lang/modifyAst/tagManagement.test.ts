@@ -1,11 +1,11 @@
+import env from '@src/env'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
-import { err } from '@src/lib/trap'
 import type { Selection } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import env from '@src/env'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import { err } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise

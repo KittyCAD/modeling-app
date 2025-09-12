@@ -37,6 +37,7 @@ import {
   CIRCLE_SEGMENT,
   CIRCLE_SEGMENT_BODY,
   CIRCLE_SEGMENT_DASH,
+  CIRCLE_SEGMENT_RADIUS_BODY,
   CIRCLE_THREE_POINT_HANDLE1,
   CIRCLE_THREE_POINT_HANDLE2,
   CIRCLE_THREE_POINT_HANDLE3,
@@ -48,6 +49,7 @@ import {
   HIDE_HOVER_SEGMENT_LENGTH,
   HIDE_SEGMENT_LENGTH,
   PROFILE_START,
+  SEGMENT_BLUE,
   SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
@@ -62,8 +64,6 @@ import {
   THREE_POINT_ARC_SEGMENT_BODY,
   THREE_POINT_ARC_SEGMENT_DASH,
   getParentGroup,
-  CIRCLE_SEGMENT_RADIUS_BODY,
-  SEGMENT_BLUE,
 } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
@@ -74,24 +74,24 @@ import {
   SEGMENT_LENGTH_LABEL_TEXT,
 } from '@src/clientSideScene/sceneUtils'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
+import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import type { Coords2d } from '@src/lang/std/sketch'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
 import type { PathToNode } from '@src/lang/wasm'
 import { getTangentialArcToInfo } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
+import { commandBarActor } from '@src/lib/singletons'
 import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { isClockwise, normaliseAngle, roundOff } from '@src/lib/utils'
 import { getTangentPointFromPreviousArc } from '@src/lib/utils2d'
-import { commandBarActor } from '@src/lib/singletons'
 import type {
   SegmentOverlay,
   SegmentOverlayPayload,
   SegmentOverlays,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
-import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {

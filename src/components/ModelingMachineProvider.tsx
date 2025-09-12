@@ -19,13 +19,13 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import {
-  applyConstraintAngleLength,
-  applyConstraintLength,
-} from '@src/components/Toolbar/setAngleLength'
-import {
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
+import {
+  applyConstraintAngleLength,
+  applyConstraintLength,
+} from '@src/components/Toolbar/setAngleLength'
 import {
   useMenuListener,
   useSketchModeMenuEnableDisable,
@@ -45,33 +45,50 @@ import {
   traverse,
 } from '@src/lang/queryAst'
 import {
-  EngineConnectionStateType,
   EngineConnectionEvents,
+  EngineConnectionStateType,
 } from '@src/lang/std/engineConnection'
-import { err, reportRejection, trap, reject } from '@src/lib/trap'
+import { err, reject, reportRejection, trap } from '@src/lib/trap'
 
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
-import { platform, uuidv4 } from '@src/lib/utils'
 import { commandBarActor, settingsActor } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
+import { platform, uuidv4 } from '@src/lib/utils'
 
-import type { IndexLoaderData } from '@src/lib/types'
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
+import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
+import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
 import {
+  angleBetweenInfo,
+  applyConstraintAngleBetween,
+} from '@src/components/Toolbar/SetAngleBetween'
+import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { updateSketchDetailsNodePaths } from '@src/lang/util'
+import type {
+  PipeExpression,
+  Program,
+  VariableDeclaration,
+} from '@src/lang/wasm'
+import { parse, recast, resultIsOk } from '@src/lang/wasm'
+import {
+  type ModelingCommandSchema,
+  modelingMachineCommandConfig,
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import {
+  EXECUTION_TYPE_MOCK,
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
-  EXECUTION_TYPE_MOCK,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
 import type { Project } from '@src/lib/project'
-import type { WebContentSendPayload } from '@src/menu/channels'
-import {
-  getPersistedContext,
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from '@src/machines/modelingMachine'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { updateSelections } from '@src/lib/selections'
 import {
   codeManager,
   editorManager,
@@ -81,31 +98,14 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import type { MachineManager } from '@src/components/MachineManagerProvider'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
-import { updateSelections } from '@src/lib/selections'
-import { updateSketchDetailsNodePaths } from '@src/lang/util'
+import type { IndexLoaderData } from '@src/lib/types'
 import {
-  modelingMachineCommandConfig,
-  type ModelingCommandSchema,
-} from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import type {
-  PipeExpression,
-  Program,
-  VariableDeclaration,
-} from '@src/lang/wasm'
-import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
-import {
-  angleBetweenInfo,
-  applyConstraintAngleBetween,
-} from '@src/components/Toolbar/SetAngleBetween'
-import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
-import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+  getPersistedContext,
+  modelingMachine,
+  modelingMachineDefaultContext,
+} from '@src/machines/modelingMachine'
 import { useFolders } from '@src/machines/systemIO/hooks'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -1213,8 +1213,8 @@ export const ModelingMachineProvider = ({
   const cb = (data: WebContentSendPayload) => {
     const openPanes = modelingActor.getSnapshot().context.store.openPanes
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      const featureTree: SidebarType = 'feature-tree'
-      const alwaysAddFeatureTree: SidebarType[] = [
+      const featureTree: SidebarId = 'feature-tree'
+      const alwaysAddFeatureTree: SidebarId[] = [
         ...new Set([...openPanes, featureTree]),
       ]
       modelingSend({
@@ -1224,8 +1224,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      const code: SidebarType = 'code'
-      const alwaysAddCode: SidebarType[] = [...new Set([...openPanes, code])]
+      const code: SidebarId = 'code'
+      const alwaysAddCode: SidebarId[] = [...new Set([...openPanes, code])]
       modelingSend({
         type: 'Set context',
         data: {
@@ -1233,8 +1233,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      const projectFiles: SidebarType = 'files'
-      const alwaysAddProjectFiles: SidebarType[] = [
+      const projectFiles: SidebarId = 'files'
+      const alwaysAddProjectFiles: SidebarId[] = [
         ...new Set([...openPanes, projectFiles]),
       ]
       modelingSend({
@@ -1244,8 +1244,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      const variables: SidebarType = 'variables'
-      const alwaysAddVariables: SidebarType[] = [
+      const variables: SidebarId = 'variables'
+      const alwaysAddVariables: SidebarId[] = [
         ...new Set([...openPanes, variables]),
       ]
       modelingSend({
@@ -1255,8 +1255,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      const logs: SidebarType = 'logs'
-      const alwaysAddLogs: SidebarType[] = [...new Set([...openPanes, logs])]
+      const logs: SidebarId = 'logs'
+      const alwaysAddLogs: SidebarId[] = [...new Set([...openPanes, logs])]
       modelingSend({
         type: 'Set context',
         data: {

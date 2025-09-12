@@ -12,12 +12,8 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -144,12 +128,8 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -177,12 +157,8 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -210,12 +186,8 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.38,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -243,12 +215,8 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -276,12 +244,8 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.36000000000000004,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -309,12 +273,8 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -342,12 +302,8 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.48,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -424,12 +380,8 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -497,12 +449,8 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 0.02,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -546,12 +494,8 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -559,12 +503,8 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -572,12 +512,8 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -590,12 +526,8 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 0.48,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -673,12 +605,8 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -686,12 +614,8 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -699,12 +623,8 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -717,12 +637,8 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 0.4,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -900,12 +816,8 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -913,12 +825,8 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -926,12 +834,8 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -944,12 +848,8 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1096,6 +996,7 @@ description: Operations executed modular-shelf-grid.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -12,12 +12,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -144,12 +128,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -177,12 +157,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.98,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -210,12 +186,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -243,12 +215,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.03,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -276,12 +244,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.96,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -309,12 +273,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.37,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -342,12 +302,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -375,12 +331,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -408,12 +360,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.96,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -441,12 +389,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -474,12 +418,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -507,12 +447,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 1.93,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -540,12 +476,8 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": 0.386,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -622,12 +554,8 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -668,12 +596,8 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 0.05,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -712,12 +636,8 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 0.05,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -785,12 +705,8 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 0.02,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -834,12 +750,8 @@ description: Operations executed parametric-shelf-unit.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -847,12 +759,8 @@ description: Operations executed parametric-shelf-unit.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               },
               {
@@ -860,12 +768,8 @@ description: Operations executed parametric-shelf-unit.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "M"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "m",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -878,12 +782,8 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": 0.386,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1026,6 +926,7 @@ description: Operations executed parametric-shelf-unit.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

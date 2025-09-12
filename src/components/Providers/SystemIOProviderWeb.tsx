@@ -1,11 +1,3 @@
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useEffect, useCallback } from 'react'
-import {
-  useClearURLParams,
-  useWatchForNewFileRequestsFromMlEphant,
-  useProjectIdToConversationId,
-} from '@src/machines/systemIO/hooks'
-import { useSearchParams } from 'react-router-dom'
 import {
   CREATE_FILE_URL_PARAM,
   DEFAULT_PROJECT_KCL_FILE,
@@ -17,6 +9,14 @@ import {
   useSettings,
   useToken,
 } from '@src/lib/singletons'
+import {
+  useClearURLParams,
+  useProjectIdToConversationId,
+  useWatchForNewFileRequestsFromMlEphant,
+} from '@src/machines/systemIO/hooks'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { useCallback, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerWeb() {
   const clearURLParams = useClearURLParams()
@@ -53,7 +53,7 @@ export function SystemIOMachineLogicListenerWeb() {
         type: SystemIOMachineEvents.createKCLFile,
         data: {
           requestedProjectName: promptMeta.project.name,
-          requestedCode: prompt.outputs['main.kcl'] ?? prompt.code ?? '',
+          requestedCode: prompt.outputs?.['main.kcl'] ?? prompt.code ?? '',
           requestedFileNameWithExtension:
             promptMeta.targetFile?.name ?? DEFAULT_PROJECT_KCL_FILE,
         },

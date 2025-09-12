@@ -12,12 +12,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 80.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 40.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 35.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -144,12 +128,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 15.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -186,12 +166,8 @@ description: Operations executed bench-for-kids.kcl
             "value": -40.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -259,12 +235,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 80.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -294,12 +266,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 4.8,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -354,12 +322,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 16.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -398,12 +362,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 16.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -440,12 +400,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 4.32,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -484,12 +440,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 4.32,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -531,12 +483,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 24.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -564,12 +512,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 64.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -608,12 +552,8 @@ description: Operations executed bench-for-kids.kcl
             "value": -12.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -624,12 +564,8 @@ description: Operations executed bench-for-kids.kcl
             "value": -32.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -640,12 +576,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -689,12 +621,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -702,12 +630,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -715,12 +639,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -733,12 +653,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 24.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -808,12 +724,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -821,12 +733,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -834,12 +742,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -852,12 +756,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 64.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -902,12 +802,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -935,12 +831,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 4.32,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -968,12 +860,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 3.8880000000000003,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1001,12 +889,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 13.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1034,12 +918,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 16.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1067,12 +947,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 31.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1100,12 +976,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 32.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1142,12 +1014,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1218,12 +1086,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1275,12 +1139,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 3.8880000000000003,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1337,12 +1197,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1353,12 +1209,8 @@ description: Operations executed bench-for-kids.kcl
             "value": -32.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1369,12 +1221,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 31.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1426,12 +1274,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1442,12 +1286,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1458,12 +1298,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1507,9 +1343,9 @@ description: Operations executed bench-for-kids.kcl
             "type": "Number",
             "value": -26.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -1523,12 +1359,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1536,12 +1368,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1549,12 +1377,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1570,12 +1394,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1583,12 +1403,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1596,12 +1412,8 @@ description: Operations executed bench-for-kids.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1653,12 +1465,8 @@ description: Operations executed bench-for-kids.kcl
             "value": -36.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1688,12 +1496,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 24.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1721,12 +1525,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 3.8880000000000003,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1754,12 +1554,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 3.4992000000000005,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1787,12 +1583,8 @@ description: Operations executed bench-for-kids.kcl
         "value": 33.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Cm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "cm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1858,12 +1650,8 @@ description: Operations executed bench-for-kids.kcl
             "value": -24.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1915,12 +1703,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 3.4992000000000005,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1977,12 +1761,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1993,12 +1773,8 @@ description: Operations executed bench-for-kids.kcl
             "value": -10.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2009,12 +1785,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2066,12 +1838,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2082,12 +1850,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2098,12 +1862,8 @@ description: Operations executed bench-for-kids.kcl
             "value": 33.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2239,6 +1999,7 @@ description: Operations executed bench-for-kids.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

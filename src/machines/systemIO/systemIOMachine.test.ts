@@ -1,3 +1,4 @@
+import path from 'node:path'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import {
@@ -5,7 +6,6 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import path from 'node:path'
 import { createActor, waitFor } from 'xstate'
 
 describe('systemIOMachine - XState', () => {

@@ -12,12 +12,8 @@ description: Operations executed saturn-v.kcl
         "value": 4.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed saturn-v.kcl
         "value": 3.2,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -116,12 +108,8 @@ description: Operations executed saturn-v.kcl
             "value": 360.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -138,12 +126,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -151,12 +135,8 @@ description: Operations executed saturn-v.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -169,12 +149,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -182,12 +158,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -236,12 +208,8 @@ description: Operations executed saturn-v.kcl
             "value": -4.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -252,12 +220,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -268,12 +232,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -392,12 +352,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -408,12 +364,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -424,12 +376,8 @@ description: Operations executed saturn-v.kcl
             "value": 90.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -507,12 +455,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -523,12 +467,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -539,12 +479,8 @@ description: Operations executed saturn-v.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -622,12 +558,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -638,12 +570,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -654,12 +582,8 @@ description: Operations executed saturn-v.kcl
             "value": 270.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -731,12 +655,8 @@ description: Operations executed saturn-v.kcl
             "value": 360.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -753,12 +673,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -766,12 +682,8 @@ description: Operations executed saturn-v.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -784,12 +696,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -797,12 +705,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -851,12 +755,8 @@ description: Operations executed saturn-v.kcl
             "value": -4.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -867,12 +767,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -883,12 +779,8 @@ description: Operations executed saturn-v.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1007,12 +899,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1023,12 +911,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1039,12 +923,8 @@ description: Operations executed saturn-v.kcl
             "value": 90.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1163,12 +1043,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1179,12 +1055,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1195,12 +1067,8 @@ description: Operations executed saturn-v.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1319,12 +1187,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1335,12 +1199,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1351,12 +1211,8 @@ description: Operations executed saturn-v.kcl
             "value": 270.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1469,12 +1325,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1593,12 +1445,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1609,12 +1457,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1625,12 +1469,8 @@ description: Operations executed saturn-v.kcl
             "value": 90.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1708,12 +1548,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1724,12 +1560,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1740,12 +1572,8 @@ description: Operations executed saturn-v.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1823,12 +1651,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1839,12 +1663,8 @@ description: Operations executed saturn-v.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1855,12 +1675,8 @@ description: Operations executed saturn-v.kcl
             "value": 270.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1903,12 +1719,8 @@ description: Operations executed saturn-v.kcl
             "value": 6.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1976,12 +1788,8 @@ description: Operations executed saturn-v.kcl
             "value": 14.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2067,12 +1875,8 @@ description: Operations executed saturn-v.kcl
             "value": 14.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2156,12 +1960,8 @@ description: Operations executed saturn-v.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2229,12 +2029,8 @@ description: Operations executed saturn-v.kcl
             "value": 18.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2318,12 +2114,8 @@ description: Operations executed saturn-v.kcl
             "value": 38.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2391,12 +2183,8 @@ description: Operations executed saturn-v.kcl
             "value": 9.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2482,12 +2270,8 @@ description: Operations executed saturn-v.kcl
             "value": 9.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2571,12 +2355,8 @@ description: Operations executed saturn-v.kcl
             "value": 47.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2644,12 +2424,8 @@ description: Operations executed saturn-v.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2733,12 +2509,8 @@ description: Operations executed saturn-v.kcl
             "value": 49.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2806,12 +2578,8 @@ description: Operations executed saturn-v.kcl
             "value": 15.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2924,12 +2692,8 @@ description: Operations executed saturn-v.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2946,12 +2710,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2959,12 +2719,8 @@ description: Operations executed saturn-v.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2977,12 +2733,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2990,12 +2742,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -3085,12 +2833,8 @@ description: Operations executed saturn-v.kcl
             "value": -180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3107,12 +2851,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -3120,12 +2860,8 @@ description: Operations executed saturn-v.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -3138,12 +2874,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -3151,12 +2883,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -3273,12 +3001,8 @@ description: Operations executed saturn-v.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3295,12 +3019,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -3308,12 +3028,8 @@ description: Operations executed saturn-v.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -3326,12 +3042,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -3339,12 +3051,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -3434,12 +3142,8 @@ description: Operations executed saturn-v.kcl
             "value": -180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3456,12 +3160,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -3469,12 +3169,8 @@ description: Operations executed saturn-v.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -3487,12 +3183,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -3500,12 +3192,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -3593,12 +3281,8 @@ description: Operations executed saturn-v.kcl
             "value": 69.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3666,12 +3350,8 @@ description: Operations executed saturn-v.kcl
             "value": 9.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3755,12 +3435,8 @@ description: Operations executed saturn-v.kcl
             "value": 78.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3828,12 +3504,8 @@ description: Operations executed saturn-v.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3946,12 +3618,8 @@ description: Operations executed saturn-v.kcl
             "value": 360.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3968,12 +3636,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -3981,12 +3645,8 @@ description: Operations executed saturn-v.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -3999,12 +3659,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -4012,12 +3668,8 @@ description: Operations executed saturn-v.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -4198,6 +3850,7 @@ description: Operations executed saturn-v.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

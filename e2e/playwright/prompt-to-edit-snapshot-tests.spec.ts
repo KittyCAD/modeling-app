@@ -1,5 +1,5 @@
-import { test } from '@e2e/playwright/zoo-test'
 import path from 'path'
+import { test } from '@e2e/playwright/zoo-test'
 import fsp from 'fs/promises'
 
 /* eslint-disable jest/no-conditional-expect */

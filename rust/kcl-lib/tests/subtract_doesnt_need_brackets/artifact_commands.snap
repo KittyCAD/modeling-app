@@ -427,6 +427,7 @@ description: Artifact commands subtract_doesnt_need_brackets.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

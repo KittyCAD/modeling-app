@@ -1,16 +1,21 @@
-import { useLoaderData } from 'react-router-dom'
-import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
-  useState,
-  useEffect,
   type MouseEventHandler,
   type ReactNode,
+  useEffect,
   useRef,
+  useState,
 } from 'react'
+import { useLoaderData } from 'react-router-dom'
 import type { ContextFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
+import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
+import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
+import type { FileExplorerEntry } from '@src/components/Explorer/utils'
+import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
+import { MLEphantConversationPaneMenu } from '@src/components/MlEphantConversation'
 import { ModelingPaneHeader } from '@src/components/ModelingSidebar/ModelingPane'
 import { DebugPane } from '@src/components/ModelingSidebar/ModelingPanes/DebugPane'
 import { FeatureTreeMenu } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreeMenu'
@@ -23,46 +28,36 @@ import {
   MemoryPaneMenu,
 } from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
 import { MlEphantConversationPane } from '@src/components/ModelingSidebar/ModelingPanes/MlEphantConversationPane'
+import { ToastInsert } from '@src/components/ToastInsert'
 import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
+  FILE_EXT,
+  INSERT_FOREIGN_TOAST_ID,
+  type VALID_PANE_IDS,
+} from '@src/lib/constants'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import { PATHS, parentPathRelativeToProject } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
+import {
+  codeManager,
   commandBarActor,
   editorManager,
-  systemIOActor,
-  mlEphantManagerActor,
   kclManager,
-  codeManager,
+  mlEphantManagerActor,
+  systemIOActor,
   useSettings,
   useUser,
 } from '@src/lib/singletons'
-import type { settingsMachine } from '@src/machines/settingsMachine'
-import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
-import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
-import { parentPathRelativeToProject, PATHS } from '@src/lib/paths'
 import type { IndexLoaderData } from '@src/lib/types'
-import { useRouteLoaderData } from 'react-router-dom'
-import type { FileExplorerEntry } from '@src/components/Explorer/utils'
-import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
+import type { settingsMachine } from '@src/machines/settingsMachine'
 import { useFolders } from '@src/machines/systemIO/hooks'
-import type { Project } from '@src/lib/project'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import toast from 'react-hot-toast'
-import { ToastInsert } from '@src/components/ToastInsert'
-import { isPlaywright } from '@src/lib/isPlaywright'
-import { MLEphantConversationPaneMenu } from '@src/components/MlEphantConversation'
+import { useRouteLoaderData } from 'react-router-dom'
 
-export type SidebarType =
-  | 'code'
-  | 'debug'
-  | 'export'
-  | 'files'
-  | 'feature-tree'
-  | 'logs'
-  | 'lspMessages'
-  | 'variables'
-  | 'text-to-cad'
+export type SidebarId = (typeof VALID_PANE_IDS)[number]
 
 export interface BadgeInfo {
   value: (props: PaneCallbackProps) => boolean | number | string
@@ -87,11 +82,11 @@ export type SidebarCssOverrides = Partial<{
 }>
 
 export type SidebarPane = {
-  id: SidebarType
+  id: SidebarId
   sidebarName: string
   icon: CustomIconName | IconDefinition
   keybinding: string
-  Content: React.FC<{ id: SidebarType; onClose: () => void }>
+  Content: React.FC<{ id: SidebarId; onClose: () => void }>
   hide?: boolean | ((props: PaneCallbackProps) => boolean)
   showBadge?: BadgeInfo
   cssClassOverrides?: SidebarCssOverrides
@@ -178,7 +173,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     id: 'code',
     icon: 'code',
     sidebarName: 'KCL Code',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
@@ -209,7 +204,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     id: 'files',
     icon: 'folder',
     sidebarName: 'Project Files',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       const projects = useFolders()
       const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
       const projectRef = useRef(loaderData.project)
@@ -373,7 +368,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     id: 'variables',
     icon: 'make-variable',
     sidebarName: 'Variables',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
@@ -393,7 +388,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     id: 'logs',
     icon: 'logs',
     sidebarName: 'Logs',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
@@ -413,7 +408,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     id: 'debug',
     icon: 'bug',
     sidebarName: 'Debug',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
@@ -436,3 +431,11 @@ export const sidebarPanesLeft: SidebarPane[] = [
 export const sidebarPanesRight: SidebarPane[] = [
   ...(!isPlaywright() ? [textToCadPane] : []),
 ]
+
+/**
+ * Gathered up all the pane IDs defined in this file
+ * for validating the pane IDs loaded from persisted storage
+ */
+export const validPaneIds = [...sidebarPanesRight, ...sidebarPanesLeft].map(
+  ({ id }) => id
+)

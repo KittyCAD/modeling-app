@@ -12,12 +12,8 @@ description: Operations executed manhole-cover.kcl
         "value": 22.75,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed manhole-cover.kcl
         "value": 1.75,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed manhole-cover.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed manhole-cover.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -144,12 +128,8 @@ description: Operations executed manhole-cover.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -177,12 +157,8 @@ description: Operations executed manhole-cover.kcl
         "value": 1.125,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -243,12 +219,8 @@ description: Operations executed manhole-cover.kcl
               "value": 20.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -262,12 +234,8 @@ description: Operations executed manhole-cover.kcl
                   "value": 5.67437,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 {
@@ -275,12 +243,8 @@ description: Operations executed manhole-cover.kcl
                   "value": -8.539703,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 }
               ]
@@ -293,12 +257,8 @@ description: Operations executed manhole-cover.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -338,12 +298,8 @@ description: Operations executed manhole-cover.kcl
               "value": 19.954,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -357,12 +313,8 @@ description: Operations executed manhole-cover.kcl
                   "value": 3.568886,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 {
@@ -370,12 +322,8 @@ description: Operations executed manhole-cover.kcl
                   "value": -9.673446,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 }
               ]
@@ -388,12 +336,8 @@ description: Operations executed manhole-cover.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -433,12 +377,8 @@ description: Operations executed manhole-cover.kcl
               "value": 18.166,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -452,12 +392,8 @@ description: Operations executed manhole-cover.kcl
                   "value": 1.114006,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 {
@@ -465,12 +401,8 @@ description: Operations executed manhole-cover.kcl
                   "value": -10.3082,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 }
               ]
@@ -483,12 +415,8 @@ description: Operations executed manhole-cover.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -528,12 +456,8 @@ description: Operations executed manhole-cover.kcl
               "value": 14.737,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -547,12 +471,8 @@ description: Operations executed manhole-cover.kcl
                   "value": -1.814767,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 {
@@ -560,12 +480,8 @@ description: Operations executed manhole-cover.kcl
                   "value": -10.266164,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 }
               ]
@@ -578,12 +494,8 @@ description: Operations executed manhole-cover.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -623,12 +535,8 @@ description: Operations executed manhole-cover.kcl
               "value": 19.954,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -642,12 +550,8 @@ description: Operations executed manhole-cover.kcl
                   "value": 7.46,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 {
@@ -655,12 +559,8 @@ description: Operations executed manhole-cover.kcl
                   "value": -6.949,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 }
               ]
@@ -673,12 +573,8 @@ description: Operations executed manhole-cover.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -718,12 +614,8 @@ description: Operations executed manhole-cover.kcl
               "value": 18.166,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -737,12 +629,8 @@ description: Operations executed manhole-cover.kcl
                   "value": 8.896,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 {
@@ -750,12 +638,8 @@ description: Operations executed manhole-cover.kcl
                   "value": -4.8592,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 }
               ]
@@ -768,12 +652,8 @@ description: Operations executed manhole-cover.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -813,12 +693,8 @@ description: Operations executed manhole-cover.kcl
               "value": 14.737,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -832,12 +708,8 @@ description: Operations executed manhole-cover.kcl
                   "value": 9.8581,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 {
@@ -845,12 +717,8 @@ description: Operations executed manhole-cover.kcl
                   "value": -2.0927,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 }
               ]
@@ -863,12 +731,8 @@ description: Operations executed manhole-cover.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -908,12 +772,8 @@ description: Operations executed manhole-cover.kcl
               "value": 7.6974,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -927,12 +787,8 @@ description: Operations executed manhole-cover.kcl
                   "value": -5.779208,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 {
@@ -940,12 +796,8 @@ description: Operations executed manhole-cover.kcl
                   "value": -8.745042,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 }
               ]
@@ -958,12 +810,8 @@ description: Operations executed manhole-cover.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1003,12 +851,8 @@ description: Operations executed manhole-cover.kcl
               "value": 7.6974,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1022,12 +866,8 @@ description: Operations executed manhole-cover.kcl
                   "value": 9.7847,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 {
@@ -1035,12 +875,8 @@ description: Operations executed manhole-cover.kcl
                   "value": 2.1529,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 }
               ]
@@ -1053,12 +889,8 @@ description: Operations executed manhole-cover.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1199,12 +1031,8 @@ description: Operations executed manhole-cover.kcl
             "value": 0.875,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1215,12 +1043,8 @@ description: Operations executed manhole-cover.kcl
             "value": 0.875,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1263,12 +1087,8 @@ description: Operations executed manhole-cover.kcl
             "value": 11.375,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1339,12 +1159,8 @@ description: Operations executed manhole-cover.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1523,6 +1339,7 @@ description: Operations executed manhole-cover.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

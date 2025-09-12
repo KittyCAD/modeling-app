@@ -1,7 +1,5 @@
-import type { ReactNode } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
-import type { FileEntry } from '@src/lib/project'
 import {
   desktopSafePathJoin,
   getEXTWithPeriod,
@@ -9,7 +7,9 @@ import {
   getStringAfterLastSeparator,
   joinOSPaths,
 } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
+import type { ReactNode } from 'react'
 
 /**
  * Remap FileEntry data into another data structure for the Project Explorer
@@ -336,21 +336,21 @@ export const copyPasteSourceAndTarget = (
   // Copy a folder to the same folder
   if (src.children && target.children && src.path === target.path) {
     // Make them siblings, copy itself to the same level
-    possibleCopyPath = joinOSPaths(getParentAbsolutePath(src.path), src.name)
+    possibleCopyPath = joinOSPaths(getParentAbsolutePath(target.path), src.name)
     collisionsToCheck = possibleParentCollisions
   } else if (src.children && target.children) {
     // Copy a folder into another folder
     possibleCopyPath = joinOSPaths(target.path, src.name)
   } else if (src.children && target.children === null) {
     // Copying a folder to a file would make them siblings
-    possibleCopyPath = joinOSPaths(getParentAbsolutePath(src.path), src.name)
+    possibleCopyPath = joinOSPaths(getParentAbsolutePath(target.path), src.name)
     collisionsToCheck = possibleParentCollisions
   } else if (src.children === null && target.children) {
     // Copying a file into a folder
     possibleCopyPath = joinOSPaths(target.path, src.name)
   } else if (src.children === null && target.children === null) {
     // Copying a file into a file would make them siblings
-    possibleCopyPath = joinOSPaths(getParentAbsolutePath(src.path), src.name)
+    possibleCopyPath = joinOSPaths(getParentAbsolutePath(target.path), src.name)
     collisionsToCheck = possibleParentCollisions
   }
 

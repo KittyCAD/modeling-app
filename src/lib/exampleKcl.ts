@@ -1,9 +1,9 @@
-import bracket from '@public/kcl-samples/bracket/main.kcl?raw'
-import fanAssembly from '@public/kcl-samples/axial-fan/main.kcl?raw'
 import fanHousingOriginal from '@public/kcl-samples/axial-fan/fan-housing.kcl?raw'
 import fanFan from '@public/kcl-samples/axial-fan/fan.kcl?raw'
+import fanAssembly from '@public/kcl-samples/axial-fan/main.kcl?raw'
 import fanMotor from '@public/kcl-samples/axial-fan/motor.kcl?raw'
 import fanParameters from '@public/kcl-samples/axial-fan/parameters.kcl?raw'
+import bracket from '@public/kcl-samples/bracket/main.kcl?raw'
 
 export { bracket }
 export const fanParts = [

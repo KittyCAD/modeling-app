@@ -46,9 +46,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   33.333333333333336
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -60,17 +58,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -209,9 +203,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -235,9 +227,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         20.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -261,9 +251,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         20.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -280,9 +268,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -306,9 +292,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -332,9 +316,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         45.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -351,9 +333,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         45.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -370,9 +350,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         -5.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -389,9 +367,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         -5.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -408,9 +384,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -427,9 +401,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -439,9 +411,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "YZ",
@@ -449,25 +419,19 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -479,9 +443,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Mm"
-                    },
+                    "units": "mm",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -512,21 +474,15 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "height": 200.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "sectional": false
               },
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "start": {
               "from": [
@@ -537,9 +493,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 -15.0,
                 33.333333333333336
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -548,16 +502,12 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": -5.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -601,9 +551,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   33.333333333333336
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -615,17 +563,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -764,9 +708,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -790,9 +732,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         20.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -816,9 +756,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         20.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -835,9 +773,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -861,9 +797,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -887,9 +821,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         45.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -906,9 +838,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         45.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -925,9 +855,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         -5.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -944,9 +872,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         -5.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -963,9 +889,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -982,9 +906,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -994,9 +916,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "YZ",
@@ -1004,25 +924,19 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -1034,9 +948,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Mm"
-                    },
+                    "units": "mm",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -1067,21 +979,15 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "height": 200.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "sectional": false
               },
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "start": {
               "from": [
@@ -1092,9 +998,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 -15.0,
                 33.333333333333336
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1103,16 +1007,12 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": -5.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -1156,9 +1056,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   33.333333333333336
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1170,17 +1068,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -1319,9 +1213,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1345,9 +1237,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         20.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1371,9 +1261,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         20.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1390,9 +1278,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1416,9 +1302,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         25.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1442,9 +1326,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         45.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1461,9 +1343,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         45.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1480,9 +1360,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         -5.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1499,9 +1377,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         -5.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1518,9 +1394,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1537,9 +1411,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -1549,9 +1421,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "YZ",
@@ -1559,25 +1429,19 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -1589,9 +1453,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Mm"
-                    },
+                    "units": "mm",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -1622,21 +1484,15 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "height": 200.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "sectional": false
               },
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "start": {
               "from": [
@@ -1647,9 +1503,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 -15.0,
                 33.333333333333336
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1658,16 +1512,12 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": -5.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -1812,9 +1662,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1838,9 +1686,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               20.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1864,9 +1710,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               20.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1883,9 +1727,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1909,9 +1751,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1935,9 +1775,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               45.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1954,9 +1792,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               45.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1973,9 +1809,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               -5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1992,9 +1826,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               -5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2011,9 +1843,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2030,9 +1860,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -2042,9 +1870,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -2052,25 +1878,19 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2082,9 +1902,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2115,9 +1933,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 200.0,
       "startCapId": "[uuid]",
@@ -2130,12 +1946,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -2148,12 +1960,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -2166,21 +1974,15 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -2323,9 +2125,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2349,9 +2149,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               20.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2375,9 +2173,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               20.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2394,9 +2190,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2420,9 +2214,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2446,9 +2238,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               45.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2465,9 +2255,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               45.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2484,9 +2272,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               -5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2503,9 +2289,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               -5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2522,9 +2306,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2541,9 +2323,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -2553,9 +2333,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -2563,25 +2341,19 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2593,9 +2365,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2626,16 +2396,12 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 200.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -2644,12 +2410,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 200.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "guardProfile": {
@@ -2680,9 +2442,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2706,9 +2466,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             20.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2732,9 +2490,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             20.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2751,9 +2507,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             25.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2777,9 +2531,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             25.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2803,9 +2555,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             45.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2822,9 +2572,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             45.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2841,9 +2589,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             -5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2860,9 +2606,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             -5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2879,9 +2623,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2898,9 +2640,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2910,9 +2650,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -2920,25 +2658,19 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2950,9 +2682,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2983,9 +2713,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "guardSketch": {
@@ -2997,34 +2725,26 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3058,9 +2778,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 33.333333333333336
               ],
               "type": "Circle",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             }
           ],
           "on": {
@@ -3072,17 +2790,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "solid": {
               "type": "Solid",
@@ -3221,9 +2935,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3247,9 +2959,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       20.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3273,9 +2983,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       20.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3292,9 +3000,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3318,9 +3024,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3344,9 +3048,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       45.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3363,9 +3065,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       45.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3382,9 +3082,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       -5.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3401,9 +3099,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       -5.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3420,9 +3116,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3439,9 +3133,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   }
                 ],
                 "on": {
@@ -3451,9 +3143,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "x": 0.0,
                     "y": 0.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   "type": "plane",
                   "value": "YZ",
@@ -3461,25 +3151,19 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   },
                   "yAxis": {
                     "x": 0.0,
                     "y": 0.0,
                     "z": 1.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   },
                   "zAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   }
                 },
                 "start": {
@@ -3491,9 +3175,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     0.0,
                     0.0
                   ],
-                  "units": {
-                    "type": "Mm"
-                  },
+                  "units": "mm",
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -3524,21 +3206,15 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "height": 200.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "sectional": false
             },
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "start": {
             "from": [
@@ -3549,9 +3225,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               -15.0,
               33.333333333333336
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -3560,9 +3234,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       },
       {
@@ -3592,9 +3264,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 33.333333333333336
               ],
               "type": "Circle",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             }
           ],
           "on": {
@@ -3606,17 +3276,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "solid": {
               "type": "Solid",
@@ -3755,9 +3421,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3781,9 +3445,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       20.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3807,9 +3469,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       20.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3826,9 +3486,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3852,9 +3510,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3878,9 +3534,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       45.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3897,9 +3551,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       45.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3916,9 +3568,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       -5.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3935,9 +3585,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       -5.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3954,9 +3602,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -3973,9 +3619,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   }
                 ],
                 "on": {
@@ -3985,9 +3629,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "x": 0.0,
                     "y": 0.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   "type": "plane",
                   "value": "YZ",
@@ -3995,25 +3637,19 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   },
                   "yAxis": {
                     "x": 0.0,
                     "y": 0.0,
                     "z": 1.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   },
                   "zAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   }
                 },
                 "start": {
@@ -4025,9 +3661,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     0.0,
                     0.0
                   ],
-                  "units": {
-                    "type": "Mm"
-                  },
+                  "units": "mm",
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -4058,21 +3692,15 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "height": 200.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "sectional": false
             },
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "start": {
             "from": [
@@ -4083,9 +3711,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               -15.0,
               33.333333333333336
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -4094,9 +3720,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       },
       {
@@ -4126,9 +3750,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 33.333333333333336
               ],
               "type": "Circle",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             }
           ],
           "on": {
@@ -4140,17 +3762,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "solid": {
               "type": "Solid",
@@ -4289,9 +3907,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -4315,9 +3931,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       20.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -4341,9 +3955,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       20.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -4360,9 +3972,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -4386,9 +3996,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       25.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -4412,9 +4020,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       45.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -4431,9 +4037,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       45.5
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -4450,9 +4054,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       -5.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -4469,9 +4071,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       -5.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -4488,9 +4088,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   {
                     "__geoMeta": {
@@ -4507,9 +4105,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   }
                 ],
                 "on": {
@@ -4519,9 +4115,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "x": 0.0,
                     "y": 0.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   "type": "plane",
                   "value": "YZ",
@@ -4529,25 +4123,19 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   },
                   "yAxis": {
                     "x": 0.0,
                     "y": 0.0,
                     "z": 1.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   },
                   "zAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   }
                 },
                 "start": {
@@ -4559,9 +4147,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     0.0,
                     0.0
                   ],
-                  "units": {
-                    "type": "Mm"
-                  },
+                  "units": "mm",
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -4592,21 +4178,15 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "height": 200.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "sectional": false
             },
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "start": {
             "from": [
@@ -4617,9 +4197,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               -15.0,
               33.333333333333336
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -4628,9 +4206,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       }
     ]
@@ -4640,12 +4216,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "holeDiameter": {
@@ -4653,12 +4225,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "holeOffsetFromGuardEdge": {
@@ -4666,12 +4234,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 33.333333333333336,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "holeOffsetFromTheTableEdge": {
@@ -4679,12 +4243,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 13.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "holeOffsetFromTheUprofileEdge": {
@@ -4692,12 +4252,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 17.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "holeProfile": {
@@ -4727,9 +4283,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             33.333333333333336
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -4741,17 +4295,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -4890,9 +4440,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4916,9 +4464,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   20.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4942,9 +4488,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   20.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4961,9 +4505,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   25.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4987,9 +4529,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   25.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5013,9 +4553,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   45.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5032,9 +4570,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   45.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5051,9 +4587,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   -5.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5070,9 +4604,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   -5.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5089,9 +4621,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5108,9 +4638,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -5120,9 +4648,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -5130,25 +4656,19 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -5160,9 +4680,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5193,21 +4711,15 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 200.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -5218,9 +4730,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           -15.0,
           33.333333333333336
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -5229,9 +4739,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "holeRadius": {
@@ -5239,12 +4747,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "holeSketch": {
@@ -5257,17 +4761,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -5406,9 +4906,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5432,9 +4930,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 20.5
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5458,9 +4954,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 20.5
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5477,9 +4971,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 25.5
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5503,9 +4995,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 25.5
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5529,9 +5019,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 45.5
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5548,9 +5036,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 45.5
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5567,9 +5053,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 -5.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5586,9 +5070,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 -5.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5605,9 +5087,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5624,9 +5104,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             }
           ],
           "on": {
@@ -5636,9 +5114,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "YZ",
@@ -5646,25 +5122,19 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -5676,9 +5146,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.0,
               0.0
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -5709,21 +5177,15 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "height": 200.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "sectional": false
       },
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "holeSpacing": {
@@ -5731,12 +5193,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 66.66666666666666,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "holeSpan": {
@@ -5744,12 +5202,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 133.33333333333331,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "innerFaceOfTheUProfileLeftSide": {
@@ -5777,12 +5231,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "stopWallHeight": {
@@ -5790,12 +5240,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "totalGuardDepth": {
@@ -5803,12 +5249,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 35.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "totalGuardHeight": {
@@ -5816,12 +5258,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 50.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "uProfileDepthInside": {
@@ -5829,12 +5267,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "uProfileWidthInside": {
@@ -5842,12 +5276,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "value": 20.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "upperFaceOfTheUprofile": {

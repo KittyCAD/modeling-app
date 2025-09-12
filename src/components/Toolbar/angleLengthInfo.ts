@@ -4,8 +4,8 @@ import { getTransformInfos } from '@src/lang/std/sketchcombos'
 import type { TransformInfo } from '@src/lang/std/stdTypes'
 import type { Expr } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
-import { err } from '@src/lib/trap'
 import { kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 export function angleLengthInfo({
   selectionRanges,

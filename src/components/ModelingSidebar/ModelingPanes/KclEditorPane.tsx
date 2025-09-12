@@ -40,19 +40,19 @@ import { useEffect, useMemo, useRef } from 'react'
 
 import { useLspContext } from '@src/components/LspProvider'
 import CodeEditor from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'
+import { historyCompartment } from '@src/editor/compartments'
 import { lineHighlightField } from '@src/editor/highlightextension'
 import { modelingMachineEvent } from '@src/editor/manager'
-import { historyCompartment } from '@src/editor/compartments'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
-import { Themes, getSystemTheme } from '@src/lib/theme'
-import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
 import { useSettings } from '@src/lib/singletons'
+import { Themes, getSystemTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
 import {
   editorIsMountedSelector,
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
-import { reportRejection } from '@src/lib/trap'
 
 export const editorShortcutMeta = {
   formatCode: {
