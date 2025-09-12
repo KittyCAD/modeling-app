@@ -8,12 +8,8 @@ description: Variables in memory after executing countersunk-plate.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltSpacing": {
@@ -21,12 +17,8 @@ description: Variables in memory after executing countersunk-plate.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "centerHoleDiameter": {
@@ -34,12 +26,8 @@ description: Variables in memory after executing countersunk-plate.kcl
     "value": 1.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "countersink": {
@@ -51,12 +39,8 @@ description: Variables in memory after executing countersunk-plate.kcl
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "plateBody": {
@@ -149,9 +133,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               0.6982556390749733
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -173,9 +155,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               -0.6982556390749742
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -192,9 +172,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               -1.547799999949526
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -216,9 +194,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               -1.5477999999495258
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -235,9 +211,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               -0.698255639074974
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -259,9 +233,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               0.6982556390749736
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -278,9 +250,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               1.5477999999495253
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -302,9 +272,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               1.547799999949525
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -321,9 +289,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               1.547799999949525
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "innerPaths": [
@@ -348,9 +314,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -360,9 +324,7 @@ description: Variables in memory after executing countersunk-plate.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -370,25 +332,19 @@ description: Variables in memory after executing countersunk-plate.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -400,9 +356,7 @@ description: Variables in memory after executing countersunk-plate.kcl
             0.6068125000000003,
             1.547799999949525
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -411,16 +365,12 @@ description: Variables in memory after executing countersunk-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 0.375,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -429,12 +379,8 @@ description: Variables in memory after executing countersunk-plate.kcl
     "value": 0.375,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "r1": {
@@ -442,12 +388,8 @@ description: Variables in memory after executing countersunk-plate.kcl
     "value": 1.6625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "r2": {
@@ -455,21 +397,17 @@ description: Variables in memory after executing countersunk-plate.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tangentAngle": {
     "type": "Number",
     "value": 0.3736328030752811,
     "ty": {
+      "radians": null,
       "type": "Known",
-      "type": "Angle",
-      "type": "Radians"
+      "type": "Angle"
     }
   },
   "tangentLength": {
@@ -477,12 +415,8 @@ description: Variables in memory after executing countersunk-plate.kcl
     "value": 2.3275187969165794,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

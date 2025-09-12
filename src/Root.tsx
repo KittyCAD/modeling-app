@@ -6,8 +6,8 @@ import { SystemIOMachineLogicListenerDesktop } from '@src/components/Providers/S
 import { SystemIOMachineLogicListenerWeb } from '@src/components/Providers/SystemIOProviderWeb'
 import { RouteProvider } from '@src/components/RouteProvider'
 import { KclContextProvider } from '@src/lang/KclProvider'
-import { Outlet } from 'react-router-dom'
 import { isDesktop } from '@src/lib/isDesktop'
+import { Outlet } from 'react-router-dom'
 
 // Root component will live for the entire applications runtime
 // This is a great place to add polling code.

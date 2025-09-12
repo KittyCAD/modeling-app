@@ -1,0 +1,28 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing coilover-assembly.kcl
+---
+{
+  "__mod_coiloverBottom": {
+    "type": "Module",
+    "value": 1
+  },
+  "__mod_coiloverSpring": {
+    "type": "Module",
+    "value": 3
+  },
+  "__mod_coiloverTop": {
+    "type": "Module",
+    "value": 4
+  },
+  "capEnd002": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "capEnd002"
+  },
+  "seg03": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg03"
+  }
+}

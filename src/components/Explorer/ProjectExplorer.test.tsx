@@ -1,10 +1,10 @@
-import type { FileEntry, Project } from '@src/lib/project'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
-import { render, screen, cleanup, fireEvent } from '@testing-library/react'
 import {
-  addPlaceHoldersForNewFileAndFolder,
   type FileExplorerEntry,
+  addPlaceHoldersForNewFileAndFolder,
 } from '@src/components/Explorer/utils'
+import type { FileEntry, Project } from '@src/lib/project'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 
 // Helper functions within this file to create a project and file entries easier to
 // populate the unit tests

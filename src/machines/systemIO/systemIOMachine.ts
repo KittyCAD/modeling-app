@@ -3,9 +3,10 @@ import {
   MAX_PROJECT_NAME_LENGTH,
 } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
+import type { AppMachineContext } from '@src/lib/types'
 import type {
-  SystemIOContext,
   RequestedKCLFile,
+  SystemIOContext,
 } from '@src/machines/systemIO/utils'
 import {
   NO_PROJECT_DIRECTORY,
@@ -17,7 +18,6 @@ import {
 } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
-import type { AppMachineContext } from '@src/lib/types'
 
 /**
  * /some/dir            = directoryPath
@@ -203,6 +203,13 @@ export const systemIOMachine = setup({
           data: {
             requestedPath: string
             requestedProjectName: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.copyRecursive
+          data: {
+            src: string
+            target: string
           }
         }
       | {
@@ -573,6 +580,23 @@ export const systemIOMachine = setup({
         }
       }
     ),
+    [SystemIOMachineActors.copyRecursive]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          src: string
+          target: string
+        }
+      }) => {
+        return {
+          message: '',
+          requestedAbsolutePath: '',
+        }
+      }
+    ),
     [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
       return new Map()
     }),
@@ -705,6 +729,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.deleteFileOrFolderAndNavigate]: {
           target: SystemIOMachineStates.deletingFileOrFolderAndNavigate,
+        },
+        [SystemIOMachineEvents.copyRecursive]: {
+          target: SystemIOMachineStates.copyingRecursive,
         },
         [SystemIOMachineEvents.getMlEphantConversations]: {
           target: SystemIOMachineStates.gettingMlEphantConversations,
@@ -1277,6 +1304,29 @@ export const systemIOMachine = setup({
             }),
             SystemIOMachineActions.toastSuccess,
           ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.copyingRecursive]: {
+      invoke: {
+        id: SystemIOMachineActors.copyRecursive,
+        src: SystemIOMachineActors.copyRecursive,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.copyRecursive)
+          return {
+            context,
+            src: event.data.src,
+            target: event.data.target,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
         },
         onError: {
           target: SystemIOMachineStates.idle,

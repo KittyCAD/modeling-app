@@ -1,10 +1,11 @@
+import type { IElectronAPI } from '@root/interface'
 import {
   createNewProjectDirectory,
+  getAppSettingsFilePath,
   getProjectInfo,
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
-  getAppSettingsFilePath,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
@@ -13,7 +14,13 @@ import {
   getUniqueProjectName,
   interpolateProjectNameWithIndex,
 } from '@src/lib/desktopFS'
+import {
+  getProjectDirectoryFromKCLFilePath,
+  getStringAfterLastSeparator,
+  parentPathRelativeToProject,
+} from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import type { AppMachineContext } from '@src/lib/types'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,
@@ -26,13 +33,6 @@ import {
   mlConversationsToJson,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
-import type { AppMachineContext } from '@src/lib/types'
-import {
-  getProjectDirectoryFromKCLFilePath,
-  getStringAfterLastSeparator,
-  parentPathRelativeToProject,
-} from '@src/lib/paths'
-import type { IElectronAPI } from '@root/interface'
 
 const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
@@ -686,6 +686,34 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         return {
           message: `Folder ${folderName} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
+        }
+      }
+    ),
+    [SystemIOMachineActors.copyRecursive]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          src: string
+          target: string
+        }
+      }) => {
+        if (window.electron) {
+          await window.electron.copy(input.src, input.target, {
+            recursive: true,
+            force: false,
+          })
+          return {
+            message: `Folder copied successfully`,
+            requestedAbsolutePath: '',
+          }
+        } else {
+          return {
+            message: 'no file system found',
+            requestedAbsolutePath: '',
+          }
         }
       }
     ),

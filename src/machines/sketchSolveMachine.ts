@@ -1,5 +1,5 @@
-import { setup } from 'xstate'
 import type { ModelingMachineContext } from '@src/machines/modelingMachine'
+import { setup } from 'xstate'
 
 export interface SketchSolveMachineContext {
   parentContext: ModelingMachineContext

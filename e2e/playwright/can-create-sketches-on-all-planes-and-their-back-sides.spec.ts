@@ -2,10 +2,10 @@ import type { Page } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
+import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 

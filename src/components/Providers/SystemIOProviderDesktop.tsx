@@ -1,46 +1,46 @@
-import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import {
-  PATHS,
-  joinRouterPaths,
-  joinOSPaths,
-  safeEncodeForRouterPaths,
-  webSafePathSplit,
-  getProjectDirectoryFromKCLFilePath,
-} from '@src/lib/paths'
-import {
-  billingActor,
-  systemIOActor,
-  useSettings,
-  useToken,
-  kclManager,
-  mlEphantManagerActor,
-  engineCommandManager,
-} from '@src/lib/singletons'
-import { PromptType, type Prompt } from '@src/lib/prompt'
-import { type PromptMeta } from '@src/machines/mlEphantManagerMachine'
-import {
-  useHasListedProjects,
-  useProjectDirectoryPath,
-  useRequestedFileName,
-  useRequestedProjectName,
-  useProjectIdToConversationId,
-  useWatchForNewFileRequestsFromMlEphant,
-} from '@src/machines/systemIO/hooks'
-import {
-  NO_PROJECT_DIRECTORY,
-  SystemIOMachineEvents,
-  type RequestedKCLFile,
-} from '@src/machines/systemIO/utils'
-import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
 import { useLspContext } from '@src/components/LspProvider'
-import { useLocation } from 'react-router-dom'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import { fsManager } from '@src/lang/std/fileSystemManager'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import {
+  PATHS,
+  getProjectDirectoryFromKCLFilePath,
+  joinOSPaths,
+  joinRouterPaths,
+  safeEncodeForRouterPaths,
+  webSafePathSplit,
+} from '@src/lib/paths'
+import { type Prompt, PromptType } from '@src/lib/prompt'
+import {
+  billingActor,
+  engineCommandManager,
+  kclManager,
+  mlEphantManagerActor,
+  systemIOActor,
+  useSettings,
+  useToken,
+} from '@src/lib/singletons'
+import { type PromptMeta } from '@src/machines/mlEphantManagerMachine'
+import {
+  useHasListedProjects,
+  useProjectDirectoryPath,
+  useProjectIdToConversationId,
+  useRequestedFileName,
+  useRequestedProjectName,
+  useWatchForNewFileRequestsFromMlEphant,
+} from '@src/machines/systemIO/hooks'
+import {
+  NO_PROJECT_DIRECTORY,
+  type RequestedKCLFile,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
@@ -273,8 +273,11 @@ export function SystemIOMachineLogicListenerDesktop() {
           },
         })
       } else {
+        const outputsRecord: Record<string, string> = {
+          ...(prompt.outputs ?? {}),
+        }
         const requestedFiles: RequestedKCLFile[] = Object.entries(
-          prompt.outputs
+          outputsRecord
         ).map(([relativePath, fileContents]) => {
           const lastSep = relativePath.lastIndexOf(window.electron?.sep ?? '')
           let pathPart = relativePath.slice(0, lastSep)

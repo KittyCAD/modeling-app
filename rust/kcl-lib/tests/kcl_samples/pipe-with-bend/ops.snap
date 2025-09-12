@@ -12,12 +12,8 @@ description: Operations executed pipe-with-bend.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed pipe-with-bend.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed pipe-with-bend.kcl
         "value": 30.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed pipe-with-bend.kcl
         "value": 90.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -225,12 +209,8 @@ description: Operations executed pipe-with-bend.kcl
             "value": 90.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -247,12 +227,8 @@ description: Operations executed pipe-with-bend.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -260,12 +236,8 @@ description: Operations executed pipe-with-bend.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -278,12 +250,8 @@ description: Operations executed pipe-with-bend.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -291,12 +259,8 @@ description: Operations executed pipe-with-bend.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -432,6 +396,7 @@ description: Operations executed pipe-with-bend.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

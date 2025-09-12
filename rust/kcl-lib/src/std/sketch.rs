@@ -8,7 +8,7 @@ use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq};
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::{shared::PathSegment, units::UnitLength};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 
@@ -23,7 +23,7 @@ use crate::{
     execution::{
         BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
         Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
-        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
+        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{
@@ -870,12 +870,6 @@ async fn inner_start_sketch_on(
         }
         SketchData::Plane(plane) => {
             if plane.value == crate::exec::PlaneType::Uninit {
-                if plane.info.origin.units == UnitLen::Unknown {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Origin of plane has unknown units".to_string(),
-                        vec![args.source_range],
-                    )));
-                }
                 let plane = make_sketch_plane_from_orientation(plane.info.into_plane_data(), exec_state, args).await?;
                 Ok(SketchSurface::Plane(plane))
             } else {
@@ -1438,7 +1432,9 @@ pub async fn relative_arc(
                     start: a_start,
                     end: a_end,
                     center: KPoint2d::from(untyped_point_to_mm(center, from.units)).map(LengthUnit),
-                    radius: LengthUnit(from.units.adjust_to(radius, UnitLen::Mm).0),
+                    radius: LengthUnit(
+                        crate::execution::types::adjust_length(from.units, radius, UnitLength::Millimeters).0,
+                    ),
                     relative: false,
                 },
             }),

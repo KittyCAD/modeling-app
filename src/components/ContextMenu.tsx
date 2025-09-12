@@ -1,13 +1,13 @@
 import { Dialog } from '@headlessui/react'
-import type { RefObject, MouseEvent } from 'react'
+import type { MouseEvent, RefObject } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { ActionIconProps } from '@src/components/ActionIcon'
 import { ActionIcon } from '@src/components/ActionIcon'
-import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import usePlatform from '@src/hooks/usePlatform'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 
 export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {

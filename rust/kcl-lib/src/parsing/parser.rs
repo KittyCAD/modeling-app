@@ -29,9 +29,10 @@ use crate::{
             BodyItem, BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
             FunctionExpression, FunctionType, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement,
             ItemVisibility, LabeledArg, Literal, LiteralValue, MemberExpression, Name, Node, NodeList, NonCodeMeta,
-            NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution,
-            PrimitiveType, Program, ReturnStatement, Shebang, SketchBlock, TagDeclarator, Type, TypeDeclaration,
-            UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+            NonCodeNode, NonCodeValue, NumericLiteral, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
+            PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, SketchBlock, SketchVar, TagDeclarator,
+            Type, TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator,
+            VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -65,6 +66,13 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     (result, ctxt.errors).into()
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+enum CodeKind {
+    #[default]
+    Standard,
+    Sketch,
+}
+
 /// Context built up while parsing a program.
 ///
 /// When returned from parsing contains the errors and warnings from the current parse.
@@ -72,6 +80,7 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
 struct ParseContext {
     pub errors: Vec<CompilationError>,
     settings: MetaSettings,
+    code_kind: CodeKind,
 }
 
 impl ParseContext {
@@ -79,6 +88,7 @@ impl ParseContext {
         ParseContext {
             errors: Vec::new(),
             settings: Default::default(),
+            code_kind: Default::default(),
         }
     }
 
@@ -153,6 +163,26 @@ impl ParseContext {
 
             ctxt.errors.push(error);
         });
+    }
+
+    fn is_in_sketch_block() -> bool {
+        CTXT.with_borrow(|ctxt| {
+            let ctxt = ctxt.as_ref().expect("no parse context");
+            ctxt.code_kind == CodeKind::Sketch
+        })
+    }
+
+    fn in_sketch_block<R, F: FnOnce() -> R>(f: F) -> R {
+        let previous_code_kind = CTXT.with_borrow_mut(|ctxt| {
+            let ctxt = ctxt.as_mut().expect("no parse context");
+            std::mem::replace(&mut ctxt.code_kind, CodeKind::Sketch)
+        });
+        let result = f();
+        CTXT.with_borrow_mut(|ctxt| {
+            let ctxt = ctxt.as_mut().expect("no parse context");
+            ctxt.code_kind = previous_code_kind;
+        });
+        result
     }
 }
 
@@ -516,6 +546,57 @@ fn bool_value(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
     ))
 }
 
+fn minus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
+    any.verify_map(|token: Token| {
+        if token.token_type == TokenType::Operator && token.value == "-" {
+            Some(token)
+        } else {
+            None
+        }
+    })
+    .context(expected("a minus sign `-`"))
+    .parse_next(i)
+}
+
+/// Numeric literal with suffix and optional leading negative sign.
+fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
+    let negative_token = opt(minus_sign).parse_next(i)?;
+    let (value, suffix, number_token) = any
+        .try_map(|token: Token| match token.token_type {
+            TokenType::Number => {
+                let value: f64 = token.numeric_value().ok_or_else(|| {
+                    CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
+                })?;
+
+                let suffix = token.numeric_suffix();
+                if let NumericSuffix::Unknown = suffix {
+                    ParseContext::warn(CompilationError::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
+                }
+
+                Ok((value, suffix, token))
+            }
+            _ => Err(CompilationError::fatal(token.as_source_range(), "invalid number literal")),
+        })
+        .context(expected("a number literal (e.g. 3 or 12.5)"))
+        .parse_next(i)?;
+    let start = negative_token.as_ref().map(|t| t.start).unwrap_or(number_token.start);
+    Ok(Node::new(
+        NumericLiteral {
+            value: if negative_token.is_some() { -value } else { value },
+            suffix,
+            raw: format!(
+                "{}{}",
+                negative_token.map(|t| t.value).unwrap_or_default(),
+                number_token.value
+            ),
+            digest: None,
+        },
+        start,
+        number_token.end,
+        number_token.module_id,
+    ))
+}
+
 fn literal(i: &mut TokenSlice) -> ModalResult<BoxNode<Literal>> {
     alt((string_literal, unsigned_number_literal, bool_value))
         .map(Box::new)
@@ -611,6 +692,28 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> ModalResult<Node<Li
         token.start,
         token.end,
         token.module_id,
+    ))
+}
+
+fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
+    let var_token = keyword(i, "var")?;
+    let literal = opt(preceded(require_whitespace, numeric_literal)).parse_next(i)?;
+    let end = literal.as_ref().map(|t| t.end).unwrap_or(var_token.end);
+    if !ParseContext::is_in_sketch_block() {
+        ParseContext::experimental(
+            "sketch var",
+            SourceRange::new(var_token.start, end, var_token.module_id),
+        );
+    }
+
+    Ok(Node::new(
+        SketchVar {
+            initial: literal.map(Box::new),
+            digest: None,
+        },
+        var_token.start,
+        end,
+        var_token.module_id,
     ))
 }
 
@@ -715,6 +818,7 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                 Expr::ObjectExpression(x) => BinaryPart::ObjectExpression(x),
                 Expr::IfExpression(x) => BinaryPart::IfExpression(x),
                 Expr::AscribedExpression(x) => BinaryPart::AscribedExpression(x),
+                Expr::SketchVar(x) => BinaryPart::SketchVar(x),
             };
             Ok(expr)
         })
@@ -2195,6 +2299,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
         bool_value.map(Box::new).map(Expr::Literal),
         tag.map(Box::new).map(Expr::TagDeclarator),
         literal.map(Expr::Literal),
+        sketch_var.map(Box::new).map(Expr::SketchVar),
         fn_call_or_sketch_block,
         name.map(Box::new).map(Expr::Name),
         array,
@@ -2220,6 +2325,7 @@ fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         bool_value.map(Box::new).map(Expr::Literal),
         literal.map(Expr::Literal),
+        sketch_var.map(Box::new).map(Expr::SketchVar),
         fn_call_or_sketch_block,
         name.map(Box::new).map(Expr::Name),
         array,
@@ -2959,10 +3065,11 @@ fn type_not_union(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
             open_brace,
             opt(whitespace),
             separated(0.., record_ty_field, comma_sep),
+            opt(comma),
             opt(whitespace),
             close_brace,
         )
-            .try_map(|(open, _, params, _, close)| {
+            .try_map(|(open, _, params, _, _, close)| {
                 Ok(Node::new(
                     Type::Object { properties: params },
                     open.start,
@@ -3035,9 +3142,17 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
             }),
         // A named type, possibly with a numeric suffix.
         (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
-            let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
-            result.inner =
-                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident });
+            let result = Node::new_node(
+                ident.start,
+                ident.end,
+                ident.module_id,
+                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident }),
+            );
+
+            if *result == PrimitiveType::None {
+                ParseContext::experimental("none type", result.as_source_range());
+            }
+
             result
         }),
     ))
@@ -3257,7 +3372,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
     if is_callee_sketch_block(&fn_call.callee) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         // We have `sketch() {`. Parse the block.
         ignore_whitespace(i);
-        let (_, body, close) = parse_block(i)?;
+        let (_, body, close) = ParseContext::in_sketch_block(|| parse_block(i))?;
         let end = close.end;
 
         let Node {
@@ -3499,6 +3614,13 @@ mod tests {
         result
     }
 
+    fn in_sketch_ctx<R, F: FnOnce() -> R>(f: F) -> R {
+        ParseContext::init();
+        let result = ParseContext::in_sketch_block(f);
+        ParseContext::take();
+        result
+    }
+
     fn assert_reserved(word: &str) {
         // Try to use it as a variable name.
         let code = format!(r#"{word} = 0"#);
@@ -3605,6 +3727,78 @@ mod tests {
         let tokens = tokens.as_slice();
         let actual = in_ctx(|| fn_call_or_sketch_block.parse(tokens)).unwrap();
         assert!(matches!(actual, Expr::SketchBlock { .. }));
+    }
+
+    #[test]
+    fn parse_sketch_var_with_initial_value() {
+        let tokens = crate::parsing::token::lex("var 1.5", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        let actual = in_sketch_ctx(|| sketch_var.parse(tokens)).unwrap();
+        let initial = actual.inner.initial.unwrap();
+        assert_eq!(initial.value, 1.5);
+        assert_eq!(initial.suffix, NumericSuffix::None);
+
+        let tokens = crate::parsing::token::lex("var -1.5", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        let actual = in_sketch_ctx(|| sketch_var.parse(tokens)).unwrap();
+        let initial = actual.inner.initial.unwrap();
+        assert_eq!(initial.value, -1.5);
+        assert_eq!(initial.suffix, NumericSuffix::None);
+
+        let tokens = crate::parsing::token::lex("var 1.5ft", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        let actual = in_sketch_ctx(|| sketch_var.parse(tokens)).unwrap();
+        let initial = actual.inner.initial.unwrap();
+        assert_eq!(initial.value, 1.5);
+        assert_eq!(initial.suffix, NumericSuffix::Ft);
+    }
+
+    #[test]
+    fn parse_sketch_var_without_initial_value() {
+        let tokens = crate::parsing::token::lex("var", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        let actual = in_sketch_ctx(|| sketch_var.parse(tokens)).unwrap();
+        assert_eq!(actual.inner.initial, None);
+    }
+
+    #[test]
+    fn parse_sketch_var_outside_sketch_block_is_experimental() {
+        let tokens = crate::parsing::token::lex("var 0", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        ParseContext::init();
+        sketch_var.parse(tokens).unwrap();
+        let ctxt = ParseContext::take();
+        let error = ctxt.errors.first().unwrap();
+        assert!(
+            error.message.contains("sketch var is experimental"),
+            "Actual: {}",
+            error.message
+        );
+        assert_eq!(error.severity, Severity::Error);
+    }
+
+    #[test]
+    fn parse_sketch_block_sketch_var() {
+        let tokens = crate::parsing::token::lex(
+            "sketch() {
+  x = var 1.5
+}",
+            ModuleId::default(),
+        )
+        .unwrap();
+        let tokens = tokens.as_slice();
+        let actual = in_ctx(|| fn_call_or_sketch_block.parse(tokens)).unwrap();
+        let Expr::SketchBlock(sketch_block) = actual else {
+            panic!("not a sketch block")
+        };
+        let item = sketch_block.body.items.first().unwrap();
+        let BodyItem::VariableDeclaration(var_dec) = item else {
+            panic!("not a variable declaration")
+        };
+        let Expr::SketchVar(sketch_var) = &var_dec.inner.declaration.init else {
+            panic!("not a sketch var")
+        };
+        assert_eq!(sketch_var.inner.initial.as_ref().unwrap().value, 1.5);
     }
 
     #[test]

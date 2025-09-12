@@ -24,16 +24,16 @@ import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { kclManager } from '@src/lib/singletons'
+import { useSettings } from '@src/lib/singletons'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { getSystemTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
-import { useSettings } from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
-import styles from './CommandBarKclInput.module.css'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import styles from './CommandBarKclInput.module.css'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>

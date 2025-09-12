@@ -1,5 +1,6 @@
 import { executeAstMock } from '@src/lang/langHelpers'
 import {
+  type SourceRange,
   formatNumberValue,
   parse,
   resultIsOk,

@@ -1,3 +1,4 @@
+import { normalizeLineEndings } from '@src/lib/codeEditor'
 import type { ReactNode } from 'react'
 import { createContext, useEffect, useState } from 'react'
 import {
@@ -6,18 +7,17 @@ import {
   useNavigation,
   useRouteLoaderData,
 } from 'react-router-dom'
-import { normalizeLineEndings } from '@src/lib/codeEditor'
 
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
-import { getStringAfterLastSeparator, PATHS } from '@src/lib/paths'
+import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import { codeManager, kclManager, settingsActor } from '@src/lib/singletons'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { codeManager, kclManager, settingsActor } from '@src/lib/singletons'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import { useSelector } from '@xstate/react'
 

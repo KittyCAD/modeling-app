@@ -11,12 +11,8 @@ description: Variables in memory after executing complex_expr_as_array_index.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       {
@@ -24,12 +20,8 @@ description: Variables in memory after executing complex_expr_as_array_index.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       {
@@ -37,12 +29,8 @@ description: Variables in memory after executing complex_expr_as_array_index.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       {
@@ -50,12 +38,8 @@ description: Variables in memory after executing complex_expr_as_array_index.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       }
     ]
@@ -65,12 +49,8 @@ description: Variables in memory after executing complex_expr_as_array_index.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

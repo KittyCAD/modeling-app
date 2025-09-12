@@ -9,8 +9,8 @@ import {
   addToInputHelper,
 } from '@src/components/AvailableVarsHelpers'
 import type { Expr } from '@src/lang/wasm'
-import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import type { Selections } from '@src/lib/selections'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 
 type ModalResolve = {
   value: string

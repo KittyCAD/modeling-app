@@ -54,12 +54,8 @@ description: Operations executed error_revolve_on_edge_get_edge.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -146,12 +142,8 @@ description: Operations executed error_revolve_on_edge_get_edge.kcl
             "value": 90.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -295,6 +287,7 @@ description: Operations executed error_revolve_on_edge_get_edge.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

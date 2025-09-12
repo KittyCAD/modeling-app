@@ -12,15 +12,21 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
 // React and XState code to test
-import type { Models } from '@kittycad/lib'
-import { createActor } from 'xstate'
-import { useSelector } from '@xstate/react'
-import { BillingRemaining, BillingRemainingMode } from '@kittycad/react-shared'
+import type {
+  CustomerBalance,
+  Org,
+  ZooProductSubscriptions,
+} from '@kittycad/lib'
+import {
+  BillingRemaining,
+  BillingRemainingMode,
+} from '@src/components/BillingRemaining'
 import {
   BILLING_CONTEXT_DEFAULTS,
-  billingMachine,
   BillingTransition,
+  billingMachine,
 } from '@src/machines/billingMachine'
+import { createActor } from 'xstate'
 
 // Setup basic request mocking
 const server = setupServer()
@@ -32,7 +38,7 @@ afterAll(() => server.close())
 const createUserPaymentBalanceResponse = (opts: {
   monthlyApiCreditsRemaining
   stableApiCreditsRemaining
-}): Models['CustomerBalance_type'] => ({
+}): CustomerBalance => ({
   created_at: '2025-05-05T16:05:47.317Z',
   id: 'de607b7e-90ba-4977-8561-16e8a9ea0e50',
   map_id: 'd7f7de34-9bc3-4b8b-9951-cdee03fc792d',
@@ -49,7 +55,7 @@ const createUserPaymentBalanceResponse = (opts: {
   updated_at: '2025-05-05T16:05:47.317Z',
 })
 
-const createOrgResponse = (): Models['Org_type'] => ({
+const createOrgResponse = (): Org => ({
   allow_users_in_domain_to_auto_join: true,
   billing_email: 'm@dN9MCH.com',
   billing_email_verified: '2025-05-05T18:52:02.021Z',
@@ -68,7 +74,7 @@ const createOrgResponse = (): Models['Org_type'] => ({
 const createUserPaymentSubscriptionsResponse = (opts: {
   monthlyPayAsYouGoApiCreditsTotal
   name
-}): Models['ZooProductSubscriptions_type'] => ({
+}): ZooProductSubscriptions => ({
   modeling_app: {
     annual_discount: 10,
     description: '1ztERftrU3L3yOnv5epTLcM',
@@ -98,18 +104,6 @@ const createUserPaymentSubscriptionsResponse = (opts: {
   },
 })
 
-function BillingRemainingWithSelector({ billingActor, mode }) {
-  const billingContext = useSelector(billingActor, ({ context }) => context)
-  return (
-    <BillingRemaining
-      mode={mode}
-      error={billingContext.error}
-      credits={billingContext.credits}
-      allowance={billingContext.allowance}
-    />
-  )
-}
-
 test('Shows a loading spinner when uninitialized credit count', async () => {
   server.use(
     http.get('*/user/payment/balance', (req, res, ctx) => {
@@ -128,7 +122,10 @@ test('Shows a loading spinner when uninitialized credit count', async () => {
   }).start()
 
   const { queryByTestId } = render(
-    <BillingRemainingWithSelector billingActor={billingActor} />
+    <BillingRemaining
+      mode={BillingRemainingMode.ProgressBarFixed}
+      billingActor={billingActor}
+    />
   )
 
   await expect(queryByTestId('spinner')).toBeVisible()
@@ -165,7 +162,7 @@ test('Shows the total credits for Unknown subscription', async () => {
   }).start()
 
   const { queryByTestId } = render(
-    <BillingRemainingWithSelector
+    <BillingRemaining
       mode={BillingRemainingMode.ProgressBarFixed}
       billingActor={billingActor}
     />
@@ -216,7 +213,7 @@ test('Progress bar reflects ratio left of Free subscription', async () => {
   }).start()
 
   const { queryByTestId } = render(
-    <BillingRemainingWithSelector
+    <BillingRemaining
       mode={BillingRemainingMode.ProgressBarFixed}
       billingActor={billingActor}
     />
@@ -277,7 +274,7 @@ test('Shows infinite credits for Pro subscription', async () => {
   }).start()
 
   const { queryByTestId } = render(
-    <BillingRemainingWithSelector
+    <BillingRemaining
       mode={BillingRemainingMode.ProgressBarFixed}
       billingActor={billingActor}
     />
@@ -333,7 +330,7 @@ test('Shows infinite credits for Enterprise subscription', async () => {
   }).start()
 
   const { queryByTestId } = render(
-    <BillingRemainingWithSelector
+    <BillingRemaining
       mode={BillingRemainingMode.ProgressBarFixed}
       billingActor={billingActor}
     />
