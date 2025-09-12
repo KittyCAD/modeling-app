@@ -13,7 +13,9 @@ import { err } from '@src/lib/trap'
 const DUMMY_VARIABLE_NAME = '__result__'
 
 // Type guard for number value items
-function isNumberValueItem(item: KclValue): item is KclValue & { type: 'Number' } {
+function isNumberValueItem(
+  item: KclValue
+): item is KclValue & { type: 'Number' } {
   return item.type === 'Number'
 }
 
