@@ -218,6 +218,7 @@ extrude001 = extrude(profile001, length = 5)`
     // Verify that "Export to DXF" option is present and click it
     const dxfExportOption = page.getByTestId('context-menu-export-dxf')
     await expect(dxfExportOption).toBeVisible()
+    await page.waitForTimeout(150) // flake workaround
     await dxfExportOption.click()
 
     // Look out for the loading toast message
