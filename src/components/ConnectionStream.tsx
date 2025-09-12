@@ -23,11 +23,13 @@ import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
 import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
+import { ManualReconnection } from '@src/components/ManualReconnection'
 
 export const ConnectionStream = (props: {
   pool: string | null
   authToken: string | undefined
 }) => {
+  const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settings = useSettings()
@@ -109,6 +111,7 @@ export const ConnectionStream = (props: {
   // TODO: Handle PingPong checks
   const { resetGlobalEngineCommandManager } = useOnPageMounted({
     callback: () => {
+      setShowManualConnect(false)
       tryConnecting({
         authToken: props.authToken || '',
         videoWrapperRef,
@@ -121,6 +124,7 @@ export const ConnectionStream = (props: {
         timeToConnect: 30_000,
       }).catch((e) => {
         console.error(e)
+        setShowManualConnect(true)
       })
     },
   })
@@ -140,7 +144,7 @@ export const ConnectionStream = (props: {
       // It needs to have been in an idle state first!
       if (!isIdle.current) return
       isIdle.current = false
-
+      setShowManualConnect(false)
       tryConnecting({
         authToken: props.authToken || '',
         videoWrapperRef,
@@ -153,6 +157,7 @@ export const ConnectionStream = (props: {
         timeToConnect: 30_000,
       }).catch((e) => {
         console.error(e)
+        setShowManualConnect(true)
       })
     },
     idleCallback: () => {
@@ -161,6 +166,7 @@ export const ConnectionStream = (props: {
   })
   useOnWebsocketClose({
     callback: () => {
+      setShowManualConnect(false)
       tryConnecting({
         authToken: props.authToken || '',
         videoWrapperRef,
@@ -173,6 +179,7 @@ export const ConnectionStream = (props: {
         timeToConnect: 30_000,
       }).catch((e) => {
         console.error(e)
+        setShowManualConnect(true)
       })
     },
   })
@@ -219,7 +226,7 @@ export const ConnectionStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
-      {!isSceneReady && (
+      {!isSceneReady && !showManualConnect && (
         <Loading
           isRetrying={false}
           retryAttemptCountdown={0}
@@ -229,6 +236,29 @@ export const ConnectionStream = (props: {
           Connecting and setting up scene...
         </Loading>
       )}
+      {showManualConnect && (
+        <ManualReconnection
+          className="absolute inset-0 h-screen"
+          callback={() => {
+            setShowManualConnect(false)
+            tryConnecting({
+              authToken: props.authToken || '',
+              videoWrapperRef,
+              setAppState,
+              videoRef,
+              setIsSceneReady,
+              isConnecting,
+              successfullyConnected,
+              numberOfConnectionAtttempts,
+              timeToConnect: 30_000,
+            }).catch((e) => {
+              console.error(e)
+              setShowManualConnect(true)
+            })
+          }}
+        ></ManualReconnection>
+      )}
+      )
     </div>
   )
 }

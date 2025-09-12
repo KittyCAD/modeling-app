@@ -145,22 +145,18 @@ async function tryConnecting({
       }
 
       isConnecting.current = true
-      async function attempt() {
-        const throwTimeoutError = () => {
-          // I want to throw to reject the attempt function to go into the catch block from within the timeout.
-          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-          throw new Error('attempt took too long')
-        }
 
+      const cancelTimeout = setTimeout(() => {
+        isConnecting.current = false
+        successfullyConnected.current = false
+        engineCommandManager.tearDown()
+        clearInterval(cancelTimeout)
+        reject('took too long to connect')
+      }, timeToConnect)
+
+      async function attempt() {
         numberOfConnectionAtttempts.current =
           numberOfConnectionAtttempts.current + 1
-
-        const cancelTimeout = setTimeout(() => {
-          isConnecting.current = false
-          successfullyConnected.current = false
-          engineCommandManager.tearDown()
-          throwTimeoutError()
-        }, timeToConnect)
 
         try {
           await attemptToConnectToEngine({
@@ -170,19 +166,21 @@ async function tryConnecting({
             videoRef,
             setIsSceneReady,
           })
+          // Only clear on success. Future attempts will have less time.
           clearInterval(cancelTimeout)
           isConnecting.current = false
           successfullyConnected.current = true
           numberOfConnectionAtttempts.current = 0
           resolve('connected')
         } catch (e) {
-          clearInterval(cancelTimeout)
           isConnecting.current = false
           successfullyConnected.current = false
           engineCommandManager.tearDown()
-          // Fail after 5 attempts
+          // Fail after NumberOfEngineRetries
           if (numberOfConnectionAtttempts.current >= NumberOfEngineRetries) {
             numberOfConnectionAtttempts.current = 0
+            // Clear if we are going to exit all the attempts
+            clearInterval(cancelTimeout)
             return reject(e)
           }
           attempt().catch(reportRejection)
