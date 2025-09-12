@@ -15,6 +15,7 @@ use kcmc::{
 use kittycad_modeling_cmds::{
     self as kcmc,
     shared::{Angle, ExtrudeMethod, Point2d},
+    units::UnitLength,
 };
 use uuid::Uuid;
 
@@ -23,7 +24,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
-        types::{PrimitiveType, RuntimeType, UnitLen},
+        types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
@@ -197,7 +198,7 @@ async fn inner_extrude(
                 }
                 Point3dAxis3dOrGeometryReference::Plane(plane) => {
                     let plane_id = if plane.value == crate::exec::PlaneType::Uninit {
-                        if plane.info.origin.units == UnitLen::Unknown {
+                        if plane.info.origin.units.is_none() {
                             return Err(KclError::new_semantic(KclErrorDetails::new(
                                 "Origin of plane has unknown units".to_string(),
                                 vec![args.source_range],
