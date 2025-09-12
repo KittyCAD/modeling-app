@@ -22,6 +22,7 @@ function CommandBarVector3DInput({
   const xInputRef = useRef<HTMLInputElement>(null)
   const yInputRef = useRef<HTMLInputElement>(null)
   const zInputRef = useRef<HTMLInputElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
 
@@ -65,17 +66,16 @@ function CommandBarVector3DInput({
     // Submit form when Enter is pressed in the last field
     if (e.key === 'Enter' && !nextInputRef) {
       e.preventDefault()
-      document
-        .getElementById('vector3d-form')
-        ?.dispatchEvent(
-          new Event('submit', { cancelable: true, bubbles: true })
-        )
+      formRef.current?.dispatchEvent(
+        new Event('submit', { bubbles: true })
+      )
     }
   }
 
   return (
     <div className="w-full">
       <form
+        ref={formRef}
         id="vector3d-form"
         data-testid="vector3d-form"
         onSubmit={handleSubmit}
