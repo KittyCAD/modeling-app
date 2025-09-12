@@ -277,12 +277,6 @@ async fn inner_extrude(
                     vec![args.source_range],
                 )));
             }
-            (_, _, _, Some(_), Some(_)) => {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "You cannot give both `length` and `to` params, you have to choose one or the other".to_owned(),
-                    vec![args.source_range],
-                )));
-            }
         };
         let cmds = sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });
         exec_state
