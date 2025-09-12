@@ -14,9 +14,7 @@ const DUMMY_VARIABLE_NAME = '__result__'
 
 // Type guard for number value items
 type KclNumber<T = KclValue> = T extends { type: 'Number' } ? T : never
-function isNumberValueItem(
-  item: KclValue
-): item is KclNumber {
+function isNumberValueItem(item: KclValue): item is KclNumber {
   return item.type === 'Number'
 }
 
