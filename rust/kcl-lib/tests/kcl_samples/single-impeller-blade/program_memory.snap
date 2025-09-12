@@ -578,7 +578,6 @@ description: Variables in memory after executing single-impeller-blade.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

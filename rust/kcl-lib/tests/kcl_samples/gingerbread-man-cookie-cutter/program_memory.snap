@@ -350,7 +350,6 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 100.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

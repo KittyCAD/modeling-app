@@ -173,7 +173,6 @@ description: Variables in memory after executing washer.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 0.032,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",

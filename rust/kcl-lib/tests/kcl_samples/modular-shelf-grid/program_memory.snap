@@ -203,7 +203,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.02,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -530,7 +529,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -696,7 +694,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -862,7 +859,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1028,7 +1024,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1194,7 +1189,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1360,7 +1354,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1526,7 +1519,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1692,7 +1684,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1858,7 +1849,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2024,7 +2014,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2190,7 +2179,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2356,7 +2344,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2522,7 +2509,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2688,7 +2674,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2854,7 +2839,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2991,7 +2975,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3128,7 +3111,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3265,7 +3247,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3402,7 +3383,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3539,7 +3519,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3676,7 +3655,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3813,7 +3791,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3950,7 +3927,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4087,7 +4063,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4224,7 +4199,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4361,7 +4335,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4498,7 +4471,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4635,7 +4607,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4772,7 +4743,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4909,7 +4879,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5075,7 +5044,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5241,7 +5209,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5407,7 +5374,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5573,7 +5539,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5739,7 +5704,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5905,7 +5869,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6071,7 +6034,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6237,7 +6199,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6403,7 +6364,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6569,7 +6529,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6735,7 +6694,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6901,7 +6859,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7067,7 +7024,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7233,7 +7189,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7399,7 +7354,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7565,7 +7519,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7731,7 +7684,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7897,7 +7849,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8063,7 +8014,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8229,7 +8179,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8395,7 +8344,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8561,7 +8509,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8727,7 +8674,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8893,7 +8839,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -9059,7 +9004,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -9225,7 +9169,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -9391,7 +9334,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -9557,7 +9499,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -9723,7 +9664,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -9889,7 +9829,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -10114,7 +10053,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -10280,7 +10218,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -10717,7 +10654,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -10854,7 +10790,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",

@@ -237,7 +237,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -488,7 +487,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -704,7 +702,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -970,7 +967,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1337,7 +1333,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -2917,7 +2912,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

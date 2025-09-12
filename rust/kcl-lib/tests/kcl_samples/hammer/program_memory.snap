@@ -134,7 +134,6 @@ description: Variables in memory after executing hammer.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -711,7 +710,6 @@ description: Variables in memory after executing hammer.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1267,7 +1265,6 @@ description: Variables in memory after executing hammer.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1513,7 +1510,6 @@ description: Variables in memory after executing hammer.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "in",
@@ -1823,7 +1819,6 @@ description: Variables in memory after executing hammer.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -2571,7 +2566,6 @@ description: Variables in memory after executing hammer.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -2881,7 +2875,6 @@ description: Variables in memory after executing hammer.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": -14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -3103,7 +3096,6 @@ description: Variables in memory after executing hammer.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": -14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -3381,7 +3373,6 @@ description: Variables in memory after executing hammer.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": -14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
