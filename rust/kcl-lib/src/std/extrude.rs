@@ -142,7 +142,7 @@ async fn inner_extrude(
     for sketch in &sketches {
         let id = exec_state.next_uuid();
         let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to) {
-            (Some(angle), angle_step, center, Some(length), None) => {
+            (Some(angle), angle_step, center, Some(length), _) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
                 let total_rotation_angle = Angle::from_degrees(angle.to_degrees());
                 let angle_step_size = Angle::from_degrees(angle_step.clone().map(|a| a.to_degrees()).unwrap_or(15.0));
