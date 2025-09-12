@@ -20,11 +20,11 @@ members = [
 anyhow = { version = "1" }
 async-trait = "0.1.89"
 bson = { version = "2.15.0", features = ["uuid-1", "chrono"] }
-clap = { version = "4.5.45", features = ["derive"] }
+clap = { version = "4.5.47", features = ["derive"] }
 console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
-indexmap = "2.11.0"
+indexmap = "2.11.1"
 kittycad = { version = "0.3.37", default-features = false, features = [
   "js",
   "requests",
