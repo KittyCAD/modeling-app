@@ -393,7 +393,9 @@ export function shouldDroppedEntryBeMoved(
   const targetIsFileInDifferentFolder =
     !targetIsFolder && target.parentPath !== src.parentPath
   const targetIsDroppedEntryParent = target.path.endsWith(src.parentPath)
-  const droppedEntryIsTargetParent = target.path.includes(src.path)
+  const droppedEntryIsTargetParent =
+    target.path !== src.path &&
+    target.path.includes(src.path + window.electron?.sep)
   const shouldDroppedEntryBeMoved =
     !droppedEntryIsTargetParent &&
     ((!targetIsDroppedEntryParent && targetIsFolder) ||
