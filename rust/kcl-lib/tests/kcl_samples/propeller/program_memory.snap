@@ -694,6 +694,7 @@ description: Variables in memory after executing propeller.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1134,6 +1135,7 @@ description: Variables in memory after executing propeller.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1538,6 +1540,7 @@ description: Variables in memory after executing propeller.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1945,6 +1948,7 @@ description: Variables in memory after executing propeller.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2349,6 +2353,7 @@ description: Variables in memory after executing propeller.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2753,6 +2758,7 @@ description: Variables in memory after executing propeller.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -3061,6 +3067,7 @@ description: Variables in memory after executing propeller.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 52.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -3248,6 +3255,7 @@ description: Variables in memory after executing propeller.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 52.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

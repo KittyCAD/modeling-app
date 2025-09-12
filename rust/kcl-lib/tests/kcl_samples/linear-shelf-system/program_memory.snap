@@ -171,6 +171,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": 0.05,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -530,6 +531,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
+      "height": 0.02,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -888,6 +890,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1053,6 +1056,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1218,6 +1222,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1383,6 +1388,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1548,6 +1554,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1684,6 +1691,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1820,6 +1828,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1956,6 +1965,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2092,6 +2102,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2228,6 +2239,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2393,6 +2405,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.05,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2558,6 +2571,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.05,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2723,6 +2737,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.05,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2888,6 +2903,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.05,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3053,6 +3069,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.05,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3218,6 +3235,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3383,6 +3401,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3548,6 +3567,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3713,6 +3733,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3878,6 +3899,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4043,6 +4065,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4208,6 +4231,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4373,6 +4397,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4538,6 +4563,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4703,6 +4729,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -4868,6 +4895,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5033,6 +5061,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5198,6 +5227,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5363,6 +5393,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5528,6 +5559,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5693,6 +5725,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -5858,6 +5891,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6023,6 +6057,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6188,6 +6223,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6353,6 +6389,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6518,6 +6555,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6683,6 +6721,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -6848,6 +6887,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7013,6 +7053,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7178,6 +7219,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7343,6 +7385,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7508,6 +7551,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7673,6 +7717,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -7838,6 +7883,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8003,6 +8049,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8236,6 +8283,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8401,6 +8449,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8566,6 +8615,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8731,6 +8781,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -8896,6 +8947,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -9061,6 +9113,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 0.02,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -9497,6 +9550,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -9633,6 +9687,7 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
+          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",

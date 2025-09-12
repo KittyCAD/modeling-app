@@ -286,6 +286,7 @@ description: Variables in memory after executing sphere.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",

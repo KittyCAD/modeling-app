@@ -404,6 +404,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 88.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1169,6 +1170,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 104.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1310,6 +1312,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 104.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1887,6 +1890,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2188,6 +2192,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2494,6 +2499,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2795,6 +2801,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [

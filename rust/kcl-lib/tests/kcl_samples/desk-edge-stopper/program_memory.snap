@@ -476,6 +476,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 200.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -503,6 +504,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -979,6 +981,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 200.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -1006,6 +1009,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -1482,6 +1486,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 200.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -1509,6 +1514,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -1929,6 +1935,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 200.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -2391,6 +2398,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 200.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -3200,6 +3208,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
+              "height": 200.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": "mm",
@@ -3685,6 +3694,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
+              "height": 200.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": "mm",
@@ -4170,6 +4180,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
+              "height": 200.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": "mm",
@@ -4702,6 +4713,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 200.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5167,6 +5179,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "originalId": "[uuid]",
           "units": "mm"
         },
+        "height": 200.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": "mm",

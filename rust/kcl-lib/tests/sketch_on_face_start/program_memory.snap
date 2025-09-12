@@ -166,6 +166,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -331,6 +332,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -620,6 +622,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 20.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -647,6 +650,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

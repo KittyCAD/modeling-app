@@ -253,6 +253,7 @@ description: Variables in memory after executing tooling-nest-block.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

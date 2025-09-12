@@ -218,6 +218,7 @@ description: Variables in memory after executing torus.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",

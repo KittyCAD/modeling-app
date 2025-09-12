@@ -175,6 +175,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -470,6 +471,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 6.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -497,6 +499,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 5.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -923,6 +926,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 6.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -950,6 +954,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 5.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -983,6 +988,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 4.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1526,6 +1532,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
+                        "height": 6.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -1553,6 +1560,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 5.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -1586,6 +1594,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 4.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -1613,6 +1622,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 3.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -2030,6 +2040,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 6.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2444,6 +2455,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 6.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -2471,6 +2483,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 5.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3015,6 +3028,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": 6.0,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -3042,6 +3056,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 5.0,
                 "startCapId": null,
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -3075,6 +3090,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 4.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "mm",

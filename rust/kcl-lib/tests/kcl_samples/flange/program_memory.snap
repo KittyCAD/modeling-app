@@ -294,6 +294,7 @@ description: Variables in memory after executing flange.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 0.625,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "in",
@@ -321,6 +322,7 @@ description: Variables in memory after executing flange.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.06,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "in",
@@ -889,6 +891,7 @@ description: Variables in memory after executing flange.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.625,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1262,6 +1265,7 @@ description: Variables in memory after executing flange.kcl
                     "originalId": "[uuid]",
                     "units": "in"
                   },
+                  "height": 0.625,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "in",
@@ -1289,6 +1293,7 @@ description: Variables in memory after executing flange.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 0.1279999999999999,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "in",
@@ -1316,6 +1321,7 @@ description: Variables in memory after executing flange.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": -0.813,
       "startCapId": null,
       "endCapId": null,
       "units": "in",
@@ -1595,6 +1601,7 @@ description: Variables in memory after executing flange.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
+            "height": 0.625,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "in",
@@ -1622,6 +1629,7 @@ description: Variables in memory after executing flange.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.1279999999999999,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "in",
