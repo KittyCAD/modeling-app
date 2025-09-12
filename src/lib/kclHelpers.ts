@@ -54,7 +54,7 @@ export async function getCalculatedKclExpressionValue(
 
   // Handle array values when allowArrays is true
   if (
-    allowArrays === true &&
+    allowArrays &&
     varValue &&
     (varValue.type === 'Tuple' || varValue.type === 'HomArray')
   ) {
