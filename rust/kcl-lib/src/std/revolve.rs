@@ -199,7 +199,6 @@ async fn inner_revolve(
             do_post_extrude(
                 sketch,
                 new_solid_id.into(),
-                TyF64::new(0.0, NumericType::mm()),
                 false,
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),

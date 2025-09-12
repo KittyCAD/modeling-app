@@ -102,7 +102,6 @@ async fn inner_sweep(
             do_post_extrude(
                 sketch,
                 id.into(),
-                TyF64::new(0.0, NumericType::mm()),
                 sectional.unwrap_or(false),
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),

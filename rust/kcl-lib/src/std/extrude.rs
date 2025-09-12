@@ -15,7 +15,6 @@ use kcmc::{
 use kittycad_modeling_cmds::{
     self as kcmc,
     shared::{Angle, ExtrudeMethod, Point2d},
-    units::UnitLength,
 };
 use uuid::Uuid;
 
@@ -294,10 +293,6 @@ async fn inner_extrude(
             do_post_extrude(
                 sketch,
                 id.into(),
-                length.clone().unwrap_or(TyF64 {
-                    n: 0.0,
-                    ty: Default::default(),
-                }),
                 false,
                 &NamedCapTags {
                     start: tag_start.as_ref(),
@@ -325,7 +320,6 @@ pub(crate) struct NamedCapTags<'a> {
 pub(crate) async fn do_post_extrude<'a>(
     sketch: &Sketch,
     solid_id: ArtifactId,
-    length: TyF64,
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
     extrude_method: ExtrudeMethod,
@@ -491,7 +485,6 @@ pub(crate) async fn do_post_extrude<'a>(
         value: new_value,
         meta: sketch.meta.clone(),
         units: sketch.units,
-        height: length.to_length_units(sketch.units),
         sectional,
         sketch,
         start_cap_id,
