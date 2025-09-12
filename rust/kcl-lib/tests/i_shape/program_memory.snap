@@ -1543,6 +1543,7 @@ description: Variables in memory after executing i_shape.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

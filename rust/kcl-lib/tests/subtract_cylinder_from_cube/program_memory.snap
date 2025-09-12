@@ -166,6 +166,7 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -331,6 +332,7 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -430,6 +432,7 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 34.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

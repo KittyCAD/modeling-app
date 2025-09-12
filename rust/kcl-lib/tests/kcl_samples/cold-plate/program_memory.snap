@@ -215,6 +215,7 @@ description: Variables in memory after executing cold-plate.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -421,6 +422,7 @@ description: Variables in memory after executing cold-plate.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -627,6 +629,7 @@ description: Variables in memory after executing cold-plate.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -833,6 +836,7 @@ description: Variables in memory after executing cold-plate.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
+          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1346,6 +1350,7 @@ description: Variables in memory after executing cold-plate.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1774,6 +1779,7 @@ description: Variables in memory after executing cold-plate.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "in",

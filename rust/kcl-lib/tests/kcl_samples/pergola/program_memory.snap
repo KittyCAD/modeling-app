@@ -180,6 +180,7 @@ description: Variables in memory after executing pergola.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 250.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -506,6 +507,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -671,6 +673,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -865,6 +868,7 @@ description: Variables in memory after executing pergola.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 2150.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1209,6 +1213,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 2150.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1374,6 +1379,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 2150.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1539,6 +1545,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 2150.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1704,6 +1711,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 2150.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1871,6 +1879,7 @@ description: Variables in memory after executing pergola.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 250.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -2197,6 +2206,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2362,6 +2372,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2529,6 +2540,7 @@ description: Variables in memory after executing pergola.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 250.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -2891,6 +2903,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3056,6 +3069,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3221,6 +3235,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3386,6 +3401,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3551,6 +3567,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3716,6 +3733,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3881,6 +3899,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4046,6 +4065,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4211,6 +4231,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4376,6 +4397,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4541,6 +4563,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4706,6 +4729,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4871,6 +4895,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5036,6 +5061,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5201,6 +5227,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5366,6 +5393,7 @@ description: Variables in memory after executing pergola.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 250.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",

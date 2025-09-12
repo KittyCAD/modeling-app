@@ -183,6 +183,7 @@ description: Variables in memory after executing cube.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 40.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

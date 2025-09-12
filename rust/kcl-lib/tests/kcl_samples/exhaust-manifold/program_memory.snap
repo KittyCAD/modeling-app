@@ -891,6 +891,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [

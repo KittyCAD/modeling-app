@@ -1015,6 +1015,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "in",

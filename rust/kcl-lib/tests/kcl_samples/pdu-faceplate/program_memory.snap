@@ -299,6 +299,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 44.45,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -622,6 +623,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
           "originalId": "[uuid]",
           "units": "mm"
         },
+        "height": 44.45,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": "mm",
@@ -1302,6 +1304,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
+              "height": 44.45,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": "mm",
@@ -1739,6 +1742,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
+              "height": 44.45,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": "mm",
@@ -2176,6 +2180,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
+              "height": 44.45,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": "mm",
@@ -2613,6 +2618,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
+              "height": 44.45,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": "mm",
@@ -3050,6 +3056,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
+              "height": 44.45,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": "mm",
@@ -3487,6 +3494,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
+              "height": 44.45,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": "mm",
@@ -3981,6 +3989,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 44.45,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -4008,6 +4017,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -4457,6 +4467,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 44.45,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -4484,6 +4495,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -4933,6 +4945,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 44.45,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -4960,6 +4973,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -5409,6 +5423,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 44.45,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -5436,6 +5451,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -5885,6 +5901,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 44.45,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -5912,6 +5929,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -6361,6 +6379,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": 44.45,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -6388,6 +6407,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -6599,6 +6619,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -40.45,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -7058,6 +7079,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 44.45,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7519,6 +7541,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 44.45,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -7546,6 +7569,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -98.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -7804,6 +7828,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -40.45,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -7831,6 +7856,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -20.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -8132,6 +8158,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -8159,6 +8186,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -8186,6 +8214,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -8484,6 +8513,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -8511,6 +8541,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -8538,6 +8569,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -8836,6 +8868,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -8863,6 +8896,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -8890,6 +8924,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -9188,6 +9223,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -9215,6 +9251,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -9242,6 +9279,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -9540,6 +9578,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -9567,6 +9606,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -9594,6 +9634,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -9892,6 +9933,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -9919,6 +9961,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -9946,6 +9989,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -10244,6 +10288,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -10271,6 +10316,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -10298,6 +10344,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -10596,6 +10643,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -10623,6 +10671,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -10650,6 +10699,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -10948,6 +10998,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -10975,6 +11026,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -11002,6 +11054,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -11300,6 +11353,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -11327,6 +11381,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -11354,6 +11409,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -11652,6 +11708,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -11679,6 +11736,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -11706,6 +11764,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -12004,6 +12063,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -12031,6 +12091,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -12058,6 +12119,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -12356,6 +12418,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -12383,6 +12446,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -12410,6 +12474,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -12708,6 +12773,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -12735,6 +12801,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -12762,6 +12829,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -13060,6 +13128,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -13087,6 +13156,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -13114,6 +13184,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -13412,6 +13483,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                         "originalId": "[uuid]",
                         "units": "mm"
                       },
+                      "height": -40.45,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "mm",
@@ -13439,6 +13511,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
+                "height": -20.0,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "mm",
@@ -13466,6 +13539,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -5.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -13765,6 +13839,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "originalId": "[uuid]",
                       "units": "mm"
                     },
+                    "height": -40.45,
                     "startCapId": "[uuid]",
                     "endCapId": "[uuid]",
                     "units": "mm",
@@ -13792,6 +13867,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
+              "height": -20.0,
               "startCapId": "[uuid]",
               "endCapId": null,
               "units": "mm",
@@ -14099,6 +14175,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                       "originalId": "[uuid]",
                       "units": "mm"
                     },
+                    "height": -40.45,
                     "startCapId": "[uuid]",
                     "endCapId": "[uuid]",
                     "units": "mm",
@@ -14126,6 +14203,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
+              "height": -20.0,
               "startCapId": "[uuid]",
               "endCapId": null,
               "units": "mm",
@@ -14377,6 +14455,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -40.45,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -14581,6 +14660,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -40.45,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -14790,6 +14870,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -40.45,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -14990,6 +15071,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -40.45,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -15213,6 +15295,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -40.45,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -15407,6 +15490,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 15.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -15903,6 +15987,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -40.45,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -15930,6 +16015,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 3.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -16228,6 +16314,7 @@ description: Variables in memory after executing pdu-faceplate.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": -40.45,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",

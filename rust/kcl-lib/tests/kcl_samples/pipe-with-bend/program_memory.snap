@@ -326,6 +326,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",

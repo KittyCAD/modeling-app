@@ -403,6 +403,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -430,6 +431,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -791,6 +793,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -818,6 +821,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -1179,6 +1183,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -1206,6 +1211,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -1567,6 +1573,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -1594,6 +1601,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -1955,6 +1963,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -1982,6 +1991,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -2343,6 +2353,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -2370,6 +2381,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -2731,6 +2743,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -2758,6 +2771,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -3173,6 +3187,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -3200,6 +3215,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 3.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -3561,6 +3577,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -3588,6 +3605,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 4.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -3889,6 +3907,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 18.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -4427,6 +4446,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -4454,6 +4474,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -4481,6 +4502,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -4983,6 +5005,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -5010,6 +5033,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -5037,6 +5061,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -5539,6 +5564,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -5566,6 +5592,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -5593,6 +5620,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -6399,6 +6427,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -6426,6 +6455,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -6453,6 +6483,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -6991,6 +7022,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -7018,6 +7050,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -7045,6 +7078,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -7547,6 +7581,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -7574,6 +7609,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -7601,6 +7637,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -8103,6 +8140,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -8130,6 +8168,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -8157,6 +8196,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -8563,6 +8603,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -8590,6 +8631,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 3.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -8996,6 +9038,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -9023,6 +9066,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 2.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -9858,6 +9902,7 @@ description: Variables in memory after executing kitt.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
+                        "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -9885,6 +9930,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -9912,6 +9958,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": "mm",
@@ -9939,6 +9986,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -10774,6 +10822,7 @@ description: Variables in memory after executing kitt.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
+                        "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -10801,6 +10850,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -10828,6 +10878,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": "mm",
@@ -10855,6 +10906,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -11690,6 +11742,7 @@ description: Variables in memory after executing kitt.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
+                        "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -11717,6 +11770,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -11744,6 +11798,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": "mm",
@@ -11771,6 +11826,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -11953,6 +12009,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -12801,6 +12858,7 @@ description: Variables in memory after executing kitt.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
+                        "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -12828,6 +12886,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -12855,6 +12914,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": "mm",
@@ -12882,6 +12942,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -13717,6 +13778,7 @@ description: Variables in memory after executing kitt.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
+                        "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -13744,6 +13806,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -13771,6 +13834,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": "mm",
@@ -13798,6 +13862,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -14651,6 +14716,7 @@ description: Variables in memory after executing kitt.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
+                        "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -14678,6 +14744,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -14705,6 +14772,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": "mm",
@@ -14732,6 +14800,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -15567,6 +15636,7 @@ description: Variables in memory after executing kitt.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
+                        "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -15594,6 +15664,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -15621,6 +15692,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": "mm",
@@ -15648,6 +15720,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -16675,6 +16748,7 @@ description: Variables in memory after executing kitt.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
+                        "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -16702,6 +16776,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -16729,6 +16804,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": "mm",
@@ -16756,6 +16832,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -17126,6 +17203,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -17153,6 +17231,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 2.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -17988,6 +18067,7 @@ description: Variables in memory after executing kitt.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
+                        "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -18015,6 +18095,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -18042,6 +18123,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": "mm",
@@ -18069,6 +18151,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -18251,6 +18334,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -18780,6 +18864,7 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
+                  "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -18807,6 +18892,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -18834,6 +18920,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 1.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -19231,6 +19318,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -19258,6 +19346,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -19619,6 +19708,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -19646,6 +19736,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -20007,6 +20098,7 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -20034,6 +20126,7 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",

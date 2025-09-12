@@ -271,6 +271,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 100.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -786,6 +787,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 100.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -885,6 +887,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 50.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1528,6 +1531,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 100.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2024,6 +2028,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 100.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [

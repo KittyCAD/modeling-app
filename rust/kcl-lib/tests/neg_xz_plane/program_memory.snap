@@ -138,6 +138,7 @@ description: Variables in memory after executing neg_xz_plane.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 12.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

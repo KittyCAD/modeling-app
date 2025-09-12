@@ -179,6 +179,7 @@ description: Variables in memory after executing rectangle-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 710.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -361,6 +362,7 @@ description: Variables in memory after executing rectangle-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 710.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -543,6 +545,7 @@ description: Variables in memory after executing rectangle-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 710.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -725,6 +728,7 @@ description: Variables in memory after executing rectangle-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 710.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1118,6 +1122,7 @@ description: Variables in memory after executing rectangle-table.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": -40.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

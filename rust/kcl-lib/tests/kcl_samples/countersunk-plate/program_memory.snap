@@ -367,6 +367,7 @@ description: Variables in memory after executing countersunk-plate.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
+      "height": 0.375,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",

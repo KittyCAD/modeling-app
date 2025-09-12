@@ -473,6 +473,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 200.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -734,6 +735,7 @@ description: Variables in memory after executing thermal-block-insert.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 200.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",

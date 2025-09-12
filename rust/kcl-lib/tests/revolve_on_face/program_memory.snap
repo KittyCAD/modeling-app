@@ -222,6 +222,7 @@ description: Variables in memory after executing revolve_on_face.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
+            "height": 7.1,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -249,6 +250,7 @@ description: Variables in memory after executing revolve_on_face.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -447,6 +449,7 @@ description: Variables in memory after executing revolve_on_face.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
+          "height": 7.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -593,6 +596,7 @@ description: Variables in memory after executing revolve_on_face.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
+      "height": 7.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
