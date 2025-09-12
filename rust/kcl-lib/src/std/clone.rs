@@ -145,6 +145,10 @@ async fn fix_tags_and_references(
             let new_solid = do_post_extrude(
                 &solid.sketch,
                 new_geometry_id.into(),
+                crate::std::args::TyF64::new(
+                    solid.height,
+                    NumericType::Known(crate::execution::types::UnitType::Length(solid.units)),
+                ),
                 solid.sectional,
                 &NamedCapTags {
                     start: start_tag.as_ref(),

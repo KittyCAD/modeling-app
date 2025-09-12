@@ -98,6 +98,7 @@ async fn inner_loft(
         do_post_extrude(
             &sketch,
             id.into(),
+            TyF64::new(0.0, NumericType::mm()),
             false,
             &super::extrude::NamedCapTags {
                 start: tag_start.as_ref(),
