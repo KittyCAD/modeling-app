@@ -1195,7 +1195,7 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
-        ModelingCmd::Solid3dGetAdjacencyInfo(kcmc::Solid3dGetAdjacencyInfo { object_id,.. }) => {
+        ModelingCmd::Solid3dGetAdjacencyInfo(kcmc::Solid3dGetAdjacencyInfo { object_id, .. }) => {
             let Some(OkModelingCmdResponse::Solid3dGetAdjacencyInfo(info)) = response else {
                 return Ok(Vec::new());
             };
@@ -1203,15 +1203,21 @@ fn artifacts_to_update(
             let base = *object_id;
 
             let mut return_arr = Vec::new();
+            let mut pi: u32 = 0;
             for (index, edge) in info.edges.iter().enumerate() {
+                println!("edge: {edge:#?}");
                 let Some(original_info) = &edge.original_info else {
                     continue;
                 };
                 //let edge_id = ArtifactId::new(original_info.edge_id);
 
-                let path_modifier = format!("path_{}", index);
-                let edge_id = ArtifactId::new(generate_engine_id(base, &path_modifier));
-                
+                let path_modifier = format!("path_{}", pi);
+                pi += 1;
+                let edge_id = ArtifactId::new(generate_engine_id(base, &path_modifier)); // aka edge/segment id, eg.: "path_0"
+
+                //let edge_id = ArtifactId::new(generate_engine_id(base, &path_modifier));
+                //let edge_id = ArtifactId::new(*edge_id);
+
                 let Some(artifact) = artifacts.get(&edge_id) else {
                     continue;
                 };
