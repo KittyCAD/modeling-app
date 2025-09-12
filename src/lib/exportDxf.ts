@@ -98,7 +98,9 @@ export async function exportSketchToDxf(
     )
 
     // Helper function to safely extract files from engine response
-    const extractExportFiles = (response: any): Array<{ contents: string }> | null => {
+    const extractExportFiles = (
+      response: any
+    ): Array<{ contents: string }> | null => {
       try {
         // Basic response validation
         if (!response?.success || isArray(response)) {
