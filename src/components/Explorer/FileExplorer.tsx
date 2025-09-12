@@ -359,6 +359,9 @@ export const FileExplorerRowElement = ({
           event.dataTransfer.setDragImage(previewElem, 0, 0)
         }
       }}
+      onDragEnd={() => {
+        removeDragPreviewElem()
+      }}
       onDrop={(event) => {
         event.preventDefault()
         let droppedData: FileExplorerDropData
