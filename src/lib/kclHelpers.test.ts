@@ -109,6 +109,13 @@ describe('KCL expression calculations', () => {
     expect(coercedActual.valueAsString).toEqual('NAN')
     expect(coercedActual.astNode).toBeDefined()
   })
+
+  it('rejects arrays when allowArrays parameter is omitted', async () => {
+    const actual = await getCalculatedKclExpressionValue('[1, 2, 3]')
+    const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
+    expect(coercedActual.valueAsString).toEqual('NAN')
+    expect(coercedActual.astNode).toBeDefined()
+  })
 })
 
 describe('getStringValue', () => {

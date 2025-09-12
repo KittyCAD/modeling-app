@@ -17,7 +17,7 @@ const DUMMY_VARIABLE_NAME = '__result__'
  */
 export async function getCalculatedKclExpressionValue(
   value: string,
-  allowArrays: boolean = false // If true, allows numeric arrays only (e.g., [1, 2, 3])
+  allowArrays?: boolean
 ) {
   // Create a one-line program that assigns the value to a variable
   const dummyProgramCode = `${DUMMY_VARIABLE_NAME} = ${value}`
@@ -44,7 +44,7 @@ export async function getCalculatedKclExpressionValue(
 
   // Handle array values when allowArrays is true
   if (
-    allowArrays &&
+    allowArrays === true &&
     varValue &&
     (varValue.type === 'Tuple' || varValue.type === 'HomArray')
   ) {
@@ -116,7 +116,7 @@ export async function getCalculatedKclExpressionValue(
 
 export async function stringToKclExpression(
   value: string,
-  allowArrays: boolean = false
+  allowArrays?: boolean
 ) {
   const calculatedResult = await getCalculatedKclExpressionValue(
     value,

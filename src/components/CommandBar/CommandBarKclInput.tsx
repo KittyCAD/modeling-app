@@ -120,23 +120,7 @@ function CommandBarKclInput({
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const editorRef = useRef<HTMLDivElement>(null)
 
-  // Determine if arrays should be allowed for this field
-  const allowArrays = useMemo(() => {
-    const commandName = commandBarState.context.selectedCommand?.name
-    const argName = arg.name
-
-    // For Pattern Circular 3D operations, allow arrays for axis and center parameters
-    if (
-      commandName === 'patternCircular3d' &&
-      (argName === 'axis' || argName === 'center')
-    ) {
-      return true
-    }
-
-    // Add more cases here as needed for other operations that should accept arrays
-    // For now, disable arrays everywhere else (maintaining current production behavior)
-    return false
-  }, [commandBarState.context.selectedCommand?.name, arg.name])
+  const allowArrays = arg.allowArrays ?? false
 
   const {
     calcResult,
