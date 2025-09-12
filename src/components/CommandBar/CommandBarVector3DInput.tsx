@@ -66,9 +66,7 @@ function CommandBarVector3DInput({
     // Submit form when Enter is pressed in the last field
     if (e.key === 'Enter' && !nextInputRef) {
       e.preventDefault()
-      formRef.current?.dispatchEvent(
-        new Event('submit', { bubbles: true })
-      )
+      formRef.current?.dispatchEvent(new Event('submit', { bubbles: true }))
     }
   }
 
