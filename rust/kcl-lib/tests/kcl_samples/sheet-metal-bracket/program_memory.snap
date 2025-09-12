@@ -774,7 +774,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 5.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1659,7 +1658,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
-            "height": 5.5,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -1745,7 +1743,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": -0.125,
       "startCapId": null,
       "endCapId": null,
       "units": "in",
@@ -2647,7 +2644,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.5,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -2733,7 +2729,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.125,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -3560,7 +3555,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.5,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -3646,7 +3640,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.125,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -4514,7 +4507,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.5,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -4600,7 +4592,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.125,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -5427,7 +5418,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.5,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -5513,7 +5503,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.125,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -6389,7 +6378,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.5,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -6475,7 +6463,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.125,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -7302,7 +7289,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.5,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -7388,7 +7374,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.125,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -8215,7 +8200,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.5,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -8301,7 +8285,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.125,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -9128,7 +9111,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.5,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -9214,7 +9196,6 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.125,
           "startCapId": null,
           "endCapId": null,
           "units": "in",

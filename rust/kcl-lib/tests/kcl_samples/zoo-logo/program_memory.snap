@@ -477,7 +477,6 @@ description: Variables in memory after executing zoo-logo.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 0.25,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -710,7 +709,6 @@ description: Variables in memory after executing zoo-logo.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 0.25,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -943,7 +941,6 @@ description: Variables in memory after executing zoo-logo.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 0.25,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1176,7 +1173,6 @@ description: Variables in memory after executing zoo-logo.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 0.25,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1409,7 +1405,6 @@ description: Variables in memory after executing zoo-logo.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 0.25,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
