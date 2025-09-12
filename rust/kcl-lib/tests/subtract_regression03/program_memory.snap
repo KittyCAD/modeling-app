@@ -43,9 +43,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -55,9 +53,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": -0.503704,
             "y": -0.264924,
             "z": 0.0,
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "type": "plane",
           "value": "Custom",
@@ -65,25 +61,19 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": 0.7435091262737867,
             "y": 0.6687257877094245,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.6687257877094245,
             "y": -0.7435091262737867,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -95,9 +85,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.0495,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -106,16 +94,12 @@ description: Variables in memory after executing subtract_regression03.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -167,9 +151,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               0.06
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -186,9 +168,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               0.06
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -205,9 +185,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               -0.06
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -224,9 +202,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               -0.06
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -236,9 +212,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": -0.503704,
             "y": -0.28,
             "z": 0.0,
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "type": "plane",
           "value": "Custom",
@@ -246,25 +220,19 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": -0.7435091262737867,
             "y": 0.6687257877094245,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": -1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": -0.6687257877094245,
             "y": -0.7435091262737867,
             "z": -0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -276,9 +244,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.0,
             -0.06
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -287,16 +253,12 @@ description: Variables in memory after executing subtract_regression03.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": -0.2,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -340,9 +302,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -352,9 +312,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": -0.503704,
             "y": -0.264924,
             "z": 0.0,
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "type": "plane",
           "value": "Custom",
@@ -362,25 +320,19 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": 0.7435091262737867,
             "y": 0.6687257877094245,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.6687257877094245,
             "y": -0.7435091262737867,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -392,9 +344,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.0495,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -403,16 +353,12 @@ description: Variables in memory after executing subtract_regression03.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -464,9 +410,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               0.06
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -483,9 +427,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               0.06
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -502,9 +444,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               -0.06
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -521,9 +461,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               -0.06
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -533,9 +471,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": 0.42,
             "y": -0.28,
             "z": 0.0,
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "type": "plane",
           "value": "Custom",
@@ -543,25 +479,19 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": -0.6025804201392091,
             "y": -0.7980581665924197,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": -0.7980581665924197,
             "y": 0.6025804201392091,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -573,9 +503,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.0,
             -0.06
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -584,16 +512,12 @@ description: Variables in memory after executing subtract_regression03.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": -0.2,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -608,12 +532,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.503704,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -621,12 +541,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.264924,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -634,12 +550,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -652,12 +564,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.191884,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -665,12 +573,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.172584,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -678,12 +582,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -696,12 +596,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -709,12 +605,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -722,12 +614,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -740,12 +628,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.191884,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -753,12 +637,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.172584,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -766,12 +646,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -790,12 +666,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.503704,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -803,12 +675,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.28,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -816,12 +684,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -834,12 +698,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.191884,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -847,12 +707,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.172584,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -860,12 +716,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -878,12 +730,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -891,12 +739,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -904,12 +748,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -922,12 +762,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.191884,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -935,12 +771,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.172584,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -948,12 +780,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -972,12 +800,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.42,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -985,12 +809,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.28,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -998,12 +818,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -1016,12 +832,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.200323,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -1029,12 +841,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.265308,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -1042,12 +850,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -1060,12 +864,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -1073,12 +873,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -1086,12 +882,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -1104,12 +896,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.200323,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -1117,12 +905,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.265308,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -1130,12 +914,8 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -1152,34 +932,26 @@ description: Variables in memory after executing subtract_regression03.kcl
         "x": -0.503704,
         "y": -0.264924,
         "z": 0.0,
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "value": "Custom",
       "xAxis": {
         "x": 0.7435091262737867,
         "y": 0.6687257877094245,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.6687257877094245,
         "y": -0.7435091262737867,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1210,9 +982,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1222,9 +992,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           "x": -0.503704,
           "y": -0.264924,
           "z": 0.0,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "type": "plane",
         "value": "Custom",
@@ -1232,25 +1000,19 @@ description: Variables in memory after executing subtract_regression03.kcl
           "x": 0.7435091262737867,
           "y": 0.6687257877094245,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.6687257877094245,
           "y": -0.7435091262737867,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1262,9 +1024,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           0.0495,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1273,9 +1033,7 @@ description: Variables in memory after executing subtract_regression03.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch002": {
@@ -1287,34 +1045,26 @@ description: Variables in memory after executing subtract_regression03.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1339,9 +1089,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             -0.09234
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1364,9 +1112,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.18843474560378842
           ],
           "type": "Arc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1383,9 +1129,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.31298174560378844
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1408,9 +1152,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.31298174560378844
           ],
           "type": "Arc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1427,9 +1169,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.18843474560378842
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1452,9 +1192,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             -0.06919259061614122
           ],
           "type": "Arc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1471,9 +1209,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             -0.33450059061614124
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1483,9 +1219,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -1493,25 +1227,19 @@ description: Variables in memory after executing subtract_regression03.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1523,9 +1251,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           -0.503704,
           -0.264924
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1534,9 +1260,7 @@ description: Variables in memory after executing subtract_regression03.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "isClosed": false
     }
   },
@@ -1549,34 +1273,26 @@ description: Variables in memory after executing subtract_regression03.kcl
         "x": -0.503704,
         "y": -0.28,
         "z": 0.0,
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "value": "Custom",
       "xAxis": {
         "x": -0.7435091262737867,
         "y": 0.6687257877094245,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": -1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": -0.6687257877094245,
         "y": -0.7435091262737867,
         "z": -0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1601,9 +1317,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.06
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1620,9 +1334,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.06
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1639,9 +1351,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             -0.06
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1658,9 +1368,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             -0.06
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1670,9 +1378,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           "x": -0.503704,
           "y": -0.28,
           "z": 0.0,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "type": "plane",
         "value": "Custom",
@@ -1680,25 +1386,19 @@ description: Variables in memory after executing subtract_regression03.kcl
           "x": -0.7435091262737867,
           "y": 0.6687257877094245,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": -1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": -0.6687257877094245,
           "y": -0.7435091262737867,
           "z": -0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1710,9 +1410,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           0.0,
           -0.06
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1721,9 +1419,7 @@ description: Variables in memory after executing subtract_regression03.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch004": {
@@ -1735,34 +1431,26 @@ description: Variables in memory after executing subtract_regression03.kcl
         "x": 0.42,
         "y": -0.28,
         "z": 0.0,
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "value": "Custom",
       "xAxis": {
         "x": -0.6025804201392091,
         "y": -0.7980581665924197,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": -0.7980581665924197,
         "y": 0.6025804201392091,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1787,9 +1475,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.06
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1806,9 +1492,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.06
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1825,9 +1509,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             -0.06
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1844,9 +1526,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             -0.06
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1856,9 +1536,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           "x": 0.42,
           "y": -0.28,
           "z": 0.0,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "type": "plane",
         "value": "Custom",
@@ -1866,25 +1544,19 @@ description: Variables in memory after executing subtract_regression03.kcl
           "x": -0.6025804201392091,
           "y": -0.7980581665924197,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": -0.7980581665924197,
           "y": 0.6025804201392091,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1896,9 +1568,7 @@ description: Variables in memory after executing subtract_regression03.kcl
           0.0,
           -0.06
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1907,9 +1577,7 @@ description: Variables in memory after executing subtract_regression03.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sweepExtrude000": {
@@ -1952,9 +1620,7 @@ description: Variables in memory after executing subtract_regression03.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1964,9 +1630,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": -0.503704,
             "y": -0.264924,
             "z": 0.0,
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "type": "plane",
           "value": "Custom",
@@ -1974,25 +1638,19 @@ description: Variables in memory after executing subtract_regression03.kcl
             "x": 0.7435091262737867,
             "y": 0.6687257877094245,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.6687257877094245,
             "y": -0.7435091262737867,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2004,9 +1662,7 @@ description: Variables in memory after executing subtract_regression03.kcl
             0.0495,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2015,16 +1671,12 @@ description: Variables in memory after executing subtract_regression03.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   }

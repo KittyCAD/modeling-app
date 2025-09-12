@@ -8,21 +8,17 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "distanceToInsideEdge": {
     "type": "Number",
     "value": 1.2846948818897639,
     "ty": {
+      "in": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Inches"
+      "type": "Length"
     }
   },
   "extrude001": {
@@ -262,9 +258,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               31.88125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -294,9 +288,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               20.0
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -320,9 +312,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -346,9 +336,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -372,9 +360,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.940625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -398,9 +384,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.940625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -424,9 +408,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.940625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -450,9 +432,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.940625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -476,9 +456,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               41.88125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -502,9 +480,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               41.88125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -521,9 +497,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               41.88125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -540,9 +514,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.940625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -559,9 +531,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               30.940625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -578,9 +548,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.940625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -597,9 +565,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               10.940625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -616,9 +582,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -635,9 +599,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -654,9 +616,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               20.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -679,9 +639,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               31.88125
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -698,9 +656,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               31.88125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -717,9 +673,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               31.88125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -729,9 +683,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -739,25 +691,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -769,9 +715,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0,
             31.88125
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -822,16 +766,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -918,9 +858,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0000000000000012246467991473533
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -944,9 +882,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -9.999999999999998
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -970,9 +906,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -989,9 +923,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1008,9 +940,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1022,17 +952,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -1269,9 +1195,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     31.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1301,9 +1225,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     20.0
                   ],
                   "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1327,9 +1249,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1353,9 +1273,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1379,9 +1297,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1405,9 +1321,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1431,9 +1345,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1457,9 +1369,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1483,9 +1393,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1509,9 +1417,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1528,9 +1434,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1547,9 +1451,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1566,9 +1468,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1585,9 +1485,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1604,9 +1502,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1623,9 +1519,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1642,9 +1536,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1661,9 +1553,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     20.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1686,9 +1576,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     31.88125
                   ],
                   "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1705,9 +1593,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     31.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1724,9 +1610,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     31.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -1736,9 +1620,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -1746,25 +1628,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -1776,9 +1652,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   0.0,
                   31.88125
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1829,21 +1703,15 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -1854,9 +1722,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             32.63125,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1879,16 +1745,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 13.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1975,9 +1837,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2001,9 +1861,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2027,9 +1885,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2046,9 +1902,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2065,9 +1919,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -2079,17 +1931,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -2326,9 +2174,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     31.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2358,9 +2204,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     20.0
                   ],
                   "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2384,9 +2228,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2410,9 +2252,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2436,9 +2276,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2462,9 +2300,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2488,9 +2324,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2514,9 +2348,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2540,9 +2372,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2566,9 +2396,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2585,9 +2413,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     41.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2604,9 +2430,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2623,9 +2447,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     30.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2642,9 +2464,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2661,9 +2481,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     10.940625
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2680,9 +2498,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2699,9 +2515,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2718,9 +2532,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     20.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2743,9 +2555,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     31.88125
                   ],
                   "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2762,9 +2572,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     31.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -2781,9 +2589,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     31.88125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -2793,9 +2599,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -2803,25 +2607,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -2833,9 +2631,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   0.0,
                   31.88125
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -2886,21 +2682,15 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -2911,9 +2701,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -32.63125,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2936,16 +2724,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 13.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -3032,9 +2816,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3058,9 +2840,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3084,9 +2864,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3103,9 +2881,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3122,9 +2898,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -3136,17 +2910,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -3229,9 +2999,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0000000000000012246467991473533
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -3255,9 +3023,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -9.999999999999998
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -3281,9 +3047,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -3300,9 +3064,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -3319,9 +3081,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -3333,17 +3093,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "solid": {
                   "type": "Solid",
@@ -3580,9 +3336,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           31.88125
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3612,9 +3366,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           20.0
                         ],
                         "type": "Arc",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3638,9 +3390,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           -10.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3664,9 +3414,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           -10.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3690,9 +3438,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           10.940625
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3716,9 +3462,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           10.940625
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3742,9 +3486,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           30.940625
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3768,9 +3510,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           30.940625
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3794,9 +3534,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           41.88125
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3820,9 +3558,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           41.88125
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3839,9 +3575,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           41.88125
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3858,9 +3592,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           30.940625
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3877,9 +3609,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           30.940625
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3896,9 +3626,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           10.940625
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3915,9 +3643,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           10.940625
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3934,9 +3660,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           -10.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3953,9 +3677,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           -10.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3972,9 +3694,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           20.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -3997,9 +3717,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           31.88125
                         ],
                         "type": "Arc",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -4016,9 +3734,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           31.88125
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -4035,9 +3751,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           31.88125
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       }
                     ],
                     "on": {
@@ -4047,9 +3761,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       "type": "plane",
                       "value": "XZ",
@@ -4057,25 +3769,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "x": 1.0,
                         "y": 0.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       }
                     },
                     "start": {
@@ -4087,9 +3793,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         0.0,
                         31.88125
                       ],
-                      "units": {
-                        "type": "Mm"
-                      },
+                      "units": "mm",
                       "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
@@ -4140,21 +3844,15 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   "height": 5.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  },
+                  "units": "mm",
                   "sectional": false
                 },
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "start": {
                 "from": [
@@ -4165,9 +3863,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   32.63125,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -4190,21 +3886,15 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "height": 13.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -4215,9 +3905,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -32.63125,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4240,16 +3928,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -4258,12 +3942,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "radius": {
@@ -4271,12 +3951,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "rectangleSegmentA001": {
@@ -4329,12 +4005,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 12.7,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "seg01": {
@@ -4415,9 +4087,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             31.88125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4447,9 +4117,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             20.0
           ],
           "type": "Arc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4473,9 +4141,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4499,9 +4165,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4525,9 +4189,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.940625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4551,9 +4213,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.940625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4577,9 +4237,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.940625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4603,9 +4261,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.940625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4629,9 +4285,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             41.88125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4655,9 +4309,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             41.88125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4674,9 +4326,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             41.88125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4693,9 +4343,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.940625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4712,9 +4360,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             30.940625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4731,9 +4377,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.940625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4750,9 +4394,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             10.940625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4769,9 +4411,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4788,9 +4428,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4807,9 +4445,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             20.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4832,9 +4468,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             31.88125
           ],
           "type": "Arc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4851,9 +4485,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             31.88125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4870,9 +4502,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             31.88125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -4882,9 +4512,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -4892,25 +4520,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -4922,9 +4544,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           0.0,
           31.88125
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -4975,9 +4595,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch002": {
@@ -5008,9 +4626,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0000000000000012246467991473533
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -5034,9 +4650,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -9.999999999999998
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -5060,9 +4674,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -5079,9 +4691,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -5098,9 +4708,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -5112,17 +4720,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -5359,9 +4963,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   31.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5391,9 +4993,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   20.0
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5417,9 +5017,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5443,9 +5041,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5469,9 +5065,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5495,9 +5089,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5521,9 +5113,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5547,9 +5137,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5573,9 +5161,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   41.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5599,9 +5185,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   41.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5618,9 +5202,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   41.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5637,9 +5219,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5656,9 +5236,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5675,9 +5253,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5694,9 +5270,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5713,9 +5287,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5732,9 +5304,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5751,9 +5321,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   20.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5776,9 +5344,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   31.88125
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5795,9 +5361,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   31.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5814,9 +5378,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   31.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -5826,9 +5388,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -5836,25 +5396,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -5866,9 +5420,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 0.0,
                 31.88125
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5919,21 +5471,15 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -5944,9 +5490,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           32.63125,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -5969,9 +5513,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch003": {
@@ -6002,9 +5544,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -6028,9 +5568,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -6054,9 +5592,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -6073,9 +5609,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -6092,9 +5626,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -6106,17 +5638,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -6353,9 +5881,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   31.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6385,9 +5911,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   20.0
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6411,9 +5935,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6437,9 +5959,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6463,9 +5983,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6489,9 +6007,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6515,9 +6031,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6541,9 +6055,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6567,9 +6079,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   41.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6593,9 +6103,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   41.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6612,9 +6120,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   41.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6631,9 +6137,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6650,9 +6154,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   30.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6669,9 +6171,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6688,9 +6188,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   10.940625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6707,9 +6205,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6726,9 +6222,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6745,9 +6239,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   20.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6770,9 +6262,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   31.88125
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6789,9 +6279,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   31.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6808,9 +6296,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   31.88125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -6820,9 +6306,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -6830,25 +6314,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -6860,9 +6338,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 0.0,
                 31.88125
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6913,21 +6389,15 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -6938,9 +6408,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           -32.63125,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -6963,9 +6431,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch004": {
@@ -6996,9 +6462,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -7022,9 +6486,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -7048,9 +6510,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -7067,9 +6527,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -7086,9 +6544,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -7100,17 +6556,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -7193,9 +6645,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   0.0000000000000012246467991473533
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7219,9 +6669,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -9.999999999999998
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7245,9 +6693,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7264,9 +6710,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7283,9 +6727,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -7297,17 +6739,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -7544,9 +6982,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         31.88125
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7576,9 +7012,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         20.0
                       ],
                       "type": "Arc",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7602,9 +7036,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         -10.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7628,9 +7060,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         -10.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7654,9 +7084,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         10.940625
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7680,9 +7108,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         10.940625
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7706,9 +7132,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         30.940625
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7732,9 +7156,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         30.940625
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7758,9 +7180,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         41.88125
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7784,9 +7204,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         41.88125
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7803,9 +7221,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         41.88125
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7822,9 +7238,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         30.940625
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7841,9 +7255,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         30.940625
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7860,9 +7272,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         10.940625
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7879,9 +7289,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         10.940625
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7898,9 +7306,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         -10.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7917,9 +7323,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         -10.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7936,9 +7340,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         20.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7961,9 +7363,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         31.88125
                       ],
                       "type": "Arc",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7980,9 +7380,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         31.88125
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -7999,9 +7397,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         31.88125
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -8011,9 +7407,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -8021,25 +7415,19 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -8051,9 +7439,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       0.0,
                       31.88125
                     ],
-                    "units": {
-                      "type": "Mm"
-                    },
+                    "units": "mm",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -8104,21 +7490,15 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "sectional": false
               },
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "start": {
               "from": [
@@ -8129,9 +7509,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 32.63125,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -8154,21 +7532,15 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -8179,9 +7551,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           -32.63125,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -8204,9 +7574,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "slateWidthHalf": {
@@ -8214,30 +7582,26 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 20.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "templateDiameter": {
     "type": "Number",
     "value": 0.6875,
     "ty": {
+      "in": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Inches"
+      "type": "Length"
     }
   },
   "templateGap": {
     "type": "Number",
     "value": 0.07406496062992127,
     "ty": {
+      "in": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Inches"
+      "type": "Length"
     }
   },
   "templateThickness": {
@@ -8245,12 +7609,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

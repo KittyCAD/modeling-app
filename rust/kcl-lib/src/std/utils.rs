@@ -1,9 +1,9 @@
 use std::f64::consts::PI;
 
-use kittycad_modeling_cmds::shared::Angle;
+use kittycad_modeling_cmds::{shared::Angle, units::UnitLength};
 
 use super::args::TyF64;
-use crate::execution::types::{NumericType, UnitLen};
+use crate::execution::types::NumericType;
 
 pub(crate) fn untype_point(p: [TyF64; 2]) -> ([f64; 2], NumericType) {
     let (x, y, ty) = NumericType::combine_eq_coerce(p[0].clone(), p[1].clone());
@@ -23,20 +23,19 @@ pub(crate) fn point_to_mm(p: [TyF64; 2]) -> [f64; 2] {
     [p[0].to_mm(), p[1].to_mm()]
 }
 
-pub(crate) fn untyped_point_to_mm(p: [f64; 2], units: UnitLen) -> [f64; 2] {
-    assert_ne!(units, UnitLen::Unknown);
+pub(crate) fn untyped_point_to_mm(p: [f64; 2], units: UnitLength) -> [f64; 2] {
     [
-        units.adjust_to(p[0], UnitLen::Mm).0,
-        units.adjust_to(p[1], UnitLen::Mm).0,
+        crate::execution::types::adjust_length(units, p[0], UnitLength::Millimeters).0,
+        crate::execution::types::adjust_length(units, p[1], UnitLength::Millimeters).0,
     ]
 }
 
-pub(crate) fn point_to_len_unit(p: [TyF64; 2], len: UnitLen) -> [f64; 2] {
+pub(crate) fn point_to_len_unit(p: [TyF64; 2], len: UnitLength) -> [f64; 2] {
     [p[0].to_length_units(len), p[1].to_length_units(len)]
 }
 
 /// Precondition, `p` must be in `len` units (this function does no conversion).
-pub(crate) fn point_to_typed(p: [f64; 2], len: UnitLen) -> [TyF64; 2] {
+pub(crate) fn point_to_typed(p: [f64; 2], len: UnitLength) -> [TyF64; 2] {
     [TyF64::new(p[0], len.into()), TyF64::new(p[1], len.into())]
 }
 

@@ -7,9 +7,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Number",
     "value": 75.0,
     "ty": {
+      "degrees": null,
       "type": "Known",
-      "type": "Angle",
-      "type": "Degrees"
+      "type": "Angle"
     }
   },
   "bracketProfile": {
@@ -228,9 +228,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -252,9 +250,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.18529523872436982
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -278,9 +274,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.375
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -302,9 +296,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.467647619362185
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -328,9 +320,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.467647619362185
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -347,9 +337,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.467647619362185
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -371,9 +359,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.375
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -390,9 +376,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.1852952387243696
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -414,9 +398,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               -0.00000000000000016653345369377348
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -433,9 +415,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               -0.00000000000000016653345369377348
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -459,9 +439,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.12499999999999983
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -485,9 +463,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.12499999999999983
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -509,9 +485,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.21764761936218474
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -528,9 +502,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.407352380637815
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -552,9 +524,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.5926476193621846
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -578,9 +548,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.5926476193621846
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -597,9 +565,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.5926476193621846
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -621,9 +587,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.407352380637815
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -640,9 +604,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.21764761936218457
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -664,9 +626,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.1249999999999997
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -690,9 +650,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.1249999999999997
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -716,9 +674,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -735,9 +691,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -747,9 +701,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -757,25 +709,19 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -787,9 +733,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             -4.25,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -828,9 +772,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 5.5,
       "startCapId": "[uuid]",
@@ -843,12 +785,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -861,12 +799,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -879,12 +813,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -897,21 +827,15 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -955,9 +879,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               2.75
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -969,17 +891,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -1195,9 +1113,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1219,9 +1135,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.18529523872436982
                   ],
                   "type": "TangentialArc",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1245,9 +1159,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.375
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1269,9 +1181,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.467647619362185
                   ],
                   "type": "TangentialArc",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1295,9 +1205,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.467647619362185
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1314,9 +1222,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.467647619362185
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1338,9 +1244,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.375
                   ],
                   "type": "TangentialArc",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1357,9 +1261,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.1852952387243696
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1381,9 +1283,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     -0.00000000000000016653345369377348
                   ],
                   "type": "TangentialArc",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1400,9 +1300,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     -0.00000000000000016653345369377348
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1426,9 +1324,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.12499999999999983
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1452,9 +1348,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.12499999999999983
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1476,9 +1370,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.21764761936218474
                   ],
                   "type": "TangentialArc",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1495,9 +1387,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.407352380637815
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1519,9 +1409,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.5926476193621846
                   ],
                   "type": "TangentialArc",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1545,9 +1433,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.5926476193621846
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1564,9 +1450,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.5926476193621846
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1588,9 +1472,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     2.407352380637815
                   ],
                   "type": "TangentialArc",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1607,9 +1489,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.21764761936218457
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1631,9 +1511,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.1249999999999997
                   ],
                   "type": "TangentialArc",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1657,9 +1535,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.1249999999999997
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1683,9 +1559,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1702,9 +1576,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -1714,9 +1586,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -1724,25 +1594,19 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -1754,9 +1618,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   -4.25,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1795,9 +1657,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "height": 5.5,
             "startCapId": "[uuid]",
@@ -1810,12 +1670,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "n": 0.5,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -1828,12 +1684,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "n": 0.5,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -1846,12 +1698,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "n": 0.5,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -1864,26 +1712,18 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "n": 0.5,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
                 "tag": null
               }
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -1894,9 +1734,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             0.75,
             2.75
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1905,16 +1743,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": -0.125,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1923,12 +1757,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.1875,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "componentBoltPatternX": {
@@ -1936,12 +1766,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "componentBoltPatternY": {
@@ -1949,12 +1775,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "exteriorBendRadius": {
@@ -1962,12 +1784,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeExtrusion": {
@@ -1975,12 +1793,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 5.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeLength": {
@@ -1988,12 +1802,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 1.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "hatHeight": {
@@ -2001,12 +1811,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "interiorBendRadius": {
@@ -2014,12 +1820,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "leftFlangeBoltPattern": {
@@ -2065,9 +1867,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   0.75
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -2079,17 +1879,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -2305,9 +2101,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2329,9 +2123,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2355,9 +2147,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2379,9 +2169,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2405,9 +2193,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2424,9 +2210,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2448,9 +2232,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2467,9 +2249,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1852952387243696
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2491,9 +2271,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2510,9 +2288,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2536,9 +2312,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2562,9 +2336,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2586,9 +2358,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218474
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2605,9 +2375,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2629,9 +2397,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2655,9 +2421,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2674,9 +2438,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2698,9 +2460,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2717,9 +2477,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218457
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2741,9 +2499,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2767,9 +2523,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2793,9 +2547,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2812,9 +2564,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -2824,9 +2574,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -2834,25 +2582,19 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -2864,9 +2606,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       -4.25,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -2905,9 +2645,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 "height": 5.5,
                 "startCapId": "[uuid]",
@@ -2920,12 +2658,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -2938,12 +2672,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -2956,12 +2686,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -2974,26 +2700,18 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -3004,9 +2722,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 -3.375,
                 0.75
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3015,16 +2731,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "height": -0.125,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -3068,9 +2780,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   0.75
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -3082,17 +2792,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -3308,9 +3014,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3332,9 +3036,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3358,9 +3060,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3382,9 +3082,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3408,9 +3106,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3427,9 +3123,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3451,9 +3145,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3470,9 +3162,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1852952387243696
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3494,9 +3184,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3513,9 +3201,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3539,9 +3225,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3565,9 +3249,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3589,9 +3271,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218474
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3608,9 +3288,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3632,9 +3310,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3658,9 +3334,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3677,9 +3351,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3701,9 +3373,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3720,9 +3390,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218457
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3744,9 +3412,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3770,9 +3436,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3796,9 +3460,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3815,9 +3477,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -3827,9 +3487,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -3837,25 +3495,19 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -3867,9 +3519,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       -4.25,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -3908,9 +3558,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 "height": 5.5,
                 "startCapId": "[uuid]",
@@ -3923,12 +3571,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -3941,12 +3585,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -3959,12 +3599,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -3977,26 +3613,18 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -4007,9 +3635,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 -3.375,
                 0.75
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4018,16 +3644,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "height": -0.125,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       }
@@ -4038,12 +3660,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "mountingBoltPatternX": {
@@ -4051,12 +3669,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 7.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "mountingBoltPatternY": {
@@ -4064,12 +3678,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "overhang": {
@@ -4077,12 +3687,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "rightFlangeBoltPattern": {
@@ -4128,9 +3734,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   0.75
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -4142,17 +3746,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -4368,9 +3968,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4392,9 +3990,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4418,9 +4014,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4442,9 +4036,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4468,9 +4060,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4487,9 +4077,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4511,9 +4099,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4530,9 +4116,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1852952387243696
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4554,9 +4138,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4573,9 +4155,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4599,9 +4179,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4625,9 +4203,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4649,9 +4225,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218474
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4668,9 +4242,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4692,9 +4264,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4718,9 +4288,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4737,9 +4305,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4761,9 +4327,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4780,9 +4344,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218457
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4804,9 +4366,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4830,9 +4390,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4856,9 +4414,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4875,9 +4431,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -4887,9 +4441,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -4897,25 +4449,19 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -4927,9 +4473,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       -4.25,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -4968,9 +4512,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 "height": 5.5,
                 "startCapId": "[uuid]",
@@ -4983,12 +4525,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -5001,12 +4539,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -5019,12 +4553,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -5037,26 +4567,18 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -5067,9 +4589,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 3.625,
                 0.75
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5078,16 +4598,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "height": -0.125,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -5131,9 +4647,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   0.75
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -5145,17 +4659,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -5371,9 +4881,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5395,9 +4903,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5421,9 +4927,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5445,9 +4949,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5471,9 +4973,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5490,9 +4990,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5514,9 +5012,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5533,9 +5029,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1852952387243696
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5557,9 +5051,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5576,9 +5068,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5602,9 +5092,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5628,9 +5116,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5652,9 +5138,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218474
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5671,9 +5155,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5695,9 +5177,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5721,9 +5201,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5740,9 +5218,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5764,9 +5240,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5783,9 +5257,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218457
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5807,9 +5279,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5833,9 +5303,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5859,9 +5327,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -5878,9 +5344,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -5890,9 +5354,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -5900,25 +5362,19 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -5930,9 +5386,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       -4.25,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -5971,9 +5425,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 "height": 5.5,
                 "startCapId": "[uuid]",
@@ -5986,12 +5438,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -6004,12 +5452,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -6022,12 +5466,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -6040,26 +5480,18 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -6070,9 +5502,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 3.625,
                 0.75
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6081,16 +5511,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "height": -0.125,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       }
@@ -6136,12 +5562,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "topFlangeBoltPattern": {
@@ -6187,9 +5609,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   1.25
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -6201,17 +5621,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -6427,9 +5843,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6451,9 +5865,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6477,9 +5889,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6501,9 +5911,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6527,9 +5935,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6546,9 +5952,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6570,9 +5974,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6589,9 +5991,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1852952387243696
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6613,9 +6013,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6632,9 +6030,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6658,9 +6054,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6684,9 +6078,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6708,9 +6100,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218474
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6727,9 +6117,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6751,9 +6139,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6777,9 +6163,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6796,9 +6180,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6820,9 +6202,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6839,9 +6219,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218457
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6863,9 +6241,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6889,9 +6265,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6915,9 +6289,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -6934,9 +6306,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -6946,9 +6316,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -6956,25 +6324,19 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -6986,9 +6348,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       -4.25,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -7027,9 +6387,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 "height": 5.5,
                 "startCapId": "[uuid]",
@@ -7042,12 +6400,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -7060,12 +6414,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -7078,12 +6428,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -7096,26 +6442,18 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -7126,9 +6464,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 -0.90625,
                 1.25
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -7137,16 +6473,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "height": -0.125,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -7190,9 +6522,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   1.25
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -7204,17 +6534,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -7430,9 +6756,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7454,9 +6778,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7480,9 +6802,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7504,9 +6824,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7530,9 +6848,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7549,9 +6865,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7573,9 +6887,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7592,9 +6904,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1852952387243696
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7616,9 +6926,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7635,9 +6943,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7661,9 +6967,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7687,9 +6991,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7711,9 +7013,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218474
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7730,9 +7030,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7754,9 +7052,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7780,9 +7076,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7799,9 +7093,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7823,9 +7115,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7842,9 +7132,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218457
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7866,9 +7154,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7892,9 +7178,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7918,9 +7202,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -7937,9 +7219,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -7949,9 +7229,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -7959,25 +7237,19 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -7989,9 +7261,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       -4.25,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -8030,9 +7300,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 "height": 5.5,
                 "startCapId": "[uuid]",
@@ -8045,12 +7313,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -8063,12 +7327,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -8081,12 +7341,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -8099,26 +7355,18 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -8129,9 +7377,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 -0.90625,
                 1.25
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -8140,16 +7386,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "height": -0.125,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -8193,9 +7435,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   1.25
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -8207,17 +7447,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -8433,9 +7669,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8457,9 +7691,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8483,9 +7715,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8507,9 +7737,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8533,9 +7761,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8552,9 +7778,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8576,9 +7800,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8595,9 +7817,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1852952387243696
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8619,9 +7839,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8638,9 +7856,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8664,9 +7880,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8690,9 +7904,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8714,9 +7926,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218474
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8733,9 +7943,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8757,9 +7965,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8783,9 +7989,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8802,9 +8006,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8826,9 +8028,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8845,9 +8045,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218457
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8869,9 +8067,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8895,9 +8091,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8921,9 +8115,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -8940,9 +8132,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -8952,9 +8142,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -8962,25 +8150,19 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -8992,9 +8174,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       -4.25,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -9033,9 +8213,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 "height": 5.5,
                 "startCapId": "[uuid]",
@@ -9048,12 +8226,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -9066,12 +8240,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -9084,12 +8254,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -9102,26 +8268,18 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -9132,9 +8290,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 -0.90625,
                 1.25
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -9143,16 +8299,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "height": -0.125,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -9196,9 +8348,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   1.25
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -9210,17 +8360,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -9436,9 +8582,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9460,9 +8604,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.18529523872436982
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9486,9 +8628,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9510,9 +8650,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9536,9 +8674,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9555,9 +8691,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.467647619362185
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9579,9 +8713,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.375
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9598,9 +8730,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1852952387243696
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9622,9 +8752,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9641,9 +8769,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         -0.00000000000000016653345369377348
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9667,9 +8793,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9693,9 +8817,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.12499999999999983
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9717,9 +8839,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218474
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9736,9 +8856,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9760,9 +8878,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9786,9 +8902,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9805,9 +8919,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.5926476193621846
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9829,9 +8941,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         2.407352380637815
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9848,9 +8958,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.21764761936218457
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9872,9 +8980,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "TangentialArc",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9898,9 +9004,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.1249999999999997
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9924,9 +9028,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -9943,9 +9045,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -9955,9 +9055,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -9965,25 +9063,19 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -9995,9 +9087,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       -4.25,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -10036,9 +9126,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 "height": 5.5,
                 "startCapId": "[uuid]",
@@ -10051,12 +9139,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -10069,12 +9153,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -10087,12 +9167,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -10105,26 +9181,18 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       "n": 0.5,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -10135,9 +9203,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 -0.90625,
                 1.25
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -10146,16 +9212,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "height": -0.125,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       }
