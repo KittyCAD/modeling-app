@@ -11,12 +11,10 @@ import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
 const globalInteractionMapItems: InteractionMapItem[] = [
   {
-    name: 'bring-the-pain',
+    id: 'bring-the-pain',
     title: 'Bring the pain',
     sequence: 'g LeftButton shift+o',
-    guard: () => true,
     action: () => alert('BRING THE PAIN!'),
-    ownerId: 'blah',
     description: "A goofy test keybinding that's always available",
     category: 'Miscellaneous',
   },
@@ -29,7 +27,7 @@ type InteractionMapMachineEvent =
     }
   | {
       type: 'Remove from interaction map'
-      data: string
+      data: InteractionMapItem[]
     }
   | { type: 'Fire event'; data: MouseEvent | KeyboardEvent }
   | { type: 'Execute keymap action'; data: InteractionMapItem }
@@ -113,28 +111,25 @@ export const interactionMapMachine = setup({
     }),
     'Remove from interactionMap': assign({
       interactionMap: ({ context, event }) => {
-        if (
-          !('data' in event) ||
-          !event.data ||
-          typeof event.data !== 'string'
-        ) {
-          console.error('bad call to remove from interactionMap', event)
-          return context.interactionMap
-        }
+        assertEvent(event, 'Remove from interaction map')
 
-        // Filter out any items that have an ownerId that matches event.data
-        return [
-          ...context.interactionMap.filter(
-            (item) => item.ownerId !== event.data
-          ),
-        ]
+        // Filter out any matching items by name
+        let newInteractionMap = [...context.interactionMap]
+        for (let itemToRemove of event.data) {
+          newInteractionMap = newInteractionMap.filter(
+            (existingItem) =>
+              existingItem.id === itemToRemove.id &&
+              existingItem.category === itemToRemove.category
+          )
+        }
+        return newInteractionMap
       },
     }),
     'Add user-defined override': assign({
       interactionMap: ({ context, event }) => {
         assertEvent(event, 'Add user-defined override')
         const foundItemIndex = context.interactionMap.findIndex(
-          (item) => item.name === event.data.itemName
+          (item) => item.id === event.data.itemName
         )
         if (foundItemIndex >= 0) {
           const newInteractionMap = [...context.interactionMap]
