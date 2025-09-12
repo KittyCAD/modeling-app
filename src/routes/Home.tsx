@@ -11,7 +11,7 @@ import {
 
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
-import { BillingDialog } from '@src/components/BillingDialog'
+import { BillingDialog } from '@kittycad/react-shared'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
@@ -359,7 +359,13 @@ const Home = () => {
             {!hasUnlimitedCredits && (
               <li className="contents">
                 <div className="my-2">
-                  <BillingDialog billingActor={billingActor} />
+                  <BillingDialog
+                    upgradeHref={withSiteBaseURL('/design-studio-pricing')}
+                    upgradeClick={openExternalBrowserIfDesktop()}
+                    error={billingContext.error}
+                    credits={billingContext.credits}
+                    allowance={billingContext.allowance}
+                  />
                 </div>
               </li>
             )}

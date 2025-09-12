@@ -5,22 +5,11 @@ import usePlatform from '@src/hooks/usePlatform'
 import { useKclContext } from '@src/lang/KclProvider'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { billingActor, commandBarActor } from '@src/lib/singletons'
-import { isErr } from '@src/lib/trap'
-import { Tier } from '@src/machines/billingMachine'
-import type { SubscriptionsOrError } from '@src/machines/billingMachine'
 import { useSelector } from '@xstate/react'
 import { memo, useCallback, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 const shareHotkey = 'mod+alt+s'
-
-const canPasswordProtectShareLinks = (
-  subOrErr: undefined | SubscriptionsOrError
-): boolean => {
-  if (subOrErr === undefined || typeof subOrErr === 'number' || isErr(subOrErr))
-    return false
-  return subOrErr.modeling_app?.share_links?.[0] === 'password_protected'
-}
 
 /** Share Zoo link button shown in the upper-right of the modeling view */
 export const ShareButton = memo(function ShareButton() {
@@ -32,10 +21,8 @@ export const ShareButton = memo(function ShareButton() {
 
   const billingContext = useSelector(billingActor, ({ context }) => context)
 
-  const allowOrgRestrict = billingContext.tier === Tier.Organization
-  const allowPassword = canPasswordProtectShareLinks(
-    billingContext.subscriptionsOrError
-  )
+  const allowOrgRestrict = !!billingContext.isOrganization
+  const allowPassword = !!billingContext.hasSubscription
   const hasOptions = allowOrgRestrict || allowPassword
 
   // Prevents Organization and Pro tier users from one-click sharing,
@@ -80,7 +67,7 @@ export const ShareButton = memo(function ShareButton() {
   // until we get what their subscription allows for.
   const disabled =
     kclContext.ast.body.some((n) => n.type === 'ImportStatement') ||
-    billingContext.tier === undefined
+    !billingContext.hasSubscription
 
   return (
     <Popover className="relative hidden sm:flex">
