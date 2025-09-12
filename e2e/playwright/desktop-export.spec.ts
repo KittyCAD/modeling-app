@@ -208,6 +208,10 @@ extrude001 = extrude(profile001, length = 5)`
     const sketchNode = page.getByText('sketch001').first()
     await expect(sketchNode).toBeVisible()
 
+    // Ensure the feature tree is fully loaded by waiting for the extrude operation too
+    const extrudeNode = page.getByText('extrude001').first()
+    await expect(extrudeNode).toBeVisible()
+
     // Right-click to open context menu
     await sketchNode.click({ button: 'right' })
 
