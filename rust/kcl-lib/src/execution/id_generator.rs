@@ -3,6 +3,16 @@
 use crate::execution::ModuleId;
 
 const NAMESPACE_KCL: uuid::Uuid = uuid::uuid!("8bda3118-75eb-58c7-a866-bef1dcb495e7");
+const ENGINE_NAMESPACE_KCL: uuid::Uuid = uuid::uuid!("22b85cda-1c8d-57c4-88b5-3fd71846f31e");
+
+
+// Generate predictive ids similar to the engine to avoid having to wait for the engine's id generation.
+// This has to match the implementation in the engine!
+// This is also duplicated in the engine's tests/triangle.rs
+pub(crate) fn generate_engine_id(base: uuid::Uuid, modifier: &str) -> uuid::Uuid {
+    let name = format!("{}_{}", base, modifier);
+    uuid::Uuid::new_v5(&ENGINE_NAMESPACE_KCL, name.as_bytes())
+}
 
 /// A generator for ArtifactIds that can be stable across executions.
 #[derive(Debug, Clone, Default, PartialEq)]
