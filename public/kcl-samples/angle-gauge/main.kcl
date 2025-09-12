@@ -22,15 +22,9 @@ fn gauge(cutoutAngle, N, startX, startY, deltaX, deltaY) {
        ])
     |> xLine(length = cutoutDepth + cutoutBaseDepth)
     |> yLine(length = (totalWidth - cutoutWidth) / 2 - ((1 - flip) * cutoutDepth * sin(units::toRadians(cutoutAngle))))
-    |> angledLine(
-         angle = 180 - ((1 - flip) * cutoutAngle),
-         lengthX = cutoutDepth
-       )
+    |> angledLine(angle = 180 - ((1 - flip) * cutoutAngle), lengthX = cutoutDepth)
     |> yLine(length = cutoutWidth)
-    |> angledLine(
-         angle = flip * cutoutAngle,
-         lengthX = cutoutDepth
-       )
+    |> angledLine(angle = flip * cutoutAngle, lengthX = cutoutDepth)
     |> yLine(endAbsolute = totalWidth)
     |> xLine(length = -1 * (cutoutDepth + cutoutBaseDepth))
     |> close()
@@ -42,6 +36,27 @@ startX = 0
 startY = 0
 xSpacing = 2
 angleSpacing = 5
-gauge(cutoutAngle = 8, N = 0, startX = startX, startY = startY, deltaX = xSpacing, deltaY = 0)
-gauge(cutoutAngle = 14, N = 1, startX = startX, startY = startY, deltaX = xSpacing, deltaY = 0)
-gauge(cutoutAngle = 15, N = 2, startX = startX, startY = startY, deltaX = xSpacing, deltaY = 0)
+gauge(
+  cutoutAngle = 8,
+  N = 0,
+  startX = startX,
+  startY = startY,
+  deltaX = xSpacing,
+  deltaY = 0,
+)
+gauge(
+  cutoutAngle = 14,
+  N = 1,
+  startX = startX,
+  startY = startY,
+  deltaX = xSpacing,
+  deltaY = 0,
+)
+gauge(
+  cutoutAngle = 15,
+  N = 2,
+  startX = startX,
+  startY = startY,
+  deltaX = xSpacing,
+  deltaY = 0,
+)

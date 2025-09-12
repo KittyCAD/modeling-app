@@ -29,15 +29,9 @@ sketch002 = startSketchOn(sketch001, face = seg01)
   |> startProfile(at = [blockEdgeLength, 0.0])
   |> xLine(length = cutoutDepth + cutoutBaseDepth)
   |> yLine(length = (totalWidth - cutoutWidth) / 2 - ((1 - FLIP) * cutoutDepth * sin(units::toRadians(cutoutAngleBase))))
-  |> angledLine(
-       angle = 180 - ((1 - FLIP) * cutoutAngleBase),
-       lengthX = cutoutDepth
-     )
+  |> angledLine(angle = 180 - ((1 - FLIP) * cutoutAngleBase), lengthX = cutoutDepth)
   |> yLine(length = cutoutWidth)
-  |> angledLine(
-       angle = FLIP * cutoutAngleBase,
-       lengthX = cutoutDepth
-     )
+  |> angledLine(angle = FLIP * cutoutAngleBase, lengthX = cutoutDepth)
   |> yLine(endAbsolute = totalWidth)
   |> xLine(endAbsolute = blockEdgeLength)
   |> close()
@@ -47,15 +41,9 @@ sketch003 = startSketchOn(sketch001, face = seg02)
   |> startProfile(at = [-1 * blockEdgeLength, 0.0])
   |> xLine(length = -1 * (cutoutDepth + cutoutBaseDepth))
   |> yLine(length = (totalWidth - cutoutWidth) / 2 - ((1 - FLIP) * cutoutDepth * sin(units::toRadians(cutoutAngleSide))))
-  |> angledLine(
-       angle = (1 - FLIP) * cutoutAngleSide,
-       lengthX = cutoutDepth
-     )
+  |> angledLine(angle = (1 - FLIP) * cutoutAngleSide, lengthX = cutoutDepth)
   |> yLine(length = cutoutWidth)
-  |> angledLine(
-       angle = 180 - (FLIP * cutoutAngleSide),
-       lengthX = cutoutDepth
-     )
+  |> angledLine(angle = 180 - (FLIP * cutoutAngleSide), lengthX = cutoutDepth)
   |> yLine(endAbsolute = totalWidth)
   |> xLine(endAbsolute = -1 * blockEdgeLength)
   |> close()
@@ -74,26 +62,15 @@ sketch004 = startSketchOn(XY)
        -1 * (barrelC + barrelD / 2),
        -totalWidth / 2
      ])
-  |> arc(
-       angleStart = 180,
-       angleEnd = 90,
-       radius = barrelD / 2
-     )
+  |> arc(angleStart = 180, angleEnd = 90, radius = barrelD / 2)
   |> xLine(endAbsolute = 0)
   |> yLine(endAbsolute = -(totalWidth / 2 + barrelD / 2))
   |> xLine(endAbsolute = -barrelC)
-  |> arc(
-       angleEnd = 180,
-       angleStart = 270,
-       radius = barrelD / 2
-     )
+  |> arc(angleEnd = 180, angleStart = 270, radius = barrelD / 2)
   |> close()
   |> extrude(length = barrelL)
 sketch005 = startSketchOn(sketch004, face = START)
-  |> circle(
-       center = [barrelC, -totalWidth / 2],
-       radius = holeD / 2
-     )
+  |> circle(center = [barrelC, -totalWidth / 2], radius = holeD / 2)
   |> extrude(length = -1 * barrelL)
 
 ridgePlane = offsetPlane(YZ, offset = -(barrelC + holeD / 2))
@@ -110,5 +87,5 @@ sketch006 = startSketchOn(ridgePlane)
        axis = [0, 0, barrelL],
        center = [-barrelC, -totalWidth / 2, barrelL],
        instances = nRidges,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
