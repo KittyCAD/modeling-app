@@ -102,11 +102,6 @@ function CommandBarPathInput({
           className="flex-grow px-2 py-1 !bg-transparent focus:outline-none"
           placeholder="Enter a path"
           defaultValue={defaultValue}
-          onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.metaKey) {
-              stepBack()
-            }
-          }}
         />
         <ActionButton
           Element="button"

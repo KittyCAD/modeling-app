@@ -1,7 +1,6 @@
 import { Combobox } from '@headlessui/react'
 import Fuse from 'fuse.js'
 import { useEffect, useMemo, useState } from 'react'
-
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { Command } from '@src/lib/commandTypes'
 import { sortCommands } from '@src/lib/commandUtils'
@@ -60,15 +59,6 @@ function CommandComboBox({
           data-testid="cmd-bar-search"
           onChange={(event) => setQuery(event.target.value)}
           className="w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
-          onKeyDown={(event) => {
-            if (
-              (event.metaKey && event.key === 'k') ||
-              event.key === 'Escape'
-            ) {
-              event.preventDefault()
-              commandBarActor.send({ type: 'Close' })
-            }
-          }}
           placeholder={
             (defaultOption && defaultOption.name) ||
             placeholder ||

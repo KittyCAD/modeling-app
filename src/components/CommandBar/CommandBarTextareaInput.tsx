@@ -1,13 +1,11 @@
 import type { RefObject } from 'react'
 import { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
 function CommandBarTextareaInput({
   arg,
-  stepBack,
   onSubmit,
 }: {
   arg: CommandArgument<unknown> & {
@@ -63,12 +61,7 @@ function CommandBarTextareaInput({
               | undefined) || (arg.defaultValue as string)
           }
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.metaKey) {
-              stepBack()
-            } else if (
-              event.key === 'Enter' &&
-              (event.metaKey || event.shiftKey)
-            ) {
+            if (event.key === 'Enter' && (event.metaKey || event.shiftKey)) {
               // Insert a newline
               event.preventDefault()
               const target = event.currentTarget
@@ -86,8 +79,6 @@ function CommandBarTextareaInput({
               formRef.current?.dispatchEvent(
                 new Event('submit', { bubbles: true })
               )
-            } else if (event.key === 'Escape') {
-              commandBarActor.send({ type: 'Close' })
             }
           }}
           autoFocus
