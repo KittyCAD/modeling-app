@@ -387,15 +387,16 @@ export const copyPasteSourceAndTarget = (
  */
 export function shouldDroppedEntryBeMoved(
   src: FileExplorerDropData,
-  target: FileExplorerRow
+  target: FileExplorerEntry
 ) {
+  const targetIsFolder = target.children !== null
   const targetIsFileInDifferentFolder =
-    !target.isFolder && target.parentPath !== src.parentPath
+    !targetIsFolder && target.parentPath !== src.parentPath
   const targetIsDroppedEntryParent = target.path.endsWith(src.parentPath)
   const droppedEntryIsTargetParent = target.path.includes(src.path)
   const shouldDroppedEntryBeMoved =
     !droppedEntryIsTargetParent &&
-    ((!targetIsDroppedEntryParent && target.isFolder) ||
+    ((!targetIsDroppedEntryParent && targetIsFolder) ||
       targetIsFileInDifferentFolder)
 
   return shouldDroppedEntryBeMoved
