@@ -380,7 +380,7 @@ export const FileExplorerRowElement = ({
         }
 
         // Now move the thing!
-        if (shouldDroppedEntryBeMoved(droppedData, row)) {
+        if (shouldDroppedEntryBeMoved(droppedData, row, window.electron?.sep)) {
           row.onDrop({ src: droppedData })
         }
 
