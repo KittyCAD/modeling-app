@@ -2,6 +2,7 @@ import {
   ConnectingType,
   EngineConnectionEvents,
   EngineConnectionStateType,
+  type ManagerTearDown,
   toRTCSessionDescriptionInit,
 } from '@src/network/utils'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -400,7 +401,7 @@ export const createOnWebSocketClose = ({
   onWebSocketOpen: (event: Event) => void
   onWebSocketError: (event: Event) => void
   onWebSocketMessage: (event: MessageEvent<any>) => void
-  tearDownManager: () => void
+  tearDownManager: (options?: ManagerTearDown) => void
   dispatchEvent: (event: Event) => boolean
 }) => {
   const onDataChannelClose = () => {
@@ -408,7 +409,7 @@ export const createOnWebSocketClose = ({
     websocket.removeEventListener('error', onWebSocketError)
     websocket.removeEventListener('message', onWebSocketMessage)
     dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-    tearDownManager()
+    tearDownManager({ websocketClosed: true })
   }
   return onDataChannelClose
 }

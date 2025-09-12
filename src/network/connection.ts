@@ -1,5 +1,5 @@
 import { markOnce } from '@src/lib/performance'
-import type { IEventListenerTracked } from '@src/network/utils'
+import type { IEventListenerTracked, ManagerTearDown } from '@src/network/utils'
 import {
   ConnectingType,
   DATACHANNEL_NAME_UMC,
@@ -90,7 +90,7 @@ export class Connection extends EventTarget {
 
   // callback functions
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
-  tearDownManager: () => void
+  tearDownManager: (options?: ManagerTearDown) => void
   rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
   handleMessage: ((event: MessageEvent<any>) => void) | null
 
@@ -106,7 +106,7 @@ export class Connection extends EventTarget {
     url: string
     token: string
     handleOnDataChannelMessage: (event: MessageEvent<any>) => void
-    tearDownManager: () => void
+    tearDownManager: (options?: ManagerTearDown) => void
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
     callbackOnUnitTestingConnection?: () => void
     handleMessage: (event: MessageEvent<any>) => void

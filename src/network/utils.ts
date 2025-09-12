@@ -258,6 +258,9 @@ export enum EngineCommandManagerEvents {
 
   // we're offline
   Offline = 'offline',
+
+  // websocket event listener for close was called
+  WebsocketClosed = 'websocket-closed',
 }
 
 export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
@@ -311,4 +314,8 @@ export function getDimensions(streamWidth: number, streamHeight: number) {
   const quadWidth = Math.round((streamWidth * ratio) / factorOf) * factorOf
   const quadHeight = Math.round((streamHeight * ratio) / factorOf) * factorOf
   return { width: quadWidth, height: quadHeight }
+}
+
+export interface ManagerTearDown {
+  websocketClosed?: boolean
 }

@@ -9,6 +9,7 @@ import {
 import { withWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   IEventListenerTracked,
+  ManagerTearDown,
   ModelTypes,
   PendingMessage,
   Subscription,
@@ -804,7 +805,7 @@ export class ConnectionManager extends EventTarget {
     this.connection.send(resizeCmd)
   }
 
-  tearDown() {
+  tearDown(options?: ManagerTearDown) {
     if (!this.started) {
       EngineDebugger.addLog({
         label: 'connectionManager',
@@ -818,6 +819,13 @@ export class ConnectionManager extends EventTarget {
         label: 'connectionManager',
         message: 'unable to tear down this.connection, connection is missing',
       })
+    }
+
+    // It was torn down from a websocket close.
+    if (options?.websocketClosed) {
+      this.dispatchEvent(
+        new CustomEvent(EngineCommandManagerEvents.WebsocketClosed, {})
+      )
     }
 
     if (this.connection) {

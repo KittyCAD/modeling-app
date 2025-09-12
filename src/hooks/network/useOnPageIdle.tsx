@@ -11,7 +11,11 @@ import { trap } from '@src/lib/trap'
 
 export const useOnPageIdle = ({
   startCallback,
-}: { startCallback: () => void }) => {
+  idleCallback,
+}: {
+  startCallback: () => void
+  idleCallback: () => void
+}) => {
   const settings = useSettings()
   const [streamIdleMode, setStreamIdleMode] = useState(
     settings.app.streamIdleMode.current
@@ -66,7 +70,9 @@ export const useOnPageIdle = ({
         ) {
           timeoutStart.current = null
           console.warn('detected idle, tearing down connection.')
+          // We do a full tear down at the moment.
           engineCommandManager.tearDown()
+          idleCallback()
         }
       }
       frameId = window.requestAnimationFrame(frameLoop)
@@ -76,7 +82,7 @@ export const useOnPageIdle = ({
     return () => {
       window.cancelAnimationFrame(frameId)
     }
-  }, [modelingMachineState, IDLE_TIME_MS])
+  }, [modelingMachineState, IDLE_TIME_MS, idleCallback])
 
   useEffect(() => {
     if (!streamIdleMode) return

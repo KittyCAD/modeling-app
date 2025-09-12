@@ -22,11 +22,13 @@ import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
 import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
+import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 
 export const ConnectionStream = (props: {
   pool: string | null
   authToken: string | undefined
 }) => {
+  const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settings = useSettings()
   const { setAppState } = useAppState()
@@ -134,6 +136,31 @@ export const ConnectionStream = (props: {
       if (!props.authToken) return
       if (engineCommandManager.started) return
 
+      // Do not try to restart the engine on any mouse move.
+      // It needs to have been in an idle state first!
+      if (!isIdle.current) return
+      isIdle.current = false
+
+      tryConnecting({
+        authToken: props.authToken || '',
+        videoWrapperRef,
+        setAppState,
+        videoRef,
+        setIsSceneReady,
+        isConnecting,
+        successfullyConnected,
+        numberOfConnectionAtttempts,
+        timeToConnect: 30_000,
+      }).catch((e) => {
+        console.error(e)
+      })
+    },
+    idleCallback: () => {
+      isIdle.current = true
+    },
+  })
+  useOnWebsocketClose({
+    callback: () => {
       tryConnecting({
         authToken: props.authToken || '',
         videoWrapperRef,
