@@ -1291,11 +1291,11 @@ mod test {
         mem.add(
             "f".to_owned(),
             KclValue::Function {
-                value: FunctionSource::User {
-                    ast: crate::parsing::ast::types::FunctionExpression::dummy(),
-                    settings: crate::MetaSettings::default(),
-                    memory: sn2,
-                },
+                value: Box::new(FunctionSource::kcl(
+                    crate::parsing::ast::types::FunctionExpression::dummy(),
+                    sn2,
+                    false,
+                )),
                 meta: Vec::new(),
             },
             sr(),
@@ -1306,10 +1306,13 @@ mod test {
         assert_get(mem, "a", 1);
         assert_get(mem, "b", 2);
         match mem.get("f", SourceRange::default()).unwrap() {
-            KclValue::Function {
-                value: FunctionSource::User { memory, .. },
-                ..
-            } if memory.0 == mem.current_env.0 => {}
+            KclValue::Function { value, .. } => match &**value {
+                FunctionSource {
+                    body: crate::execution::kcl_value::FunctionBody::Kcl(memory),
+                    ..
+                } if memory.0 == mem.current_env.0 => {}
+                v => panic!("{v:#?}, expected {sn1:?}"),
+            },
             v => panic!("{v:#?}, expected {sn1:?}"),
         }
         assert_eq!(mem.memory.envs().len(), 2);

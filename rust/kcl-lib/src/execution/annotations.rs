@@ -8,7 +8,6 @@ use serde::{Deserialize, Serialize};
 use crate::{
     KclError, SourceRange,
     errors::{KclErrorDetails, Severity},
-    execution::types::{UnitAngle, UnitLen},
     parsing::ast::types::{Annotation, Expr, LiteralValue, Node, ObjectProperty},
 };
 
@@ -291,36 +290,4 @@ pub(super) fn get_fn_attrs(
     }
 
     Ok(result)
-}
-
-impl UnitLen {
-    pub(super) fn from_str(s: &str, source_range: SourceRange) -> Result<Self, KclError> {
-        match s {
-            "mm" => Ok(UnitLen::Mm),
-            "cm" => Ok(UnitLen::Cm),
-            "m" => Ok(UnitLen::M),
-            "inch" | "in" => Ok(UnitLen::Inches),
-            "ft" => Ok(UnitLen::Feet),
-            "yd" => Ok(UnitLen::Yards),
-            value => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!(
-                    "Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `in`, `ft`, `yd`"
-                ),
-                vec![source_range],
-            ))),
-        }
-    }
-}
-
-impl UnitAngle {
-    pub(super) fn from_str(s: &str, source_range: SourceRange) -> Result<Self, KclError> {
-        match s {
-            "deg" => Ok(UnitAngle::Degrees),
-            "rad" => Ok(UnitAngle::Radians),
-            value => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Unexpected value for angle units: `{value}`; expected one of `deg`, `rad`"),
-                vec![source_range],
-            ))),
-        }
-    }
 }
