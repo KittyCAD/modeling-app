@@ -62,6 +62,13 @@ function CommandBarVector3DInput({
       e.preventDefault()
       nextInputRef.current.focus()
     }
+    // Submit form when Enter is pressed in the last field
+    if (e.key === 'Enter' && !nextInputRef) {
+      e.preventDefault()
+      document.getElementById('vector3d-form')?.dispatchEvent(
+        new Event('submit', { cancelable: true, bubbles: true })
+      )
+    }
   }
 
   return (
