@@ -61,15 +61,19 @@ export async function deleteSegment({
   }
 
   if (!sketchDetails) return
-  await sceneEntitiesManager.updateAstAndRejigSketch(
-    pathToNode,
-    sketchDetails.sketchNodePaths,
-    sketchDetails.planeNodePath,
-    modifiedAst,
-    sketchDetails.zAxis,
-    sketchDetails.yAxis,
-    sketchDetails.origin
-  )
-
-  // Now 'Set sketchDetails' is called with the modified pathToNode
+  try {
+    await sceneEntitiesManager.updateAstAndRejigSketch(
+      sketchDetails.sketchEntryNodePath,
+      sketchDetails.sketchNodePaths,
+      sketchDetails.planeNodePath,
+      modifiedAst,
+      sketchDetails.zAxis,
+      sketchDetails.yAxis,
+      sketchDetails.origin
+    )
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_err) {
+    // When deleting the last startProfile in a sketch, the above updateAstAndRejigSketch fails because prepareTruncatedAst
+    // calls getNodeFromPath with a path that no longer exists (we just deleted it)..
+  }
 }
