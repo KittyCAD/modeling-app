@@ -1,0 +1,111 @@
+// Zoo Logo
+// The logo for the Zoo Corporation
+
+// Set units in inches (in)
+@settings(defaultLengthUnit = in)
+
+fn ZOO_O(surface, center, phi_deg, depth, height) {
+  scale_factor = height / 14.291
+  r = scale_factor * 8.25 / 2
+  R = scale_factor * 15 / 2
+  t = scale_factor * 1.6
+  phi = units::toRadians(phi_deg)
+  theta_r = asin(t / 2 / r)
+  theta_R = asin(t / 2 / R)
+  O_SKETCH = surface
+    |> startProfile(at = [
+         center[0] + r * cos(theta_r + phi),
+         center[1] + r * sin(theta_r + phi)
+       ])
+    |> angledLine(angle = units::toDegrees(phi), length = R * cos(theta_R) - (r * cos(theta_r)), tag = $flat1)
+    |> arc(angleStart = units::toDegrees(phi + theta_R), angleEnd = 180 + units::toDegrees(phi - theta_R), radius = R)
+    |> angledLine(angle = units::toDegrees(phi), length = R * cos(theta_R) - (r * cos(theta_r)), tag = $flat2)
+    |> arc(angleStart = 180 + units::toDegrees(phi - theta_r), angleEnd = units::toDegrees(phi + theta_r), radius = r)
+    |> close()
+    |> extrude(length = depth)
+  return O_SKETCH
+}
+
+fn rot(x, y, theta_deg) {
+  cos_theta = cos(units::toRadians(theta_deg))
+  sin_theta = sin(units::toRadians(theta_deg))
+  xr = x * cos_theta - (y * sin_theta)
+  yr = x * sin_theta + y * cos_theta
+  return [xr, yr]
+}
+
+fn ZOO(surface, origin, depth, height, zoo_angle) {
+  scale_factor = height / 14.291
+
+  Z_SKETCH = surface
+    |> startProfile(at = [origin[0], origin[1]])
+    |> line(end = rot(x = scale_factor * 2.172096, y = scale_factor * 0.0700, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * 2.057187, y = scale_factor * 2.222436, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * 0, y = scale_factor * -2.29248, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * 9.096038, y = scale_factor * 0, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * 0, y = scale_factor * 3.232973, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * -8.223936, y = scale_factor * 0, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * 8.223936, y = scale_factor * 8.883325, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * 0, y = scale_factor * 2.174907, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * -2.173592, y = scale_factor * -0.07298, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * -2.055669, y = scale_factor * -2.219505, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * 0, y = scale_factor * 2.292469, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * -9.09606, y = scale_factor * 0, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * 0, y = scale_factor * -3.232969, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * 8.225417, y = scale_factor * 0, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * -8.225417, y = scale_factor * -8.886255, theta_deg = zoo_angle))
+    |> line(end = rot(x = scale_factor * 0, y = scale_factor * -2.171981, theta_deg = zoo_angle))
+    |> close()
+    |> extrude(length = depth)
+
+  O_ANGLE = 47.15 // 47
+  O_DELTA = rot(x = scale_factor * 21.5, y = scale_factor * 7.1456, theta_deg = zoo_angle)
+  O_Y = O_DELTA[1] + origin[1]
+  O_X = O_DELTA[0] + origin[0]
+  O_SPACEING = rot(x = scale_factor * 16, y = 0, theta_deg = zoo_angle)
+
+  O1_1 = ZOO_O(
+    surface = surface,
+    center = [O_X, O_Y],
+    phi_deg = O_ANGLE + zoo_angle,
+    depth = depth,
+    height = height,
+  )
+  O1_2 = ZOO_O(
+    surface = surface,
+    center = [O_X, O_Y],
+    phi_deg = O_ANGLE + 180 + zoo_angle,
+    depth = depth,
+    height = height,
+  )
+  O2_1 = ZOO_O(
+    surface = surface,
+    center = [
+      O_X + O_SPACEING[0],
+      O_Y + O_SPACEING[1]
+    ],
+    phi_deg = O_ANGLE + zoo_angle,
+    depth = depth,
+    height = height,
+  )
+  O2_2 = ZOO_O(
+    surface = surface,
+    center = [
+      O_X + O_SPACEING[0],
+      O_Y + O_SPACEING[1]
+    ],
+    phi_deg = O_ANGLE + 180 + zoo_angle,
+    depth = depth,
+    height = height,
+  )
+  return [Z_SKETCH, O1_1, O1_2, O2_1, O2_2]
+}
+
+logoFace0 = startSketchOn(XY)
+LOGO = ZOO(
+  surface = logoFace0,
+  origin = [0, 0],
+  depth = 0.250,
+  height = 1,
+  zoo_angle = 0,
+)
