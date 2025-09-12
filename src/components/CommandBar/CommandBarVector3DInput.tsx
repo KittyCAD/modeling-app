@@ -40,7 +40,7 @@ function CommandBarVector3DInput({
     const zNum = parseFloat(z)
 
     // Basic validation - ensure all values are valid numbers
-    if (Number.isNaN(xNum) || Number.isNaN(yNum) || Number.isNaN(zNum)) {
+    if (isNaN(xNum) || isNaN(yNum) || isNaN(zNum)) {
       return // Don't submit if any value is invalid
     }
 
