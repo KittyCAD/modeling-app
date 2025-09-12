@@ -67,7 +67,7 @@ export const ShareButton = memo(function ShareButton() {
   // until we get what their subscription allows for.
   const disabled =
     kclContext.ast.body.some((n) => n.type === 'ImportStatement') ||
-    !billingContext.hasSubscription
+    billingContext.hasSubscription === undefined
 
   return (
     <Popover className="relative hidden sm:flex">

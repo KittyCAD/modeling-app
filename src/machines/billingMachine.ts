@@ -62,10 +62,9 @@ export const billingMachine = setup({
         const client = createKCClient(input.event.apiToken)
         const billing = await getBillingInfo(client)
         if (BillingError.from(billing)) {
-          return {
-            error: billing.error,
-          }
+          return Promise.reject(billing)
         }
+
         return {
           ...billing,
           lastFetch: new Date(),
