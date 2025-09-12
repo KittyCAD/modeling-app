@@ -193,7 +193,7 @@ async function tryConnecting({
   })
   return connection
 }
-export const useOnPageConnectToEngine = () => {
+export const useTryConnect = () => {
   // What about offline? the dispatch event.
   const isConnecting = useRef(false)
   const successfullyConnected = useRef(false)

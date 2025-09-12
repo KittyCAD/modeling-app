@@ -20,7 +20,7 @@ import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
-import { useOnPageConnectToEngine } from '@src/hooks/network/useOnPageConnectToEngine'
+import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 
 export const ConnectionStream = (props: {
@@ -46,7 +46,7 @@ export const ConnectionStream = (props: {
     isConnecting,
     successfullyConnected,
     numberOfConnectionAtttempts,
-  } = useOnPageConnectToEngine()
+  } = useTryConnect()
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
