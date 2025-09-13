@@ -25,6 +25,7 @@ import {
   getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
+import { uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import {
   selectDefaultSketchPlane,
@@ -34,6 +35,7 @@ import {
   codeManager,
   commandBarActor,
   editorManager,
+  engineCommandManager,
   kclManager,
   rustContext,
   sceneInfra,
@@ -48,6 +50,10 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
+import toast from 'react-hot-toast'
+import { base64Decode } from '@src/lang/wasm'
+import { browserSaveFile } from '@src/lib/browserSaveFile'
+import { exportSketchToDxf } from '@src/lib/exportDxf'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -587,6 +593,30 @@ const OperationItem = (props: {
         ? [
             <ContextMenuItem onClick={startSketchOnOffsetPlane}>
               Start Sketch
+            </ContextMenuItem>,
+          ]
+        : []),
+      ...(props.item.type === 'StdLibCall' &&
+      props.item.name === 'startSketchOn'
+        ? [
+            <ContextMenuItem
+              onClick={() => {
+                const exportDxf = async () => {
+                  if (props.item.type !== 'StdLibCall') return
+                  await exportSketchToDxf(props.item, {
+                    engineCommandManager,
+                    kclManager,
+                    toast,
+                    uuidv4,
+                    base64Decode,
+                    browserSaveFile,
+                  })
+                }
+                void exportDxf()
+              }}
+              data-testid="context-menu-export-dxf"
+            >
+              Export to DXF
             </ContextMenuItem>,
           ]
         : []),
