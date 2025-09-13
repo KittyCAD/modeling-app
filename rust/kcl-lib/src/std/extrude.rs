@@ -22,7 +22,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
-        types::RuntimeType,
+        generate_engine_id, types::RuntimeType,
     },
     parsing::ast::types::TagNode,
     std::Args,
@@ -218,6 +218,9 @@ pub(crate) async fn do_post_extrude<'a>(
             sketch.id = face.solid.sketch.id;
         }
     }
+
+    let path_modifier = format!("path_{}", 0);
+    let any_edge_id = generate_engine_id(sketch.id, &path_modifier);
 
     let solid3d_info = exec_state
         .send_modeling_cmd(

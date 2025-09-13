@@ -12,7 +12,7 @@ use uuid::Uuid;
 use crate::{
     KclError, NodePath, SourceRange,
     errors::KclErrorDetails,
-    execution::ArtifactId,
+    execution::{ArtifactId, id_generator::generate_engine_id},
     parsing::ast::types::{Node, Program},
 };
 
@@ -1048,12 +1048,16 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
-        ModelingCmd::Solid3dGetExtrusionFaceInfo(_) => {
+        ModelingCmd::Solid3dGetExtrusionFaceInfo(kcmc::Solid3dGetExtrusionFaceInfo { object_id, .. }) => {
             let Some(OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info)) = response else {
                 return Ok(Vec::new());
             };
             let mut return_arr = Vec::new();
             let mut last_path = None;
+
+            let base = *object_id;
+            let mut pi: u32 = 0;
+
             for face in &face_info.faces {
                 if face.cap != ExtrusionFaceCapType::None {
                     continue;
@@ -1061,7 +1065,7 @@ fn artifacts_to_update(
                 let Some(curve_id) = face.curve_id.map(ArtifactId::new) else {
                     continue;
                 };
-                let Some(face_id) = face.face_id.map(ArtifactId::new) else {
+                let Some(_face_id) = face.face_id.map(ArtifactId::new) else {
                     continue;
                 };
                 let Some(Artifact::Segment(seg)) = artifacts.get(&curve_id) else {
@@ -1070,6 +1074,12 @@ fn artifacts_to_update(
                 let Some(Artifact::Path(path)) = artifacts.get(&seg.path_id) else {
                     continue;
                 };
+
+                let path_modifier = format!("path_{}", pi);
+                pi += 1;
+                let face_id = ArtifactId::new(generate_engine_id(base, &format!("{}_face", path_modifier)));
+                let curve_id = ArtifactId::new(generate_engine_id(base, &path_modifier)); // aka edge/segment id, eg.: "path_0"
+
                 last_path = Some(path);
                 let Some(path_sweep_id) = path.sweep_id else {
                     // If the path doesn't have a sweep ID, check if it's a
@@ -1161,7 +1171,13 @@ fn artifacts_to_update(
                         // TODO: If we didn't find it, it's probably a bug.
                         .unwrap_or_default();
                     return_arr.push(Artifact::Cap(Cap {
-                        id: face_id,
+                        id: ArtifactId::new(generate_engine_id(
+                            base,
+                            match sub_type {
+                                CapSubType::Start => "face_bottom",
+                                CapSubType::End => "face_top",
+                            },
+                        )),
                         sub_type,
                         edge_cut_edge_ids: Vec::new(),
                         sweep_id: path_sweep_id,
@@ -1179,17 +1195,29 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
-        ModelingCmd::Solid3dGetAdjacencyInfo(kcmc::Solid3dGetAdjacencyInfo { .. }) => {
+        ModelingCmd::Solid3dGetAdjacencyInfo(kcmc::Solid3dGetAdjacencyInfo { object_id, .. }) => {
             let Some(OkModelingCmdResponse::Solid3dGetAdjacencyInfo(info)) = response else {
                 return Ok(Vec::new());
             };
 
+            let base = *object_id;
+
             let mut return_arr = Vec::new();
+            let mut pi: u32 = 0;
             for (index, edge) in info.edges.iter().enumerate() {
+                println!("edge: {edge:#?}");
                 let Some(original_info) = &edge.original_info else {
                     continue;
                 };
-                let edge_id = ArtifactId::new(original_info.edge_id);
+                //let edge_id = ArtifactId::new(original_info.edge_id);
+
+                let path_modifier = format!("path_{}", pi);
+                pi += 1;
+                let edge_id = ArtifactId::new(generate_engine_id(base, &path_modifier)); // aka edge/segment id, eg.: "path_0"
+
+                //let edge_id = ArtifactId::new(generate_engine_id(base, &path_modifier));
+                //let edge_id = ArtifactId::new(*edge_id);
+
                 let Some(artifact) = artifacts.get(&edge_id) else {
                     continue;
                 };
@@ -1212,9 +1240,11 @@ fn artifacts_to_update(
                 let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
                     continue;
                 };
-                let Some(surface_id) = segment.surface_id else {
-                    continue;
-                };
+                // let Some(surface_id) = segment.surface_id else {
+                //     continue;
+                // };
+                let surface_id = ArtifactId::new(generate_engine_id(base, &format!("{}_face", path_modifier)));
+
                 let Some(Artifact::Wall(wall)) = artifacts.get(&surface_id) else {
                     continue;
                 };
@@ -1227,7 +1257,7 @@ fn artifacts_to_update(
 
                 if let Some(opposite_info) = &edge.opposite_info {
                     return_arr.push(Artifact::SweepEdge(SweepEdge {
-                        id: opposite_info.edge_id.into(),
+                        id: ArtifactId::new(generate_engine_id(base, &format!("{}_opp", path_modifier))), //opposite_info.edge_id.into(),
                         sub_type: SweepEdgeSubType::Opposite,
                         seg_id: edge_id,
                         cmd_id: artifact_command.cmd_id,
@@ -1247,7 +1277,7 @@ fn artifacts_to_update(
                 }
                 if let Some(adjacent_info) = &edge.adjacent_info {
                     return_arr.push(Artifact::SweepEdge(SweepEdge {
-                        id: adjacent_info.edge_id.into(),
+                        id: ArtifactId::new(generate_engine_id(base, &format!("{}_adj", path_modifier))), //adjacent_info.edge_id.into(),
                         sub_type: SweepEdgeSubType::Adjacent,
                         seg_id: edge_id,
                         cmd_id: artifact_command.cmd_id,
