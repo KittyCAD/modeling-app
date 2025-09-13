@@ -57,7 +57,7 @@ import {
   kclManager,
   sceneInfra,
   settingsActor,
-  useCurrentInteractionSequence,
+  shortcutService,
 } from '@src/lib/singletons'
 import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
@@ -83,7 +83,6 @@ if (window.electron) {
 }
 
 export function App() {
-  const currentInteractionSequence = useCurrentInteractionSequence()
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -304,7 +303,7 @@ export function App() {
             {
               id: 'key-sequence',
               element: 'text',
-              label: currentInteractionSequence,
+              label: `Sequence: ${shortcutService.currentSequence ?? 'no sequence'}`,
               toolTip: { children: 'The current interaction sequence' },
             } satisfies StatusBarItemType,
             ...(getSettings().app.showDebugPanel.current

@@ -6,5 +6,4 @@ export const ACTOR_IDS = {
   MLEPHANT_MANAGER: 'mlephant_manager',
   COMMAND_BAR: 'command_bar',
   BILLING: 'billing',
-  INTERACTION_MAP: 'interaction_map',
 } as const

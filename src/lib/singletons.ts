@@ -1,5 +1,4 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-
 import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclSingleton'
 import CodeManager from '@src/lang/codeManager'
@@ -38,7 +37,7 @@ import {
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
-import { interactionMapMachine } from '@src/machines/interactionMapMachine'
+import { initialShortcuts, ShortcutService } from '@src/lib/shortcuts'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -48,6 +47,7 @@ declare global {
   interface Window {
     editorManager: EditorManager
     engineCommandManager: EngineCommandManager
+    shortcutsService: ShortcutService
   }
 }
 
@@ -67,6 +67,8 @@ export const kclManager = new KclManager(engineCommandManager, {
   editorManager,
   sceneInfra,
 })
+export const shortcutService = new ShortcutService(initialShortcuts)
+window.shortcutsService = shortcutService
 
 import { initPromise } from '@src/lang/wasmUtils'
 // Initialize KCL version
@@ -141,7 +143,6 @@ const {
   MLEPHANT_MANAGER,
   COMMAND_BAR,
   BILLING,
-  INTERACTION_MAP,
 } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
@@ -151,7 +152,6 @@ const appMachineActors = {
   [MLEPHANT_MANAGER]: mlEphantManagerMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
-  [INTERACTION_MAP]: interactionMapMachine,
 } as const
 
 const appMachine = setup({
@@ -202,10 +202,6 @@ const appMachine = setup({
         ...BILLING_CONTEXT_DEFAULTS,
         urlUserService: () => withAPIBaseURL(''),
       },
-    }),
-    spawnChild(appMachineActors[INTERACTION_MAP], {
-      systemId: INTERACTION_MAP,
-      input: {},
     }),
   ],
 })
@@ -274,13 +270,6 @@ export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
 export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
   (typeof appMachineActors)[typeof BILLING]
 >
-export const interactionMapActor = appActor.system.get(
-  INTERACTION_MAP
-) as ActorRefFrom<(typeof appMachineActors)[typeof INTERACTION_MAP]>
-export const useInteractionMap = () =>
-  useSelector(interactionMapActor, (state) => state.context.interactionMap)
-export const useCurrentInteractionSequence = () =>
-  useSelector(interactionMapActor, (state) => state.context.currentSequence)
 
 const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
   state

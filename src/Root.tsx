@@ -7,7 +7,7 @@ import { SystemIOMachineLogicListenerWeb } from '@src/components/Providers/Syste
 import { RouteProvider } from '@src/components/RouteProvider'
 import { KclContextProvider } from '@src/lang/KclProvider'
 import { isDesktop } from '@src/lib/isDesktop'
-import { InteractionListener } from '@src/components/InteractionListener'
+import { ShortcutListener } from '@src/components/ShortcutListener'
 import { Outlet } from 'react-router-dom'
 
 // Root component will live for the entire applications runtime
@@ -15,7 +15,7 @@ import { Outlet } from 'react-router-dom'
 function RootLayout() {
   return (
     <OpenInDesktopAppHandler>
-      <InteractionListener>
+      <ShortcutListener>
         <RouteProvider>
           <LspProvider>
             <KclContextProvider>
@@ -32,7 +32,7 @@ function RootLayout() {
             </KclContextProvider>
           </LspProvider>
         </RouteProvider>
-      </InteractionListener>
+      </ShortcutListener>
     </OpenInDesktopAppHandler>
   )
 }
