@@ -8,7 +8,7 @@ import { SystemIOMachineLogicListenerWeb } from '@src/components/Providers/Syste
 import { RouteProvider } from '@src/components/RouteProvider'
 import { KclContextProvider } from '@src/lang/KclProvider'
 import { isDesktop } from '@src/lib/isDesktop'
-import { InteractionListener } from '@src/components/InteractionListener'
+import { ShortcutListener } from '@src/components/ShortcutListener'
 import { Outlet } from 'react-router-dom'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
 import { useToken } from '@src/lib/singletons'
@@ -22,7 +22,7 @@ function RootLayout() {
 
   return (
     <OpenInDesktopAppHandler>
-      <InteractionListener>
+      <ShortcutListener>
         <RouteProvider>
           <Auth>
             {/* It's possible the ML agent will interact with the user
@@ -53,8 +53,8 @@ function RootLayout() {
             </MlEphantManagerReactContext.Provider >
           </Auth>
         </RouteProvider>
-      </InteractionListener>
-    </OpenInDesktopAppHandler >
+      </ShortcutListener>
+    </OpenInDesktopAppHandler>
   )
 }
 
