@@ -3,8 +3,8 @@
 
 
 export fn angleIron(length, thickness, width, miterStart, miterEnd) {
-  assert(miterStart, isGreaterThan = -90, isLessThan = 90)
-  assert(miterEnd, isGreaterThanOrEqual = -90, isLessThan = 90)
+  assert(miterStart, isGreaterThan = -90deg, isLessThan = 90deg)
+  assert(miterEnd, isGreaterThanOrEqual = -90deg, isLessThan = 90deg)
 
   csgFriendlyOffset = 1
   length002 = -1 * (width - thickness)
@@ -31,7 +31,7 @@ export fn angleIron(length, thickness, width, miterStart, miterEnd) {
                1 - (1 * cos(miterStart))
              ],
            )
-        |> angledLine(angle = -180 - miterStart, length = (width + csgFriendlyOffset) / cos(miterStart))
+        |> angledLine(angle = -180deg - miterStart, length = (width + csgFriendlyOffset) / cos(miterStart))
         |> yLine(endAbsolute = profileStartY() - 1)
         |> xLine(endAbsolute = profileStartX())
         |> close()
@@ -67,7 +67,7 @@ miterStartTool
                length + 1 + 1 * cos(miterEnd)
              ],
            )
-        |> angledLine(angle = 180 + miterEnd, length = (width + csgFriendlyOffset) / cos(miterEnd))
+        |> angledLine(angle = 180deg + miterEnd, length = (width + csgFriendlyOffset) / cos(miterEnd))
         |> yLine(endAbsolute = profileStartY() + 1)
         |> xLine(endAbsolute = profileStartX())
         |> close()
@@ -105,8 +105,8 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
          length = height,
          width = ironWidth,
          thickness = ironThickness,
-         miterStart = 0,
-         miterEnd = 45,
+         miterStart = 0deg,
+         miterEnd = 45deg,
        )
     |> rotate(roll = 90, yaw = 180)
   verticalHolesNeeded = ceil((height - bottomBoltOffset) / distanceBetweenBolts)
@@ -127,8 +127,8 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
          length = depth,
          width = ironWidth,
          thickness = ironThickness,
-         miterStart = 45,
-         miterEnd = 0,
+         miterStart = 45deg,
+         miterEnd = 0deg,
        )
     |> rotate(pitch = 270, yaw = -90)
     |> translate(z = height + 1, global = true)
@@ -149,12 +149,12 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
          length = strutLength,
          width = ironWidth - ironThickness,
          thickness = ironThickness,
-         miterStart = -45,
-         miterEnd = -45,
+         miterStart = -45deg,
+         miterEnd = -45deg,
        )
-    |> rotate(pitch = 270, yaw = -90)
+    |> rotate(pitch = 270deg, yaw = -90deg)
     |> translate(x = -strutLength - 1, z = ironWidth - ironThickness, global = true)
-    |> rotate(pitch = -45, global = true)
+    |> rotate(pitch = -45deg, global = true)
     |> translate(
          y = -ironThickness,
          x = depth,
@@ -164,8 +164,8 @@ export fn gallowsBracket(depth, height, ironWidth, ironThickness) {
 
   legSketch = startSketchOn(-YZ)
   leg = startProfile(legSketch, at = [0, 0])
-    |> angledLine(angle = 0, length = ironWidth, tag = $rectangleSegmentA001)
-    |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = ironWidth)
+    |> angledLine(angle = 0deg, length = ironWidth, tag = $rectangleSegmentA001)
+    |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = ironWidth)
     |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()

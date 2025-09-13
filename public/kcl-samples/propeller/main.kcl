@@ -7,7 +7,7 @@
 @settings(defaultLengthUnit = mm)
 
 // Main Parameters
-bladeTwistAngle = 5 // Twist angle applied to the void cut geometry
+bladeTwistAngle = 5deg // Twist angle applied to the void cut geometry
 bladeSpanLength = 100 // Blade span (radial length)
 bladeWidth = 17.5 // Half-width of the blade at its widest point
 bladeBaseThickness = 10 // Total thickness of the extruded root/base
@@ -16,12 +16,12 @@ bladeThickness = 2 // Thickness of the profile at void section
 
 // Root geometry
 bladeRootWidth = bladeWidth * 2
-bladeSeamLength = bladeRootWidth / 2 / cos(30) // Angled base segment (30°)
-bladeNeckLength = (bladeRootWidth / 2 - (bladeWidth / 2)) / sin(30) // Neck connects to span
+bladeSeamLength = bladeRootWidth / 2 / cos(30deg) // Angled base segment (30°)
+bladeNeckLength = (bladeRootWidth / 2 - (bladeWidth / 2)) / sin(30deg) // Neck connects to span
 
 
 // Fillet radii
-rootFillet = bladeNeckLength / tan(30) * 0.5 // Rounded base root
+rootFillet = bladeNeckLength / tan(30deg) * 0.5 // Rounded base root
 tipFillet = bladeWidth * 0.49 // Rounded blade tip
 
 
@@ -35,12 +35,12 @@ voidCutoutHeight = bladeWidth * 2 // Height (used in tangential arc)
 bladePlane = offsetPlane(XY, offset = -bladeBaseThickness / 2)
 bladeSketch = startSketchOn(XY)
 bladeProfile = startProfile(bladePlane, at = [0, 0])
-  |> angledLine(angle = 30, length = bladeSeamLength)
-  |> angledLine(angle = 120, length = bladeNeckLength, tag = $segUpperNeck)
+  |> angledLine(angle = 30deg, length = bladeSeamLength)
+  |> angledLine(angle = 120deg, length = bladeNeckLength, tag = $segUpperNeck)
   |> yLine(length = bladeSpanLength, tag = $segSpanTop)
   |> xLine(length = -bladeWidth, tag = $seg01)
   |> yLine(length = -bladeSpanLength, tag = $segSpanBottom)
-  |> angledLine(angle = 240, length = bladeNeckLength, tag = $segLowerNeck)
+  |> angledLine(angle = 240deg, length = bladeNeckLength, tag = $segLowerNeck)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
