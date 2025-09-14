@@ -219,8 +219,9 @@ pub(crate) async fn do_post_extrude<'a>(
         }
     }
 
+    let base = sketch.id;
     let path_modifier = format!("path_{}", 0);
-    let any_edge_id = generate_engine_id(sketch.id, &path_modifier);
+    let any_edge_id = generate_engine_id(base, &path_modifier);
 
     let solid3d_info = exec_state
         .send_modeling_cmd(
@@ -263,7 +264,7 @@ pub(crate) async fn do_post_extrude<'a>(
         sides: face_id_map,
         start_cap_id,
         end_cap_id,
-    } = analyze_faces(exec_state, args, face_infos).await;
+    } = analyze_faces(exec_state, args, face_infos, base).await;
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
     let mut new_value: Vec<ExtrudeSurface> = Vec::with_capacity(sketch.paths.len() + sketch.inner_paths.len() + 2);
@@ -363,28 +364,34 @@ struct Faces {
     start_cap_id: Option<Uuid>,
 }
 
-async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<ExtrusionFaceInfo>) -> Faces {
+async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<ExtrusionFaceInfo>, base: Uuid) -> Faces {
     let mut faces = Faces {
         sides: HashMap::with_capacity(face_infos.len()),
         ..Default::default()
     };
     if args.ctx.no_engine_commands().await {
         // Create fake IDs for start and end caps, to make extrudes mock-execute safe
-        faces.start_cap_id = Some(exec_state.next_uuid());
-        faces.end_cap_id = Some(exec_state.next_uuid());
+        faces.start_cap_id = Some(generate_engine_id(base, "face_bottom"));
+        faces.end_cap_id = Some(generate_engine_id(base, "face_top"));
     }
+    let mut pi: u32 = 0;
     for face_info in face_infos {
         match face_info.cap {
-            ExtrusionFaceCapType::Bottom => faces.start_cap_id = face_info.face_id,
-            ExtrusionFaceCapType::Top => faces.end_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::Bottom => faces.start_cap_id = Some(generate_engine_id(base, "face_bottom")),//faces.start_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::Top => faces.end_cap_id = Some(generate_engine_id(base, "face_top")),//faces.end_cap_id = face_info.face_id,
             ExtrusionFaceCapType::Both => {
-                faces.end_cap_id = face_info.face_id;
-                faces.start_cap_id = face_info.face_id;
+                faces.end_cap_id = Some(generate_engine_id(base, "face_top"));      //face_info.face_id;
+                faces.start_cap_id = Some(generate_engine_id(base, "face_bottom")); //face_info.face_id;
             }
             ExtrusionFaceCapType::None => {
-                if let Some(curve_id) = face_info.curve_id {
-                    faces.sides.insert(curve_id, face_info.face_id);
-                }
+                let path_modifier = format!("path_{}", pi);
+                pi += 1;
+                let face_id = generate_engine_id(base, &format!("{}_face", path_modifier));
+                let curve_id = generate_engine_id(base, &path_modifier);
+                faces.sides.insert(curve_id, Some(face_id));
+                // if let Some(curve_id) = face_info.curve_id {
+                //     faces.sides.insert(curve_id, face_info.face_id);
+                // }
             }
         }
     }

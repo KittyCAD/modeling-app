@@ -1062,23 +1062,24 @@ fn artifacts_to_update(
                 if face.cap != ExtrusionFaceCapType::None {
                     continue;
                 }
-                let Some(curve_id) = face.curve_id.map(ArtifactId::new) else {
-                    continue;
-                };
-                let Some(_face_id) = face.face_id.map(ArtifactId::new) else {
-                    continue;
-                };
+                // let Some(curve_id) = face.curve_id.map(ArtifactId::new) else {
+                //     continue;
+                // };
+                // let Some(_face_id) = face.face_id.map(ArtifactId::new) else {
+                //     continue;
+                // };
+
+                let path_modifier = format!("path_{}", pi);
+                pi += 1;
+                let face_id = ArtifactId::new(generate_engine_id(base, &format!("{}_face", path_modifier)));
+                let curve_id = ArtifactId::new(generate_engine_id(base, &path_modifier)); // aka edge/segment id, eg.: "path_0"
+
                 let Some(Artifact::Segment(seg)) = artifacts.get(&curve_id) else {
                     continue;
                 };
                 let Some(Artifact::Path(path)) = artifacts.get(&seg.path_id) else {
                     continue;
                 };
-
-                let path_modifier = format!("path_{}", pi);
-                pi += 1;
-                let face_id = ArtifactId::new(generate_engine_id(base, &format!("{}_face", path_modifier)));
-                let curve_id = ArtifactId::new(generate_engine_id(base, &path_modifier)); // aka edge/segment id, eg.: "path_0"
 
                 last_path = Some(path);
                 let Some(path_sweep_id) = path.sweep_id else {

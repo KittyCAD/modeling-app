@@ -73,6 +73,9 @@ export async function executeAst({
     const execState = await rustContext.execute(ast, settings, path)
 
     await rustContext.waitForAllEngineCommands()
+
+    console.log('execState', execState.artifactGraph, execState)
+
     return {
       logs: [],
       errors: [],
