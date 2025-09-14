@@ -364,7 +364,12 @@ struct Faces {
     start_cap_id: Option<Uuid>,
 }
 
-async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<ExtrusionFaceInfo>, base: Uuid) -> Faces {
+async fn analyze_faces(
+    exec_state: &mut ExecState,
+    args: &Args,
+    face_infos: Vec<ExtrusionFaceInfo>,
+    base: Uuid,
+) -> Faces {
     let mut faces = Faces {
         sides: HashMap::with_capacity(face_infos.len()),
         ..Default::default()
@@ -377,10 +382,10 @@ async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<
     let mut pi: u32 = 0;
     for face_info in face_infos {
         match face_info.cap {
-            ExtrusionFaceCapType::Bottom => faces.start_cap_id = Some(generate_engine_id(base, "face_bottom")),//faces.start_cap_id = face_info.face_id,
-            ExtrusionFaceCapType::Top => faces.end_cap_id = Some(generate_engine_id(base, "face_top")),//faces.end_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::Bottom => faces.start_cap_id = Some(generate_engine_id(base, "face_bottom")), //faces.start_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::Top => faces.end_cap_id = Some(generate_engine_id(base, "face_top")), //faces.end_cap_id = face_info.face_id,
             ExtrusionFaceCapType::Both => {
-                faces.end_cap_id = Some(generate_engine_id(base, "face_top"));      //face_info.face_id;
+                faces.end_cap_id = Some(generate_engine_id(base, "face_top")); //face_info.face_id;
                 faces.start_cap_id = Some(generate_engine_id(base, "face_bottom")); //face_info.face_id;
             }
             ExtrusionFaceCapType::None => {

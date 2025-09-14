@@ -5,17 +5,17 @@
 #![recursion_limit = "1024"]
 #![allow(clippy::boxed_local)]
 
-#[allow(unused_macros)]
-macro_rules! println {
-    ($($rest:tt)*) => {
-        #[cfg(all(feature = "disable-println", not(test)))]
-        {
-            let _ = format!($($rest)*);
-        }
-        #[cfg(any(not(feature = "disable-println"), test))]
-        std::println!($($rest)*)
-    }
-}
+// #[allow(unused_macros)]
+// macro_rules! println {
+//     ($($rest:tt)*) => {
+//         #[cfg(all(feature = "disable-println", not(test)))]
+//         {
+//             let _ = format!($($rest)*);
+//         }
+//         #[cfg(any(not(feature = "disable-println"), test))]
+//         std::println!($($rest)*)
+//     }
+// }
 
 #[allow(unused_macros)]
 macro_rules! eprintln {

@@ -583,6 +583,9 @@ pub(super) fn build_artifact_graph(
     let item_count = initial_graph.item_count;
     let mut map = initial_graph.into_map();
 
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::warn_1(&format!("initial_graph {map:#?}").into());
+
     let mut path_to_plane_id_map = FnvHashMap::default();
     let mut current_plane_id = None;
 
@@ -594,6 +597,7 @@ pub(super) fn build_artifact_graph(
         fill_in_node_paths(exec_artifact, ast, item_count);
     }
 
+    let mut pi: u32 = 0;
     for artifact_command in artifact_commands {
         if let ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) = artifact_command.command {
             current_plane_id = Some(entity_id);
@@ -620,9 +624,26 @@ pub(super) fn build_artifact_graph(
             ast,
             item_count,
             exec_artifacts,
+            pi,
         )?;
+        match artifact_command.command {
+            ModelingCmd::ClosePath(_) => {
+                pi = 0;
+            }
+            ModelingCmd::ExtendPath(_) => {
+                pi += 1;
+            }
+            _ => {}
+        }
+
+        //#[cfg(target_arch = "wasm32")]
+        //web_sys::console::warn_1(&format!("artifact_command {artifact_command:#?}").into());
+
         for artifact in artifact_updates {
             // Merge with existing artifacts.
+            //#[cfg(target_arch = "wasm32")]
+            //web_sys::console::warn_1(&format!("artifact to insert {artifact:#?}").into());
+
             merge_artifact_into_map(&mut map, artifact);
         }
     }
@@ -741,6 +762,7 @@ fn artifacts_to_update(
     ast: &Node<Program>,
     cached_body_items: usize,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
+    pi: u32,
 ) -> Result<Vec<Artifact>, KclError> {
     let uuid = artifact_command.cmd_id;
     let response = responses.get(&uuid);
@@ -881,8 +903,13 @@ fn artifacts_to_update(
                 ),
             });
             let mut return_arr = Vec::new();
+
+            let base = path_id.into(); // this is probably wrong, solid id doesn't exist yet
+            let path_modifier = format!("path_{}", pi);
+            let curve_id = ArtifactId::new(generate_engine_id(base, &path_modifier));
+
             return_arr.push(Artifact::Segment(Segment {
-                id,
+                id: curve_id,
                 path_id,
                 surface_id: None,
                 edge_ids: Vec::new(),
@@ -1052,6 +1079,10 @@ fn artifacts_to_update(
             let Some(OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info)) = response else {
                 return Ok(Vec::new());
             };
+
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::warn_1(&format!("Solid3dGetExtrusionFaceInfo {face_info:#?}").into());
+
             let mut return_arr = Vec::new();
             let mut last_path = None;
 
@@ -1069,12 +1100,18 @@ fn artifacts_to_update(
                 //     continue;
                 // };
 
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::warn_1(&format!("artifacts{artifacts:#?}").into());
+
                 let path_modifier = format!("path_{}", pi);
                 pi += 1;
                 let face_id = ArtifactId::new(generate_engine_id(base, &format!("{}_face", path_modifier)));
                 let curve_id = ArtifactId::new(generate_engine_id(base, &path_modifier)); // aka edge/segment id, eg.: "path_0"
 
                 let Some(Artifact::Segment(seg)) = artifacts.get(&curve_id) else {
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::warn_1(&format!("segment not found {curve_id:#?}, {artifacts:#?}").into());
+
                     continue;
                 };
                 let Some(Artifact::Path(path)) = artifacts.get(&seg.path_id) else {
@@ -1112,6 +1149,9 @@ fn artifacts_to_update(
                     })
                     // TODO: If we didn't find it, it's probably a bug.
                     .unwrap_or_default();
+
+                //#[cfg(target_arch = "wasm32")]
+                //web_sys::console::warn_1(&format!("add wall: face_id: {face_id:#?}, curve_id: {curve_id:#?}").into());
 
                 return_arr.push(Artifact::Wall(Wall {
                     id: face_id,
@@ -1200,6 +1240,9 @@ fn artifacts_to_update(
             let Some(OkModelingCmdResponse::Solid3dGetAdjacencyInfo(info)) = response else {
                 return Ok(Vec::new());
             };
+
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::warn_1(&format!("Solid3dGetAdjacencyInfo {info:#?}").into());
 
             let base = *object_id;
 
