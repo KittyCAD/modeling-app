@@ -1,6 +1,9 @@
 import { EngineDebugger } from '@src/lib/debugger'
 import { useCallback, useEffect } from 'react'
 
+/**
+ * When the browser detects that the internet is out this will handle how to disconnect and reconnect
+ */
 export const useOnWindowOnlineOffline = ({
   close,
   connect,

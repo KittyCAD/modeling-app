@@ -14,6 +14,9 @@ import { useRef } from 'react'
 
 const NumberOfEngineRetries = 5
 
+/**
+ * Helper function, do not call this directly. Use tryConnecting instead.
+ */
 const attemptToConnectToEngine = async ({
   authToken,
   videoWrapperRef,
@@ -117,6 +120,19 @@ const attemptToConnectToEngine = async ({
   return connection
 }
 
+/**
+ * Entry point for starting the connection process.
+ * This has wrapper logic to ensure multiple attempts with a global time and reporting the state back to
+ * react all happen.
+ * For example
+ *  - attempt N number of connection tries
+ *  - global timeout of timeToConnect, if this is triggered stop trying to connect
+ *  - report the state of the connection process back to connectionStream.tsx to display the correct DOM state
+ *
+ *
+ * No part of the system should be trying to directly connect. This file wraps multiple levels of business logic and state management to provide
+ * a single safe location to connect to the engine.
+ */
 async function tryConnecting({
   isConnecting,
   successfullyConnected,

@@ -3,7 +3,7 @@ import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import { useEffect } from 'react'
 
 /**
- * When the router path changes from /file to another path this will be an exit.  
+ * When the router path changes from /file to another path this will be an exit.
  * For example: Going from /file to /home
  * What will not trigger this going from one /file to another /file path. That is not a router exit.
  */

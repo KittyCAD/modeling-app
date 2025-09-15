@@ -3,6 +3,11 @@ import { engineCommandManager } from '@src/lib/singletons'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 import { useEffect } from 'react'
 
+/**
+ * The one location that the websocket close event will be handled within the /file page.
+ * If the websocket closes we want to be able to reconnect or stop forever depending on the disconnection type
+ * Look at WebSocketStatusCodes for more details on the code that is sent when the websocket close event happens
+ */
 export function useOnWebsocketClose({ callback }: { callback: () => void }) {
   useEffect(() => {
     const onWebsocketClose = (event: CustomEvent) => {

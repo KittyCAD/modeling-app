@@ -3,6 +3,10 @@ import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 import { getDimensions } from '@src/network/utils'
 import { useEffect, useRef } from 'react'
 
+/**
+ * Event handler that will watch for the page to resize and call the handleResize function to
+ * resize the engine stream. There is no other workflow in the system that will resize the engine
+ */
 export const useOnPageResize = ({
   videoWrapperRef,
   videoRef,

@@ -9,6 +9,11 @@ const resetGlobalEngineCommandManager = () => {
   didUseEffectRunOnce = false
 }
 
+/**
+ * When the page mounts from a /file router call it will trigger the callback which will
+ * be the engine connection call
+ * This is the main entry point to start the engine connection when /file loads
+ */
 export const useOnPageMounted = ({ callback }: { callback: () => void }) => {
   // Run once on initialization
   useEffect(() => {
