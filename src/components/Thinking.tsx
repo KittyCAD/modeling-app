@@ -352,7 +352,6 @@ const fromDataToComponent = (
       }
       // Prepare to have this type come down the pipeline.
       // We have to shut-up tsc.
-      // @ts-expect-error
       case 'markdown': {
         return (
           <>
