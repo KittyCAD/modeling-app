@@ -11,7 +11,7 @@ import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import Loading from '@src/components/Loading'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
-import { useEnableShortcuts } from '@src/lib/useShortcuts'
+import { useEnableShortcuts } from '@src/lib/useEnableShortcuts'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
