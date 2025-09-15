@@ -10,8 +10,8 @@ use crate::{
     ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
-        TagIdentifier,
+        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchSurface,
+        Solid, TagIdentifier,
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType, UnitType},
     },
@@ -965,6 +965,33 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrPoint3d {
     }
 }
 
+impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryReference {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = |arg: &KclValue| {
+            let obj = arg.as_object()?;
+            let_field_of!(obj, direction);
+            let_field_of!(obj, origin);
+            Some(Self::Axis { direction, origin })
+        };
+        let case2 = <[TyF64; 3]>::from_kcl_val;
+        let case3 = super::fillet::EdgeReference::from_kcl_val;
+        let case4 = FaceTag::from_kcl_val;
+        let case5 = Box::<Solid>::from_kcl_val;
+        let case6 = TagIdentifier::from_kcl_val;
+        let case7 = Box::<Plane>::from_kcl_val;
+        let case8 = Box::<Sketch>::from_kcl_val;
+
+        case1(arg)
+            .or_else(|| case2(arg).map(Self::Point))
+            .or_else(|| case3(arg).map(Self::Edge))
+            .or_else(|| case4(arg).map(Self::Face))
+            .or_else(|| case5(arg).map(Self::Solid))
+            .or_else(|| case6(arg).map(Self::TaggedEdgeOrFace))
+            .or_else(|| case7(arg).map(Self::Plane))
+            .or_else(|| case8(arg).map(Self::Sketch))
+    }
+}
+
 impl<'a> FromKclValue<'a> for i64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
@@ -1154,6 +1181,24 @@ impl<'a> FromKclValue<'a> for bool {
 impl<'a> FromKclValue<'a> for Box<Solid> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Solid { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Box<Plane> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Plane { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Box<Sketch> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Sketch { value } = arg else {
             return None;
         };
         Some(value.to_owned())
