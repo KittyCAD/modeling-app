@@ -20,7 +20,7 @@ import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { ModelingMachineContext } from '@src/components/ModelingMachineProvider'
-import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes/types'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
