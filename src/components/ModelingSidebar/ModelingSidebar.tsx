@@ -1,5 +1,5 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { type settings } from '@src/lib/settings/initialSettings'
+import type { settings } from '@src/lib/settings/initialSettings'
 import { useSelector } from '@xstate/react'
 import { Resizable } from 're-resizable'
 import type { HTMLProps, MouseEventHandler, ComponentProps, Ref } from 'react'
@@ -11,7 +11,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useAppState } from '@src/AppState'
 import { ActionIcon } from '@src/components/ActionIcon'
@@ -22,7 +21,6 @@ import type {
   SidebarAction,
   SidebarCssOverrides,
   SidebarPane,
-  SidebarId,
 } from '@src/components/ModelingSidebar/ModelingPanes'
 import {
   sidebarPanesLeft,
@@ -44,10 +42,12 @@ import { commandBarActor } from '@src/lib/singletons'
 import { settingsActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes/types'
+import { useEnableShortcuts } from '@src/lib/useEnableShortcuts'
 
 interface BadgeInfoComputed {
   value: number | boolean | string
-  onClick?: MouseEventHandler<any>
+  onClick?: MouseEventHandler
   className?: string
   title?: string
 }
@@ -321,6 +321,13 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
     [context.store?.openPanes, send]
   )
 
+  useEnableShortcuts(
+    filteredPanes.map((pane) => ({
+      id: `pane-toggle-${pane.id}`,
+      action: () => togglePane(pane.id),
+    }))
+  )
+
   const css = {
     handle:
       (openPanesForThisSide.length === 0 ? 'hidden ' : 'block ') +
@@ -478,10 +485,6 @@ function ModelingPaneButton({
   ...props
 }: ModelingPaneButtonProps) {
   const platform = usePlatform()
-  useHotkeys(paneConfig.keybinding, onClick, {
-    scopes: ['modeling'],
-  })
-
   const tooltipPosition = props.align === Alignment.Left ? 'left' : 'right'
 
   return (
