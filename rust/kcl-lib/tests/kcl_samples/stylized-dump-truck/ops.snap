@@ -12,12 +12,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 4.2,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 1.8,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 2.94,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -144,12 +128,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.7,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -177,12 +157,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.27,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -210,12 +186,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.1,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -243,12 +215,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 4.4,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -276,12 +244,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -309,12 +273,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.35,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -342,12 +302,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -375,12 +331,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.75,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -408,12 +360,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 1.15,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -441,12 +389,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -474,12 +418,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -507,12 +447,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.8400000000000001,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -540,12 +476,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 2.8600000000000003,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -573,12 +505,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 2.15,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -606,12 +534,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.1,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -639,12 +563,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.95,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -672,12 +592,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 1.35,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -705,12 +621,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.32000000000000006,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -738,12 +650,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -771,12 +679,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.08000000000000002,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -804,12 +708,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.24,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -837,12 +737,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.36,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -870,12 +766,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.8300000000000001,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -903,12 +795,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 1.2800000000000002,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -936,12 +824,8 @@ description: Operations executed stylized-dump-truck.kcl
         "value": 0.32000000000000006,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -978,12 +862,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.9,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1022,12 +902,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1073,12 +949,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1159,12 +1031,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1250,12 +1118,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.405,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1312,12 +1176,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.47,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1328,12 +1188,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1344,12 +1200,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1389,12 +1241,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1480,12 +1328,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.405,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1542,12 +1386,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 1.47,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1558,12 +1398,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1574,12 +1410,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1619,12 +1451,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1710,12 +1538,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.405,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1772,12 +1596,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1788,12 +1608,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1804,12 +1620,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1854,12 +1666,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 1.47,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1870,12 +1678,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1886,12 +1690,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1931,12 +1731,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2022,12 +1818,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.405,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2084,12 +1876,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2100,12 +1888,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2116,12 +1900,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2166,12 +1946,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.47,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2182,12 +1958,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2198,12 +1970,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2365,12 +2133,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2461,12 +2225,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2557,12 +2317,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2653,12 +2409,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.8,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2739,12 +2491,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2755,12 +2503,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.27,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2902,12 +2646,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3019,12 +2759,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3150,12 +2886,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.47,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3166,12 +2898,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3182,12 +2910,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3227,12 +2951,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3243,12 +2963,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.27,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3390,12 +3106,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3507,12 +3219,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3638,12 +3346,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 1.47,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3654,12 +3358,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3670,12 +3370,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3715,12 +3411,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3731,12 +3423,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.27,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3878,12 +3566,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3995,12 +3679,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4126,12 +3806,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4142,12 +3818,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4158,12 +3830,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4219,12 +3887,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 1.47,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4235,12 +3899,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4251,12 +3911,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4296,12 +3952,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4312,12 +3964,8 @@ description: Operations executed stylized-dump-truck.kcl
               "value": 0.27,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4459,12 +4107,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4576,12 +4220,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.27,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4707,12 +4347,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4723,12 +4359,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4739,12 +4371,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4800,12 +4428,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.47,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4816,12 +4440,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4832,12 +4452,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4880,12 +4496,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -2.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4964,12 +4576,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": -0.05,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5064,12 +4672,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 2.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5148,12 +4752,8 @@ description: Operations executed stylized-dump-truck.kcl
             "value": 0.05,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []

@@ -21,12 +21,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": 0.25,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -78,12 +74,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -91,12 +83,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -109,12 +97,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -122,12 +106,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -160,9 +140,9 @@ description: Operations executed pillow-block-bearing.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -176,12 +156,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -189,12 +165,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -202,12 +174,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -223,12 +191,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -236,12 +200,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -249,12 +209,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -302,12 +258,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": 0.25,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -359,12 +311,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -372,12 +320,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -390,12 +334,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -403,12 +343,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -441,9 +377,9 @@ description: Operations executed pillow-block-bearing.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -457,12 +393,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -470,12 +402,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -483,12 +411,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -504,12 +428,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -517,12 +437,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -530,12 +446,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -617,12 +529,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": 360.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -639,12 +547,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -652,12 +556,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -670,12 +570,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -683,12 +579,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -748,12 +640,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": 360.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -770,12 +658,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -783,12 +667,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -801,12 +681,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -814,12 +690,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -879,12 +751,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": 22.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -901,12 +769,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -914,12 +778,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -932,12 +792,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -945,12 +801,8 @@ description: Operations executed pillow-block-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -983,9 +835,9 @@ description: Operations executed pillow-block-bearing.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -999,12 +851,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1012,12 +860,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1025,12 +869,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1046,12 +886,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1059,12 +895,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1072,12 +904,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1118,12 +946,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 6.125,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1140,12 +964,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 4.125,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1217,12 +1037,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1278,12 +1094,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1333,12 +1145,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": -2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1346,12 +1154,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": -1.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1410,12 +1214,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": -0.1875,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1471,12 +1271,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": -0.3125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1505,12 +1301,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": -2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1518,12 +1310,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 1.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1582,12 +1370,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": -0.1875,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1643,12 +1427,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": -0.3125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1677,12 +1457,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1690,12 +1466,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": -1.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1754,12 +1526,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": -0.1875,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1815,12 +1583,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": -0.3125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1849,12 +1613,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 2.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1862,12 +1622,8 @@ description: Operations executed pillow-block-bearing.kcl
                 "value": 1.5,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1926,12 +1682,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": -0.1875,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1987,12 +1739,8 @@ description: Operations executed pillow-block-bearing.kcl
             "value": -0.3125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2078,12 +1826,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -2100,12 +1844,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -2122,12 +1862,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 0.375,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -2144,12 +1880,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 0.75,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -2166,12 +1898,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 0.1875,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -2188,12 +1916,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -2210,12 +1934,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 1.75,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -2232,12 +1952,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 2.625,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -2254,12 +1970,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 0.21875,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -2276,12 +1988,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 0.109375,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -2298,12 +2006,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 0.02734375,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -2320,12 +2024,8 @@ description: Operations executed pillow-block-bearing.kcl
         "value": 0.0546875,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",

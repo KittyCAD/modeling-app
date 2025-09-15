@@ -12,12 +12,8 @@ description: Operations executed dining-table.kcl
         "value": 750.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed dining-table.kcl
         "value": 750.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed dining-table.kcl
         "value": 2100.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed dining-table.kcl
         "value": 800.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -144,12 +128,8 @@ description: Operations executed dining-table.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -177,12 +157,8 @@ description: Operations executed dining-table.kcl
         "value": 40.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -210,12 +186,8 @@ description: Operations executed dining-table.kcl
         "value": 60.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -243,12 +215,8 @@ description: Operations executed dining-table.kcl
         "value": 120.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -276,12 +244,8 @@ description: Operations executed dining-table.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -318,12 +282,8 @@ description: Operations executed dining-table.kcl
             "value": 750.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -391,12 +351,8 @@ description: Operations executed dining-table.kcl
             "value": -20.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -426,12 +382,8 @@ description: Operations executed dining-table.kcl
         "value": 730.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -459,12 +411,8 @@ description: Operations executed dining-table.kcl
         "value": 640.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -492,12 +440,8 @@ description: Operations executed dining-table.kcl
         "value": 1940.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -563,12 +507,8 @@ description: Operations executed dining-table.kcl
             "value": 730.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -613,12 +553,8 @@ description: Operations executed dining-table.kcl
             "value": 60.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -629,12 +565,8 @@ description: Operations executed dining-table.kcl
             "value": 60.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -645,12 +577,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -728,12 +656,8 @@ description: Operations executed dining-table.kcl
             "value": 640.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -744,12 +668,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -760,12 +680,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -843,12 +759,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -859,12 +771,8 @@ description: Operations executed dining-table.kcl
             "value": 1940.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -875,12 +783,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -958,12 +862,8 @@ description: Operations executed dining-table.kcl
             "value": 640.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -974,12 +874,8 @@ description: Operations executed dining-table.kcl
             "value": 1940.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -990,12 +886,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1029,12 +921,8 @@ description: Operations executed dining-table.kcl
         "value": 1900.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1062,12 +950,8 @@ description: Operations executed dining-table.kcl
         "value": 600.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1095,12 +979,8 @@ description: Operations executed dining-table.kcl
         "value": 100.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1128,12 +1008,8 @@ description: Operations executed dining-table.kcl
         "value": 80.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1161,12 +1037,8 @@ description: Operations executed dining-table.kcl
         "value": 70.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1203,12 +1075,8 @@ description: Operations executed dining-table.kcl
             "value": 730.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1276,12 +1144,8 @@ description: Operations executed dining-table.kcl
             "value": 70.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1292,12 +1156,8 @@ description: Operations executed dining-table.kcl
             "value": 100.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1308,12 +1168,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1354,12 +1210,8 @@ description: Operations executed dining-table.kcl
             "value": -120.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1433,12 +1285,8 @@ description: Operations executed dining-table.kcl
             "value": 640.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1449,12 +1297,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1465,12 +1309,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1515,12 +1355,8 @@ description: Operations executed dining-table.kcl
             "value": 100.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1531,12 +1367,8 @@ description: Operations executed dining-table.kcl
             "value": 70.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1547,12 +1379,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1593,12 +1421,8 @@ description: Operations executed dining-table.kcl
             "value": -120.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1672,12 +1496,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1688,12 +1508,8 @@ description: Operations executed dining-table.kcl
             "value": 1940.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1704,12 +1520,8 @@ description: Operations executed dining-table.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []

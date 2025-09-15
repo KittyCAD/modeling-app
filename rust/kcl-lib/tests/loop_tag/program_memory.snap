@@ -7,9 +7,9 @@ description: Variables in memory after executing loop_tag.kcl
     "type": "Number",
     "value": 7.2,
     "ty": {
+      "degrees": null,
       "type": "Known",
-      "type": "Angle",
-      "type": "Degrees"
+      "type": "Angle"
     }
   },
   "calculatePoint": {
@@ -44,9 +44,7 @@ description: Variables in memory after executing loop_tag.kcl
             1.2533323356430426
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -70,9 +68,7 @@ description: Variables in memory after executing loop_tag.kcl
             3.7402312072915906
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -96,9 +92,7 @@ description: Variables in memory after executing loop_tag.kcl
             7.42147673413837
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -122,9 +116,7 @@ description: Variables in memory after executing loop_tag.kcl
             12.239013475155524
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -148,9 +140,7 @@ description: Variables in memory after executing loop_tag.kcl
             18.116865998080257
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -174,9 +164,7 @@ description: Variables in memory after executing loop_tag.kcl
             24.962337057367144
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -200,9 +188,7 @@ description: Variables in memory after executing loop_tag.kcl
             32.66746948512503
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -226,9 +212,7 @@ description: Variables in memory after executing loop_tag.kcl
             41.11074874014518
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -252,9 +236,7 @@ description: Variables in memory after executing loop_tag.kcl
             50.15901926480538
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -278,9 +260,7 @@ description: Variables in memory after executing loop_tag.kcl
             59.66958442775692
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -304,9 +284,7 @@ description: Variables in memory after executing loop_tag.kcl
             69.4924569350438
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -330,9 +308,7 @@ description: Variables in memory after executing loop_tag.kcl
             79.47272421932652
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -356,9 +332,7 @@ description: Variables in memory after executing loop_tag.kcl
             89.45299150360924
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -382,9 +356,7 @@ description: Variables in memory after executing loop_tag.kcl
             99.27586401089613
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -408,9 +380,7 @@ description: Variables in memory after executing loop_tag.kcl
             108.78642917384767
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -434,9 +404,7 @@ description: Variables in memory after executing loop_tag.kcl
             117.83469969850786
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -460,9 +428,7 @@ description: Variables in memory after executing loop_tag.kcl
             126.277978953528
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -486,9 +452,7 @@ description: Variables in memory after executing loop_tag.kcl
             133.9831113812859
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -512,9 +476,7 @@ description: Variables in memory after executing loop_tag.kcl
             140.8285824405728
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -538,9 +500,7 @@ description: Variables in memory after executing loop_tag.kcl
             146.70643496349754
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -564,9 +524,7 @@ description: Variables in memory after executing loop_tag.kcl
             151.5239717045147
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -590,9 +548,7 @@ description: Variables in memory after executing loop_tag.kcl
             155.2052172313615
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -616,9 +572,7 @@ description: Variables in memory after executing loop_tag.kcl
             157.69211610301005
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -642,9 +596,7 @@ description: Variables in memory after executing loop_tag.kcl
             158.9454484386531
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -668,9 +620,7 @@ description: Variables in memory after executing loop_tag.kcl
             158.9454484386531
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -694,9 +644,7 @@ description: Variables in memory after executing loop_tag.kcl
             157.69211610301005
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -720,9 +668,7 @@ description: Variables in memory after executing loop_tag.kcl
             155.2052172313615
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -746,9 +692,7 @@ description: Variables in memory after executing loop_tag.kcl
             151.52397170451474
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -772,9 +716,7 @@ description: Variables in memory after executing loop_tag.kcl
             146.70643496349757
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -798,9 +740,7 @@ description: Variables in memory after executing loop_tag.kcl
             140.82858244057283
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -824,9 +764,7 @@ description: Variables in memory after executing loop_tag.kcl
             133.98311138128594
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -850,9 +788,7 @@ description: Variables in memory after executing loop_tag.kcl
             126.27797895352805
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -876,9 +812,7 @@ description: Variables in memory after executing loop_tag.kcl
             117.83469969850789
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -902,9 +836,7 @@ description: Variables in memory after executing loop_tag.kcl
             108.7864291738477
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -928,9 +860,7 @@ description: Variables in memory after executing loop_tag.kcl
             99.27586401089616
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -954,9 +884,7 @@ description: Variables in memory after executing loop_tag.kcl
             89.45299150360927
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -980,9 +908,7 @@ description: Variables in memory after executing loop_tag.kcl
             79.47272421932655
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1006,9 +932,7 @@ description: Variables in memory after executing loop_tag.kcl
             69.49245693504383
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1032,9 +956,7 @@ description: Variables in memory after executing loop_tag.kcl
             59.669584427756945
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1058,9 +980,7 @@ description: Variables in memory after executing loop_tag.kcl
             50.15901926480541
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1084,9 +1004,7 @@ description: Variables in memory after executing loop_tag.kcl
             41.11074874014521
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1110,9 +1028,7 @@ description: Variables in memory after executing loop_tag.kcl
             32.66746948512506
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1136,9 +1052,7 @@ description: Variables in memory after executing loop_tag.kcl
             24.962337057367172
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1162,9 +1076,7 @@ description: Variables in memory after executing loop_tag.kcl
             18.116865998080282
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1188,9 +1100,7 @@ description: Variables in memory after executing loop_tag.kcl
             12.239013475155549
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1214,9 +1124,7 @@ description: Variables in memory after executing loop_tag.kcl
             7.421476734138388
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1240,9 +1148,7 @@ description: Variables in memory after executing loop_tag.kcl
             3.740231207291609
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1266,9 +1172,7 @@ description: Variables in memory after executing loop_tag.kcl
             1.253332335643064
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1292,9 +1196,7 @@ description: Variables in memory after executing loop_tag.kcl
             0.000000000000017319479184152442
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1311,9 +1213,7 @@ description: Variables in memory after executing loop_tag.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1323,9 +1223,7 @@ description: Variables in memory after executing loop_tag.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -1333,25 +1231,19 @@ description: Variables in memory after executing loop_tag.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1363,9 +1255,7 @@ description: Variables in memory after executing loop_tag.kcl
           10.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1380,9 +1270,7 @@ description: Variables in memory after executing loop_tag.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "cylinder": {
@@ -2112,9 +2000,7 @@ description: Variables in memory after executing loop_tag.kcl
               1.2533323356430426
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2138,9 +2024,7 @@ description: Variables in memory after executing loop_tag.kcl
               3.7402312072915906
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2164,9 +2048,7 @@ description: Variables in memory after executing loop_tag.kcl
               7.42147673413837
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2190,9 +2072,7 @@ description: Variables in memory after executing loop_tag.kcl
               12.239013475155524
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2216,9 +2096,7 @@ description: Variables in memory after executing loop_tag.kcl
               18.116865998080257
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2242,9 +2120,7 @@ description: Variables in memory after executing loop_tag.kcl
               24.962337057367144
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2268,9 +2144,7 @@ description: Variables in memory after executing loop_tag.kcl
               32.66746948512503
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2294,9 +2168,7 @@ description: Variables in memory after executing loop_tag.kcl
               41.11074874014518
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2320,9 +2192,7 @@ description: Variables in memory after executing loop_tag.kcl
               50.15901926480538
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2346,9 +2216,7 @@ description: Variables in memory after executing loop_tag.kcl
               59.66958442775692
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2372,9 +2240,7 @@ description: Variables in memory after executing loop_tag.kcl
               69.4924569350438
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2398,9 +2264,7 @@ description: Variables in memory after executing loop_tag.kcl
               79.47272421932652
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2424,9 +2288,7 @@ description: Variables in memory after executing loop_tag.kcl
               89.45299150360924
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2450,9 +2312,7 @@ description: Variables in memory after executing loop_tag.kcl
               99.27586401089613
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2476,9 +2336,7 @@ description: Variables in memory after executing loop_tag.kcl
               108.78642917384767
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2502,9 +2360,7 @@ description: Variables in memory after executing loop_tag.kcl
               117.83469969850786
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2528,9 +2384,7 @@ description: Variables in memory after executing loop_tag.kcl
               126.277978953528
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2554,9 +2408,7 @@ description: Variables in memory after executing loop_tag.kcl
               133.9831113812859
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2580,9 +2432,7 @@ description: Variables in memory after executing loop_tag.kcl
               140.8285824405728
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2606,9 +2456,7 @@ description: Variables in memory after executing loop_tag.kcl
               146.70643496349754
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2632,9 +2480,7 @@ description: Variables in memory after executing loop_tag.kcl
               151.5239717045147
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2658,9 +2504,7 @@ description: Variables in memory after executing loop_tag.kcl
               155.2052172313615
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2684,9 +2528,7 @@ description: Variables in memory after executing loop_tag.kcl
               157.69211610301005
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2710,9 +2552,7 @@ description: Variables in memory after executing loop_tag.kcl
               158.9454484386531
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2736,9 +2576,7 @@ description: Variables in memory after executing loop_tag.kcl
               158.9454484386531
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2762,9 +2600,7 @@ description: Variables in memory after executing loop_tag.kcl
               157.69211610301005
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2788,9 +2624,7 @@ description: Variables in memory after executing loop_tag.kcl
               155.2052172313615
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2814,9 +2648,7 @@ description: Variables in memory after executing loop_tag.kcl
               151.52397170451474
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2840,9 +2672,7 @@ description: Variables in memory after executing loop_tag.kcl
               146.70643496349757
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2866,9 +2696,7 @@ description: Variables in memory after executing loop_tag.kcl
               140.82858244057283
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2892,9 +2720,7 @@ description: Variables in memory after executing loop_tag.kcl
               133.98311138128594
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2918,9 +2744,7 @@ description: Variables in memory after executing loop_tag.kcl
               126.27797895352805
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2944,9 +2768,7 @@ description: Variables in memory after executing loop_tag.kcl
               117.83469969850789
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2970,9 +2792,7 @@ description: Variables in memory after executing loop_tag.kcl
               108.7864291738477
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2996,9 +2816,7 @@ description: Variables in memory after executing loop_tag.kcl
               99.27586401089616
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3022,9 +2840,7 @@ description: Variables in memory after executing loop_tag.kcl
               89.45299150360927
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3048,9 +2864,7 @@ description: Variables in memory after executing loop_tag.kcl
               79.47272421932655
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3074,9 +2888,7 @@ description: Variables in memory after executing loop_tag.kcl
               69.49245693504383
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3100,9 +2912,7 @@ description: Variables in memory after executing loop_tag.kcl
               59.669584427756945
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3126,9 +2936,7 @@ description: Variables in memory after executing loop_tag.kcl
               50.15901926480541
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3152,9 +2960,7 @@ description: Variables in memory after executing loop_tag.kcl
               41.11074874014521
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3178,9 +2984,7 @@ description: Variables in memory after executing loop_tag.kcl
               32.66746948512506
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3204,9 +3008,7 @@ description: Variables in memory after executing loop_tag.kcl
               24.962337057367172
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3230,9 +3032,7 @@ description: Variables in memory after executing loop_tag.kcl
               18.116865998080282
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3256,9 +3056,7 @@ description: Variables in memory after executing loop_tag.kcl
               12.239013475155549
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3282,9 +3080,7 @@ description: Variables in memory after executing loop_tag.kcl
               7.421476734138388
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3308,9 +3104,7 @@ description: Variables in memory after executing loop_tag.kcl
               3.740231207291609
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3334,9 +3128,7 @@ description: Variables in memory after executing loop_tag.kcl
               1.253332335643064
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3360,9 +3152,7 @@ description: Variables in memory after executing loop_tag.kcl
               0.000000000000017319479184152442
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3379,9 +3169,7 @@ description: Variables in memory after executing loop_tag.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -3391,9 +3179,7 @@ description: Variables in memory after executing loop_tag.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -3401,25 +3187,19 @@ description: Variables in memory after executing loop_tag.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3431,9 +3211,7 @@ description: Variables in memory after executing loop_tag.kcl
             10.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3448,16 +3226,12 @@ description: Variables in memory after executing loop_tag.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -3489,9 +3263,7 @@ description: Variables in memory after executing loop_tag.kcl
             1.2533323356430426
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3515,9 +3287,7 @@ description: Variables in memory after executing loop_tag.kcl
             3.7402312072915906
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3541,9 +3311,7 @@ description: Variables in memory after executing loop_tag.kcl
             7.42147673413837
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3567,9 +3335,7 @@ description: Variables in memory after executing loop_tag.kcl
             12.239013475155524
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3593,9 +3359,7 @@ description: Variables in memory after executing loop_tag.kcl
             18.116865998080257
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3619,9 +3383,7 @@ description: Variables in memory after executing loop_tag.kcl
             24.962337057367144
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3645,9 +3407,7 @@ description: Variables in memory after executing loop_tag.kcl
             32.66746948512503
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3671,9 +3431,7 @@ description: Variables in memory after executing loop_tag.kcl
             41.11074874014518
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3697,9 +3455,7 @@ description: Variables in memory after executing loop_tag.kcl
             50.15901926480538
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3723,9 +3479,7 @@ description: Variables in memory after executing loop_tag.kcl
             59.66958442775692
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3749,9 +3503,7 @@ description: Variables in memory after executing loop_tag.kcl
             69.4924569350438
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3775,9 +3527,7 @@ description: Variables in memory after executing loop_tag.kcl
             79.47272421932652
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3801,9 +3551,7 @@ description: Variables in memory after executing loop_tag.kcl
             89.45299150360924
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3827,9 +3575,7 @@ description: Variables in memory after executing loop_tag.kcl
             99.27586401089613
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3853,9 +3599,7 @@ description: Variables in memory after executing loop_tag.kcl
             108.78642917384767
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3879,9 +3623,7 @@ description: Variables in memory after executing loop_tag.kcl
             117.83469969850786
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3905,9 +3647,7 @@ description: Variables in memory after executing loop_tag.kcl
             126.277978953528
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3931,9 +3671,7 @@ description: Variables in memory after executing loop_tag.kcl
             133.9831113812859
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3957,9 +3695,7 @@ description: Variables in memory after executing loop_tag.kcl
             140.8285824405728
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3983,9 +3719,7 @@ description: Variables in memory after executing loop_tag.kcl
             146.70643496349754
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4009,9 +3743,7 @@ description: Variables in memory after executing loop_tag.kcl
             151.5239717045147
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4035,9 +3767,7 @@ description: Variables in memory after executing loop_tag.kcl
             155.2052172313615
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4061,9 +3791,7 @@ description: Variables in memory after executing loop_tag.kcl
             157.69211610301005
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4087,9 +3815,7 @@ description: Variables in memory after executing loop_tag.kcl
             158.9454484386531
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4113,9 +3839,7 @@ description: Variables in memory after executing loop_tag.kcl
             158.9454484386531
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4139,9 +3863,7 @@ description: Variables in memory after executing loop_tag.kcl
             157.69211610301005
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4165,9 +3887,7 @@ description: Variables in memory after executing loop_tag.kcl
             155.2052172313615
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4191,9 +3911,7 @@ description: Variables in memory after executing loop_tag.kcl
             151.52397170451474
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4217,9 +3935,7 @@ description: Variables in memory after executing loop_tag.kcl
             146.70643496349757
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4243,9 +3959,7 @@ description: Variables in memory after executing loop_tag.kcl
             140.82858244057283
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4269,9 +3983,7 @@ description: Variables in memory after executing loop_tag.kcl
             133.98311138128594
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4295,9 +4007,7 @@ description: Variables in memory after executing loop_tag.kcl
             126.27797895352805
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4321,9 +4031,7 @@ description: Variables in memory after executing loop_tag.kcl
             117.83469969850789
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4347,9 +4055,7 @@ description: Variables in memory after executing loop_tag.kcl
             108.7864291738477
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4373,9 +4079,7 @@ description: Variables in memory after executing loop_tag.kcl
             99.27586401089616
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4399,9 +4103,7 @@ description: Variables in memory after executing loop_tag.kcl
             89.45299150360927
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4425,9 +4127,7 @@ description: Variables in memory after executing loop_tag.kcl
             79.47272421932655
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4451,9 +4151,7 @@ description: Variables in memory after executing loop_tag.kcl
             69.49245693504383
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4477,9 +4175,7 @@ description: Variables in memory after executing loop_tag.kcl
             59.669584427756945
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4503,9 +4199,7 @@ description: Variables in memory after executing loop_tag.kcl
             50.15901926480541
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4529,9 +4223,7 @@ description: Variables in memory after executing loop_tag.kcl
             41.11074874014521
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4555,9 +4247,7 @@ description: Variables in memory after executing loop_tag.kcl
             32.66746948512506
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4581,9 +4271,7 @@ description: Variables in memory after executing loop_tag.kcl
             24.962337057367172
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4607,9 +4295,7 @@ description: Variables in memory after executing loop_tag.kcl
             18.116865998080282
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4633,9 +4319,7 @@ description: Variables in memory after executing loop_tag.kcl
             12.239013475155549
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4659,9 +4343,7 @@ description: Variables in memory after executing loop_tag.kcl
             7.421476734138388
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4685,9 +4367,7 @@ description: Variables in memory after executing loop_tag.kcl
             3.740231207291609
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4711,9 +4391,7 @@ description: Variables in memory after executing loop_tag.kcl
             1.253332335643064
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4737,9 +4415,7 @@ description: Variables in memory after executing loop_tag.kcl
             0.000000000000017319479184152442
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -4749,9 +4425,7 @@ description: Variables in memory after executing loop_tag.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -4759,25 +4433,19 @@ description: Variables in memory after executing loop_tag.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -4789,9 +4457,7 @@ description: Variables in memory after executing loop_tag.kcl
           10.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -4806,9 +4472,7 @@ description: Variables in memory after executing loop_tag.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "isClosed": false
     }
   },
@@ -4817,12 +4481,8 @@ description: Variables in memory after executing loop_tag.kcl
     "value": 50.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "initialSketch": {
@@ -4838,9 +4498,7 @@ description: Variables in memory after executing loop_tag.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -4848,25 +4506,19 @@ description: Variables in memory after executing loop_tag.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -4878,9 +4530,7 @@ description: Variables in memory after executing loop_tag.kcl
           10.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -4895,9 +4545,7 @@ description: Variables in memory after executing loop_tag.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "isClosed": false
     }
   },
@@ -4906,12 +4554,8 @@ description: Variables in memory after executing loop_tag.kcl
     "value": 50.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "problematicTag": {
@@ -4924,12 +4568,8 @@ description: Variables in memory after executing loop_tag.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

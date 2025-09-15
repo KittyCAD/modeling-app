@@ -56,7 +56,7 @@ import { platform, uuidv4 } from '@src/lib/utils'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
 import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
 import {
@@ -1216,8 +1216,8 @@ export const ModelingMachineProvider = ({
   const cb = (data: WebContentSendPayload) => {
     const openPanes = modelingActor.getSnapshot().context.store.openPanes
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      const featureTree: SidebarType = 'feature-tree'
-      const alwaysAddFeatureTree: SidebarType[] = [
+      const featureTree: SidebarId = 'feature-tree'
+      const alwaysAddFeatureTree: SidebarId[] = [
         ...new Set([...openPanes, featureTree]),
       ]
       modelingSend({
@@ -1227,8 +1227,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      const code: SidebarType = 'code'
-      const alwaysAddCode: SidebarType[] = [...new Set([...openPanes, code])]
+      const code: SidebarId = 'code'
+      const alwaysAddCode: SidebarId[] = [...new Set([...openPanes, code])]
       modelingSend({
         type: 'Set context',
         data: {
@@ -1236,8 +1236,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      const projectFiles: SidebarType = 'files'
-      const alwaysAddProjectFiles: SidebarType[] = [
+      const projectFiles: SidebarId = 'files'
+      const alwaysAddProjectFiles: SidebarId[] = [
         ...new Set([...openPanes, projectFiles]),
       ]
       modelingSend({
@@ -1247,8 +1247,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      const variables: SidebarType = 'variables'
-      const alwaysAddVariables: SidebarType[] = [
+      const variables: SidebarId = 'variables'
+      const alwaysAddVariables: SidebarId[] = [
         ...new Set([...openPanes, variables]),
       ]
       modelingSend({
@@ -1258,8 +1258,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      const logs: SidebarType = 'logs'
-      const alwaysAddLogs: SidebarType[] = [...new Set([...openPanes, logs])]
+      const logs: SidebarId = 'logs'
+      const alwaysAddLogs: SidebarId[] = [...new Set([...openPanes, logs])]
       modelingSend({
         type: 'Set context',
         data: {

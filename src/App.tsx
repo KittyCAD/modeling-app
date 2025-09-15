@@ -275,7 +275,10 @@ export function App() {
         <ModalContainer />
         <section className="flex flex-1">
           <ModelingSidebarLeft />
-          <div className="relative z-0 flex flex-col flex-1 items-center overflow-hidden">
+          <div
+            className="relative z-0 flex flex-col flex-1 items-center overflow-hidden"
+            style={{ minWidth: '256px' }}
+          >
             <Toolbar />
             <ConnectionStream pool={pool} authToken={authToken} />
             <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
