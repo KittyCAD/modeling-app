@@ -588,7 +588,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 3.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1141,7 +1140,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -150.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1604,7 +1602,6 @@ description: Variables in memory after executing food-service-spatula.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -150.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2209,7 +2206,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 15.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -2934,7 +2930,6 @@ description: Variables in memory after executing food-service-spatula.kcl
           "originalId": "[uuid]",
           "units": "mm"
         },
-        "height": -150.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": "mm",

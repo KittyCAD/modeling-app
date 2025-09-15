@@ -189,7 +189,6 @@ description: Variables in memory after executing riddle_small.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

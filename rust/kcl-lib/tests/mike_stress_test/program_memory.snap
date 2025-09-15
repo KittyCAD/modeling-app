@@ -24090,7 +24090,6 @@ description: Variables in memory after executing mike_stress_test.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

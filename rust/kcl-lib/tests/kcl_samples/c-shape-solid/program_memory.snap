@@ -128,7 +128,6 @@ description: Variables in memory after executing c-shape-solid.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -452,7 +451,6 @@ description: Variables in memory after executing c-shape-solid.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -635,7 +633,6 @@ description: Variables in memory after executing c-shape-solid.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
