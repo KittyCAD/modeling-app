@@ -1,5 +1,3 @@
-import { platform } from '@src/lib/utils'
-
 /**
  * From https://github.com/JohannesKlauss/react-hotkeys-hook/blob/main/src/parseHotkeys.ts
  * we don't want to use the whole library (as cool as it is) because it attaches

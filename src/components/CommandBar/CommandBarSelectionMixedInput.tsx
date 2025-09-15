@@ -9,7 +9,7 @@ import {
   handleSelectionBatch,
 } from '@src/lib/selections'
 import { kclManager, engineCommandManager } from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useCommandBarState } from '@src/lib/singletons'
 import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -159,9 +159,9 @@ export default function CommandBarSelectionMixedInput({
       const resolvedSelection: Selections | undefined = isArgRequired
         ? selection
         : selection || {
-            graphSelections: [],
-            otherSelections: [],
-          }
+          graphSelections: [],
+          otherSelections: [],
+        }
 
       if (
         !(arg.clearSelectionFirst && !hasClearedSelection) &&
@@ -193,9 +193,9 @@ export default function CommandBarSelectionMixedInput({
     const resolvedSelection: Selections | undefined = isArgRequired
       ? selection
       : selection || {
-          graphSelections: [],
-          otherSelections: [],
-        }
+        graphSelections: [],
+        otherSelections: [],
+      }
 
     onSubmit(resolvedSelection)
   }
@@ -214,7 +214,7 @@ export default function CommandBarSelectionMixedInput({
         }
       >
         {canSubmitSelection &&
-        (selection.graphSelections.length || selection.otherSelections.length)
+          (selection.graphSelections.length || selection.otherSelections.length)
           ? getSelectionTypeDisplayText(selection) + ' selected'
           : 'Select code/objects, or skip'}
 
