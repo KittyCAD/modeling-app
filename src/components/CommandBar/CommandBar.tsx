@@ -12,7 +12,7 @@ import { engineCommandManager } from '@src/lib/singletons'
 import { EngineConnectionStateType } from '@src/network/utils'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
-import { useEnableShortcuts } from '@src/lib/useShortcuts'
+import { useEnableShortcuts } from '@src/lib/useEnableShortcuts'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
