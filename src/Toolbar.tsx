@@ -26,8 +26,8 @@ import type {
   ToolbarModeName,
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
-import { useEnableShortcuts } from './lib/useEnableShortcuts'
-import { ShortcutId } from './lib/shortcuts/config'
+import { useEnableShortcuts } from '@src/lib/useEnableShortcuts'
+import { ShortcutId } from '@src/lib/shortcuts/config'
 
 export function Toolbar({
   className = '',

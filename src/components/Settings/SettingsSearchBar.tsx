@@ -62,7 +62,7 @@ export function SettingsSearchBar() {
         level: 'keybindings' as ExtendedSettingsLevel,
       })),
     ],
-    [settings, shortcutService.shortcuts]
+    [settings]
   )
   const [searchResults, setSearchResults] = useState(settingsAsSearchable)
 
