@@ -16,6 +16,7 @@ import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 import { CameraControls } from '@src/clientSideScene/CameraControls'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
+import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
 import {
   AXIS_GROUP,
   DEBUG_SHOW_INTERSECTION_PLANE,
@@ -31,14 +32,13 @@ import type { Coords2d } from '@src/lang/std/sketch'
 import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/lib/selections'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
+import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
 import { getAngle, getLength, throttle } from '@src/lib/utils'
 import type {
   MouseState,
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
-import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
-import { Signal } from '@src/lib/signal'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 

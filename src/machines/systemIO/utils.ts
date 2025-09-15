@@ -1,15 +1,15 @@
-import toast from 'react-hot-toast'
 import type { ExecState } from '@src/lang/wasm'
+import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
+import { isDesktop } from '@src/lib/isDesktop'
+import { joinOSPaths } from '@src/lib/paths'
+import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
-import { REGEXP_UUIDV4, FILE_EXT } from '@src/lib/constants'
-import { joinOSPaths } from '@src/lib/paths'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { FileEntry, Project } from '@src/lib/project'
-import type { ActorRefFrom } from 'xstate'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import toast from 'react-hot-toast'
+import type { ActorRefFrom } from 'xstate'
 
 export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',

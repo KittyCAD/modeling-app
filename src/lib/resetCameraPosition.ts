@@ -8,8 +8,8 @@ import {
 } from '@src/lib/singletons'
 import {
   engineStreamZoomToFit,
-  engineViewIsometricWithoutGeometryPresent,
   engineViewIsometricWithGeometryPresent,
+  engineViewIsometricWithoutGeometryPresent,
 } from '@src/lib/utils'
 
 /**

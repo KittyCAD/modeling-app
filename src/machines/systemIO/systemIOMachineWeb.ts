@@ -1,3 +1,12 @@
+import { newKclFile } from '@src/lang/project'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  LOCAL_STORAGE_ML_CONVERSATIONS,
+} from '@src/lib/constants'
+import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsUtils'
+import { err } from '@src/lib/trap'
+import type { AppMachineContext } from '@src/lib/types'
+import { engineStreamZoomToFit } from '@src/lib/utils'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import {
@@ -6,15 +15,6 @@ import {
   mlConversationsToJson,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
-import { newKclFile } from '@src/lang/project'
-import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsUtils'
-import { err } from '@src/lib/trap'
-import {
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-  LOCAL_STORAGE_ML_CONVERSATIONS,
-} from '@src/lib/constants'
-import type { AppMachineContext } from '@src/lib/types'
-import { engineStreamZoomToFit } from '@src/lib/utils'
 
 export const systemIOMachineWeb = systemIOMachine.provide({
   actors: {

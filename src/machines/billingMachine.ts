@@ -1,8 +1,7 @@
-import type { Models } from '@kittycad/lib'
-import crossPlatformFetch from '@src/lib/crossPlatformFetch'
+import { BillingError, getBillingInfo } from '@kittycad/react-shared'
+import { createKCClient } from '@src/lib/kcClient'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
-import { isErr } from '@src/lib/trap'
 
 const _TIME_1_SECOND = 1000
 
@@ -16,34 +15,13 @@ export enum BillingTransition {
   Wait = 'wait',
 }
 
-// It's nice to be explicit if we are an Organization, Pro, Free.
-// @kittycad/lib offers some types around this, but they aren't as...
-// homogeneous: Models['ZooProductSubscriptions_type'], and
-// Models['Org_type'].
-export enum Tier {
-  Free = 'free',
-  Pro = 'pro',
-  Organization = 'organization',
-  Unknown = 'unknown',
-}
-
-export type OrgOrError = Models['Org_type'] | number | Error
-export type SubscriptionsOrError =
-  | Models['ZooProductSubscriptions_type']
-  | number
-  | Error
-export type TierBasedOn = {
-  orgOrError: OrgOrError
-  subscriptionsOrError: SubscriptionsOrError
-}
-
 export interface BillingContext {
   credits: undefined | number
   allowance: undefined | number
+  isOrg?: boolean
+  hasSubscription?: boolean
   error: undefined | Error
   urlUserService: () => string
-  tier: undefined | Tier
-  subscriptionsOrError: undefined | SubscriptionsOrError
   lastFetch: undefined | Date
 }
 
@@ -56,30 +34,11 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   credits: undefined,
   allowance: undefined,
   error: undefined,
-  tier: undefined,
-  subscriptionsOrError: undefined,
+  isOrg: undefined,
+  hasSubscription: undefined,
   urlUserService: () => '',
   lastFetch: undefined,
 })
-
-const toTierFrom = (args: TierBasedOn): Tier => {
-  if (typeof args.orgOrError !== 'number' && !isErr(args.orgOrError)) {
-    return Tier.Organization
-  } else if (
-    typeof args.subscriptionsOrError !== 'number' &&
-    !isErr(args.subscriptionsOrError)
-  ) {
-    const subscriptions: Models['ZooProductSubscriptions_type'] =
-      args.subscriptionsOrError
-    if (subscriptions.modeling_app.name === 'pro') {
-      return Tier.Pro
-    } else {
-      return Tier.Free
-    }
-  }
-
-  return Tier.Unknown
-}
 
 export const billingMachine = setup({
   types: {
@@ -100,75 +59,17 @@ export const billingMachine = setup({
           return input.context
         }
 
-        const billingOrError: Models['CustomerBalance_type'] | number | Error =
-          await crossPlatformFetch(
-            `${input.context.urlUserService()}/user/payment/balance`,
-            { method: 'GET' },
-            input.event.apiToken
-          )
-
-        if (typeof billingOrError === 'number' || isErr(billingOrError)) {
-          return Promise.reject(billingOrError)
+        const client = createKCClient(input.event.apiToken)
+        const billing = await getBillingInfo(client)
+        if (BillingError.from(billing)) {
+          return Promise.reject(billing)
         }
-        const billing: Models['CustomerBalance_type'] = billingOrError
-
-        const subscriptionsOrError:
-          | Models['ZooProductSubscriptions_type']
-          | number
-          | Error = await crossPlatformFetch(
-          `${input.context.urlUserService()}/user/payment/subscriptions`,
-          { method: 'GET' },
-          input.event.apiToken
-        )
-
-        const orgOrError: Models['Org_type'] | number | Error =
-          await crossPlatformFetch(
-            `${input.context.urlUserService()}/org`,
-            { method: 'GET' },
-            input.event.apiToken
-          )
-
-        const tier = toTierFrom({
-          orgOrError,
-          subscriptionsOrError,
-        })
-
-        let credits =
-          Number(billing.monthly_api_credits_remaining) +
-          Number(billing.stable_api_credits_remaining)
-        let allowance = undefined
-
-        switch (tier) {
-          case Tier.Organization:
-          case Tier.Pro:
-            credits = Infinity
-            break
-          case Tier.Free:
-            // TS too dumb Tier.Free has the same logic
-            if (
-              typeof subscriptionsOrError !== 'number' &&
-              !isErr(subscriptionsOrError)
-            ) {
-              allowance = Number(
-                subscriptionsOrError.modeling_app
-                  .monthly_pay_as_you_go_api_credits
-              )
-            }
-            break
-          case Tier.Unknown:
-            break
-          default:
-            const _exh: never = tier
-        }
-
-        // If nothing matches, we show a credit total.
 
         return {
-          error: undefined,
-          tier,
-          subscriptionsOrError,
-          credits,
-          allowance,
+          credits: billing.credits,
+          allowance: billing.allowance,
+          isOrg: billing.isOrg,
+          hasSubscription: billing.hasSubscription,
           lastFetch: new Date(),
         }
       }

@@ -11,6 +11,7 @@ import {
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { getProjectInfo } from '@src/lib/desktop'
+import { readAppSettingsFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   BROWSER_PATH,
@@ -23,13 +24,12 @@ import {
   readLocalStorageAppSettingsFile,
 } from '@src/lib/settings/settingsUtils'
 import { codeManager, rustContext } from '@src/lib/singletons'
+import { settingsActor } from '@src/lib/singletons'
 import type {
   FileLoaderData,
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
-import { settingsActor } from '@src/lib/singletons'
-import { readAppSettingsFile } from '@src/lib/desktop'
 
 export const fileLoader: LoaderFunction = async (
   routerData

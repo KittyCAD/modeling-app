@@ -8,12 +8,8 @@ description: Variables in memory after executing poopy-shoe.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "customPlane": {
@@ -27,12 +23,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -40,12 +32,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": -1.4375,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -53,15 +41,12 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "xAxis": {
         "type": "Object",
@@ -71,12 +56,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -84,12 +65,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -97,15 +74,12 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "yAxis": {
         "type": "Object",
@@ -115,12 +89,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -128,12 +98,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -141,17 +107,15 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
-        }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
   },
   "customPlane2": {
     "type": "Object",
@@ -164,12 +128,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": -3.875,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -177,12 +137,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -190,15 +146,12 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "xAxis": {
         "type": "Object",
@@ -208,12 +161,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -221,12 +170,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -234,15 +179,12 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "yAxis": {
         "type": "Object",
@@ -252,12 +194,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -265,12 +203,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -278,17 +212,15 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
-        }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
   },
   "customPlane3": {
     "type": "Object",
@@ -301,12 +233,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": -3.875,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -314,12 +242,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -327,15 +251,12 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "xAxis": {
         "type": "Object",
@@ -345,12 +266,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -358,12 +275,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -371,15 +284,12 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
-        }
+        },
+        "constrainable": false
       },
       "yAxis": {
         "type": "Object",
@@ -389,12 +299,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "y": {
@@ -402,12 +308,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "z": {
@@ -415,29 +317,23 @@ description: Variables in memory after executing poopy-shoe.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
-        }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
   },
   "exitHeight": {
     "type": "Number",
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "filletRadius": {
@@ -445,12 +341,8 @@ description: Variables in memory after executing poopy-shoe.kcl
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "frontLength": {
@@ -458,12 +350,8 @@ description: Variables in memory after executing poopy-shoe.kcl
     "value": 7.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "height": {
@@ -471,12 +359,8 @@ description: Variables in memory after executing poopy-shoe.kcl
     "value": 5.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "part001": {
@@ -604,9 +488,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -630,9 +512,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.4898230358802604
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -649,9 +529,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -668,9 +546,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -687,9 +563,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.4898230358802604
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -706,9 +580,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.21650635094610982
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -725,9 +597,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.21650635094610982
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -744,9 +614,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.4898230358802627
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -763,9 +631,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -782,9 +648,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -801,9 +665,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.4898230358802604
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -820,9 +682,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -839,9 +699,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -851,9 +709,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -861,25 +717,19 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": -1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -891,9 +741,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             1.5,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -908,16 +756,12 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -962,9 +806,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -988,9 +830,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             2.4898230358802604
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1007,9 +847,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             5.125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1026,9 +864,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             5.125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1045,9 +881,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             2.4898230358802604
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1064,9 +898,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.21650635094610982
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1083,9 +915,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.21650635094610982
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1102,9 +932,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             2.4898230358802627
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1121,9 +949,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             5.125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1140,9 +966,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             5.125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1159,9 +983,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             2.4898230358802604
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1178,9 +1000,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1197,9 +1017,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1209,9 +1027,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -1219,25 +1035,19 @@ description: Variables in memory after executing poopy-shoe.kcl
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1249,9 +1059,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           1.5,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1266,9 +1074,7 @@ description: Variables in memory after executing poopy-shoe.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch002": {
@@ -1396,9 +1202,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1422,9 +1226,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.4898230358802604
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1441,9 +1243,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1460,9 +1260,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1479,9 +1277,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.4898230358802604
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1498,9 +1294,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.21650635094610982
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1517,9 +1311,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.21650635094610982
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1536,9 +1328,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.4898230358802627
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1555,9 +1345,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1574,9 +1362,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1593,9 +1379,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.4898230358802604
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1612,9 +1396,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1631,9 +1413,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1643,9 +1423,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -1653,25 +1431,19 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": -1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1683,9 +1455,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             1.5,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1700,16 +1470,12 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 0.875,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1766,9 +1532,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.5625000000000004
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1785,9 +1549,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1804,9 +1566,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1816,9 +1576,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": 0.0,
             "y": -1.4375,
             "z": 0.0,
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "type": "plane",
           "value": "Custom",
@@ -1826,25 +1584,19 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1856,9 +1608,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1867,16 +1617,12 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1998,9 +1744,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2017,9 +1761,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2036,9 +1778,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.4898230358802604
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2055,9 +1795,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.2165063509461076
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2074,9 +1812,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.2165063509461076
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2093,9 +1829,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.4898230358802604
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2112,9 +1846,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2131,9 +1863,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2155,9 +1885,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               3.0625
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2179,9 +1907,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               1.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2198,9 +1924,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2224,9 +1948,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -2238,17 +1960,13 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -2373,9 +2091,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2399,9 +2115,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     2.4898230358802604
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2418,9 +2132,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     5.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2437,9 +2149,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     5.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2456,9 +2166,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     2.4898230358802604
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2475,9 +2183,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.21650635094610982
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2494,9 +2200,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.21650635094610982
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2513,9 +2217,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     2.4898230358802627
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2532,9 +2234,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     5.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2551,9 +2251,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     5.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2570,9 +2268,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     2.4898230358802604
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2589,9 +2285,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -2608,9 +2302,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -2620,9 +2312,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "YZ",
@@ -2630,25 +2320,19 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": -1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -2660,9 +2344,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   1.5,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -2677,21 +2359,15 @@ description: Variables in memory after executing poopy-shoe.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "height": 0.875,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -2702,9 +2378,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2719,16 +2393,12 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -2808,9 +2478,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2827,9 +2495,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2851,9 +2517,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               3.0625
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2875,9 +2539,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               1.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2901,9 +2563,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2920,9 +2580,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -2932,9 +2590,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": -3.875,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "type": "plane",
           "value": "Custom",
@@ -2942,25 +2598,19 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2972,9 +2622,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2989,16 +2637,12 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -3057,9 +2701,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               -0.875
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3076,9 +2718,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               -3.875
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3095,9 +2735,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               -3.875
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3114,9 +2752,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               -0.875
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -3128,17 +2764,13 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -3214,9 +2846,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     5.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3233,9 +2863,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     5.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3257,9 +2885,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     3.0625
                   ],
                   "type": "TangentialArcTo",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3281,9 +2907,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     1.0
                   ],
                   "type": "TangentialArcTo",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3307,9 +2931,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3326,9 +2948,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -3338,9 +2958,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "x": -3.875,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 "type": "plane",
                 "value": "Custom",
@@ -3348,25 +2966,19 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -3378,9 +2990,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   0.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -3395,21 +3005,15 @@ description: Variables in memory after executing poopy-shoe.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "height": 0.125,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -3420,9 +3024,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0,
             -0.875
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3431,16 +3033,12 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -3499,9 +3097,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3518,9 +3114,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3537,9 +3131,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               5.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3556,9 +3148,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -3570,17 +3160,13 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -3698,9 +3284,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     5.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3717,9 +3301,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     5.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3736,9 +3318,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     2.4898230358802604
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3755,9 +3335,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.2165063509461076
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3774,9 +3352,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.2165063509461076
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3793,9 +3369,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     2.4898230358802604
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3812,9 +3386,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     5.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3831,9 +3403,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     5.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3855,9 +3425,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     3.0625
                   ],
                   "type": "TangentialArcTo",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3879,9 +3447,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     1.0
                   ],
                   "type": "TangentialArcTo",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3898,9 +3464,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -3924,9 +3488,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -3938,17 +3500,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "solid": {
                   "type": "Solid",
@@ -4073,9 +3631,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           0.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4099,9 +3655,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           2.4898230358802604
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4118,9 +3672,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           5.125
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4137,9 +3689,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           5.125
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4156,9 +3706,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           2.4898230358802604
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4175,9 +3723,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           0.21650635094610982
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4194,9 +3740,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           0.21650635094610982
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4213,9 +3757,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           2.4898230358802627
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4232,9 +3774,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           5.125
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4251,9 +3791,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           5.125
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4270,9 +3808,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           2.4898230358802604
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4289,9 +3825,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           0.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -4308,9 +3842,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                           0.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       }
                     ],
                     "on": {
@@ -4320,9 +3852,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       "type": "plane",
                       "value": "YZ",
@@ -4330,25 +3860,19 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "x": 0.0,
                         "y": -1.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       },
                       "zAxis": {
                         "x": -1.0,
                         "y": 0.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       }
                     },
                     "start": {
@@ -4360,9 +3884,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                         1.5,
                         0.0
                       ],
-                      "units": {
-                        "type": "Inches"
-                      },
+                      "units": "in",
                       "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
@@ -4377,21 +3899,15 @@ description: Variables in memory after executing poopy-shoe.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   "height": 0.875,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  },
+                  "units": "in",
                   "sectional": false
                 },
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               "start": {
                 "from": [
@@ -4402,9 +3918,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   0.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -4419,21 +3933,15 @@ description: Variables in memory after executing poopy-shoe.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "height": 0.125,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -4444,9 +3952,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4455,16 +3961,12 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 2.75,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -4523,9 +4025,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -4542,9 +4042,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.875
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -4561,9 +4059,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               2.875
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -4580,9 +4076,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -4592,9 +4086,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": -3.875,
             "y": 0.0,
             "z": 0.125,
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "type": "plane",
           "value": "Custom",
@@ -4602,25 +4094,19 @@ description: Variables in memory after executing poopy-shoe.kcl
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": -0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4632,9 +4118,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.125,
             0.125
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4643,16 +4127,12 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": -0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -4661,12 +4141,8 @@ description: Variables in memory after executing poopy-shoe.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "wallsWidth": {
@@ -4674,12 +4150,8 @@ description: Variables in memory after executing poopy-shoe.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

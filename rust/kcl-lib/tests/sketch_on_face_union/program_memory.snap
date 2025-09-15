@@ -86,9 +86,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -105,9 +103,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               12.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -131,9 +127,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               39.978459489299915
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -150,9 +144,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               12.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -169,9 +161,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -181,9 +171,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -191,25 +179,19 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -221,9 +203,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             60.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -242,16 +222,12 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -265,12 +241,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 120.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "leg001": {
@@ -328,9 +300,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -347,9 +317,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               2.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -366,9 +334,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               2.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -385,9 +351,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -399,17 +363,13 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -492,9 +452,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -511,9 +469,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                     12.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -537,9 +493,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                     39.978459489299915
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -556,9 +510,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                     12.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -575,9 +527,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -587,9 +537,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "YZ",
@@ -597,25 +545,19 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -627,9 +569,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   60.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -648,21 +588,15 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "height": 2.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -673,9 +607,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             -60.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -684,16 +616,12 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 48.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -707,17 +635,13 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -800,9 +724,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -819,9 +741,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 12.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -845,9 +765,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 39.978459489299915
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -864,9 +782,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 12.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -883,9 +799,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -895,9 +809,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "YZ",
@@ -905,25 +817,19 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -935,9 +841,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               60.0,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -956,21 +860,15 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "height": 2.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "sectional": false
       },
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "legProfile001": {
@@ -994,9 +892,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1013,9 +909,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             2.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1032,9 +926,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             2.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1051,9 +943,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1065,17 +955,13 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -1158,9 +1044,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1177,9 +1061,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   12.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1203,9 +1085,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   39.978459489299915
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1222,9 +1102,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   12.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1241,9 +1119,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1253,9 +1129,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -1263,25 +1137,19 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1293,9 +1161,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 60.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1314,21 +1180,15 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -1339,9 +1199,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           -60.0,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1350,9 +1208,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "newSketch": {
@@ -1438,9 +1294,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1457,9 +1311,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               12.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1483,9 +1335,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               39.978459489299915
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1502,9 +1352,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               12.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1521,9 +1369,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1533,9 +1379,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -1543,25 +1387,19 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1573,9 +1411,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             60.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1594,16 +1430,12 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1635,9 +1467,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1654,9 +1484,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             12.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1680,9 +1508,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             39.978459489299915
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1699,9 +1525,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             12.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1718,9 +1542,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1730,9 +1552,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -1740,25 +1560,19 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1770,9 +1584,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           60.0,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1791,9 +1603,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile002": {
@@ -1817,9 +1627,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             4.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1836,9 +1644,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             35.978459489299915
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1855,9 +1661,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             10.797845948929993
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1874,9 +1678,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             4.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1886,9 +1688,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -1896,25 +1696,19 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1926,9 +1720,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           56.0,
           4.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1937,9 +1729,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile003": {
@@ -1963,9 +1753,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             4.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1982,9 +1770,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             35.978459489299915
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2001,9 +1787,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             10.797845948930004
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2020,9 +1804,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             4.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -2032,9 +1814,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -2042,25 +1822,19 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2072,9 +1846,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           -56.0,
           4.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2083,9 +1855,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile004": {
@@ -2116,9 +1886,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2135,9 +1903,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             12.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2161,9 +1927,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             39.978459489299915
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2180,9 +1944,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             12.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2199,9 +1961,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "innerPaths": [
@@ -2220,9 +1980,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             4.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2239,9 +1997,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             35.978459489299915
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2258,9 +2014,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             10.797845948929993
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2277,9 +2031,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             4.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -2289,9 +2041,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -2299,25 +2049,19 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2329,9 +2073,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           60.0,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2350,9 +2092,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile006": {
@@ -2410,9 +2150,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               26.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2429,9 +2167,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               24.386908691296505
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2448,9 +2184,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               9.270623467225178
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2467,9 +2201,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               14.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -2479,9 +2211,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 2.54,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2489,25 +2219,19 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2519,9 +2243,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             1.0,
             14.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2530,16 +2252,12 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -2598,9 +2316,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               26.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2617,9 +2333,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               24.386908691296505
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2636,9 +2350,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               9.270623467225185
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2655,9 +2367,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               14.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -2667,9 +2377,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 2.54,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2677,25 +2385,19 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2707,9 +2409,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             -1.0,
             14.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2718,16 +2418,12 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "height": 1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -2740,34 +2436,26 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2780,34 +2468,26 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "x": 2.54,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2821,12 +2501,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "trussSupportAngle": {
@@ -2834,12 +2510,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 15.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

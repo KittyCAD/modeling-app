@@ -3,9 +3,10 @@ import {
   MAX_PROJECT_NAME_LENGTH,
 } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
+import type { AppMachineContext } from '@src/lib/types'
 import type {
-  SystemIOContext,
   RequestedKCLFile,
+  SystemIOContext,
 } from '@src/machines/systemIO/utils'
 import {
   NO_PROJECT_DIRECTORY,
@@ -17,7 +18,6 @@ import {
 } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
-import type { AppMachineContext } from '@src/lib/types'
 
 /**
  * /some/dir            = directoryPath

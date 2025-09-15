@@ -3065,10 +3065,11 @@ fn type_not_union(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
             open_brace,
             opt(whitespace),
             separated(0.., record_ty_field, comma_sep),
+            opt(comma),
             opt(whitespace),
             close_brace,
         )
-            .try_map(|(open, _, params, _, close)| {
+            .try_map(|(open, _, params, _, _, close)| {
                 Ok(Node::new(
                     Type::Object { properties: params },
                     open.start,
@@ -3141,9 +3142,17 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
             }),
         // A named type, possibly with a numeric suffix.
         (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
-            let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
-            result.inner =
-                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident });
+            let result = Node::new_node(
+                ident.start,
+                ident.end,
+                ident.module_id,
+                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident }),
+            );
+
+            if *result == PrimitiveType::None {
+                ParseContext::experimental("none type", result.as_source_range());
+            }
+
             result
         }),
     ))
