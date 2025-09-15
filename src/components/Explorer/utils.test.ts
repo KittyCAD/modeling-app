@@ -3,6 +3,7 @@ import {
   copyPasteSourceAndTarget,
   getUniqueCopyPath,
   isRowFake,
+  shouldDroppedEntryBeMoved,
 } from '@src/components/Explorer/utils'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import type { FileEntry } from '@src/lib/project'
@@ -570,6 +571,100 @@ describe('Explorer utils.ts', () => {
           true
         )
         expect(actual).toBe(expected)
+      })
+    })
+    describe('shouldDroppedEntryBeMoved', () => {
+      it('should not move file into the same parent directory', () => {
+        const result = shouldDroppedEntryBeMoved(
+          {
+            name: 'main.kcl',
+            path: '/root/main.kcl',
+            children: null,
+            parentPath: '/root',
+          },
+          {
+            path: '/root/another.kcl',
+            name: 'another.kcl',
+            children: null,
+            parentPath: '/root',
+            level: 0,
+            index: 0,
+            key: '/root/another.kcl',
+            setSize: 1,
+            positionInSet: 1,
+          }
+        )
+
+        expect(result).toEqual(false)
+      })
+      it('should not move a directory into any of its own descendents', () => {
+        const result = shouldDroppedEntryBeMoved(
+          {
+            name: 'src',
+            path: '/root/src',
+            children: [],
+            parentPath: '/root',
+          },
+          {
+            path: '/root/src/child',
+            name: 'child',
+            children: [],
+            parentPath: '/root/src',
+            level: 1,
+            index: 0,
+            key: '/root/src/child',
+            setSize: 1,
+            positionInSet: 1,
+          }
+        )
+
+        expect(result).toEqual(false)
+      })
+      it('should move a file into a nested directory', () => {
+        const result = shouldDroppedEntryBeMoved(
+          {
+            name: 'main.kcl',
+            path: '/root/main.kcl',
+            children: null,
+            parentPath: '/root',
+          },
+          {
+            path: '/root/folder/nested',
+            name: 'nested',
+            children: [],
+            parentPath: '/root/folder',
+            level: 1,
+            index: 0,
+            key: '/root/folder/nested',
+            setSize: 1,
+            positionInSet: 1,
+          }
+        )
+
+        expect(result).toEqual(true)
+      })
+      it('should move a directory into a sibling directory', () => {
+        const result = shouldDroppedEntryBeMoved(
+          {
+            name: 'src',
+            path: '/root/src',
+            children: [],
+            parentPath: '/root',
+          },
+          {
+            path: '/root/another',
+            name: 'another',
+            children: [],
+            parentPath: '/root',
+            level: 0,
+            index: 0,
+            key: '/root/another',
+            setSize: 1,
+            positionInSet: 1,
+          }
+        )
+
+        expect(result).toEqual(true)
       })
     })
   })
