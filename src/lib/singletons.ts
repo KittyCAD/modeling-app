@@ -37,7 +37,8 @@ import {
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
-import { initialShortcuts, ShortcutService } from '@src/lib/shortcuts'
+import { ShortcutService } from '@src/lib/shortcuts'
+import { initialShortcuts } from '@src/lib/shortcuts/config'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
