@@ -192,6 +192,8 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
+        let base = sketch.id;
+        
     let any_edge_id = if let Some(edge_id) = sketch.mirror {
         edge_id
     } else if let Some(id) = edge_id {
@@ -199,13 +201,18 @@ pub(crate) async fn do_post_extrude<'a>(
     } else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.
-        let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
-            return Err(KclError::new_type(KclErrorDetails::new(
-                "Expected a non-empty sketch".to_owned(),
-                vec![args.source_range],
-            )));
-        };
+        let path_modifier = format!("path_{}", 0);
+        let any_edge_id = generate_engine_id(base, &path_modifier);
         any_edge_id
+
+        // Previous version:
+        // let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
+        //     return Err(KclError::new_type(KclErrorDetails::new(
+        //         "Expected a non-empty sketch".to_owned(),
+        //         vec![args.source_range],
+        //     )));
+        // };
+        // any_edge_id
     };
 
     let mut sketch = sketch.clone();
@@ -218,10 +225,6 @@ pub(crate) async fn do_post_extrude<'a>(
             sketch.id = face.solid.sketch.id;
         }
     }
-
-    let base = sketch.id;
-    let path_modifier = format!("path_{}", 0);
-    let any_edge_id = generate_engine_id(base, &path_modifier);
 
     let solid3d_info = exec_state
         .send_modeling_cmd(
@@ -264,7 +267,7 @@ pub(crate) async fn do_post_extrude<'a>(
         sides: face_id_map,
         start_cap_id,
         end_cap_id,
-    } = analyze_faces(exec_state, args, face_infos, base).await;
+    } = analyze_faces(args, face_infos, base).await;
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
     let mut new_value: Vec<ExtrudeSurface> = Vec::with_capacity(sketch.paths.len() + sketch.inner_paths.len() + 2);
@@ -365,7 +368,6 @@ struct Faces {
 }
 
 async fn analyze_faces(
-    exec_state: &mut ExecState,
     args: &Args,
     face_infos: Vec<ExtrusionFaceInfo>,
     base: Uuid,

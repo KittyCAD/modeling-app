@@ -1155,7 +1155,7 @@ fn artifacts_to_update(
                     .unwrap_or_default();
 
                 #[cfg(target_arch = "wasm32")]
-                web_sys::console::warn_1(&format!("add wall: face_id: {face_id:#?}, curve_id: {curve_id:#?}").into());
+                web_sys::console::warn_1(&format!("add wall: face_id: {face_id:#?}, curve_id: {curve_id:#?}, index: {pi:#?}").into());
 
                 return_arr.push(Artifact::Wall(Wall {
                     id: face_id,
@@ -1182,9 +1182,13 @@ fn artifacts_to_update(
                         ExtrusionFaceCapType::Bottom => CapSubType::Start,
                         ExtrusionFaceCapType::None | ExtrusionFaceCapType::Both => continue,
                     };
-                    let Some(face_id) = face.face_id.map(ArtifactId::new) else {
-                        continue;
-                    };
+                    let face_id = ArtifactId::new(generate_engine_id(
+                        base,
+                        match sub_type {
+                            CapSubType::Start => "face_bottom",
+                            CapSubType::End => "face_top",
+                        },
+                    ));
                     let Some(path_sweep_id) = path.sweep_id else {
                         // If the path doesn't have a sweep ID, check if it's a
                         // hole.
@@ -1216,13 +1220,7 @@ fn artifacts_to_update(
                         // TODO: If we didn't find it, it's probably a bug.
                         .unwrap_or_default();
                     return_arr.push(Artifact::Cap(Cap {
-                        id: ArtifactId::new(generate_engine_id(
-                            base,
-                            match sub_type {
-                                CapSubType::Start => "face_bottom",
-                                CapSubType::End => "face_top",
-                            },
-                        )),
+                        id: face_id,
                         sub_type,
                         edge_cut_edge_ids: Vec::new(),
                         sweep_id: path_sweep_id,
@@ -1253,10 +1251,6 @@ fn artifacts_to_update(
             let mut return_arr = Vec::new();
             let mut pi: u32 = 0;
             for (index, edge) in info.edges.iter().enumerate() {
-                let Some(original_info) = &edge.original_info else {
-                    continue;
-                };
-                //let edge_id = ArtifactId::new(original_info.edge_id);
 
                 let path_modifier = format!("path_{}", pi);
                 let edge_id = ArtifactId::new(generate_engine_id(base, &path_modifier)); // aka edge/segment id, eg.: "path_0"
@@ -1264,20 +1258,13 @@ fn artifacts_to_update(
                 let next_face_id = ArtifactId::new(generate_engine_id(base, &format!("{}_face", format!("path_{}", (pi + 1) % (info.edges.len() as u32)))));
                 pi += 1;
 
-
-                //let edge_id = ArtifactId::new(generate_engine_id(base, &path_modifier));
-                //let edge_id = ArtifactId::new(*edge_id);
-
                 let Some(artifact) = artifacts.get(&edge_id) else {
                     continue;
                 };
-
                 
                 match artifact {
                     Artifact::Segment(segment) => {
                         let mut new_segment = segment.clone();
-                        // new_segment.common_surface_ids =
-                        //     original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
                         new_segment.common_surface_ids = vec![
                             face_id,
                             ArtifactId::new(generate_engine_id(base, "face_bottom")) // cap start
@@ -1288,10 +1275,8 @@ fn artifacts_to_update(
 
                         return_arr.push(Artifact::Segment(new_segment));
                     }
-                    Artifact::SweepEdge(sweep_edge) => {
-                        
+                    Artifact::SweepEdge(_sweep_edge) => {
                         // TODO is this ever used?
-
                         // let mut new_sweep_edge = sweep_edge.clone();
                         // new_sweep_edge.common_surface_ids =
                         //     original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
@@ -1303,9 +1288,7 @@ fn artifacts_to_update(
                 let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
                     continue;
                 };
-                // let Some(surface_id) = segment.surface_id else {
-                //     continue;
-                // };
+
                 let surface_id = ArtifactId::new(generate_engine_id(base, &format!("{}_face", path_modifier)));
 
                 let Some(Artifact::Wall(wall)) = artifacts.get(&surface_id) else {
@@ -1318,7 +1301,6 @@ fn artifacts_to_update(
                     continue;
                 };
 
-                if let Some(opposite_info) = &edge.opposite_info {
                     let opposite_edge_id = ArtifactId::new(generate_engine_id(base, &format!("{}_opp", path_modifier))); //opposite_info.edge_id.into(),
                     return_arr.push(Artifact::SweepEdge(SweepEdge {
                         id: opposite_edge_id,
@@ -1327,7 +1309,6 @@ fn artifacts_to_update(
                         cmd_id: artifact_command.cmd_id,
                         index,
                         sweep_id: sweep.id,
-                        //common_surface_ids: opposite_info.faces.iter().map(|face| ArtifactId::new(*face)).collect(),
                         common_surface_ids: vec![
                             face_id,
                             ArtifactId::new(generate_engine_id(base, "face_top")) // cap end
@@ -1345,9 +1326,8 @@ fn artifacts_to_update(
                     let mut new_wall = wall.clone();
                     new_wall.edge_cut_edge_ids = vec![opposite_edge_id];
                     return_arr.push(Artifact::Wall(new_wall));
-                }
+            
 
-                if let Some(adjacent_info) = &edge.adjacent_info {
                     let adjacent_edge_id = ArtifactId::new(generate_engine_id(base, &format!("{}_adj", path_modifier))); //adjacent_info.edge_id.into(),
 
                     return_arr.push(Artifact::SweepEdge(SweepEdge {
@@ -1357,7 +1337,6 @@ fn artifacts_to_update(
                         cmd_id: artifact_command.cmd_id,
                         index,
                         sweep_id: sweep.id,
-                        //common_surface_ids: adjacent_info.faces.iter().map(|face| ArtifactId::new(*face)).collect(),
                         common_surface_ids: vec![
                             face_id,
                             next_face_id,
@@ -1375,7 +1354,6 @@ fn artifacts_to_update(
                     let mut new_wall = wall.clone();
                     new_wall.edge_cut_edge_ids = vec![adjacent_edge_id];
                     return_arr.push(Artifact::Wall(new_wall));
-                }
             }
             return Ok(return_arr);
         }
