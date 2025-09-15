@@ -170,7 +170,6 @@ description: Variables in memory after executing plane_of.kcl
         "originalId": "[uuid]",
         "units": "yd"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "yd",

@@ -395,7 +395,6 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 1.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",

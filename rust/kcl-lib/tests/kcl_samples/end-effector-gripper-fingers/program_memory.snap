@@ -413,7 +413,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 40.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -725,7 +724,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -1004,7 +1002,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -1484,7 +1481,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 40.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -1542,7 +1538,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -2017,7 +2012,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 40.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -2075,7 +2069,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -2550,7 +2543,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 40.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -2608,7 +2600,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -3083,7 +3074,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 40.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -3141,7 +3131,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -3585,7 +3574,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "originalId": "[uuid]",
           "units": "mm"
         },
-        "height": 40.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -4050,7 +4038,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "originalId": "[uuid]",
           "units": "mm"
         },
-        "height": 40.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -4196,7 +4183,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 40.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -4296,7 +4282,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 40.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -4853,7 +4838,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 80.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -5410,7 +5394,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 80.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -5748,7 +5731,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -6051,7 +6033,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -6515,7 +6496,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 40.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7029,7 +7009,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 40.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7543,7 +7522,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 40.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8057,7 +8035,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 40.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8453,7 +8430,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -8776,7 +8752,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 8.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9069,7 +9044,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 8.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9514,7 +9488,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -9614,7 +9587,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 40.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -9714,7 +9686,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 40.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -11792,7 +11763,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",

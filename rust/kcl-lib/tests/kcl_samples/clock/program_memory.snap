@@ -144,7 +144,6 @@ description: Variables in memory after executing clock.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -425,7 +424,6 @@ description: Variables in memory after executing clock.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 50.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -479,7 +477,6 @@ description: Variables in memory after executing clock.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -649,7 +646,6 @@ description: Variables in memory after executing clock.kcl
           "originalId": "[uuid]",
           "units": "mm"
         },
-        "height": 50.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -1787,7 +1783,6 @@ description: Variables in memory after executing clock.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2018,7 +2013,6 @@ description: Variables in memory after executing clock.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 50.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2346,7 +2340,6 @@ description: Variables in memory after executing clock.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 50.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -2390,7 +2383,6 @@ description: Variables in memory after executing clock.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -20.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -3232,7 +3224,6 @@ description: Variables in memory after executing clock.kcl
           "originalId": "[uuid]",
           "units": "mm"
         },
-        "height": 50.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [

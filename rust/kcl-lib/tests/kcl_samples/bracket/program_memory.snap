@@ -346,7 +346,6 @@ description: Variables in memory after executing bracket.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -859,7 +858,6 @@ description: Variables in memory after executing bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -887,7 +885,6 @@ description: Variables in memory after executing bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.39485618835389114,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -1286,7 +1283,6 @@ description: Variables in memory after executing bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -1314,7 +1310,6 @@ description: Variables in memory after executing bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.39485618835389114,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -1713,7 +1708,6 @@ description: Variables in memory after executing bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -1741,7 +1735,6 @@ description: Variables in memory after executing bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.39485618835389114,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -2140,7 +2133,6 @@ description: Variables in memory after executing bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -2168,7 +2160,6 @@ description: Variables in memory after executing bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.39485618835389114,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -2617,7 +2608,6 @@ description: Variables in memory after executing bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -2645,7 +2635,6 @@ description: Variables in memory after executing bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.4848561883538911,
           "startCapId": null,
           "endCapId": null,
           "units": "in",
@@ -3044,7 +3033,6 @@ description: Variables in memory after executing bracket.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -3072,7 +3060,6 @@ description: Variables in memory after executing bracket.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -0.4848561883538911,
           "startCapId": null,
           "endCapId": null,
           "units": "in",

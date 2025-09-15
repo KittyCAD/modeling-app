@@ -503,7 +503,6 @@ description: Variables in memory after executing helium-tank.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1217,7 +1216,6 @@ description: Variables in memory after executing helium-tank.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1715,7 +1713,6 @@ description: Variables in memory after executing helium-tank.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1829,7 +1826,6 @@ description: Variables in memory after executing helium-tank.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": -5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1961,7 +1957,6 @@ description: Variables in memory after executing helium-tank.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 0.75,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -2147,7 +2142,6 @@ description: Variables in memory after executing helium-tank.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 0.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -2798,7 +2792,6 @@ description: Variables in memory after executing helium-tank.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -3403,7 +3396,6 @@ description: Variables in memory after executing helium-tank.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 1.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -3557,7 +3549,6 @@ description: Variables in memory after executing helium-tank.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 1.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -3705,7 +3696,6 @@ description: Variables in memory after executing helium-tank.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 1.3,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",

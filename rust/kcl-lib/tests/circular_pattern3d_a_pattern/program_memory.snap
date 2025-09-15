@@ -162,7 +162,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -331,7 +330,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -497,7 +495,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -663,7 +660,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -829,7 +825,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -995,7 +990,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1161,7 +1155,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1327,7 +1320,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1498,7 +1490,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1664,7 +1655,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1830,7 +1820,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1996,7 +1985,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2162,7 +2150,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2328,7 +2315,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2494,7 +2480,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2660,7 +2645,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2826,7 +2810,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2992,7 +2975,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3158,7 +3140,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3324,7 +3305,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3490,7 +3470,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3656,7 +3635,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3822,7 +3800,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3988,7 +3965,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4154,7 +4130,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4320,7 +4295,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4486,7 +4460,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4652,7 +4625,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4818,7 +4790,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4984,7 +4955,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5150,7 +5120,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5316,7 +5285,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5482,7 +5450,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5648,7 +5615,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5814,7 +5780,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5980,7 +5945,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6146,7 +6110,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6312,7 +6275,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6478,7 +6440,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6644,7 +6605,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6810,7 +6770,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6976,7 +6935,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7142,7 +7100,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7308,7 +7265,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7474,7 +7430,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7640,7 +7595,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7806,7 +7760,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7972,7 +7925,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8138,7 +8090,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8304,7 +8255,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8470,7 +8420,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8636,7 +8585,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8802,7 +8750,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8968,7 +8915,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9134,7 +9080,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9300,7 +9245,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9466,7 +9410,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9632,7 +9575,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9798,7 +9740,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9964,7 +9905,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10130,7 +10070,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10296,7 +10235,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10462,7 +10400,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10628,7 +10565,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10794,7 +10730,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10960,7 +10895,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -11126,7 +11060,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -11292,7 +11225,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -11458,7 +11390,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -11624,7 +11555,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -11790,7 +11720,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -11956,7 +11885,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -12122,7 +12050,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -12288,7 +12215,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -12454,7 +12380,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -12620,7 +12545,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -12786,7 +12710,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -12952,7 +12875,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -13118,7 +13040,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -13284,7 +13205,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -13450,7 +13370,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -13616,7 +13535,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -13782,7 +13700,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -13948,7 +13865,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -14114,7 +14030,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -14280,7 +14195,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -14446,7 +14360,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -14612,7 +14525,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -14778,7 +14690,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -14944,7 +14855,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15110,7 +15020,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15276,7 +15185,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15442,7 +15350,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15608,7 +15515,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15774,7 +15680,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15940,7 +15845,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -16106,7 +16010,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -16272,7 +16175,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -16438,7 +16340,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -16604,7 +16505,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -16770,7 +16670,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -16936,7 +16835,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -17102,7 +17000,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -17268,7 +17165,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -17434,7 +17330,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -17600,7 +17495,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -17766,7 +17660,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -17932,7 +17825,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -18098,7 +17990,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -18264,7 +18155,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -18430,7 +18320,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -18596,7 +18485,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -18762,7 +18650,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -18928,7 +18815,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -19094,7 +18980,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -19260,7 +19145,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -19426,7 +19310,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -19592,7 +19475,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -19758,7 +19640,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -19924,7 +19805,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -20090,7 +19970,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -20256,7 +20135,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -20422,7 +20300,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -20588,7 +20465,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -20754,7 +20630,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -20920,7 +20795,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -21086,7 +20960,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -21252,7 +21125,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -21418,7 +21290,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -21584,7 +21455,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -21750,7 +21620,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -21916,7 +21785,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -22082,7 +21950,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -22248,7 +22115,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -22414,7 +22280,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -22580,7 +22445,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -22746,7 +22610,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -22912,7 +22775,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -23078,7 +22940,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -23244,7 +23105,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -23410,7 +23270,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -23576,7 +23435,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -23742,7 +23600,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -23908,7 +23765,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -24074,7 +23930,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -24240,7 +24095,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -24406,7 +24260,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -24572,7 +24425,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -24738,7 +24590,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -24904,7 +24755,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -25070,7 +24920,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -25236,7 +25085,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -25402,7 +25250,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -25568,7 +25415,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -25734,7 +25580,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -25900,7 +25745,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -26066,7 +25910,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -26232,7 +26075,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -26398,7 +26240,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -26564,7 +26405,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -26730,7 +26570,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -26896,7 +26735,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -27062,7 +26900,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -27228,7 +27065,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -27394,7 +27230,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -27560,7 +27395,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -27726,7 +27560,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -27892,7 +27725,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -28058,7 +27890,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -28224,7 +28055,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -28390,7 +28220,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -28556,7 +28385,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -28722,7 +28550,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -28888,7 +28715,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -29054,7 +28880,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -29220,7 +29045,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -29386,7 +29210,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -29552,7 +29375,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -29718,7 +29540,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -29884,7 +29705,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -30050,7 +29870,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -30216,7 +30035,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -30382,7 +30200,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -30548,7 +30365,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -30714,7 +30530,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -30880,7 +30695,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -31046,7 +30860,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -31212,7 +31025,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -31378,7 +31190,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -31544,7 +31355,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -31710,7 +31520,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -31876,7 +31685,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -32042,7 +31850,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -32208,7 +32015,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -32374,7 +32180,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -32540,7 +32345,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -32706,7 +32510,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -32872,7 +32675,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -33038,7 +32840,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -33204,7 +33005,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -33370,7 +33170,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -33536,7 +33335,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -33702,7 +33500,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -33868,7 +33665,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -34034,7 +33830,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -34200,7 +33995,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -34366,7 +34160,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -34532,7 +34325,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -34698,7 +34490,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -34864,7 +34655,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -35030,7 +34820,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -35196,7 +34985,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -35362,7 +35150,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -35528,7 +35315,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -35694,7 +35480,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -35860,7 +35645,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -36026,7 +35810,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -36192,7 +35975,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -36358,7 +36140,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -36524,7 +36305,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -36690,7 +36470,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -36856,7 +36635,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -37022,7 +36800,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -37188,7 +36965,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -37354,7 +37130,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -37520,7 +37295,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -37686,7 +37460,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -37852,7 +37625,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -38018,7 +37790,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -38184,7 +37955,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -38350,7 +38120,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -38516,7 +38285,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -38682,7 +38450,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -38848,7 +38615,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -39014,7 +38780,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -39180,7 +38945,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -39346,7 +39110,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -39512,7 +39275,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -39678,7 +39440,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -39844,7 +39605,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -40010,7 +39770,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -40176,7 +39935,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -40342,7 +40100,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -40508,7 +40265,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -40674,7 +40430,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -40840,7 +40595,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -41006,7 +40760,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -41172,7 +40925,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -41338,7 +41090,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -41504,7 +41255,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -41670,7 +41420,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -41836,7 +41585,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -42002,7 +41750,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -42168,7 +41915,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -42334,7 +42080,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -42500,7 +42245,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -42666,7 +42410,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -42832,7 +42575,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -42998,7 +42740,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -43164,7 +42905,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -43330,7 +43070,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -43496,7 +43235,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -43662,7 +43400,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -43828,7 +43565,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -43994,7 +43730,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -44160,7 +43895,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -44326,7 +44060,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -44492,7 +44225,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -44658,7 +44390,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -44824,7 +44555,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -44990,7 +44720,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -45156,7 +44885,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -45322,7 +45050,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -45488,7 +45215,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -45654,7 +45380,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -45820,7 +45545,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -45986,7 +45710,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -46152,7 +45875,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -46318,7 +46040,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -46484,7 +46205,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -46650,7 +46370,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -46816,7 +46535,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -46982,7 +46700,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -47148,7 +46865,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -47314,7 +47030,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -47480,7 +47195,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -47646,7 +47360,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -47812,7 +47525,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -47978,7 +47690,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -48144,7 +47855,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -48310,7 +48020,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -48476,7 +48185,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -48642,7 +48350,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -48808,7 +48515,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -48974,7 +48680,6 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
