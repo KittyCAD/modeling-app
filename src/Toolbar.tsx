@@ -1,5 +1,4 @@
 import { memo, useCallback, useMemo, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useAppState } from '@src/AppState'
 import { ActionButton } from '@src/components/ActionButton'
@@ -27,6 +26,8 @@ import type {
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
+import { useEnableShortcuts } from './lib/useEnableShortcuts'
+import { ShortcutId } from './lib/shortcuts/config'
 
 export function Toolbar({
   className = '',
@@ -191,9 +192,9 @@ export function Toolbar({
         links: maybeIconConfig.links || [],
         isActive: itemIsActive,
         hotkey:
-          typeof maybeIconConfig.hotkey === 'string'
-            ? maybeIconConfig.hotkey
-            : maybeIconConfig.hotkey?.(state),
+          typeof maybeIconConfig.sequence === 'string'
+            ? maybeIconConfig.sequence
+            : maybeIconConfig.sequence?.(state),
         disabled: isDisabled,
         disabledReason:
           typeof maybeIconConfig.disabledReason === 'function'
@@ -214,6 +215,23 @@ export function Toolbar({
       number /* index in currentModeItems */,
       number /* index in maybeIconConfig */
     >()
+  )
+
+  useEnableShortcuts(
+    currentModeItems
+      .filter((item) => item !== 'break')
+      .flatMap((item) => {
+        if (isToolbarItemResolvedDropdown(item)) {
+          return item.array.map((subItem) => ({
+            id: subItem.id as ShortcutId,
+            action: () => subItem.onClick(configCallbackProps),
+          }))
+        }
+        return {
+          id: item.id as ShortcutId,
+          action: () => item.onClick(configCallbackProps),
+        }
+      })
   )
 
   return (
@@ -455,8 +473,6 @@ interface ToolbarItemContentsProps extends React.PropsWithChildren {
  * and a hotkey listener
  */
 const ToolbarItemTooltip = memo(function ToolbarItemContents({
-  itemConfig,
-  configCallbackProps,
   wrapperClassName = '',
   contentClassName = '',
   children,

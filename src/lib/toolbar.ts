@@ -10,6 +10,7 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
+import { toolbarShortcutConfigs } from '@src/lib/shortcuts/config'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -42,7 +43,7 @@ export type ToolbarItem = {
   disableHotkey?: (state: StateFrom<typeof modelingMachine>) => boolean
   title: string | ((props: ToolbarItemCallbackProps) => string)
   showTitle?: boolean
-  hotkey?:
+  sequence?:
     | string
     | ((state: StateFrom<typeof modelingMachine>) => string | string[])
   description: string
@@ -77,8 +78,6 @@ export const isToolbarItemResolvedDropdown = (
   return (item as ToolbarItemResolvedDropdown).array !== undefined
 }
 
-const TOOLBAR_LEADER = 'ctrl+.'
-
 export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
   modeling: {
     check: (state) =>
@@ -91,7 +90,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       ),
     items: [
       {
-        id: 'sketch',
+        ...toolbarShortcutConfigs.sketch,
         onClick: ({ modelingSend, sketchPathId, editorHasFocus }) =>
           !(editorHasFocus && sketchPathId)
             ? modelingSend({
@@ -104,8 +103,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: ({ editorHasFocus, sketchPathId }) =>
           editorHasFocus && sketchPathId ? 'Edit Sketch' : 'Start Sketch',
         showTitle: true,
-        hotkey: `${TOOLBAR_LEADER} s`,
-        description: 'Start drawing a 2D sketch',
         links: [
           {
             label: 'KCL docs',
@@ -117,7 +114,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       'break',
       {
-        id: 'extrude',
+        ...toolbarShortcutConfigs.extrude,
         onClick: () =>
           commandBarActor.send({
             type: 'Find and select command',
@@ -125,9 +122,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         icon: 'extrude',
         status: 'available',
-        title: 'Extrude',
-        hotkey: `${TOOLBAR_LEADER} e`,
-        description: 'Pull a sketch into 3D along its normal or perpendicular.',
         links: [
           {
             label: 'KCL docs',
@@ -136,7 +130,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         ],
       },
       {
-        id: 'sweep',
+        ...toolbarShortcutConfigs.sweep,
         onClick: () =>
           commandBarActor.send({
             type: 'Find and select command',
@@ -144,10 +138,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         icon: 'sweep',
         status: 'available',
-        title: 'Sweep',
-        hotkey: `${TOOLBAR_LEADER} w`,
-        description:
-          'Create a 3D body by moving a sketch region along an arbitrary path.',
         links: [
           {
             label: 'KCL docs',
@@ -156,7 +146,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         ],
       },
       {
-        id: 'loft',
+        ...toolbarShortcutConfigs.loft,
         onClick: () =>
           commandBarActor.send({
             type: 'Find and select command',
@@ -164,10 +154,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         icon: 'loft',
         status: 'available',
-        title: 'Loft',
-        hotkey: `${TOOLBAR_LEADER} l`,
-        description:
-          'Create a 3D body by blending between two or more sketches.',
         links: [
           {
             label: 'KCL docs',
@@ -176,7 +162,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         ],
       },
       {
-        id: 'revolve',
+        ...toolbarShortcutConfigs.revolve,
         onClick: () =>
           commandBarActor.send({
             type: 'Find and select command',
@@ -184,10 +170,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         icon: 'revolve',
         status: 'available',
-        title: 'Revolve',
-        hotkey: `${TOOLBAR_LEADER} r`,
-        description:
-          'Create a 3D body by rotating a sketch region about an axis.',
         links: [
           {
             label: 'KCL docs',
@@ -201,7 +183,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       'break',
       {
-        id: 'fillet3d',
+        ...toolbarShortcutConfigs.fillet3d,
         onClick: () =>
           commandBarActor.send({
             type: 'Find and select command',
@@ -209,9 +191,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         icon: 'fillet3d',
         status: 'available',
-        title: 'Fillet',
-        hotkey: `${TOOLBAR_LEADER} f`,
-        description: 'Round the edges of a 3D solid.',
         links: [
           {
             label: 'KCL docs',
@@ -220,7 +199,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         ],
       },
       {
-        id: 'chamfer3d',
+        ...toolbarShortcutConfigs.chamfer3d,
         onClick: () =>
           commandBarActor.send({
             type: 'Find and select command',
@@ -228,9 +207,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         icon: 'chamfer3d',
         status: 'available',
-        title: 'Chamfer',
-        hotkey: `${TOOLBAR_LEADER} c`,
-        description: 'Bevel the edges of a 3D solid.',
         extraNote:
           'Chamfers cannot touch other chamfers yet. This is under development, see issue tracker.',
         links: [
@@ -245,7 +221,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         ],
       },
       {
-        id: 'shell',
+        ...toolbarShortcutConfigs.shell,
         onClick: () => {
           commandBarActor.send({
             type: 'Find and select command',
@@ -254,9 +230,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         icon: 'shell',
         status: 'available',
-        title: 'Shell',
-        hotkey: `${TOOLBAR_LEADER} shift+s`,
-        description: 'Hollow out a 3D solid.',
         links: [
           {
             label: 'KCL docs',
@@ -289,7 +262,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         id: 'booleans',
         array: [
           {
-            id: 'boolean-union',
+            ...toolbarShortcutConfigs.booleanUnion,
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
@@ -297,9 +270,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             icon: 'booleanUnion',
             status: 'available',
-            title: 'Union',
-            hotkey: `${TOOLBAR_LEADER} b u`,
-            description: 'Combine two or more solids into a single solid.',
             links: [
               {
                 label: 'KCL docs',
@@ -308,7 +278,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
-            id: 'boolean-subtract',
+            ...toolbarShortcutConfigs.booleanSubtract,
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
@@ -316,9 +286,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             icon: 'booleanSubtract',
             status: 'available',
-            title: 'Subtract',
-            hotkey: `${TOOLBAR_LEADER} b s`,
-            description: 'Subtract one solid from another.',
             links: [
               {
                 label: 'KCL docs',
@@ -329,17 +296,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
-            id: 'boolean-intersect',
+            ...toolbarShortcutConfigs.booleanInterset,
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
                 data: { name: 'Boolean Intersect', groupId: 'modeling' },
               }),
             icon: 'booleanIntersect',
-            hotkey: `${TOOLBAR_LEADER} b i`,
             status: 'available',
-            title: 'Intersect',
-            description: 'Create a solid from the intersection of two solids.',
             links: [
               {
                 label: 'KCL docs',
@@ -356,18 +320,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         id: 'planes',
         array: [
           {
-            id: 'plane-offset',
+            ...toolbarShortcutConfigs.offsetPlane,
             onClick: () => {
               commandBarActor.send({
                 type: 'Find and select command',
                 data: { name: 'Offset plane', groupId: 'modeling' },
               })
             },
-            hotkey: `${TOOLBAR_LEADER} o`,
             icon: 'plane',
             status: 'available',
-            title: 'Offset plane',
-            description: 'Create a plane parallel to an existing plane.',
             links: [
               {
                 label: 'KCL docs',
@@ -387,18 +348,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         ],
       },
       {
-        id: 'helix',
+        ...toolbarShortcutConfigs.helix,
         onClick: () => {
           commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Helix', groupId: 'modeling' },
           })
         },
-        hotkey: `${TOOLBAR_LEADER} h`,
         icon: 'helix',
         status: 'available',
-        title: 'Helix',
-        description: 'Create a helix or spiral in 3D about an axis.',
         links: [
           {
             label: 'KCL docs',
@@ -408,18 +366,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       'break',
       {
-        id: 'insert',
+        ...toolbarShortcutConfigs.insert,
         onClick: () =>
           commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Insert', groupId: 'code' },
           }),
-        hotkey: `${TOOLBAR_LEADER} i`,
         icon: 'import',
         status: 'available',
         disabled: () => !isDesktop(),
-        title: 'Insert',
-        description: 'Insert from a file in the current project directory',
         links: [
           {
             label: 'API docs',
@@ -431,7 +386,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         id: 'transform',
         array: [
           {
-            id: 'translate',
+            ...toolbarShortcutConfigs.move,
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
@@ -439,9 +394,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             icon: 'move',
             status: 'available',
-            title: 'Translate',
-            hotkey: `${TOOLBAR_LEADER} t t`,
-            description: 'Apply a translation to a solid or sketch.',
             links: [
               {
                 label: 'API docs',
@@ -452,7 +404,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
-            id: 'rotate',
+            ...toolbarShortcutConfigs.rotate,
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
@@ -460,9 +412,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             icon: 'rotate',
             status: 'available',
-            title: 'Rotate',
-            hotkey: `${TOOLBAR_LEADER} t r`,
-            description: 'Apply a rotation to a solid or sketch.',
             links: [
               {
                 label: 'API docs',
@@ -473,7 +422,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
-            id: 'scale',
+            ...toolbarShortcutConfigs.scale,
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
@@ -481,9 +430,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             icon: 'scale',
             status: 'available',
-            title: 'Scale',
-            hotkey: `${TOOLBAR_LEADER} t s`,
-            description: 'Apply scaling to a solid or sketch.',
             links: [
               {
                 label: 'API docs',
@@ -492,17 +438,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
-            id: 'clone',
+            ...toolbarShortcutConfigs.clone,
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
                 data: { name: 'Clone', groupId: 'modeling' },
               }),
-            status: 'available',
-            title: 'Clone',
-            hotkey: `${TOOLBAR_LEADER} t c`,
             icon: 'clone',
-            description: 'Clone a solid or sketch.',
+            status: 'available',
             links: [
               {
                 label: 'API docs',
@@ -511,18 +454,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
-            id: 'appearance',
+            ...toolbarShortcutConfigs.appearance,
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
                 data: { name: 'Appearance', groupId: 'modeling' },
               }),
             status: 'available',
-            title: 'Appearance',
-            hotkey: `${TOOLBAR_LEADER} shift+a`,
             icon: 'text',
-            description:
-              'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
             links: [
               {
                 label: 'API docs',
@@ -697,7 +636,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,
-        hotkey: 'Esc',
+        sequence: 'Esc',
         description: 'Exit the current sketch',
         links: [],
       },
@@ -718,7 +657,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         disabled: (state) => state.matches('Sketch no face'),
         title: 'Line',
-        hotkey: (state) =>
+        sequence: (state) =>
           state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',
         description: 'Start drawing straight lines',
         links: [],
@@ -743,7 +682,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'arc',
             status: 'available',
             title: 'Three-point Arc',
-            hotkey: (state) =>
+            sequence: (state) =>
               state.matches({ Sketch: 'Arc three point tool' })
                 ? ['Esc', 'T']
                 : 'T',
@@ -799,7 +738,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 : undefined
             },
             title: 'Tangential Arc',
-            hotkey: (state) =>
+            sequence: (state) =>
               state.matches({ Sketch: 'Tangential arc to' })
                 ? ['Esc', 'A']
                 : 'A',
@@ -829,7 +768,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             title: 'Center circle',
             disabled: (state) => state.matches('Sketch no face'),
             isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
-            hotkey: (state) =>
+            sequence: (state) =>
               state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
             showTitle: false,
             description: 'Start drawing a circle from its center',
@@ -853,7 +792,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             title: '3-point circle',
             isActive: (state) =>
               state.matches({ Sketch: 'Circle three point tool' }),
-            hotkey: (state) =>
+            sequence: (state) =>
               state.matches({ Sketch: 'Circle three point tool' })
                 ? ['Alt+C', 'Esc']
                 : 'Alt+C',
@@ -881,7 +820,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             status: 'available',
             disabled: (state) => state.matches('Sketch no face'),
             title: 'Corner rectangle',
-            hotkey: (state) =>
+            sequence: (state) =>
               state.matches({ Sketch: 'Rectangle tool' }) ? ['Esc', 'R'] : 'R',
             description: 'Start drawing a rectangle',
             links: [],
@@ -906,7 +845,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             title: 'Center rectangle',
             description: 'Start drawing a rectangle from its center',
             links: [],
-            hotkey: (state) =>
+            sequence: (state) =>
               state.matches({ Sketch: 'Center Rectangle tool' })
                 ? ['Alt+R', 'Esc']
                 : 'Alt+R',

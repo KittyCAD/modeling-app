@@ -250,13 +250,19 @@ export function App() {
             ...defaultGlobalStatusBarItems({ location, filePath }),
           ]}
           localItems={[
-            {
-              id: 'key-sequence',
-              element: 'text',
-              label: shortcutService.currentSequence ?? '',
-              toolTip: { children: 'The current shortcut sequence' },
-              className: 'hotkey',
-            } satisfies StatusBarItemType,
+            ...(shortcutService.currentSequence
+              ? [
+                  {
+                    id: 'key-sequence',
+                    element: 'text',
+                    label: shortcutService.currentSequence
+                      ? `Chord mode: (${shortcutService.currentSequence}) pressed, awaiting input`
+                      : '',
+                    toolTip: { children: 'The current shortcut sequence' },
+                    className: 'hotkey',
+                  } satisfies StatusBarItemType,
+                ]
+              : []),
             ...(getSettings().app.showDebugPanel.current
               ? ([
                 {
