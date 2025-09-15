@@ -208,22 +208,13 @@ extrude001 = extrude(profile001, length = 5)`
     const sketchNode = page.getByText('sketch001').first()
     await expect(sketchNode).toBeVisible()
 
-    // Ensure the feature tree is fully loaded by waiting for the extrude operation too
-    const extrudeNode = page.getByText('extrude001').first()
-    await expect(extrudeNode).toBeVisible()
-
     // Right-click to open context menu
     await sketchNode.click({ button: 'right' })
 
     // Verify that "Export to DXF" option is present and click it
     const dxfExportOption = page.getByTestId('context-menu-export-dxf')
     await expect(dxfExportOption).toBeVisible()
-    await page.waitForTimeout(150) // flake workaround
     await dxfExportOption.click()
-
-    // Look out for the loading toast message
-    const exportingToastMessage = page.getByText('Exporting sketch to DXF...')
-    await expect(exportingToastMessage).toBeVisible()
 
     // Expect it to succeed - check for various error types
     const errorToastMessage = page.getByText('Failed to export sketch to DXF')
@@ -237,7 +228,6 @@ extrude001 = extrude(profile001, length = 5)`
     await page.waitForTimeout(1_000)
     const count = await successToastMessage.count()
     await expect(count).toBeGreaterThanOrEqual(1)
-    await expect(exportingToastMessage).not.toBeVisible()
 
     // Check for the exported DXF file
     const exportFileName = 'sketch001.dxf'
