@@ -904,7 +904,7 @@ fn artifacts_to_update(
             });
             let mut return_arr = Vec::new();
 
-            let base = path_id.into(); // this is probably wrong, solid id doesn't exist yet?
+            let base = path_id.into();
 
             let path_modifier = format!("path_{}", pi);
             let curve_id = ArtifactId::new(generate_engine_id(base, &path_modifier));
