@@ -20,7 +20,7 @@ export interface BillingContext {
   allowance: undefined | number
   isOrg?: boolean
   hasSubscription?: boolean
-  error: undefined | Error
+  error: undefined | BillingError
   urlUserService: () => string
   lastFetch: undefined | Date
 }
@@ -108,7 +108,9 @@ export const billingMachine = setup({
           {
             target: BillingState.Waiting,
             // Yep, this is hard to follow. XState, why!
-            actions: assign({ error: ({ event }) => event.error as Error }),
+            actions: assign({
+              error: ({ event }) => event.error as BillingError,
+            }),
           },
         ],
       },
