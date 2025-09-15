@@ -278,7 +278,8 @@ mod tests {
             sh.signatures[0].label,
             r#"extrude(
   @sketches: [Sketch; 1+],
-  length: number(Length),
+  length?: number(Length),
+  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
   symmetric?: bool,
   bidirectionalLength?: number(Length),
   tagStart?: TagDecl,
