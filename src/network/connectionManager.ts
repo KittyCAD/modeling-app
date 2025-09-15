@@ -133,11 +133,17 @@ export class ConnectionManager extends EventTarget {
     if (settings) {
       // completely overwrite the settings
       this.settings = settings
-    }
-
-    if (this.callbackOnUnitTestingConnection) {
-      // Makes snapshot tests happy?
-      this.settings.cameraProjection = 'perspective'
+    } else {
+      // TODO: Huh? is this only for snapshot tests?
+      this.settings = {
+        pool: null,
+        theme: Themes.Dark,
+        highlightEdges: true,
+        enableSSAO: true,
+        showScaleGrid: false,
+        cameraProjection: 'perspective',
+        cameraOrbit: 'spherical',
+      }
     }
   }
 
