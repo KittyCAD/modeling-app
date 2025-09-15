@@ -11,7 +11,7 @@ export function useOnWebsocketClose({ callback }: { callback: () => void }) {
         // This will result in an infinite loop
         EngineDebugger.addLog({
           label: 'useOnWebsocketClose',
-          message: 'deteched infinite loop',
+          message: 'detected infinite loop',
           metadata: {
             webSocketCloseEventCode: event.detail.websocketCloseEventCode,
           },
