@@ -3228,7 +3228,6 @@ description: Variables in memory after executing loop_tag.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

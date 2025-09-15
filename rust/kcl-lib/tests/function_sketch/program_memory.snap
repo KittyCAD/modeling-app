@@ -166,7 +166,6 @@ description: Variables in memory after executing function_sketch.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

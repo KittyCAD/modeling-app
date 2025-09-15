@@ -236,7 +236,6 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 4.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -614,7 +613,6 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 4.5,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -706,7 +704,6 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 37.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1048,7 +1045,6 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 4.5,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -1140,7 +1136,6 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 37.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1313,7 +1308,6 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 3.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1405,7 +1399,6 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 3.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
