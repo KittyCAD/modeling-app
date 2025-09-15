@@ -70,7 +70,6 @@ pub struct EngineIdGenerator {
 //     }
 // }
 
-
 /// A generator for ArtifactIds that can be stable across executions.
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct IdGenerator {

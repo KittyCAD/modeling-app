@@ -1,4 +1,3 @@
-
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
@@ -1155,7 +1154,9 @@ fn artifacts_to_update(
                     .unwrap_or_default();
 
                 #[cfg(target_arch = "wasm32")]
-                web_sys::console::warn_1(&format!("add wall: face_id: {face_id:#?}, curve_id: {curve_id:#?}, index: {pi:#?}").into());
+                web_sys::console::warn_1(
+                    &format!("add wall: face_id: {face_id:#?}, curve_id: {curve_id:#?}, index: {pi:#?}").into(),
+                );
 
                 return_arr.push(Artifact::Wall(Wall {
                     id: face_id,
@@ -1251,27 +1252,29 @@ fn artifacts_to_update(
             let mut return_arr = Vec::new();
             let mut pi: u32 = 0;
             for (index, edge) in info.edges.iter().enumerate() {
-
                 let path_modifier = format!("path_{}", pi);
                 let edge_id = ArtifactId::new(generate_engine_id(base, &path_modifier)); // aka edge/segment id, eg.: "path_0"
                 let face_id = ArtifactId::new(generate_engine_id(base, &format!("{}_face", path_modifier)));
-                let next_face_id = ArtifactId::new(generate_engine_id(base, &format!("{}_face", format!("path_{}", (pi + 1) % (info.edges.len() as u32)))));
+                let next_face_id = ArtifactId::new(generate_engine_id(
+                    base,
+                    &format!("{}_face", format!("path_{}", (pi + 1) % (info.edges.len() as u32))),
+                ));
                 pi += 1;
 
                 let Some(artifact) = artifacts.get(&edge_id) else {
                     continue;
                 };
-                
+
                 match artifact {
                     Artifact::Segment(segment) => {
                         let mut new_segment = segment.clone();
                         new_segment.common_surface_ids = vec![
                             face_id,
-                            ArtifactId::new(generate_engine_id(base, "face_bottom")) // cap start
+                            ArtifactId::new(generate_engine_id(base, "face_bottom")), // cap start
                         ]
-                            .into_iter()
-                            .filter(|id| artifacts.contains_key(id))
-                            .collect();
+                        .into_iter()
+                        .filter(|id| artifacts.contains_key(id))
+                        .collect();
 
                         return_arr.push(Artifact::Segment(new_segment));
                     }
@@ -1301,59 +1304,55 @@ fn artifacts_to_update(
                     continue;
                 };
 
-                    let opposite_edge_id = ArtifactId::new(generate_engine_id(base, &format!("{}_opp", path_modifier))); //opposite_info.edge_id.into(),
-                    return_arr.push(Artifact::SweepEdge(SweepEdge {
-                        id: opposite_edge_id,
-                        sub_type: SweepEdgeSubType::Opposite,
-                        seg_id: edge_id,
-                        cmd_id: artifact_command.cmd_id,
-                        index,
-                        sweep_id: sweep.id,
-                        common_surface_ids: vec![
-                            face_id,
-                            ArtifactId::new(generate_engine_id(base, "face_top")) // cap end
-                        ]
-                            .into_iter()
-                            .filter(|id| artifacts.contains_key(id))
-                            .collect(),
-                    }));
-                    let mut new_segment = segment.clone();
-                    new_segment.edge_ids = vec![opposite_edge_id];
-                    return_arr.push(Artifact::Segment(new_segment));
-                    let mut new_sweep = sweep.clone();
-                    new_sweep.edge_ids = vec![opposite_edge_id];
-                    return_arr.push(Artifact::Sweep(new_sweep));
-                    let mut new_wall = wall.clone();
-                    new_wall.edge_cut_edge_ids = vec![opposite_edge_id];
-                    return_arr.push(Artifact::Wall(new_wall));
-            
+                let opposite_edge_id = ArtifactId::new(generate_engine_id(base, &format!("{}_opp", path_modifier))); //opposite_info.edge_id.into(),
+                return_arr.push(Artifact::SweepEdge(SweepEdge {
+                    id: opposite_edge_id,
+                    sub_type: SweepEdgeSubType::Opposite,
+                    seg_id: edge_id,
+                    cmd_id: artifact_command.cmd_id,
+                    index,
+                    sweep_id: sweep.id,
+                    common_surface_ids: vec![
+                        face_id,
+                        ArtifactId::new(generate_engine_id(base, "face_top")), // cap end
+                    ]
+                    .into_iter()
+                    .filter(|id| artifacts.contains_key(id))
+                    .collect(),
+                }));
+                let mut new_segment = segment.clone();
+                new_segment.edge_ids = vec![opposite_edge_id];
+                return_arr.push(Artifact::Segment(new_segment));
+                let mut new_sweep = sweep.clone();
+                new_sweep.edge_ids = vec![opposite_edge_id];
+                return_arr.push(Artifact::Sweep(new_sweep));
+                let mut new_wall = wall.clone();
+                new_wall.edge_cut_edge_ids = vec![opposite_edge_id];
+                return_arr.push(Artifact::Wall(new_wall));
 
-                    let adjacent_edge_id = ArtifactId::new(generate_engine_id(base, &format!("{}_adj", path_modifier))); //adjacent_info.edge_id.into(),
+                let adjacent_edge_id = ArtifactId::new(generate_engine_id(base, &format!("{}_adj", path_modifier))); //adjacent_info.edge_id.into(),
 
-                    return_arr.push(Artifact::SweepEdge(SweepEdge {
-                        id: adjacent_edge_id,
-                        sub_type: SweepEdgeSubType::Adjacent,
-                        seg_id: edge_id,
-                        cmd_id: artifact_command.cmd_id,
-                        index,
-                        sweep_id: sweep.id,
-                        common_surface_ids: vec![
-                            face_id,
-                            next_face_id,
-                        ]
-                            .into_iter()
-                            .filter(|id| artifacts.contains_key(id))
-                            .collect(),
-                    }));
-                    let mut new_segment = segment.clone();
-                    new_segment.edge_ids = vec![adjacent_edge_id];
-                    return_arr.push(Artifact::Segment(new_segment));
-                    let mut new_sweep = sweep.clone();
-                    new_sweep.edge_ids = vec![adjacent_edge_id];
-                    return_arr.push(Artifact::Sweep(new_sweep));
-                    let mut new_wall = wall.clone();
-                    new_wall.edge_cut_edge_ids = vec![adjacent_edge_id];
-                    return_arr.push(Artifact::Wall(new_wall));
+                return_arr.push(Artifact::SweepEdge(SweepEdge {
+                    id: adjacent_edge_id,
+                    sub_type: SweepEdgeSubType::Adjacent,
+                    seg_id: edge_id,
+                    cmd_id: artifact_command.cmd_id,
+                    index,
+                    sweep_id: sweep.id,
+                    common_surface_ids: vec![face_id, next_face_id]
+                        .into_iter()
+                        .filter(|id| artifacts.contains_key(id))
+                        .collect(),
+                }));
+                let mut new_segment = segment.clone();
+                new_segment.edge_ids = vec![adjacent_edge_id];
+                return_arr.push(Artifact::Segment(new_segment));
+                let mut new_sweep = sweep.clone();
+                new_sweep.edge_ids = vec![adjacent_edge_id];
+                return_arr.push(Artifact::Sweep(new_sweep));
+                let mut new_wall = wall.clone();
+                new_wall.edge_cut_edge_ids = vec![adjacent_edge_id];
+                return_arr.push(Artifact::Wall(new_wall));
             }
             return Ok(return_arr);
         }

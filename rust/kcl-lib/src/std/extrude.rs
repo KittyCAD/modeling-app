@@ -192,8 +192,8 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-        let base = sketch.id;
-        
+    let base = sketch.id;
+
     let any_edge_id = if let Some(edge_id) = sketch.mirror {
         edge_id
     } else if let Some(id) = edge_id {
@@ -367,11 +367,7 @@ struct Faces {
     start_cap_id: Option<Uuid>,
 }
 
-async fn analyze_faces(
-    args: &Args,
-    face_infos: Vec<ExtrusionFaceInfo>,
-    base: Uuid,
-) -> Faces {
+async fn analyze_faces(args: &Args, face_infos: Vec<ExtrusionFaceInfo>, base: Uuid) -> Faces {
     let mut faces = Faces {
         sides: HashMap::with_capacity(face_infos.len()),
         ..Default::default()
