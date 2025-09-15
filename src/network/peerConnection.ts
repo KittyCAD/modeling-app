@@ -172,7 +172,7 @@ export function createOnConnectionStateChange({
         dispatchEvent(
           // TODO: Mediastream ???? why the fuck is this here. This is a bad dependency flow.
           new CustomEvent(EngineConnectionEvents.NewTrack, {
-            detail: { conn: connection, mediaStream: null },
+            detail: { conn: connection, mediaStream: connection.mediaStream },
           })
         )
         break
