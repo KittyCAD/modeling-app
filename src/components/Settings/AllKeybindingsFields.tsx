@@ -15,29 +15,27 @@ export const AllKeybindingsFields = forwardRef(
     return (
       <div className="relative overflow-y-auto pb-16">
         <div ref={scrollRef} className="flex flex-col gap-12">
-          {interactionMapCategoriesInOrder.map((category) =>
-            shortcutService.shortcuts
-              .values()
-              .filter((item) => item.category === category)
-              .toArray()
-              .map((_item, _, categoryItems) => (
-                <div className="flex flex-col gap-4 px-2 pr-4" key={category}>
-                  <h2
-                    id={`category-${category.replaceAll(/\s/g, '-')}`}
-                    className="text-xl mt-6 first-of-type:mt-0 capitalize font-bold"
-                  >
-                    {category}
-                  </h2>
-                  {categoryItems.map((item) => (
-                    <KeybindingField
-                      key={category + '-' + item.id}
-                      category={category}
-                      item={item}
-                    />
-                  ))}
-                </div>
-              ))
-          )}
+          {interactionMapCategoriesInOrder.map((category) => (
+            <div className="flex flex-col gap-4 px-2 pr-4" key={category}>
+              <h2
+                id={`category-${category.replaceAll(/\s/g, '-')}`}
+                className="text-xl mt-6 first-of-type:mt-0 capitalize font-bold"
+              >
+                {category}
+              </h2>
+              {shortcutService.shortcuts
+                .values()
+                .filter((item) => item.category === category)
+                .toArray()
+                .map((item) => (
+                  <KeybindingField
+                    key={`category-${item.id}`}
+                    category={category}
+                    item={item}
+                  />
+                ))}
+            </div>
+          ))}
         </div>
       </div>
     )
