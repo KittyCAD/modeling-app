@@ -142,7 +142,7 @@ async fn inner_extrude(
     for sketch in &sketches {
         let id = exec_state.next_uuid();
         let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to) {
-            (Some(angle), angle_step, center, Some(length), _) => {
+            (Some(angle), angle_step, center, Some(length), None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
                 let total_rotation_angle = Angle::from_degrees(angle.to_degrees());
                 let angle_step_size = Angle::from_degrees(angle_step.clone().map(|a| a.to_degrees()).unwrap_or(15.0));
@@ -156,14 +156,14 @@ async fn inner_extrude(
                     tolerance,
                 })
             }
-            (None, _, _, Some(length), None) => ModelingCmd::from(mcmd::Extrude {
+            (None, None, None, Some(length), None) => ModelingCmd::from(mcmd::Extrude {
                 target: sketch.id.into(),
                 distance: LengthUnit(length.to_mm()),
                 faces: Default::default(),
                 opposite: opposite.clone(),
                 extrude_method,
             }),
-            (_, _, _, None, Some(to)) => match to {
+            (None, None, None, None, Some(to)) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(mcmd::ExtrudeToReference {
                     target: sketch.id.into(),
                     reference: ExtrudeReference::Point {
@@ -280,6 +280,12 @@ async fn inner_extrude(
             (_, _, _, Some(_), Some(_)) => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     "You cannot give both `length` and `to` params, you have to choose one or the other".to_owned(),
+                    vec![args.source_range],
+                )));
+            }
+            (_, _, _, _, _) => {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Invalid combination of parameters for extrusion.".to_owned(),
                     vec![args.source_range],
                 )));
             }
