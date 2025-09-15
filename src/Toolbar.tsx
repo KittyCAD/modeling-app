@@ -465,19 +465,6 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
    * GOTCHA: `useHotkeys` can only register one hotkey listener per component.
    * TODO: make a global hotkey registration system. make them editable.
    */
-  useHotkeys(
-    itemConfig.hotkey || '',
-    () => {
-      itemConfig.onClick(itemConfig.callbackProps)
-    },
-    {
-      enabled:
-        ['available', 'experimental'].includes(itemConfig.status) &&
-        !!itemConfig.hotkey &&
-        !itemConfig.disabled &&
-        !itemConfig.disableHotkey,
-    }
-  )
 
   return (
     <Tooltip

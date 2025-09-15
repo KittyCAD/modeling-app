@@ -77,6 +77,8 @@ export const isToolbarItemResolvedDropdown = (
   return (item as ToolbarItemResolvedDropdown).array !== undefined
 }
 
+const TOOLBAR_LEADER = 'ctrl+.'
+
 export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
   modeling: {
     check: (state) =>
@@ -102,7 +104,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: ({ editorHasFocus, sketchPathId }) =>
           editorHasFocus && sketchPathId ? 'Edit Sketch' : 'Start Sketch',
         showTitle: true,
-        hotkey: 'S',
+        hotkey: `${TOOLBAR_LEADER} s`,
         description: 'Start drawing a 2D sketch',
         links: [
           {
@@ -124,7 +126,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'extrude',
         status: 'available',
         title: 'Extrude',
-        hotkey: 'E',
+        hotkey: `${TOOLBAR_LEADER} e`,
         description: 'Pull a sketch into 3D along its normal or perpendicular.',
         links: [
           {
@@ -143,7 +145,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'sweep',
         status: 'available',
         title: 'Sweep',
-        hotkey: 'W',
+        hotkey: `${TOOLBAR_LEADER} w`,
         description:
           'Create a 3D body by moving a sketch region along an arbitrary path.',
         links: [
@@ -163,7 +165,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'loft',
         status: 'available',
         title: 'Loft',
-        hotkey: 'L',
+        hotkey: `${TOOLBAR_LEADER} l`,
         description:
           'Create a 3D body by blending between two or more sketches.',
         links: [
@@ -183,7 +185,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'revolve',
         status: 'available',
         title: 'Revolve',
-        hotkey: 'R',
+        hotkey: `${TOOLBAR_LEADER} r`,
         description:
           'Create a 3D body by rotating a sketch region about an axis.',
         links: [
@@ -208,7 +210,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'fillet3d',
         status: 'available',
         title: 'Fillet',
-        hotkey: 'F',
+        hotkey: `${TOOLBAR_LEADER} f`,
         description: 'Round the edges of a 3D solid.',
         links: [
           {
@@ -227,7 +229,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'chamfer3d',
         status: 'available',
         title: 'Chamfer',
-        hotkey: 'C',
+        hotkey: `${TOOLBAR_LEADER} c`,
         description: 'Bevel the edges of a 3D solid.',
         extraNote:
           'Chamfers cannot touch other chamfers yet. This is under development, see issue tracker.',
@@ -253,6 +255,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'shell',
         status: 'available',
         title: 'Shell',
+        hotkey: `${TOOLBAR_LEADER} shift+s`,
         description: 'Hollow out a 3D solid.',
         links: [
           {
@@ -295,6 +298,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'booleanUnion',
             status: 'available',
             title: 'Union',
+            hotkey: `${TOOLBAR_LEADER} b u`,
             description: 'Combine two or more solids into a single solid.',
             links: [
               {
@@ -313,6 +317,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'booleanSubtract',
             status: 'available',
             title: 'Subtract',
+            hotkey: `${TOOLBAR_LEADER} b s`,
             description: 'Subtract one solid from another.',
             links: [
               {
@@ -331,6 +336,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 data: { name: 'Boolean Intersect', groupId: 'modeling' },
               }),
             icon: 'booleanIntersect',
+            hotkey: `${TOOLBAR_LEADER} b i`,
             status: 'available',
             title: 'Intersect',
             description: 'Create a solid from the intersection of two solids.',
@@ -357,7 +363,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 data: { name: 'Offset plane', groupId: 'modeling' },
               })
             },
-            hotkey: 'O',
+            hotkey: `${TOOLBAR_LEADER} o`,
             icon: 'plane',
             status: 'available',
             title: 'Offset plane',
@@ -388,7 +394,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Helix', groupId: 'modeling' },
           })
         },
-        hotkey: 'H',
+        hotkey: `${TOOLBAR_LEADER} h`,
         icon: 'helix',
         status: 'available',
         title: 'Helix',
@@ -408,7 +414,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Insert', groupId: 'code' },
           }),
-        hotkey: 'I',
+        hotkey: `${TOOLBAR_LEADER} i`,
         icon: 'import',
         status: 'available',
         disabled: () => !isDesktop(),
@@ -434,6 +440,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'move',
             status: 'available',
             title: 'Translate',
+            hotkey: `${TOOLBAR_LEADER} t t`,
             description: 'Apply a translation to a solid or sketch.',
             links: [
               {
@@ -454,6 +461,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'rotate',
             status: 'available',
             title: 'Rotate',
+            hotkey: `${TOOLBAR_LEADER} t r`,
             description: 'Apply a rotation to a solid or sketch.',
             links: [
               {
@@ -474,6 +482,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'scale',
             status: 'available',
             title: 'Scale',
+            hotkey: `${TOOLBAR_LEADER} t s`,
             description: 'Apply scaling to a solid or sketch.',
             links: [
               {
@@ -491,6 +500,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             status: 'available',
             title: 'Clone',
+            hotkey: `${TOOLBAR_LEADER} t c`,
             icon: 'clone',
             description: 'Clone a solid or sketch.',
             links: [
@@ -509,6 +519,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             status: 'available',
             title: 'Appearance',
+            hotkey: `${TOOLBAR_LEADER} shift+a`,
             icon: 'text',
             description:
               'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
