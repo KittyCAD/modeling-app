@@ -25,6 +25,13 @@ export interface FileExplorerEntry extends FileEntry {
 }
 
 /**
+ * A limited version of a file entry for drag-and-drop purposes
+ */
+export type FileExplorerDropData = FileEntry & {
+  parentPath: string
+}
+
+/**
  * Pass this to the FileExplorer to render
  */
 export interface FileExplorerRow extends FileExplorerEntry {
@@ -50,6 +57,7 @@ export interface FileExplorerRow extends FileExplorerEntry {
   onDelete: () => void
   onCopy: () => void
   onPaste: () => void
+  onDrop: (props: { src: FileExplorerDropData }) => void
   onRenameStart: () => void
   onRenameEnd: SubmitByPressOrBlur
 }
@@ -370,6 +378,30 @@ export const copyPasteSourceAndTarget = (
     src: src.path,
     target: uniquePath,
   }
+}
+
+/**
+ * When dropping one file explorer item onto another, should we fire events?
+ * - not if the dragged item is an ancestor of the target
+ * - not if it would result in no movement: the target is a sibling file or the parent directory
+ */
+export function shouldDroppedEntryBeMoved(
+  src: FileExplorerDropData,
+  target: FileExplorerEntry,
+  sep = '/'
+) {
+  const targetIsFolder = target.children !== null
+  const targetIsFileInDifferentFolder =
+    !targetIsFolder && target.parentPath !== src.parentPath
+  const targetIsDroppedEntryParent = target.path.endsWith(src.parentPath)
+  const droppedEntryIsTargetParent =
+    target.path !== src.path && target.path.startsWith(src.path + sep)
+  const shouldDroppedEntryBeMoved =
+    !droppedEntryIsTargetParent &&
+    ((!targetIsDroppedEntryParent && targetIsFolder) ||
+      targetIsFileInDifferentFolder)
+
+  return shouldDroppedEntryBeMoved
 }
 
 // Used for focused which is different from the selection when you mouse click.
