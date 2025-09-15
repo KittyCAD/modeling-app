@@ -1,3 +1,4 @@
+
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
@@ -904,7 +905,8 @@ fn artifacts_to_update(
             });
             let mut return_arr = Vec::new();
 
-            let base = path_id.into(); // this is probably wrong, solid id doesn't exist yet
+            let base = path_id.into(); // this is probably wrong, solid id doesn't exist yet?
+
             let path_modifier = format!("path_{}", pi);
             let curve_id = ArtifactId::new(generate_engine_id(base, &path_modifier));
 
@@ -920,7 +922,7 @@ fn artifacts_to_update(
             let path = artifacts.get(&path_id);
             if let Some(Artifact::Path(path)) = path {
                 let mut new_path = path.clone();
-                new_path.seg_ids = vec![id];
+                new_path.seg_ids = vec![curve_id];
                 return_arr.push(Artifact::Path(new_path));
             }
             if let Some(OkModelingCmdResponse::ClosePath(close_path)) = response {
@@ -1115,6 +1117,8 @@ fn artifacts_to_update(
                     continue;
                 };
                 let Some(Artifact::Path(path)) = artifacts.get(&seg.path_id) else {
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::warn_1(&format!("no path???").into());
                     continue;
                 };
 
@@ -1150,8 +1154,8 @@ fn artifacts_to_update(
                     // TODO: If we didn't find it, it's probably a bug.
                     .unwrap_or_default();
 
-                //#[cfg(target_arch = "wasm32")]
-                //web_sys::console::warn_1(&format!("add wall: face_id: {face_id:#?}, curve_id: {curve_id:#?}").into());
+                #[cfg(target_arch = "wasm32")]
+                web_sys::console::warn_1(&format!("add wall: face_id: {face_id:#?}, curve_id: {curve_id:#?}").into());
 
                 return_arr.push(Artifact::Wall(Wall {
                     id: face_id,
@@ -1258,25 +1262,39 @@ fn artifacts_to_update(
                 let path_modifier = format!("path_{}", pi);
                 pi += 1;
                 let edge_id = ArtifactId::new(generate_engine_id(base, &path_modifier)); // aka edge/segment id, eg.: "path_0"
-
+                let face_id = ArtifactId::new(generate_engine_id(base, &format!("{}_face", path_modifier)));
+                
                 //let edge_id = ArtifactId::new(generate_engine_id(base, &path_modifier));
                 //let edge_id = ArtifactId::new(*edge_id);
 
                 let Some(artifact) = artifacts.get(&edge_id) else {
                     continue;
                 };
+
+                
                 match artifact {
                     Artifact::Segment(segment) => {
                         let mut new_segment = segment.clone();
-                        new_segment.common_surface_ids =
-                            original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
+                        // new_segment.common_surface_ids =
+                        //     original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
+                        new_segment.common_surface_ids = vec![
+                            face_id,
+                            ArtifactId::new(generate_engine_id(base, "face_bottom")) // cap start
+                        ]
+                            .into_iter()
+                            .filter(|id| artifacts.contains_key(id))
+                            .collect();
+
                         return_arr.push(Artifact::Segment(new_segment));
                     }
                     Artifact::SweepEdge(sweep_edge) => {
-                        let mut new_sweep_edge = sweep_edge.clone();
-                        new_sweep_edge.common_surface_ids =
-                            original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
-                        return_arr.push(Artifact::SweepEdge(new_sweep_edge));
+                        
+                        // TODO is this ever used?
+
+                        // let mut new_sweep_edge = sweep_edge.clone();
+                        // new_sweep_edge.common_surface_ids =
+                        //     original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
+                        // return_arr.push(Artifact::SweepEdge(new_sweep_edge));
                     }
                     _ => {}
                 };
