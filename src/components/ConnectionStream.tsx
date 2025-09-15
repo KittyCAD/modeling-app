@@ -25,6 +25,7 @@ import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { ManualReconnection } from '@src/components/ManualReconnection'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
+import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -186,6 +187,29 @@ export const ConnectionStream = (props: {
   })
   useOnPeerConnectionClose({
     callback: () => {
+      setShowManualConnect(false)
+      tryConnecting({
+        authToken: props.authToken || '',
+        videoWrapperRef,
+        setAppState,
+        videoRef,
+        setIsSceneReady,
+        isConnecting,
+        successfullyConnected,
+        numberOfConnectionAtttempts,
+        timeToConnect: 30_000,
+      }).catch((e) => {
+        console.error(e)
+        setShowManualConnect(true)
+      })
+    },
+  })
+  useOnWindowOnlineOffline({
+    close: () => {
+      setShowManualConnect(true)
+      engineCommandManager.tearDown()
+    },
+    connect: () => {
       setShowManualConnect(false)
       tryConnecting({
         authToken: props.authToken || '',
