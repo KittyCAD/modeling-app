@@ -388,7 +388,7 @@ export const copyPasteSourceAndTarget = (
 export function shouldDroppedEntryBeMoved(
   src: FileExplorerDropData,
   target: FileExplorerEntry,
-  sep: string = '/'
+  sep = '/'
 ) {
   const targetIsFolder = target.children !== null
   const targetIsFileInDifferentFolder =
