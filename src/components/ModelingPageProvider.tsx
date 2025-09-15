@@ -73,8 +73,12 @@ export const ModelingPageProvider = ({
   useEffect(() => {
     const filePath =
       PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
-    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
-      createRouteCommands(navigate, location, filePath)
+    const {
+      RouteTelemetryCommand,
+      RouteHomeCommand,
+      RouteSettingsCommand,
+      RouteShortcutsDebugCommand,
+    } = createRouteCommands(navigate, location, filePath)
     commandBarActor.send({
       type: 'Remove commands',
       data: {
@@ -82,13 +86,20 @@ export const ModelingPageProvider = ({
           RouteTelemetryCommand,
           RouteHomeCommand,
           RouteSettingsCommand,
+          RouteShortcutsDebugCommand,
         ],
       },
     })
     if (location.pathname === PATHS.HOME) {
       commandBarActor.send({
         type: 'Add commands',
-        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+        data: {
+          commands: [
+            RouteTelemetryCommand,
+            RouteSettingsCommand,
+            RouteShortcutsDebugCommand,
+          ],
+        },
       })
     } else if (location.pathname.includes(PATHS.FILE)) {
       commandBarActor.send({
@@ -98,6 +109,7 @@ export const ModelingPageProvider = ({
             RouteTelemetryCommand,
             RouteSettingsCommand,
             RouteHomeCommand,
+            RouteShortcutsDebugCommand,
           ],
         },
       })

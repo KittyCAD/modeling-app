@@ -449,7 +449,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
                 key={pane.id}
                 icon={pane.icon}
                 title={pane.sidebarName}
-                onClose={() => { }}
+                onClose={() => {}}
                 id={`${pane.id}-pane`}
               >
                 {pane.Content instanceof Function ? (
@@ -561,7 +561,7 @@ function ModelingPaneButton({
         >
           <span className="sr-only">&nbsp;has&nbsp;</span>
           {typeof showBadge.value === 'number' ||
-            typeof showBadge.value === 'string' ? (
+          typeof showBadge.value === 'string' ? (
             <span>{showBadge.value}</span>
           ) : (
             <span className="sr-only">a</span>

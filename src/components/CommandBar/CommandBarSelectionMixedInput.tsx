@@ -8,8 +8,8 @@ import {
   getSelectionTypeDisplayText,
 } from '@src/lib/selections'
 import { kclManager, engineCommandManager } from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { useCommandBarState } from '@src/lib/singletons'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
