@@ -9,10 +9,7 @@ use kittycad_modeling_cmds as kcmc;
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::RuntimeType,
-    },
+    execution::{ExecState, KclValue, ModelingCmdMeta, Sketch, Solid, types::RuntimeType},
     parsing::ast::types::TagNode,
     std::{Args, extrude::do_post_extrude},
 };

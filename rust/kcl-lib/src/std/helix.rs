@@ -130,7 +130,7 @@ async fn inner_helix(
                 ModelingCmd::from(mcmd::EntityMakeHelix {
                     cylinder_id: cylinder.id,
                     is_clockwise: !helix_result.ccw,
-                    length:length.map(|t| LengthUnit(t.to_mm())),
+                    length: length.map(|t| LengthUnit(t.to_mm())),
                     revolutions,
                     start_angle: Angle::from_degrees(angle_start),
                 }),
