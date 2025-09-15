@@ -14,9 +14,9 @@ jobs:
   npm-unit-test:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
