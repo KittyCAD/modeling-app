@@ -856,10 +856,6 @@ impl Solid {
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
     }
-
-    pub(crate) fn height_in_mm(&self) -> f64 {
-        adjust_length(self.units, self.height, UnitLength::Millimeters).0
-    }
 }
 
 /// A fillet or a chamfer.
