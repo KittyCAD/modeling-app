@@ -253,8 +253,9 @@ export function App() {
             {
               id: 'key-sequence',
               element: 'text',
-              label: `Sequence: ${shortcutService.currentSequence ?? 'no sequence'}`,
-              toolTip: { children: 'The current interaction sequence' },
+              label: shortcutService.currentSequence ?? '',
+              toolTip: { children: 'The current shortcut sequence' },
+              className: 'hotkey',
             } satisfies StatusBarItemType,
             ...(getSettings().app.showDebugPanel.current
               ? ([
