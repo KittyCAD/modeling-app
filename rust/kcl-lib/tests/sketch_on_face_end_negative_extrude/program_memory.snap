@@ -166,7 +166,6 @@ description: Variables in memory after executing sketch_on_face_end_negative_ext
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -456,7 +455,6 @@ description: Variables in memory after executing sketch_on_face_end_negative_ext
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 20.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -484,7 +482,6 @@ description: Variables in memory after executing sketch_on_face_end_negative_ext
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

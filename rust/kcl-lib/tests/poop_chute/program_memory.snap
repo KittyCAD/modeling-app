@@ -479,7 +479,6 @@ description: Variables in memory after executing poop_chute.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1183,7 +1182,6 @@ description: Variables in memory after executing poop_chute.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 1.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

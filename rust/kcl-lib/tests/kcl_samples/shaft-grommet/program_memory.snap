@@ -303,7 +303,6 @@ description: Variables in memory after executing shaft-grommet.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",

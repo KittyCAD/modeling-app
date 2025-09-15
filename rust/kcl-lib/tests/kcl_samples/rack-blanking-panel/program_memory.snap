@@ -549,7 +549,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 0.0598,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1706,7 +1705,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
-            "height": 0.0598,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -1764,7 +1762,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 0.3333333333333333,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -2424,7 +2421,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 0.0598,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -3221,7 +3217,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
-            "height": 0.0598,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -3279,7 +3274,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 0.3333333333333333,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -3939,7 +3933,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 0.0598,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -4596,7 +4589,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "originalId": "[uuid]",
           "units": "in"
         },
-        "height": 0.0598,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [

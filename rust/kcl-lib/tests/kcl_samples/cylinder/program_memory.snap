@@ -96,7 +96,6 @@ description: Variables in memory after executing cylinder.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

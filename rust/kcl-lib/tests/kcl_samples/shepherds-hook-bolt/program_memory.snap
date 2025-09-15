@@ -230,7 +230,6 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -532,7 +531,6 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1123,7 +1121,6 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 0.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -1165,7 +1162,6 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1297,7 +1293,6 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "originalId": "[uuid]",
           "units": "mm"
         },
-        "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": "mm",
@@ -1451,7 +1446,6 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",

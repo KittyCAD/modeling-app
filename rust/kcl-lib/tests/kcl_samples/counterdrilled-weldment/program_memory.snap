@@ -173,7 +173,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -396,7 +395,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": -10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -685,7 +683,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 0.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [

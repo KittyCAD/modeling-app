@@ -293,7 +293,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -785,7 +784,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 6.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -843,7 +841,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 10.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",

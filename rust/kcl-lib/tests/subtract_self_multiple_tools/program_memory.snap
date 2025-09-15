@@ -166,7 +166,6 @@ description: Variables in memory after executing subtract_self_multiple_tools.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -332,7 +331,6 @@ description: Variables in memory after executing subtract_self_multiple_tools.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

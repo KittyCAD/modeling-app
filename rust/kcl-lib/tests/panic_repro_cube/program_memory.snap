@@ -276,7 +276,6 @@ description: Variables in memory after executing panic_repro_cube.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
