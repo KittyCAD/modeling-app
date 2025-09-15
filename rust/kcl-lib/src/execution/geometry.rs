@@ -1620,7 +1620,7 @@ impl ExtrudeSurface {
         }
     }
 
-    pub fn get_face_id(&self) -> uuid::Uuid {
+    pub fn face_id(&self) -> uuid::Uuid {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.face_id,
             ExtrudeSurface::ExtrudeArc(ea) => ea.face_id,

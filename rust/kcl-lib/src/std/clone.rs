@@ -255,13 +255,13 @@ async fn fix_sketch_tags_and_references(
         // Check if this path has a tag.
         if let Some(tag) = path.get_tag() {
             let mut surface = None;
-            if surface_id_map.contains_key(&tag.to_string()) {
-                surface = Some(surface_id_map.get(&tag.to_string()).unwrap().clone());
-                let new_face_id = entity_id_map
-                    .get(&surface.as_ref().unwrap().get_face_id())
-                    .copied()
-                    .unwrap_or_default();
-                surface.as_mut().unwrap().set_face_id(new_face_id);
+            if let Some(found_surface) = surface_id_map.get(&tag.name) {
+                let mut new_surface = found_surface.clone();
+                let new_face_id = entity_id_map.get(&new_surface.face_id())
+                  .copied()
+                  .unwrap_or_default();
+                new_surface.set_face_id(new_face_id);
+                surface = Some(new_surface);
             }
 
             new_sketch.add_tag(&tag.clone(), &path, exec_state, &surface);
