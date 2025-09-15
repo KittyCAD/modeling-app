@@ -9,13 +9,30 @@ import toast from 'react-hot-toast'
 import { platform } from '@src/lib/utils'
 import { mouseButtonToName } from '@src/lib/shortcuts/utils'
 
+type ShortcutMessage = {
+  type: 'pending' | 'failure' | 'success'
+  message: string
+}
+
 export class ShortcutService {
   shortcuts: Map<string, Shortcut>
   _currentSequence: string | null = null
+  lastMessage: ShortcutMessage | null = null
   _fireEvent = (event: MouseEvent | KeyboardEvent) => {
+    this.lastMessage = null
     this.resolveShortcut(event)
-      .then((action) => console.log('fired action!', action))
-      .catch((reason) => console.warn(`shortcut failed: ${reason}`))
+      .then((result) => {
+        const resultType: ShortcutMessage['type'] | null =
+          result && (result.type === 'success' || result.type === 'pending')
+            ? result.type
+            : null
+        if (result && resultType) {
+          this.lastMessage = { type: resultType, message: result.message }
+        }
+      })
+      .catch((reason) => {
+        this.lastMessage = { type: 'failure', message: reason }
+      })
   }
 
   constructor(shortcuts: Shortcut[]) {
@@ -166,29 +183,39 @@ export class ShortcutService {
 
       return item.sequence === searchString
     })
+
     if (!exactMatches.length) {
       // We have a prefix match.
       // Reject the promise and return the step
       // so we can add it to currentSequence
       this.appendToSequence(step)
-      return Promise.reject(
-        `Only prefix matches, still listening with sequence: ${this.currentSequence}`
-      )
+      input.preventDefault()
+      return Promise.resolve({
+        type: 'pending',
+        message: this.currentSequence ?? 'no sequence',
+      })
     }
 
     // Resolve to just one exact match
     const availableExactMatches = exactMatches.filter((item) => item.enabled)
 
     if (availableExactMatches.length === 0) {
+      this.clearSequence()
+      input.preventDefault()
       return Promise.reject(
         `exact matches, but none enabled: ${availableExactMatches.map((item) => item.id).toString()}`
       )
     }
-    //
+
     // return the last-added, available exact match
-    return Promise.resolve(
-      this.execute(availableExactMatches[availableExactMatches.length - 1])
-    )
+    this.clearSequence()
+    input.preventDefault()
+    return Promise.resolve({
+      type: 'success',
+      message:
+        this.execute(availableExactMatches[availableExactMatches.length - 1]) ??
+        'unknown',
+    } satisfies ShortcutMessage)
   }
 
   execute(shortcut: Shortcut) {

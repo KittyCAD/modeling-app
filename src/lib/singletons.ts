@@ -33,9 +33,9 @@ import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDe
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
-import type { Debugger } from '@src/lib/debugger'
-import { EngineDebugger } from '@src/lib/debugger'
-import { initialShortcuts, ShortcutService } from '@src/lib/shortcuts'
+import { EngineDebugger, type Debugger } from '@src/lib/debugger'
+import { ShortcutService } from '@src/lib/shortcuts'
+import { initialShortcuts } from '@src/lib/shortcuts/config'
 
 export const engineCommandManager = new ConnectionManager()
 export const rustContext = new RustContext(engineCommandManager)
