@@ -267,7 +267,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -474,7 +473,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -681,7 +679,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -888,7 +885,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1095,7 +1091,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1302,7 +1297,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1509,7 +1503,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1716,7 +1709,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1923,7 +1915,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2130,7 +2121,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2337,7 +2327,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2544,7 +2533,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2751,7 +2739,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2958,7 +2945,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3165,7 +3151,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3372,7 +3357,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3579,7 +3563,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3786,7 +3769,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3993,7 +3975,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4200,7 +4181,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4407,7 +4387,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4614,7 +4593,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4821,7 +4799,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5028,7 +5005,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5273,7 +5249,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 4.75,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -5571,7 +5546,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 4.75,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -5869,7 +5843,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 4.75,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6167,7 +6140,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 4.75,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6465,7 +6437,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 4.75,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6763,7 +6734,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 4.75,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7051,7 +7021,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7258,7 +7227,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7465,7 +7433,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7672,7 +7639,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7879,7 +7845,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8086,7 +8051,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8293,7 +8257,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8500,7 +8463,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8707,7 +8669,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8914,7 +8875,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9121,7 +9081,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9328,7 +9287,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9535,7 +9493,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9742,7 +9699,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9949,7 +9905,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10156,7 +10111,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10363,7 +10317,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10570,7 +10523,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10777,7 +10729,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10984,7 +10935,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -11191,7 +11141,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -11398,7 +11347,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -11605,7 +11553,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -11812,7 +11759,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -12072,7 +12018,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -12349,7 +12294,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -12556,7 +12500,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -12763,7 +12706,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -12970,7 +12912,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -13362,7 +13303,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 4.75,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -13448,7 +13388,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -2.4,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -13746,7 +13685,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 4.75,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -13832,7 +13770,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -2.4,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -14130,7 +14067,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 4.75,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -14216,7 +14152,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -2.4,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -14514,7 +14449,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 4.75,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -14600,7 +14534,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -2.4,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -14848,7 +14781,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15055,7 +14987,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15262,7 +15193,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15469,7 +15399,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15711,7 +15640,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 4.75,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -15976,7 +15904,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -16183,7 +16110,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 34.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

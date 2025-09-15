@@ -196,7 +196,6 @@ description: Variables in memory after executing engine-valve.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 42.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -224,7 +223,6 @@ description: Variables in memory after executing engine-valve.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 1.8,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -440,7 +438,6 @@ description: Variables in memory after executing engine-valve.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
-                  "height": 42.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -468,7 +465,6 @@ description: Variables in memory after executing engine-valve.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 1.8,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -496,7 +492,6 @@ description: Variables in memory after executing engine-valve.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.9,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -770,7 +765,6 @@ description: Variables in memory after executing engine-valve.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
-                        "height": 42.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -798,7 +792,6 @@ description: Variables in memory after executing engine-valve.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
-                  "height": 1.8,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -826,7 +819,6 @@ description: Variables in memory after executing engine-valve.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 0.9,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -854,7 +846,6 @@ description: Variables in memory after executing engine-valve.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.9,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1186,7 +1177,6 @@ description: Variables in memory after executing engine-valve.kcl
                                 "originalId": "[uuid]",
                                 "units": "mm"
                               },
-                              "height": 42.0,
                               "startCapId": "[uuid]",
                               "endCapId": "[uuid]",
                               "units": "mm",
@@ -1214,7 +1204,6 @@ description: Variables in memory after executing engine-valve.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
-                        "height": 1.8,
                         "startCapId": null,
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -1242,7 +1231,6 @@ description: Variables in memory after executing engine-valve.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
-                  "height": 0.9,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -1270,7 +1258,6 @@ description: Variables in memory after executing engine-valve.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 0.9,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -1298,7 +1285,6 @@ description: Variables in memory after executing engine-valve.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.9,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1688,7 +1674,6 @@ description: Variables in memory after executing engine-valve.kcl
                                       "originalId": "[uuid]",
                                       "units": "mm"
                                     },
-                                    "height": 42.0,
                                     "startCapId": "[uuid]",
                                     "endCapId": "[uuid]",
                                     "units": "mm",
@@ -1716,7 +1701,6 @@ description: Variables in memory after executing engine-valve.kcl
                                 "originalId": "[uuid]",
                                 "units": "mm"
                               },
-                              "height": 1.8,
                               "startCapId": null,
                               "endCapId": "[uuid]",
                               "units": "mm",
@@ -1744,7 +1728,6 @@ description: Variables in memory after executing engine-valve.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
-                        "height": 0.9,
                         "startCapId": null,
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -1772,7 +1755,6 @@ description: Variables in memory after executing engine-valve.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
-                  "height": 0.9,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -1800,7 +1782,6 @@ description: Variables in memory after executing engine-valve.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 0.9,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -1828,7 +1809,6 @@ description: Variables in memory after executing engine-valve.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.9,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -2276,7 +2256,6 @@ description: Variables in memory after executing engine-valve.kcl
                                             "originalId": "[uuid]",
                                             "units": "mm"
                                           },
-                                          "height": 42.0,
                                           "startCapId": "[uuid]",
                                           "endCapId": "[uuid]",
                                           "units": "mm",
@@ -2304,7 +2283,6 @@ description: Variables in memory after executing engine-valve.kcl
                                       "originalId": "[uuid]",
                                       "units": "mm"
                                     },
-                                    "height": 1.8,
                                     "startCapId": null,
                                     "endCapId": "[uuid]",
                                     "units": "mm",
@@ -2332,7 +2310,6 @@ description: Variables in memory after executing engine-valve.kcl
                                 "originalId": "[uuid]",
                                 "units": "mm"
                               },
-                              "height": 0.9,
                               "startCapId": null,
                               "endCapId": "[uuid]",
                               "units": "mm",
@@ -2360,7 +2337,6 @@ description: Variables in memory after executing engine-valve.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
-                        "height": 0.9,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -2388,7 +2364,6 @@ description: Variables in memory after executing engine-valve.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
-                  "height": 0.9,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -2416,7 +2391,6 @@ description: Variables in memory after executing engine-valve.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 0.9,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -2444,7 +2418,6 @@ description: Variables in memory after executing engine-valve.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.9,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -2978,7 +2951,6 @@ description: Variables in memory after executing engine-valve.kcl
                                                   "originalId": "[uuid]",
                                                   "units": "mm"
                                                 },
-                                                "height": 42.0,
                                                 "startCapId": "[uuid]",
                                                 "endCapId": "[uuid]",
                                                 "units": "mm",
@@ -3006,7 +2978,6 @@ description: Variables in memory after executing engine-valve.kcl
                                             "originalId": "[uuid]",
                                             "units": "mm"
                                           },
-                                          "height": 1.8,
                                           "startCapId": null,
                                           "endCapId": "[uuid]",
                                           "units": "mm",
@@ -3034,7 +3005,6 @@ description: Variables in memory after executing engine-valve.kcl
                                       "originalId": "[uuid]",
                                       "units": "mm"
                                     },
-                                    "height": 0.9,
                                     "startCapId": null,
                                     "endCapId": "[uuid]",
                                     "units": "mm",
@@ -3062,7 +3032,6 @@ description: Variables in memory after executing engine-valve.kcl
                                 "originalId": "[uuid]",
                                 "units": "mm"
                               },
-                              "height": 0.9,
                               "startCapId": "[uuid]",
                               "endCapId": "[uuid]",
                               "units": "mm",
@@ -3090,7 +3059,6 @@ description: Variables in memory after executing engine-valve.kcl
                           "originalId": "[uuid]",
                           "units": "mm"
                         },
-                        "height": 0.9,
                         "startCapId": null,
                         "endCapId": "[uuid]",
                         "units": "mm",
@@ -3118,7 +3086,6 @@ description: Variables in memory after executing engine-valve.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
-                  "height": 0.9,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -3146,7 +3113,6 @@ description: Variables in memory after executing engine-valve.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 0.9,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": "mm",
@@ -3184,7 +3150,6 @@ description: Variables in memory after executing engine-valve.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 2.7,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -3515,7 +3480,6 @@ description: Variables in memory after executing engine-valve.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -3912,7 +3876,6 @@ description: Variables in memory after executing engine-valve.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 42.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

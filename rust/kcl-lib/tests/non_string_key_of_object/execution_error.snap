@@ -2,12 +2,13 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing non_string_key_of_object.kcl
 ---
-KCL Engine error
+KCL Semantic error
 
-  × engine: Modeling command failed: websocket closed early
-   ╭─[1:1]
+  × semantic: Only strings can be used as the property of an object, but
+  │ you're using a number
+   ╭─[2:7]
  1 │ obj = { key = 123 }
-   · ▲
-   · ╰── main
  2 │ num = obj[3]
+   ·       ───┬──
+   ·          ╰── tests/non_string_key_of_object/input.kcl
    ╰────
