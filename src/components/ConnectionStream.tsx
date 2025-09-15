@@ -24,6 +24,7 @@ import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { ManualReconnection } from '@src/components/ManualReconnection'
+import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -165,6 +166,25 @@ export const ConnectionStream = (props: {
     },
   })
   useOnWebsocketClose({
+    callback: () => {
+      setShowManualConnect(false)
+      tryConnecting({
+        authToken: props.authToken || '',
+        videoWrapperRef,
+        setAppState,
+        videoRef,
+        setIsSceneReady,
+        isConnecting,
+        successfullyConnected,
+        numberOfConnectionAtttempts,
+        timeToConnect: 30_000,
+      }).catch((e) => {
+        console.error(e)
+        setShowManualConnect(true)
+      })
+    },
+  })
+  useOnPeerConnectionClose({
     callback: () => {
       setShowManualConnect(false)
       tryConnecting({

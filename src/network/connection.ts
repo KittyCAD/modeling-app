@@ -7,6 +7,7 @@ import {
   EngineConnectionStateType,
   pingIntervalMs,
   promiseFactory,
+  WebSocketStatusCodes,
 } from '@src/network/utils'
 import {
   createOnConnectionStateChange,
@@ -442,7 +443,7 @@ export class Connection extends EventTarget {
     const onConnectionStateChange = createOnConnectionStateChange({
       dispatchEvent: this.dispatchEvent.bind(this),
       connection: this,
-      disconnectAll: this.disconnectAll.bind(this),
+      tearDownManager: this.tearDownManager.bind(this),
     })
     const onTrack = createOnTrack({
       setMediaStream: this.setMediaStream.bind(this),
@@ -572,6 +573,8 @@ export class Connection extends EventTarget {
       message: 'createWebSocketConnection',
       metadata: { id: this.id },
     })
+    // A websocket that cannot connect due to failed: Error in connection establishment: net::ERR_INTERNET_DISCONNECTED
+    // will not throw an error. Check in sync time if the websocket instance is closed
     this.websocket = new WebSocket(this.url, [])
     this.websocket.binaryType = 'arraybuffer'
 
@@ -609,8 +612,17 @@ export class Connection extends EventTarget {
 
     // Meta close will remove all the internal events itself but then the this.websocket.close
     // needs to remove itself so it is wrapped in a metaClose.
-    const metaClose = () => {
-      onWebSocketClose()
+    const metaClose = (event: CloseEvent) => {
+      const codeAsString = event.code.toString()
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'metaClose',
+        metadata: {
+          event,
+          codeSummarized: WebSocketStatusCodes[codeAsString] || codeAsString,
+        },
+      })
+      onWebSocketClose(event)
     }
 
     this.trackListener('websocket-open', {

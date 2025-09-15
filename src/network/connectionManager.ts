@@ -826,6 +826,21 @@ export class ConnectionManager extends EventTarget {
       this.dispatchEvent(
         new CustomEvent(EngineCommandManagerEvents.WebsocketClosed, {})
       )
+    } else if (options?.peerConnectionClosed) {
+      this.dispatchEvent(
+        new CustomEvent(EngineCommandManagerEvents.peerConnectionClosed, {})
+      )
+    } else if (options?.peerConnectionDisconnected) {
+      this.dispatchEvent(
+        new CustomEvent(
+          EngineCommandManagerEvents.peerConnectionDisconnected,
+          {}
+        )
+      )
+    } else if (options?.peerConnectionFailed) {
+      this.dispatchEvent(
+        new CustomEvent(EngineCommandManagerEvents.peerConnectionFailed, {})
+      )
     }
 
     if (this.connection) {

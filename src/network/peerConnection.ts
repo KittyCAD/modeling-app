@@ -1,4 +1,4 @@
-import type { IEventListenerTracked } from '@src/network/utils'
+import type { IEventListenerTracked, ManagerTearDown } from '@src/network/utils'
 import {
   ConnectingType,
   EngineConnectionEvents,
@@ -150,11 +150,11 @@ export function createOnIceCandidateError() {
 export function createOnConnectionStateChange({
   dispatchEvent,
   connection,
-  disconnectAll,
+  tearDownManager,
 }: {
   dispatchEvent: (event: Event) => boolean
   connection: Connection
-  disconnectAll: () => void
+  tearDownManager: (options?: ManagerTearDown) => void
 }) {
   // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
   // Event type: generic Event type...
@@ -180,16 +180,15 @@ export function createOnConnectionStateChange({
         break
       case 'failed':
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        // TODO: Can I do this on the custom event handler...? Why here.
-        disconnectAll()
+        tearDownManager({ peerConnectionFailed: true })
         break
       case 'disconnected':
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        // TODO: Can I do this on the custom event handler...? Why here.
-        disconnectAll()
+        tearDownManager({ peerConnectionDisconnected: true })
         break
       case 'closed':
-        disconnectAll()
+        dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
+        tearDownManager({ peerConnectionClosed: true })
         break
       default:
         break

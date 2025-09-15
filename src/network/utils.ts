@@ -261,6 +261,15 @@ export enum EngineCommandManagerEvents {
 
   // websocket event listener for close was called
   WebsocketClosed = 'websocket-closed',
+
+  // RTCPeerConnection processed a failed state in onConnectionStateChange
+  peerConnectionFailed = 'peer-connection-failed',
+
+  // RTCPeerConnection processed a disconnected state in onConnectionStateChange
+  peerConnectionDisconnected = 'peer-connection-disconnected',
+
+  // RTCPeerConnection processed a closed state in onConnectionStateChange
+  peerConnectionClosed = 'peer-connection-closed',
 }
 
 export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
@@ -318,4 +327,98 @@ export function getDimensions(streamWidth: number, streamHeight: number) {
 
 export interface ManagerTearDown {
   websocketClosed?: boolean
+  peerConnectionFailed?: boolean
+  peerConnectionDisconnected?: boolean
+  peerConnectionClosed?: boolean
 }
+
+// 7.4.1 Defined Status Codes from RFC 6455 The WebSocket Protocol
+export const WebSocketStatusCodes: Readonly<Record<string, string>> =
+  Object.freeze({
+    /**
+     * indicates a normal closure, meaning that the purpose for
+     * which the connection was established has been fulfilled.
+     */
+    '1000': 'normal closure',
+    /**
+     * indicates that an endpoint is "going away", such as a server
+     * going down or a browser having navigated away from a page.
+     */
+    '1001': 'going away',
+    /**
+     * indicates that an endpoint is terminating the connection due
+     * to a protocol error.
+     */
+    '1002': 'protocol error',
+    /**
+     * indicates that an endpoint is terminating the connection
+     * because it has received a type of data it cannot accept (e.g., an
+     * endpoint that understands only text data MAY send this if it
+     * receives a binary message).
+     */
+    '1003': 'cannot accept data',
+    /**
+     * Reserved.  The specific meaning might be defined in the future.
+     */
+    '1004': 'reserved, no meaning',
+    /**
+     * is a reserved value and MUST NOT be set as a status code in a
+     * Close control frame by an endpoint.  It is designated for use in
+     * applications expecting a status code to indicate that no status
+     * code was actually present.
+     */
+    '1005': 'no status present',
+    /**
+     * is a reserved value and MUST NOT be set as a status code in a
+     * Close control frame by an endpoint.  It is designated for use in
+     * applications expecting a status code to indicate that the
+     * connection was closed abnormally, e.g., without sending or
+     * receiving a Close control frame.
+     */
+    '1006': 'abnormally closed',
+    /**
+     * indicates that an endpoint is terminating the connection
+     * because it has received data within a message that was not
+     * consistent with the type of the message (e.g., non-UTF-8 [RFC3629]
+     * data within a text message).
+     */
+    '1007': 'received data mismatch type of message',
+    /**
+     * indicates that an endpoint is terminating the connection
+     * because it has received a message that violates its policy.  This
+     * is a generic status code that can be returned when there is no
+     * other more suitable status code (e.g., 1003 or 1009) or if there
+     * is a need to hide specific details about the policy.
+     */
+    '1008': 'received message violates policy',
+    /**
+     * indicates that an endpoint is terminating the connection
+     * because it has received a message that is too big for it to
+     * process.
+     */
+    '1009': 'received message is too big for process',
+    /**
+     *  indicates that an endpoint (client) is terminating the
+     *  connection because it has expected the server to negotiate one or
+     *  more extension, but the server didn't return them in the response
+     *  message of the WebSocket handshake.  The list of extensions that
+     *  are needed SHOULD appear in the /reason/ part of the Close frame.
+     *  Note that this status code is not used by the server, because it
+     *  can fail the WebSocket handshake instead.
+     */
+    '1010': 'extension not found',
+    /**
+     * indicates that a server is terminating the connection because
+     * it encountered an unexpected condition that prevented it from
+     * fulfilling the request.
+     */
+    '1011': 'unexpected condition from server',
+    /**
+     * is a reserved value and MUST NOT be set as a status code in a
+     * Close control frame by an endpoint.  It is designated for use in
+     * applications expecting a status code to indicate that the
+     * connection was closed due to a failure to perform a TLS handshake
+     * (e.g., the server certificate can't be verified).
+     */
+    '1015': 'TLS handshake failure',
+  } as const)

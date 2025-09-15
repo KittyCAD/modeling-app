@@ -404,11 +404,15 @@ export const createOnWebSocketClose = ({
   tearDownManager: (options?: ManagerTearDown) => void
   dispatchEvent: (event: Event) => boolean
 }) => {
-  const onDataChannelClose = () => {
+  const onDataChannelClose = (event: CloseEvent) => {
     websocket.removeEventListener('open', onWebSocketOpen)
     websocket.removeEventListener('error', onWebSocketError)
     websocket.removeEventListener('message', onWebSocketMessage)
-    dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
+    dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.Offline, {
+        detail: { websocketCloseEventCode: event.code },
+      })
+    )
     tearDownManager({ websocketClosed: true })
   }
   return onDataChannelClose
