@@ -834,8 +834,6 @@ pub struct Solid {
     pub value: Vec<ExtrudeSurface>,
     /// The sketch.
     pub sketch: Sketch,
-    /// The height of the solid.
-    pub height: f64,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
