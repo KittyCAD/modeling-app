@@ -109,6 +109,7 @@ export const billingMachine = setup({
             target: BillingState.Waiting,
             // Yep, this is hard to follow. XState, why!
             actions: assign({
+              // TODO: we shouldn't need this cast here
               error: ({ event }) => event.error as BillingError,
             }),
           },
