@@ -372,7 +372,7 @@ export const FileExplorerRowElement = ({
         try {
           droppedData = JSON.parse(event.dataTransfer.getData('json'))
           if (!('name' in droppedData) || !('path' in droppedData)) {
-            throw Error('malformed drop data', droppedData)
+            throw new Error('malformed drop data: ' + JSON.stringify(droppedData))
           }
         } catch (e) {
           console.error('invalid JSON in drop event', e)
