@@ -266,11 +266,9 @@ export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
 export const VALID_PANE_IDS = [
   'code',
   'debug',
-  'export',
   'files',
   'feature-tree',
   'logs',
-  'lspMessages',
   'variables',
   'text-to-cad',
   'text-to-cad-2',

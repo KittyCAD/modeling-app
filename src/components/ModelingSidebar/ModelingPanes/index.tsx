@@ -34,11 +34,7 @@ import { ToastInsert } from '@src/components/ToastInsert'
 import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import {
-  FILE_EXT,
-  INSERT_FOREIGN_TOAST_ID,
-  type VALID_PANE_IDS,
-} from '@src/lib/constants'
+import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { PATHS, parentPathRelativeToProject } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
@@ -60,12 +56,11 @@ import { useFolders } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import { useRouteLoaderData } from 'react-router-dom'
-
-export type SidebarId = (typeof VALID_PANE_IDS)[number]
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes/types'
 
 export interface BadgeInfo {
   value: (props: PaneCallbackProps) => boolean | number | string
-  onClick?: MouseEventHandler<any>
+  onClick?: MouseEventHandler<HTMLElement>
   className?: string
   title?: string
 }
