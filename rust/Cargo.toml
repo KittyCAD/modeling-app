@@ -1,20 +1,75 @@
 [workspace]
 resolver = "2"
 members = [
-	"kcl-bumper",
-	"kcl-derive-docs",
-	"kcl-directory-test-macro",
-	"kcl-language-server",
-	"kcl-language-server-release",
-	"kcl-lib",
-	"kcl-python-bindings",
-	"kcl-test-server",
-	"kcl-to-core",
-	"kcl-wasm-lib"
+  "ezpz",
+  "kcl-api",
+  "kcl-bumper",
+  "kcl-derive-docs",
+  "kcl-directory-test-macro",
+  "kcl-error",
+  "kcl-language-server",
+  "kcl-language-server-release",
+  "kcl-lib",
+  "kcl-python-bindings",
+  "kcl-test-server",
+  "kcl-to-core",
+  "kcl-wasm-lib",
 ]
+
+[workspace.dependencies]
+anyhow = { version = "1" }
+async-trait = "0.1.89"
+bson = { version = "2.15.0", features = ["uuid-1", "chrono"] }
+clap = { version = "4.5.45", features = ["derive"] }
+console_error_panic_hook = "0.1.7"
+dashmap = { version = "6.1.0" }
+http = "1"
+indexmap = "2.11.0"
+kittycad = { version = "0.3.37", default-features = false, features = [
+  "js",
+  "requests",
+] }
+kittycad-modeling-cmds = { version = "0.2.137", features = [
+  "ts-rs",
+  "websocket",
+] }
+lazy_static = "1.5.0"
+miette = "7.6.0"
+pyo3 = { version = "0.25.1" }
+# Build with Python >= 3.10 (set PYO3_PYTHON accordingly)
+pyo3-stub-gen = "0.13.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+slog = "2.7.0"
+slog-async = "2.8.0"
+slog-json = "2.6.1"
+slog-term = "2.9.2"
+tokio = { version = "1" }
+tower-lsp = { version = "0.20.0", default-features = false }
+tracing-subscriber = { version = "0.3.20", features = [
+  "registry",
+  "std",
+  "fmt",
+  "smallvec",
+  "ansi",
+  "tracing-log",
+  "json",
+] }
+uuid = { version = "1", features = ["v4", "serde"] }
+zip = { version = "2.4.2", default-features = false }
+
+[workspace.lints.clippy]
+assertions_on_result_states = "warn"
+dbg_macro = "warn"
+iter_over_hash_type = "warn"
+lossy_float_literal = "warn"
+result_large_err = "allow"
 
 [profile.release]
 panic = "abort"
+debug = true
+
+[profile.bench]
 debug = true
 
 [profile.dev]
@@ -26,40 +81,7 @@ insta = { opt-level = 3 }
 [profile.test]
 debug = "line-tables-only"
 
-[workspace.dependencies]
-async-trait = "0.1.88"
-anyhow = { version = "1" }
-bson = { version = "2.15.0", features = ["uuid-1", "chrono"] }
-clap = { version = "4.5.40", features = ["derive"] }
-console_error_panic_hook = "0.1.7"
-dashmap = { version = "6.1.0" }
-http = "1"
-indexmap = "2.10.0"
-kittycad = { version = "0.3.37", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-cmds = { version = "0.2.128", features = ["ts-rs", "websocket"] }
-lazy_static = "1.5.0"
-miette = "7.6.0"
-pyo3 = { version = "0.24.2" }
-serde = { version = "1", features = ["derive"] }
-serde_json = { version = "1" }
-slog = "2.7.0"
-slog-async = "2.8.0"
-slog-json = "2.6.1"
-slog-term = "2.9.1"
-tokio = { version = "1" }
-tower-lsp = { version = "0.20.0", default-features = false }
-tracing-subscriber = { version = "0.3.19", features = ["registry", "std", "fmt", "smallvec", "ansi", "tracing-log", "json"] }
-uuid = { version = "1", features = ["v4", "serde"] }
-zip = { version = "2.4.2", default-features = false }
-
-[workspace.lints.clippy]
-assertions_on_result_states = "warn"
-dbg_macro = "warn"
-iter_over_hash_type = "warn"
-lossy_float_literal = "warn"
-result_large_err = "allow"
-
-# Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
+#Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
 #[patch.crates-io]
-# kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
-#kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
+#kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
+#kittycad-modeling-session = { path = "../../modeling-api/modeling-session" }

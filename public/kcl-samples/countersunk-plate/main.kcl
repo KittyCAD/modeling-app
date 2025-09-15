@@ -22,18 +22,18 @@ tangentLength = (r1 - r2) / tan(tangentAngle)
 
 plateBody = startSketchOn(XY)
   // Use polar coordinates to start the sketch at the tangent point of the larger radius
-  |> startProfile(at = polar(angle = 90 - tangentAngle, length = r1))
+  |> startProfile(at = polar(angle = 90deg - tangentAngle, length = r1))
   |> angledLine(angle = -tangentAngle, length = tangentLength)
-  |> tangentialArc(radius = r2, angle = (tangentAngle - 90) * 2)
+  |> tangentialArc(radius = r2, angle = (tangentAngle - 90deg) * 2)
   |> angledLine(angle = tangentAngle, length = -tangentLength)
   |> tangentialArc(radius = r1, angle = -tangentAngle * 2)
   |> angledLine(angle = -tangentAngle, length = -tangentLength)
-  |> tangentialArc(radius = r2, angle = (tangentAngle - 90) * 2)
+  |> tangentialArc(radius = r2, angle = (tangentAngle - 90deg) * 2)
   |> angledLine(angle = tangentAngle, length = tangentLength)
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> subtract2d(tool = circle(center = [0, 0], radius = centerHoleDiameter / 2 * 1.5))
-  |> extrude(%, length = plateThickness)
+  |> extrude(length = plateThickness)
 
 // Function to create a countersunk hole
 fn countersink(@holePosition) {

@@ -1,0 +1,3389 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing parametric-shelf-unit.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "unitWidth",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "raw": "1",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 1.0,
+              "suffix": "None"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "// --- Global Dimensions ---"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "unitHeight",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "raw": "2",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 2.0,
+              "suffix": "None"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "unitDepth",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "raw": "0.4",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.4,
+              "suffix": "None"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "shelfBoardCount",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "raw": "5",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 5.0,
+              "suffix": "None"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "panelThickness",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "raw": "0.02",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.02,
+              "suffix": "None"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "// --- Panel & Shelf Geometry ---"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "sidePanelOffset",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "left": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "unitWidth",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            "moduleId": 0,
+            "operator": "-",
+            "right": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "panelThickness",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "baseHeight",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "raw": "0.05",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.05,
+              "suffix": "None"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "// --- Base Spacer (Plinth) ---"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "baseInset",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "raw": "0.03",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.03,
+              "suffix": "None"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "baseWidth",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "left": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "unitWidth",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            "moduleId": 0,
+            "operator": "-",
+            "right": {
+              "commentStart": 0,
+              "end": 0,
+              "left": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "panelThickness",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              },
+              "moduleId": 0,
+              "operator": "*",
+              "right": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 0,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "baseDepth",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "left": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "unitDepth",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            "moduleId": 0,
+            "operator": "-",
+            "right": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "baseInset",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "shelfStartZ",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "baseHeight",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "// --- Shelf Placement ---"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "shelfThickness",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "panelThickness",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "shelfWidth",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "baseWidth",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "shelfDepth",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "unitDepth",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "totalShelfBoards",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "left": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "shelfBoardCount",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            "moduleId": 0,
+            "operator": "+",
+            "right": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "availableVerticalSpace",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "left": {
+              "commentStart": 0,
+              "end": 0,
+              "left": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "unitHeight",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              },
+              "moduleId": 0,
+              "operator": "-",
+              "right": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "baseHeight",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              },
+              "start": 0,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "moduleId": 0,
+            "operator": "-",
+            "right": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "shelfThickness",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "shelfSpacing",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "left": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "availableVerticalSpace",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            "moduleId": 0,
+            "operator": "/",
+            "right": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "shelfBoardCount",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "basePlane",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "startSketchOn",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "XY",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "// --- Reference Plane ---"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "sidePanelProfile",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "at",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "left": {
+                            "argument": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "unitWidth",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "operator": "-",
+                            "start": 0,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "moduleId": 0,
+                          "operator": "/",
+                          "right": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "raw": "2",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "start": 0,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "startProfile",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "basePlane",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "unitDepth",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "panelThickness",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "unitDepth",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "instances",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "2",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "distance",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "sidePanelOffset",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "axis",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "1",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "patternLinear2d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              }
+            ],
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "",
+          "",
+          "// --- Side Panels ---",
+          "// Left and right vertical structural walls."
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "sidePanels",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "length",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "unitHeight",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "sidePanelProfile",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "baseProfile",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "at",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "left": {
+                            "argument": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "baseWidth",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "operator": "-",
+                            "start": 0,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "moduleId": 0,
+                          "operator": "/",
+                          "right": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "raw": "2",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "start": 0,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "startProfile",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "basePlane",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "baseDepth",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "baseWidth",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "baseDepth",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "",
+          "",
+          "// --- Floor Base / Plinth ---",
+          "// Supporting base element between side panels."
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "baseBlock",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "length",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "baseHeight",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "baseProfile",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "firstShelfPlane",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "offset",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "shelfStartZ",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "offsetPlane",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "XY",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "",
+          "",
+          "// --- First Shelf Board ---"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "firstShelfSketch",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "startSketchOn",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "firstShelfPlane",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "firstShelfProfile",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "at",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "left": {
+                            "argument": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "shelfWidth",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "operator": "-",
+                            "start": 0,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "moduleId": 0,
+                          "operator": "/",
+                          "right": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "raw": "2",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "start": 0,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "startProfile",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "firstShelfSketch",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "shelfDepth",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "operator": "-",
+                      "start": 0,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "shelfWidth",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "xLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "length",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "shelfDepth",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "yLine",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "firstShelf",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "length",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "shelfThickness",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "firstShelfProfile",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "shelves",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "instances",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "totalShelfBoards",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "distance",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "shelfSpacing",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "axis",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "1",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "patternLinear3d",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "firstShelf",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "",
+          "",
+          "// --- Shelf Stack ---"
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "name": {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "m",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "1.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "moduleId": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "overall external width of the shelf",
+              "style": "line"
+            }
+          }
+        ],
+        "1": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "total height including top and base",
+              "style": "line"
+            }
+          }
+        ],
+        "2": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "depth from front to back",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "number of usable shelf boards (excludes top cover)",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "thickness of side panels and shelf boards",
+              "style": "line"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "distance between origin points of left and right panel",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "6": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "elevation of bottom plinth from ground",
+              "style": "line"
+            }
+          }
+        ],
+        "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "inward offset at the front (toe kick for foot clearance)",
+              "style": "line"
+            }
+          }
+        ],
+        "8": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "internal width of base element",
+              "style": "line"
+            }
+          }
+        ],
+        "9": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "shallower depth than full unit",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "Z elevation of the first shelf board",
+              "style": "line"
+            }
+          }
+        ],
+        "11": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "shelf board thickness",
+              "style": "line"
+            }
+          }
+        ],
+        "12": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "width same as base",
+              "style": "line"
+            }
+          }
+        ],
+        "13": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "full shelf depth",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "14": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "includes top cover board",
+              "style": "line"
+            }
+          }
+        ],
+        "16": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "vertical distance between shelf boards",
+              "style": "line"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Parametric Shelf Unit",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "A modular and adjustable 3D shelf model designed for basic furniture design.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "This model includes:",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "- Two vertical side panels (left and right)",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "- A floor base (spacer) at the bottom",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "- Multiple evenly spaced horizontal shelf boards",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "- Optional top board acting as a cover",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "All elements are parametric and adaptable through clearly named variables.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

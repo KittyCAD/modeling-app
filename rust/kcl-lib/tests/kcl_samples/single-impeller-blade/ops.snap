@@ -1,0 +1,421 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed single-impeller-blade.kcl
+---
+{
+  "public/kcl-samples/single-impeller-blade/main.kcl": [
+    {
+      "type": "VariableDeclaration",
+      "name": "bladeHeight",
+      "value": {
+        "type": "Number",
+        "value": 60.0,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "bladeChord",
+      "value": {
+        "type": "Number",
+        "value": 40.0,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "bladeThickness",
+      "value": {
+        "type": "Number",
+        "value": 5.0,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "twistAngle",
+      "value": {
+        "type": "Number",
+        "value": 30.0,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 60.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "rotate",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "yaw": {
+          "value": {
+            "type": "Number",
+            "value": 30.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 5
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "loft",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [
+    {
+      "type": "VariableDeclaration",
+      "name": "PI",
+      "value": {
+        "type": "Number",
+        "value": 3.141592653589793,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "E",
+      "value": {
+        "type": "Number",
+        "value": 2.718281828459045,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "TAU",
+      "value": {
+        "type": "Number",
+        "value": 6.283185307179586,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::prelude": [
+    {
+      "type": "VariableDeclaration",
+      "name": "START",
+      "value": {
+        "type": "String",
+        "value": "start"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "END",
+      "value": {
+        "type": "String",
+        "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "NEW",
+      "value": {
+        "type": "String",
+        "value": "new"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "MERGE",
+      "value": {
+        "type": "String",
+        "value": "merge"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::sketch": [],
+  "std::sketch2": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": [],
+  "std::vector": []
+}

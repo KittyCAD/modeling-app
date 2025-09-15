@@ -1,14 +1,75 @@
-type EnvironmentVariables = {
+import type { EnvironmentConfigurationRuntime } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+
+export function generateDomainsFromBaseDomain(baseDomain: string) {
+  return {
+    API_URL: `https://api.${baseDomain}`,
+    SITE_URL: `https://${baseDomain}`,
+    WEBSOCKET_URL: `wss://api.${baseDomain}/ws/modeling/commands`,
+    APP_URL: `https://app.${baseDomain}`,
+  }
+}
+
+export type EnvironmentVariables = {
   readonly NODE_ENV: string | undefined
+  readonly VITE_KITTYCAD_BASE_DOMAIN: string | undefined
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_API_WEBSOCKET_URL: string | undefined
   readonly VITE_KITTYCAD_API_TOKEN: string | undefined
   readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_SITE_APP_URL: string | undefined
-  readonly PROD: string | undefined
-  readonly TEST: string | undefined
-  readonly DEV: string | undefined
-  readonly CI: string | undefined
+  readonly POOL: string | undefined
+}
+
+/** Store the environment in memory to be accessed during runtime */
+let ENVIRONMENT: EnvironmentConfigurationRuntime | null = null
+
+/** Update the runtime environment */
+export const updateEnvironment = (environment: string | null) => {
+  if (environment === '') {
+    console.log('reject updating environment: value is the empty string.')
+    return
+  }
+
+  if (environment === null) {
+    ENVIRONMENT = null
+  } else {
+    if (ENVIRONMENT) {
+      ENVIRONMENT.domain = environment
+    } else {
+      ENVIRONMENT = {
+        domain: environment,
+        pool: '',
+      }
+    }
+  }
+  console.log('updating environment', environment)
+}
+
+export const updateEnvironmentPool = (
+  environmentName: string,
+  pool: string
+) => {
+  if (environmentName === '') {
+    console.log(
+      'reject updating pool,  environment: value is the empty string.'
+    )
+    return
+  }
+  if (!ENVIRONMENT) return
+  if (ENVIRONMENT.domain === environmentName) {
+    ENVIRONMENT.pool = pool
+  }
+}
+
+// Do not export the entire Environment! Use env()
+const getEnvironmentFromThisFile = (baseDomain: string) => {
+  return (
+    ENVIRONMENT || {
+      domain: baseDomain,
+      pool: '',
+    }
+  )
 }
 
 export const viteEnv = () => {
@@ -29,16 +90,7 @@ export const processEnv = () => {
   if (typeof process === 'undefined') {
     // Web, no window.process or process
     return undefined
-  } else if (
-    typeof process !== 'undefined' &&
-    typeof window !== 'undefined' &&
-    process.env.TEST !== 'true'
-  ) {
-    // Web, you made window.process, why :(, need process.env.TEST to make sure the frontend gets evaluated.
-    // The frontend can spoof this too :(
-    return undefined
   }
-
   return process.env
 }
 
@@ -52,36 +104,53 @@ export const processEnv = () => {
 export default (): EnvironmentVariables => {
   // Compute the possible environment variables, order operation is important
   // runtime (TODO) > process.env > window.electron.process.env > import.meta.env
-
   const viteOnly = viteEnv()
   const windowElectronProcessEnvOnly = windowElectronProcessEnv()
   const processEnvOnly = processEnv()
   const env = processEnvOnly || windowElectronProcessEnvOnly || viteOnly
-  // Vite uses Booleans and process.env uses strings
-  let PROD = env.PROD
-  if (typeof PROD === 'boolean') {
-    PROD = Number(PROD).toString()
+
+  let BASE_DOMAIN = env.VITE_KITTYCAD_BASE_DOMAIN
+  let { API_URL, SITE_URL, WEBSOCKET_URL, APP_URL } =
+    generateDomainsFromBaseDomain(BASE_DOMAIN)
+  let pool = ''
+
+  /**
+   * If you are desktop, see if you have any runtime environment which can be read from disk and
+   * populated during the sign in workflow.
+   * A built binary will allow the user to sign into different environments on the desktop
+   */
+  const environment = getEnvironmentFromThisFile(BASE_DOMAIN)
+  if (isDesktop() && environment && environment.domain) {
+    const environmentDomains = generateDomainsFromBaseDomain(environment.domain)
+    API_URL = environmentDomains.API_URL
+    SITE_URL = environmentDomains.SITE_URL
+    WEBSOCKET_URL = environmentDomains.WEBSOCKET_URL
+    APP_URL = environmentDomains.APP_URL
+    pool = environment && environment.pool ? environment.pool : ''
+    BASE_DOMAIN = environment.domain
   }
-  let DEV = env.DEV
-  if (typeof DEV === 'boolean') {
-    DEV = Number(DEV).toString()
+
+  /**
+   * Allow .env.development.local to overwrite the websocket url for engine
+   */
+  if (
+    env.VITE_KITTYCAD_API_WEBSOCKET_URL &&
+    env.VITE_KITTYCAD_API_WEBSOCKET_URL !== 'undefined'
+  ) {
+    WEBSOCKET_URL = env.VITE_KITTYCAD_API_WEBSOCKET_URL
   }
+
   const environmentVariables: EnvironmentVariables = {
-    NODE_ENV: (env.NODE_ENV as string) || undefined,
-    VITE_KITTYCAD_API_BASE_URL:
-      (env.VITE_KITTYCAD_API_BASE_URL as string) || undefined,
-    VITE_KITTYCAD_API_WEBSOCKET_URL:
-      (env.VITE_KITTYCAD_API_WEBSOCKET_URL as string) || undefined,
+    NODE_ENV: (env.NODE_ENV as string) || viteOnly.MODE || undefined,
+    VITE_KITTYCAD_BASE_DOMAIN: BASE_DOMAIN || undefined,
+    VITE_KITTYCAD_API_BASE_URL: API_URL || undefined,
+    VITE_KITTYCAD_API_WEBSOCKET_URL: WEBSOCKET_URL || undefined,
     VITE_KITTYCAD_API_TOKEN:
       (env.VITE_KITTYCAD_API_TOKEN as string) || undefined,
-    VITE_KITTYCAD_SITE_BASE_URL:
-      (env.VITE_KITTYCAD_SITE_BASE_URL as string) || undefined,
-    VITE_KITTYCAD_SITE_APP_URL:
-      (env.VITE_KITTYCAD_SITE_APP_URL as string) || undefined,
-    PROD: PROD || undefined,
-    TEST: (env.TEST as string) || undefined,
-    DEV: DEV || undefined,
-    CI: (env.CI as string) || undefined,
+    VITE_KITTYCAD_SITE_BASE_URL: SITE_URL || undefined,
+    VITE_KITTYCAD_SITE_APP_URL: APP_URL || undefined,
+    POOL: pool, // TODO: Rename to ENGINE_POOL to be more descriptive
   }
+
   return environmentVariables
 }

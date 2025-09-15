@@ -1,9 +1,9 @@
-import bracket from '@public/kcl-samples/bracket/main.kcl?raw'
-import fanAssembly from '@public/kcl-samples/axial-fan/main.kcl?raw'
 import fanHousingOriginal from '@public/kcl-samples/axial-fan/fan-housing.kcl?raw'
 import fanFan from '@public/kcl-samples/axial-fan/fan.kcl?raw'
+import fanAssembly from '@public/kcl-samples/axial-fan/main.kcl?raw'
 import fanMotor from '@public/kcl-samples/axial-fan/motor.kcl?raw'
 import fanParameters from '@public/kcl-samples/axial-fan/parameters.kcl?raw'
+import bracket from '@public/kcl-samples/bracket/main.kcl?raw'
 
 export { bracket }
 export const fanParts = [
@@ -70,7 +70,7 @@ import * from "parameters.kcl"
 bottomFaceSketch = startSketchOn(XY)
   |> startProfile(at = [-fanSize / 2, -fanSize / 2])
   |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = fanSize, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = fanSize, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()
@@ -108,19 +108,19 @@ bottomFaceSketch = startSketchOn(XY)
 // Add large openings to the bottom face to allow airflow through the fan
 airflowPattern = startSketchOn(bottomFaceSketch, face = END)
   |> startProfile(at = [fanSize * 7 / 25, -fanSize * 9 / 25])
-  |> angledLine(angle = 140, length = fanSize * 12 / 25, tag = $seg01)
-  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
-  |> angledLine(angle = -130, length = fanSize * 8 / 25)
-  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
-  |> angledLine(angle = segAng(seg01) + 180, length = fanSize * 2 / 25)
-  |> tangentialArc(radius = fanSize * 8 / 25, angle = 40)
+  |> angledLine(angle = 140deg, length = fanSize * 12 / 25, tag = $seg01)
+  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90deg)
+  |> angledLine(angle = -130deg, length = fanSize * 8 / 25)
+  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90deg)
+  |> angledLine(angle = segAng(seg01) + 180deg, length = fanSize * 2 / 25)
+  |> tangentialArc(radius = fanSize * 8 / 25, angle = 40deg)
   |> xLine(length = fanSize * 3 / 25)
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternCircular2d(
        instances = 4,
        center = [0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
   |> extrude(length = -4)
@@ -133,13 +133,13 @@ bodyMiddle = startSketchOn(bottomFaceSketch, face = END)
        housingMiddleLength / 2,
        -housingMiddleLength / 2 - housingMiddleRadius
      ])
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> yLine(length = housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> xLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> yLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> extrude(length = fanHeight - 4 - 4)
 
@@ -152,7 +152,7 @@ bodyFanHole = startSketchOn(bodyMiddle, face = END)
 topFaceSketch = startSketchOn(bodyMiddle, face = END)
 topHoles = startProfile(topFaceSketch, at = [-fanSize / 2, -fanSize / 2])
   |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = fanSize, tag = $rectangleSegmentB002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90deg, length = fanSize, tag = $rectangleSegmentB002)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $rectangleSegmentC002)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
   |> close()
@@ -229,7 +229,7 @@ export mountingHoleSize = 4.5
 bottomFaceSketch = startSketchOn(XY)
   |> startProfile(at = [-fanSize / 2, -fanSize / 2])
   |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = fanSize, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = fanSize, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()
@@ -267,19 +267,19 @@ bottomFaceSketch = startSketchOn(XY)
 // Add large openings to the bottom face to allow airflow through the fan
 airflowPattern = startSketchOn(bottomFaceSketch, face = END)
   |> startProfile(at = [fanSize * 7 / 25, -fanSize * 9 / 25])
-  |> angledLine(angle = 140, length = fanSize * 12 / 25, tag = $seg01)
-  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
-  |> angledLine(angle = -130, length = fanSize * 8 / 25)
-  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
-  |> angledLine(angle = segAng(seg01) + 180, length = fanSize * 2 / 25)
-  |> tangentialArc(radius = fanSize * 8 / 25, angle = 40)
+  |> angledLine(angle = 140deg, length = fanSize * 12 / 25, tag = $seg01)
+  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90deg)
+  |> angledLine(angle = -130deg, length = fanSize * 8 / 25)
+  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90deg)
+  |> angledLine(angle = segAng(seg01) + 180deg, length = fanSize * 2 / 25)
+  |> tangentialArc(radius = fanSize * 8 / 25, angle = 40deg)
   |> xLine(length = fanSize * 3 / 25)
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternCircular2d(
        instances = 4,
        center = [0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
   |> extrude(length = -4)
@@ -292,13 +292,13 @@ bodyMiddle = startSketchOn(bottomFaceSketch, face = END)
        housingMiddleLength / 2,
        -housingMiddleLength / 2 - housingMiddleRadius
      ])
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> yLine(length = housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> xLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> yLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> extrude(length = fanHeight - 4 - 4)
 
@@ -311,7 +311,7 @@ bodyFanHole = startSketchOn(bodyMiddle, face = END)
 topFaceSketch = startSketchOn(bodyMiddle, face = END)
 topHoles = startProfile(topFaceSketch, at = [-fanSize / 2, -fanSize / 2])
   |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = fanSize, tag = $rectangleSegmentB002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90deg, length = fanSize, tag = $rectangleSegmentB002)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $rectangleSegmentC002)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
   |> close()
@@ -387,7 +387,7 @@ export mountingHoleSize = 4.5
 bottomFaceSketch = startSketchOn(XY)
   |> startProfile(at = [-fanSize / 2, -fanSize / 2])
   |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = fanSize, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = fanSize, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()
@@ -425,19 +425,19 @@ bottomFaceSketch = startSketchOn(XY)
 // Add large openings to the bottom face to allow airflow through the fan
 airflowPattern = startSketchOn(bottomFaceSketch, face = END)
   |> startProfile(at = [fanSize * 7 / 25, -fanSize * 9 / 25])
-  |> angledLine(angle = 140, length = fanSize * 12 / 25, tag = $seg01)
-  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
-  |> angledLine(angle = -130, length = fanSize * 8 / 25)
-  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
-  |> angledLine(angle = segAng(seg01) + 180, length = fanSize * 2 / 25)
-  |> tangentialArc(radius = fanSize * 8 / 25, angle = 40)
+  |> angledLine(angle = 140deg, length = fanSize * 12 / 25, tag = $seg01)
+  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90deg)
+  |> angledLine(angle = -130deg, length = fanSize * 8 / 25)
+  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90deg)
+  |> angledLine(angle = segAng(seg01) + 180deg, length = fanSize * 2 / 25)
+  |> tangentialArc(radius = fanSize * 8 / 25, angle = 40deg)
   |> xLine(length = fanSize * 3 / 25)
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternCircular2d(
        instances = 4,
        center = [0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
   |> extrude(length = -4)
@@ -450,13 +450,13 @@ bodyMiddle = startSketchOn(bottomFaceSketch, face = END)
        housingMiddleLength / 2,
        -housingMiddleLength / 2 - housingMiddleRadius
      ])
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> yLine(length = housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> xLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> yLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
+  |> tangentialArc(radius = housingMiddleRadius, angle = 90deg)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> extrude(length = fanHeight - 4 - 4)
 
@@ -469,7 +469,7 @@ bodyFanHole = startSketchOn(bodyMiddle, face = END)
 topFaceSketch = startSketchOn(bodyMiddle, face = END)
 topHoles = startProfile(topFaceSketch, at = [-fanSize / 2, -fanSize / 2])
   |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = fanSize, tag = $rectangleSegmentB002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90deg, length = fanSize, tag = $rectangleSegmentB002)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $rectangleSegmentC002)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
   |> close()
@@ -543,11 +543,11 @@ ${fanHousingBrowser}
 fanCenter = startSketchOn(XZ)
   |> startProfile(at = [-0.0001, fanHeight])
   |> xLine(endAbsolute = -15 + 1.5)
-  |> tangentialArc(radius = 1.5, angle = 90)
+  |> tangentialArc(radius = 1.5, angle = 90deg)
   |> yLine(endAbsolute = 4.5)
   |> xLine(endAbsolute = -13)
   |> yLine(endAbsolute = profileStartY(%) - 5)
-  |> tangentialArc(radius = 1, angle = -90)
+  |> tangentialArc(radius = 1, angle = -90deg)
   |> xLine(endAbsolute = -1)
   |> yLine(length = 2)
   |> xLine(length = -0.15)
@@ -571,32 +571,32 @@ fn fanBlade(offsetHeight, startAngle: number(deg)) {
          15 * cos(startAngle),
          15 * sin(startAngle)
        ])
-    |> arc(angleStart = startAngle, angleEnd = startAngle + 14, radius = 15)
+    |> arc(angleStart = startAngle, angleEnd = startAngle + 14deg, radius = 15)
     |> arc(
          endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 20),
-           fanSize * 22 / 50 * sin(startAngle - 20)
+           fanSize * 22 / 50 * cos(startAngle - 20deg),
+           fanSize * 22 / 50 * sin(startAngle - 20deg)
          ],
          interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle + 3),
-           fanSize * 11 / 50 * sin(startAngle + 3)
+           fanSize * 11 / 50 * cos(startAngle + 3deg),
+           fanSize * 11 / 50 * sin(startAngle + 3deg)
          ],
        )
     |> arc(
          endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 24),
-           fanSize * 22 / 50 * sin(startAngle - 24)
+           fanSize * 22 / 50 * cos(startAngle - 24deg),
+           fanSize * 22 / 50 * sin(startAngle - 24deg)
          ],
          interiorAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 22),
-           fanSize * 22 / 50 * sin(startAngle - 22)
+           fanSize * 22 / 50 * cos(startAngle - 22deg),
+           fanSize * 22 / 50 * sin(startAngle - 22deg)
          ],
        )
     |> arc(
          endAbsolute = [profileStartX(%), profileStartY(%)],
          interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle - 5),
-           fanSize * 11 / 50 * sin(startAngle - 5)
+           fanSize * 11 / 50 * cos(startAngle - 5deg),
+           fanSize * 11 / 50 * sin(startAngle - 5deg)
          ],
        )
     |> close()
@@ -605,8 +605,8 @@ fn fanBlade(offsetHeight, startAngle: number(deg)) {
 
 // Loft the fan blade cross sections into a single blade, then pattern them about the fan center
 crossSections = [
-  fanBlade(offsetHeight = 4.5, startAngle = 50),
-  fanBlade(offsetHeight = (fanHeight - 2 - 4) / 2, startAngle = 30),
+  fanBlade(offsetHeight = 4.5, startAngle = 50deg),
+  fanBlade(offsetHeight = (fanHeight - 2 - 4) / 2, startAngle = 30deg),
   fanBlade(offsetHeight = fanHeight - 2, startAngle = 0)
 ]
 loft(crossSections)
@@ -615,7 +615,7 @@ loft(crossSections)
        instances = 9,
        axis = [0, 0, 1],
        center = [0, 0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
 
@@ -650,11 +650,11 @@ ${modifiedFanHousingBrowser}
 fanCenter = startSketchOn(XZ)
   |> startProfile(at = [-0.0001, fanHeight])
   |> xLine(endAbsolute = -15 + 1.5)
-  |> tangentialArc(radius = 1.5, angle = 90)
+  |> tangentialArc(radius = 1.5, angle = 90deg)
   |> yLine(endAbsolute = 4.5)
   |> xLine(endAbsolute = -13)
   |> yLine(endAbsolute = profileStartY(%) - 5)
-  |> tangentialArc(radius = 1, angle = -90)
+  |> tangentialArc(radius = 1, angle = -90deg)
   |> xLine(endAbsolute = -1)
   |> yLine(length = 2)
   |> xLine(length = -0.15)
@@ -678,32 +678,32 @@ fn fanBlade(offsetHeight, startAngle: number(deg)) {
          15 * cos(startAngle),
          15 * sin(startAngle)
        ])
-    |> arc(angleStart = startAngle, angleEnd = startAngle + 14, radius = 15)
+    |> arc(angleStart = startAngle, angleEnd = startAngle + 14deg, radius = 15)
     |> arc(
          endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 20),
-           fanSize * 22 / 50 * sin(startAngle - 20)
+           fanSize * 22 / 50 * cos(startAngle - 20deg),
+           fanSize * 22 / 50 * sin(startAngle - 20deg)
          ],
          interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle + 3),
-           fanSize * 11 / 50 * sin(startAngle + 3)
+           fanSize * 11 / 50 * cos(startAngle + 3deg),
+           fanSize * 11 / 50 * sin(startAngle + 3deg)
          ],
        )
     |> arc(
          endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 24),
-           fanSize * 22 / 50 * sin(startAngle - 24)
+           fanSize * 22 / 50 * cos(startAngle - 24deg),
+           fanSize * 22 / 50 * sin(startAngle - 24deg)
          ],
          interiorAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 22),
-           fanSize * 22 / 50 * sin(startAngle - 22)
+           fanSize * 22 / 50 * cos(startAngle - 22deg),
+           fanSize * 22 / 50 * sin(startAngle - 22deg)
          ],
        )
     |> arc(
          endAbsolute = [profileStartX(%), profileStartY(%)],
          interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle - 5),
-           fanSize * 11 / 50 * sin(startAngle - 5)
+           fanSize * 11 / 50 * cos(startAngle - 5deg),
+           fanSize * 11 / 50 * sin(startAngle - 5deg)
          ],
        )
     |> close()
@@ -712,8 +712,8 @@ fn fanBlade(offsetHeight, startAngle: number(deg)) {
 
 // Loft the fan blade cross sections into a single blade, then pattern them about the fan center
 crossSections = [
-  fanBlade(offsetHeight = 4.5, startAngle = 50),
-  fanBlade(offsetHeight = (fanHeight - 2 - 4) / 2, startAngle = 30),
+  fanBlade(offsetHeight = 4.5, startAngle = 50deg),
+  fanBlade(offsetHeight = (fanHeight - 2 - 4) / 2, startAngle = 30deg),
   fanBlade(offsetHeight = fanHeight - 2, startAngle = 0)
 ]
 loft(crossSections)
@@ -722,7 +722,7 @@ loft(crossSections)
        instances = 9,
        axis = [0, 0, 1],
        center = [0, 0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
 

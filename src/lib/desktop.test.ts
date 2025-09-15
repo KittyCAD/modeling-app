@@ -3,9 +3,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
 import { initPromise } from '@src/lang/wasmUtils'
-import { listProjects } from '@src/lib/desktop'
-import type { DeepPartial } from '@src/lib/types'
+import type { EnvironmentConfiguration } from '@src/lib/constants'
+import {
+  getEnvironmentConfigurationPath,
+  getEnvironmentFilePath,
+  listProjects,
+  readEnvironmentConfigurationFile,
+  readEnvironmentConfigurationToken,
+  readEnvironmentFile,
+} from '@src/lib/desktop'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
+import type { DeepPartial } from '@src/lib/types'
 
 beforeAll(async () => {
   await initPromise
@@ -34,6 +42,10 @@ const mockElectron = {
   getPath: vi.fn(),
   kittycad: vi.fn(),
   canReadWriteDirectory: vi.fn(),
+  getAppTestProperty: vi.fn(),
+  packageJson: {
+    name: '',
+  },
 }
 
 vi.stubGlobal('window', { electron: mockElectron })
@@ -122,11 +134,13 @@ describe('desktop utilities', () => {
 
   describe('listProjects', () => {
     it('does not list .git directories', async () => {
-      const projects = await listProjects(mockConfig)
+      if (!window.electron) throw new Error('Electron not found')
+      const projects = await listProjects(window.electron, mockConfig)
       expect(projects.map((p) => p.name)).not.toContain('.git')
     })
     it('lists projects excluding hidden and without .kcl files', async () => {
-      const projects = await listProjects(mockConfig)
+      if (!window.electron) throw new Error('Electron not found')
+      const projects = await listProjects(window.electron, mockConfig)
 
       // Verify only non-dot projects with .kcl files were included
       expect(projects.map((p) => p.name)).toEqual([
@@ -149,7 +163,8 @@ describe('desktop utilities', () => {
     })
 
     it('correctly counts directories and files', async () => {
-      const projects = await listProjects(mockConfig)
+      if (!window.electron) throw new Error('Electron not found')
+      const projects = await listProjects(window.electron, mockConfig)
       // Verify that directories and files are counted correctly
       expect(projects[0].directory_count).toEqual(1)
       expect(projects[0].kcl_file_count).toEqual(2)
@@ -158,12 +173,200 @@ describe('desktop utilities', () => {
     })
 
     it('handles empty project directory', async () => {
+      if (!window.electron) throw new Error('Electron not found')
       // Adjust mockFileSystem to simulate empty directory
       mockFileSystem['/test/projects'] = []
 
-      const projects = await listProjects(mockConfig)
+      const projects = await listProjects(window.electron, mockConfig)
 
       expect(projects).toEqual([])
+    })
+  })
+
+  describe('getEnvironmentConfigurationPath', () => {
+    it('should return a wonky path because appConfig is not set by default', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      const expected = '/appData//envs/development.json'
+      const actual = await getEnvironmentConfigurationPath(
+        window.electron,
+        'development'
+      )
+      expect(actual).toBe(expected)
+    })
+    it('should return path to the configuration file for development', async () => {
+      const expected = '/appData/zoo-modeling-app/envs/development.json'
+      if (!window.electron) throw new Error('Electron not found')
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      const actual = await getEnvironmentConfigurationPath(
+        window.electron,
+        'development'
+      )
+      mockElectron.packageJson.name = ''
+      expect(actual).toBe(expected)
+    })
+    it('should return path to the configuration file for production', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      const expected = '/appData/zoo-modeling-app/envs/production.json'
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      const actual = await getEnvironmentConfigurationPath(
+        window.electron,
+        'production'
+      )
+      mockElectron.packageJson.name = ''
+      expect(actual).toBe(expected)
+    })
+  })
+
+  describe('getEnvironmentPath', () => {
+    it('should return a wonky path because appConfig is not set by default', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      const expected = '/appData//environment.txt'
+      const actual = await getEnvironmentFilePath(window.electron)
+      expect(actual).toBe(expected)
+    })
+    it('should return path to the environment.txt file', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      const expected = '/appData/zoo-modeling-app/environment.txt'
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      const actual = await getEnvironmentFilePath(window.electron)
+      mockElectron.packageJson.name = ''
+      expect(actual).toBe(expected)
+    })
+  })
+
+  describe('readEnvironmentConfigurationFile', () => {
+    it('should return null for development', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      const expected = null
+      const actual = await readEnvironmentConfigurationFile(
+        window.electron,
+        'dev.zoo.dev'
+      )
+      expect(actual).toBe(expected)
+    })
+    it('should return a empty string object for development', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => {
+        return '{"token":"","pool":"","domain":"dev.zoo.dev"}'
+      })
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      const expected: EnvironmentConfiguration = {
+        domain: 'dev.zoo.dev',
+        pool: '',
+        token: '',
+      }
+      const actual = await readEnvironmentConfigurationFile(
+        window.electron,
+        'dev.zoo.dev'
+      )
+
+      // mock clean up
+      mockElectron.packageJson.name = ''
+      expect(actual).toStrictEqual(expected)
+    })
+    it('should return an empty string object for production', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => {
+        return '{"token":"","pool":"","domain":"zoo.dev"}'
+      })
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      const expected: EnvironmentConfiguration = {
+        domain: 'zoo.dev',
+        pool: '',
+        token: '',
+      }
+      const actual = await readEnvironmentConfigurationFile(
+        window.electron,
+        'zoo.dev'
+      )
+
+      // mock clean up
+      mockElectron.packageJson.name = ''
+      expect(actual).toStrictEqual(expected)
+    })
+  })
+
+  describe('readEnvironmentFile', () => {
+    it('should return the empty string', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      const expected = ''
+      const actual = await readEnvironmentFile(window.electron)
+      expect(actual).toBe(expected)
+    })
+    it('should return development', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      const expected = 'dev.zoo.dev'
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => 'dev.zoo.dev')
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      const actual = await readEnvironmentFile(window.electron)
+      mockElectron.packageJson.name = ''
+      expect(actual).toBe(expected)
+    })
+    it('should return production', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      const expected = 'zoo.dev'
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => 'zoo.dev')
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      const actual = await readEnvironmentFile(window.electron)
+      mockElectron.packageJson.name = ''
+      expect(actual).toBe(expected)
+    })
+  })
+
+  describe('readEnvironmentConfigurationToken', () => {
+    it('should return the empty string for dev.zoo.dev', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      const expected = ''
+      const actual = await readEnvironmentConfigurationToken(
+        window.electron,
+        'dev.zoo.dev'
+      )
+      expect(actual).toBe(expected)
+    })
+    it('should return the empty string for production', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      const expected = ''
+      const actual = await readEnvironmentConfigurationToken(
+        window.electron,
+        'zoo.dev'
+      )
+      expect(actual).toBe(expected)
+    })
+    it('should return the string dog-dog-dog for development', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => {
+        return '{"token":"dog-dog-dog","pool":"","domain":"development"}'
+      })
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      const expected = 'dog-dog-dog'
+      const actual = await readEnvironmentConfigurationToken(
+        window.electron,
+        'development'
+      )
+      // mock clean up
+      mockElectron.packageJson.name = ''
+      expect(actual).toBe(expected)
+    })
+    it('should return the string cat-cat-cat for production', async () => {
+      if (!window.electron) throw new Error('Electron not found')
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => {
+        return '{"token":"cat-cat-cat","pool":"","domain":"production"}'
+      })
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      const expected = 'cat-cat-cat'
+      const actual = await readEnvironmentConfigurationToken(
+        window.electron,
+        'production'
+      )
+      // mock clean up
+      mockElectron.packageJson.name = ''
+      expect(actual).toBe(expected)
     })
   })
 })

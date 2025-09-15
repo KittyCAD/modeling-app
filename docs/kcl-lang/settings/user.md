@@ -85,13 +85,6 @@ Whether to show the debug panel, which lets you see various states of the app to
 
 **Default:** None
 
-##### fixed_size_grid
-
-If true, the grid cells will be fixed-size, where the width is your default length unit. If false, the grid will get larger as you zoom out, and smaller as you zoom in.
-
-
-**Default:** None
-
 
 #### modeling
 
@@ -107,7 +100,7 @@ This setting has the following nested options:
 The default unit to use in modeling dimensions.
 
 
-**Default:** None
+**Default:** `mm`
 
 ##### camera_projection
 
@@ -131,6 +124,27 @@ The controls for how to navigate the 3D view.
 
 **Default:** None
 
+##### enable_touch_controls
+
+Toggle touch controls for 3D view navigation
+
+
+**Default:** None
+
+##### enable_copilot
+
+Toggle copilot features
+
+
+**Default:** None
+
+##### use_new_sketch_mode
+
+Toggle new sketch mode implementation
+
+
+**Default:** None
+
 ##### highlight_edges
 
 Highlight edges of 3D objects?
@@ -148,6 +162,41 @@ Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
 ##### show_scale_grid
 
 Whether or not to show a scale grid in the 3D modeling view
+
+
+**Default:** None
+
+##### fixed_size_grid
+
+When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level. If true, the grid cells will be fixed-size, where the width is your default length unit. If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+
+
+**Default:** None
+
+##### snap_to_grid
+
+When enabled, tools like line, rectangle, etc. will snap to the grid.
+
+
+**Default:** None
+
+##### major_grid_spacing
+
+The space between major grid lines, specified in the current unit.
+
+
+**Default:** None
+
+##### minor_grids_per_major
+
+The number of minor grid lines per major grid line.
+
+
+**Default:** None
+
+##### snaps_per_minor
+
+The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
 
 
 **Default:** None

@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing kw_fn_unlabeled_but_has_label.kcl
+---
+{}

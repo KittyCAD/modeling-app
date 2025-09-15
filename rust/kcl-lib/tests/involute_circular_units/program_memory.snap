@@ -8,25 +8,17 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "angle001": {
     "type": "Number",
     "value": 6.0,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "degrees": null,
+      "type": "Known",
+      "type": "Angle"
     }
   },
   "baseDiameter": {
@@ -34,12 +26,8 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 9.866772518252038,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "deddendum": {
@@ -47,12 +35,8 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "gearHeight": {
@@ -60,12 +44,8 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 0.3,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "module": {
@@ -73,12 +53,8 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "nTeeth": {
@@ -86,12 +62,8 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 21.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "pitchDiameter": {
@@ -99,21 +71,17 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 10.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "pressureAngle": {
     "type": "Number",
     "value": 20.0,
     "ty": {
+      "degrees": null,
       "type": "Known",
-      "type": "Angle",
-      "type": "Degrees"
+      "type": "Angle"
     }
   },
   "seg01": {
@@ -138,10 +106,10 @@ description: Variables in memory after executing involute_circular_units.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 505,
-            "end": 511,
+            "commentStart": 508,
+            "end": 514,
             "moduleId": 0,
-            "start": 505,
+            "start": 508,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -159,10 +127,10 @@ description: Variables in memory after executing involute_circular_units.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 708,
-            "end": 714,
+            "commentStart": 714,
+            "end": 720,
             "moduleId": 0,
-            "start": 708,
+            "start": 714,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -188,6 +156,13 @@ description: Variables in memory after executing involute_circular_units.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -204,10 +179,10 @@ description: Variables in memory after executing involute_circular_units.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 505,
-              "end": 511,
+              "commentStart": 508,
+              "end": 514,
               "moduleId": 0,
-              "start": 505,
+              "start": 508,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -216,9 +191,7 @@ description: Variables in memory after executing involute_circular_units.kcl
               0.3404307813964144
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
           {
             "__geoMeta": {
@@ -235,9 +208,7 @@ description: Variables in memory after executing involute_circular_units.kcl
               0.3404307813964144
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
           {
             "__geoMeta": {
@@ -255,10 +226,10 @@ description: Variables in memory after executing involute_circular_units.kcl
             ],
             "radius": 5.75,
             "tag": {
-              "commentStart": 708,
-              "end": 714,
+              "commentStart": 714,
+              "end": 720,
               "moduleId": 0,
-              "start": 708,
+              "start": 714,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -267,9 +238,7 @@ description: Variables in memory after executing involute_circular_units.kcl
               0.8988999492558021
             ],
             "type": "Arc",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
           {
             "__geoMeta": {
@@ -286,9 +255,7 @@ description: Variables in memory after executing involute_circular_units.kcl
               1.0642050608448215
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
           {
             "__geoMeta": {
@@ -305,9 +272,7 @@ description: Variables in memory after executing involute_circular_units.kcl
               1.0642050608448215
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
           {
             "__geoMeta": {
@@ -324,9 +289,7 @@ description: Variables in memory after executing involute_circular_units.kcl
               1.4541411272450477
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
           {
             "__geoMeta": {
@@ -343,9 +306,32 @@ description: Variables in memory after executing involute_circular_units.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              1.0,
+              0.0
+            ],
+            "radius": 1.0,
+            "tag": null,
+            "to": [
+              1.0,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "cm"
           }
         ],
         "on": {
@@ -355,9 +341,7 @@ description: Variables in memory after executing involute_circular_units.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -365,25 +349,19 @@ description: Variables in memory after executing involute_circular_units.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -395,9 +373,7 @@ description: Variables in memory after executing involute_circular_units.kcl
             4.933386259126019,
             0.0
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -416,16 +392,11 @@ description: Variables in memory after executing involute_circular_units.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Cm"
-        }
+        "units": "cm"
       },
-      "height": 0.3,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Cm"
-      },
+      "units": "cm",
       "sectional": false
     }
   },
@@ -434,12 +405,8 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 11.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   }
 }

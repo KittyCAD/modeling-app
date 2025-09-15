@@ -1,10 +1,11 @@
-import Hammer from 'hammerjs'
-import type {
-  CameraDragInteractionType_type,
-  CameraViewState_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { CameraDragInteractionType, CameraViewState } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { isArray } from '@src/lib/utils'
+
 import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
 import * as TWEEN from '@tweenjs/tween.js'
+import Hammer from 'hammerjs'
+import type { Camera } from 'three'
 import {
   Euler,
   MathUtils,
@@ -34,7 +35,10 @@ import type {
 } from '@src/lang/std/engineConnection'
 import type { MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { Signal } from '@src/lib/signal'
 import { reportRejection } from '@src/lib/trap'
+import { err } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
   isReducedMotion,
@@ -44,12 +48,18 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { degToRad } from 'three/src/math/MathUtils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
 const ORTHOGRAPHIC_MAGIC_FOV = 4
+const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
+
+// Partial declaration; the front/back/left/right are handled differently.
+enum StandardView {
+  TOP = 'top',
+  BOTTOM = 'bottom',
+}
 
 const tempQuaternion = new Quaternion() // just used for maths
 
@@ -113,7 +123,9 @@ export class CameraControls {
   wasDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
-  oldCameraState: undefined | CameraViewState_type
+  worldDownPosition: Vector3
+  cameraDown: Camera
+  oldCameraState: undefined | CameraViewState
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
@@ -123,10 +135,12 @@ export class CameraControls {
   lastPerspectiveFov = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
-  pendingPan: Vector2 | null = null
+  pendingPan: Vector3 | null = null
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
+  touchControlManager: HammerManager | null = null
+  enableTouchControls = true
   // TODO: proper dependency injection
   getSettings: (() => SettingsType) | null = null
 
@@ -134,6 +148,35 @@ export class CameraControls {
   _setting_allowOrbitInSketchMode = false
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
+  }
+
+  private _zoomFocus: Vector3 | null = null // the position under the mouse when zooming, in world space
+  private _lastWheelEvent: WheelEvent | null = null
+
+  // Converts a screen space coordinate to world space
+  private screenToWorld(
+    event: WheelEvent | PointerEvent,
+    camera?: Camera
+  ): Vector3 {
+    let x = event.offsetX
+    let y = event.offsetY
+    if (event.target !== this.domElement) {
+      // There are some divs over the canvas that change event.offsetX, so manually calculate it
+      // We could just do this by default but the getBoundingClientRect() can be expensive
+      const rect = this.domElement.getBoundingClientRect()
+      x = event.clientX - rect.left
+      y = event.clientY - rect.top
+    }
+
+    // Ideally we would have access to renderer drawing buffer size
+    const width = this.domElement.clientWidth
+    const height = this.domElement.clientHeight
+    const ndc = new Vector3(
+      (x / width) * 2 - 1,
+      -(y / height) * 2 + 1,
+      0 // NDC z: 0 (halfway between camera near and far)
+    )
+    return ndc.unproject(camera || this.camera)
   }
 
   setEngineCameraProjection(projection: CameraProjectionType) {
@@ -216,7 +259,7 @@ export class CameraControls {
   }
 
   doMove = (
-    interaction: CameraDragInteractionType_type,
+    interaction: CameraDragInteractionType,
     coordinates: [number, number]
   ) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -263,14 +306,15 @@ export class CameraControls {
     this.wasDragging = false
     this.mouseDownPosition = new Vector2()
     this.mouseNewPosition = new Vector2()
+    this.worldDownPosition = new Vector3()
+    this.cameraDown = this.camera.clone()
 
     this.domElement.addEventListener('pointerdown', this.onMouseDown)
     this.domElement.addEventListener('pointermove', this.onMouseMove)
     this.domElement.addEventListener('pointerup', this.onMouseUp)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
-    this.setUpMultiTouch(this.domElement)
+    this.initTouchControls(this.enableTouchControls)
 
-    window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
 
     this.update()
@@ -381,21 +425,16 @@ export class CameraControls {
   setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
     this._isCamMovingCallback = cb
   }
-  private _camChangeCallbacks: { [key: string]: () => void } = {}
-  subscribeToCamChange(cb: () => void) {
-    const cbId = uuidv4()
-    this._camChangeCallbacks[cbId] = cb
-    const unsubscribe = () => {
-      delete this._camChangeCallbacks[cbId]
-    }
-    return unsubscribe
-  }
+
+  public readonly cameraChange = new Signal()
 
   onWindowResize = () => {
     if (this.camera instanceof PerspectiveCamera) {
-      this.camera.aspect = window.innerWidth / window.innerHeight
+      this.camera.aspect =
+        this.domElement.clientWidth / this.domElement.clientHeight
     } else if (this.camera instanceof OrthographicCamera) {
-      const aspect = window.innerWidth / window.innerHeight
+      const aspect = this.domElement.clientWidth / this.domElement.clientHeight
+
       this.camera.left = -ORTHOGRAPHIC_CAMERA_SIZE * aspect
       this.camera.right = ORTHOGRAPHIC_CAMERA_SIZE * aspect
       this.camera.top = ORTHOGRAPHIC_CAMERA_SIZE
@@ -410,6 +449,8 @@ export class CameraControls {
     // Reset the wasDragging flag to false when starting a new drag
     this.wasDragging = false
     this.mouseDownPosition.set(event.clientX, event.clientY)
+    this.worldDownPosition = this.screenToWorld(event).clone()
+    this.cameraDown = this.camera.clone()
     let interaction = this.getInteractionType(event)
     if (interaction === 'none') return
     this.handleStart()
@@ -468,15 +509,17 @@ export class CameraControls {
         this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
         this.pendingZoom *= 1 + deltaMove.y * 0.01
       } else if (interaction === 'pan') {
-        this.pendingPan = this.pendingPan ? this.pendingPan : new Vector2()
-        let distance = this.camera.position.distanceTo(this.target)
-        if (this.camera instanceof OrthographicCamera) {
-          const zoomFudgeFactor = 2280
-          distance = zoomFudgeFactor / (this.camera.zoom * 45)
+        this.pendingPan = this.pendingPan ?? new Vector3()
+        if (this.camera instanceof PerspectiveCamera) {
+          const distance = this.camera.position.distanceTo(this.target)
+          const panSpeed =
+            (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
+          this.pendingPan.x += -deltaMove.x * panSpeed
+          this.pendingPan.y += deltaMove.y * panSpeed
+        } else {
+          const newPosition = this.screenToWorld(event, this.cameraDown)
+          this.pendingPan = newPosition.sub(this.worldDownPosition)
         }
-        const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
-        this.pendingPan.x += -deltaMove.x * panSpeed
-        this.pendingPan.y += deltaMove.y * panSpeed
       }
     } else {
       /**
@@ -570,6 +613,10 @@ export class CameraControls {
     this.handleStart()
     if (interaction === 'zoom') {
       this.pendingZoom = 1 + (deltaY / window.devicePixelRatio) * 0.001
+
+      // Record the world point under the mouse so we can keep it anchored during zoom
+      this._zoomFocus = this.screenToWorld(event)
+      this._lastWheelEvent = event
     } else {
       // This case will get handled when we add pan and rotate using Apple trackpad.
       console.error(
@@ -584,7 +631,9 @@ export class CameraControls {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     const oldCamUp = this.camera.up.clone()
-    const aspect = window.innerWidth / window.innerHeight
+    const aspect =
+      this.engineCommandManager.streamDimensions.width /
+      this.engineCommandManager.streamDimensions.height
     this.lastPerspectiveFov = this.camera.fov
     const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
     this.camera = new OrthographicCamera(
@@ -622,7 +671,8 @@ export class CameraControls {
     const previousCamUp = this.camera.up.clone()
     this.camera = new PerspectiveCamera(
       this.lastPerspectiveFov,
-      window.innerWidth / window.innerHeight,
+      this.engineCommandManager.streamDimensions.width /
+        this.engineCommandManager.streamDimensions.height,
       z_near,
       z_far
     )
@@ -787,23 +837,46 @@ export class CameraControls {
         // TODO change ortho zoom
         this.camera.zoom = this.camera.zoom / this.pendingZoom
         this.pendingZoom = null
+
+        // Keep mouse world point fixed during zoom (without this zooming is pivoted around the camera position,
+        // regardless of current mouse position)
+        if (this._zoomFocus && this._lastWheelEvent) {
+          this.camera.updateProjectionMatrix()
+          // The new focused point in world space after zooming
+          const newFocus = this.screenToWorld(this._lastWheelEvent)
+          const diff = this._zoomFocus.clone().sub(newFocus)
+          this.camera.position.add(diff)
+          this.target.add(diff)
+
+          this._zoomFocus = null
+          this._lastWheelEvent = null
+        }
       }
       didChange = true
     }
 
     if (this.pendingPan) {
-      // move camera left/right and up/down
-      const offset = this.camera.position.clone().sub(this.target)
-      const direction = offset.clone().normalize()
-      const cameraQuaternion = this.camera.quaternion
-      const up = new Vector3(0, 1, 0).applyQuaternion(cameraQuaternion)
-      const right = new Vector3().crossVectors(up, direction)
-      right.multiplyScalar(this.pendingPan.x)
-      up.multiplyScalar(this.pendingPan.y)
-      const newPosition = this.camera.position.clone().add(right).add(up)
-      this.target.add(right)
-      this.target.add(up)
-      this.camera.position.copy(newPosition)
+      if (this.camera instanceof PerspectiveCamera) {
+        // move camera left/right and up/down
+        const forward = this.camera.position
+          .clone()
+          .sub(this.target)
+          .normalize()
+        const cameraQuaternion = this.camera.quaternion
+        const up = new Vector3(0, 1, 0).applyQuaternion(cameraQuaternion)
+        const right = new Vector3().crossVectors(up, forward)
+        right.multiplyScalar(this.pendingPan.x)
+        up.multiplyScalar(this.pendingPan.y)
+        const newPosition = this.camera.position.clone().add(right).add(up)
+        this.target.add(right)
+        this.target.add(up)
+        this.camera.position.copy(newPosition)
+      } else {
+        const newPos = this.cameraDown.position.clone().sub(this.pendingPan)
+        const oldPos = this.camera.position.clone()
+        this.camera.position.copy(newPos)
+        this.target.add(this.camera.position.clone().sub(oldPos))
+      }
       this.pendingPan = null
       didChange = true
     }
@@ -917,28 +990,121 @@ export class CameraControls {
     })
   }
 
+  async getCameraView(): Promise<CameraViewState | Error> {
+    const response = await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'default_camera_get_view' },
+    })
+
+    // Check valid response from the engine.
+    const singleResponse = isArray(response) ? response[0] : response
+    if (!singleResponse || !isModelingResponse(singleResponse)) {
+      return new Error('Failed to get camera view state: no valid response.')
+    }
+    if (!isModelingResponse(singleResponse)) {
+      return new Error('Failed to get camera view state: wrong response type.')
+    }
+    const data = singleResponse.resp.data
+    const noModelingResponse = !('modeling_response' in data)
+
+    if (noModelingResponse) {
+      return new Error(
+        'Failed to get camera view state: no `modeling_response`.'
+      )
+    }
+
+    // Check that we have the expected response type and the nested data.
+    const modelingResponse = data.modeling_response
+    const noData = !('data' in modelingResponse)
+    const wrongResponseType =
+      modelingResponse.type !== 'default_camera_get_view'
+
+    if (noData || wrongResponseType) {
+      return new Error('Failed to get camera view state: invalid response.')
+    }
+
+    return modelingResponse.data.view
+  }
+
+  async setCameraViewAlongZ(direction: StandardView) {
+    // Sets the camera view along the Z axis, giving us a top-down or bottom-up view.
+    // The approach first retrieves current camera setup, then alters pivot params,
+    // ultimately preserving other camera settings, e.g., ortho vs. perspective projection.
+
+    // Note: this assumes right handed, Z-up, X positive to the right.
+    const Z_AXIS_QUATERNIONS = {
+      [StandardView.TOP]: { x: 0, y: 0, z: 0, w: 1 },
+      [StandardView.BOTTOM]: { x: 1, y: 0, z: 0, w: 0 },
+    } as const
+
+    const cameraView = await this.getCameraView()
+
+    if (err(cameraView)) {
+      return
+    }
+
+    // Handle unexpected world coordinate system; should delete this eventually.
+    if (cameraView.world_coord_system !== EXPECTED_WORLD_COORD_SYSTEM) {
+      console.warn(
+        `Camera is not in the expected ${EXPECTED_WORLD_COORD_SYSTEM} world coordinate system.
+        Resulting view may not match expectations.`
+      )
+    }
+
+    const cameraViewTarget: CameraViewState = {
+      ...cameraView,
+      pivot_rotation: Z_AXIS_QUATERNIONS[direction],
+      pivot_position: {
+        x: this.target.x,
+        y: this.target.y,
+        z: this.target.z,
+      },
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_set_view',
+        view: cameraViewTarget,
+      },
+    })
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
   async updateCameraToAxis(
     axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z'
   ): Promise<void> {
+    // TODO: We currently use both `default_camera_look_at` and `default_camera_set_view`
+    // (via `setCameraViewAlongZ`). We should unify these during future camera work.
+
     const distance = this.camera.position.distanceTo(this.target)
 
     const vantage = this.target.clone()
-    let up = { x: 0, y: 0, z: 1 }
+    const up = { x: 0, y: 0, z: 1 }
 
     if (axis === 'x') {
       vantage.x += distance
     } else if (axis === 'y') {
       vantage.y += distance
     } else if (axis === 'z') {
-      vantage.z += distance
-      up = { x: -1, y: 0, z: 0 }
+      await this.setCameraViewAlongZ(StandardView.TOP)
+      return
     } else if (axis === '-x') {
       vantage.x -= distance
     } else if (axis === '-y') {
       vantage.y -= distance
     } else if (axis === '-z') {
-      vantage.z -= distance
-      up = { x: -1, y: 0, z: 0 }
+      await this.setCameraViewAlongZ(StandardView.BOTTOM)
+      return
     }
 
     await this.engineCommandManager.sendSceneCommand({
@@ -1064,14 +1230,14 @@ export class CameraControls {
             cmd: { type: 'default_camera_get_view' },
           })
         if (!cameraViewStateResponse) return
-        if (
-          'resp' in cameraViewStateResponse &&
-          'modeling_response' in cameraViewStateResponse.resp.data &&
-          'data' in cameraViewStateResponse.resp.data.modeling_response &&
-          'view' in cameraViewStateResponse.resp.data.modeling_response.data
-        ) {
-          this.oldCameraState =
-            cameraViewStateResponse.resp.data.modeling_response.data.view
+        const r = isArray(cameraViewStateResponse)
+          ? cameraViewStateResponse[0]
+          : cameraViewStateResponse
+        if (r && isModelingResponse(r)) {
+          const mr = r.resp.data.modeling_response
+          if ('data' in mr && 'view' in mr.data) {
+            this.oldCameraState = mr.data.view
+          }
         }
 
         clearTimeout(timeoutId)
@@ -1333,11 +1499,11 @@ export class CameraControls {
       })
     }
     this.deferReactUpdate(this.reactCameraProperties)
-    Object.values(this._camChangeCallbacks).forEach((cb) => cb())
+    this.cameraChange.dispatch()
   }
   getInteractionType = (
     event: PointerEvent | WheelEvent | MouseEvent
-  ): CameraDragInteractionType_type | 'none' => {
+  ): CameraDragInteractionType | 'none' => {
     // We just need to send any start value to the engine for touch.
     // I chose "rotate" because it's the 1-finger gesture
     const initialInteractionType =
@@ -1369,7 +1535,7 @@ export class CameraControls {
    *
    * TODO: Add support for sketch mode touch camera movements
    */
-  setUpMultiTouch = (domElement: HTMLCanvasElement) => {
+  setUpTouchControls = (domElement: HTMLCanvasElement) => {
     /** Amount in px needed to pan before recognizer runs */
     const panDistanceThreshold = 3
     /** Amount in scale delta needed to pinch before recognizer runs */
@@ -1522,6 +1688,16 @@ export class CameraControls {
     hammertime.on('pinchend pinchcancel doublepanend', (event) => {
       this.onMouseUpInner(event.srcEvent as PointerEvent)
     })
+
+    return hammertime
+  }
+
+  initTouchControls = (shouldEnable?: boolean) => {
+    if (this.touchControlManager === null) {
+      this.touchControlManager = this.setUpTouchControls(this.domElement)
+    }
+
+    this.touchControlManager.set({ enable: shouldEnable })
   }
 }
 

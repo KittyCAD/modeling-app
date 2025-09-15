@@ -1,17 +1,15 @@
 import type { EventFrom, StateFrom } from 'xstate'
-import { settingsActor } from '@src/lib/singletons'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
 import { commandBarActor } from '@src/lib/singletons'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
@@ -444,6 +442,24 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ],
           },
           {
+            id: 'scale',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Scale', groupId: 'modeling' },
+              }),
+            icon: 'scale',
+            status: 'available',
+            title: 'Scale',
+            description: 'Apply scaling to a solid or sketch.',
+            links: [
+              {
+                label: 'API docs',
+                url: 'https://zoo.dev/docs/kcl-std/functions/std-transform-scale',
+              },
+            ],
+          },
+          {
             id: 'clone',
             onClick: () =>
               commandBarActor.send({
@@ -461,58 +477,24 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               },
             ],
           },
-        ],
-      },
-      'break',
-      {
-        id: 'ai',
-        array: [
           {
-            id: 'text-to-cad',
-            onClick: () => {
-              const currentProject =
-                settingsActor.getSnapshot().context.currentProject
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: {
-                  name: 'Text-to-CAD',
-                  groupId: 'application',
-                  argDefaultValues: {
-                    method: 'existingProject',
-                    projectName: currentProject?.name,
-                  },
-                },
-              })
-            },
-            icon: 'sparkles',
-            iconColor: '#29FFA4',
-            alwaysDark: true,
-            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
-            title: 'Create with Zoo Text-to-CAD',
-            description: 'Create geometry with AI / ML.',
-            links: [
-              {
-                label: 'API docs',
-                url: withSiteBaseURL(
-                  '/docs/api/ml/generate-a-cad-model-from-text'
-                ),
-              },
-            ],
-          },
-          {
-            id: 'prompt-to-edit',
+            id: 'appearance',
             onClick: () =>
               commandBarActor.send({
                 type: 'Find and select command',
-                data: { name: 'Prompt-to-edit', groupId: 'modeling' },
+                data: { name: 'Appearance', groupId: 'modeling' },
               }),
-            icon: 'sparkles',
-            iconColor: '#29FFA4',
-            alwaysDark: true,
-            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
-            title: 'Modify with Zoo Text-to-CAD',
-            description: 'Edit geometry with AI / ML.',
-            links: [],
+            status: 'available',
+            title: 'Appearance',
+            icon: 'text',
+            description:
+              'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+            links: [
+              {
+                label: 'API docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-appearance'),
+              },
+            ],
           },
         ],
       },

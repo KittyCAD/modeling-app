@@ -13,10 +13,8 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     7[Solid2d]
   end
-  subgraph path21 [Path]
-    21["Path<br>[311, 361, 0]"]
-      %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-    22["Segment<br>[311, 361, 0]"]
+  subgraph path22 [Path]
+    22["Path<br>[311, 361, 0]"]
       %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
     23["Segment<br>[311, 361, 0]"]
       %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
@@ -26,7 +24,9 @@ flowchart LR
       %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
     26["Segment<br>[311, 361, 0]"]
       %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-    27[Solid2d]
+    27["Segment<br>[311, 361, 0]"]
+      %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+    28[Solid2d]
   end
   1["Plane<br>[41, 58, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
@@ -48,9 +48,11 @@ flowchart LR
   17["SweepEdge Adjacent"]
   18["SweepEdge Opposite"]
   19["SweepEdge Adjacent"]
-  20["Plane<br>[277, 304, 0]"]
+  20["PlaneOfFace<br>[184, 208, 0]"]
+    %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  21["Plane<br>[277, 304, 0]"]
     %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }, CallKwUnlabeledArg]
-  28["StartSketchOnPlane<br>[263, 305, 0]"]
+  29["StartSketchOnPlane<br>[263, 305, 0]"]
     %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -94,12 +96,13 @@ flowchart LR
   14 <--x 13
   16 <--x 13
   18 <--x 13
-  20 --- 21
-  20 <--x 28
+  13 <--x 20
   21 --- 22
-  21 --- 23
-  21 --- 24
-  21 --- 25
-  21 --- 26
-  21 --- 27
+  21 <--x 29
+  22 --- 23
+  22 --- 24
+  22 --- 25
+  22 --- 26
+  22 --- 27
+  22 --- 28
 ```

@@ -17,9 +17,7 @@ description: Variables in memory after executing helix_simple.kcl
       "angleStart": 0.0,
       "ccw": true,
       "cylinderId": null,
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "helper001": {
@@ -50,9 +48,7 @@ description: Variables in memory after executing helix_simple.kcl
             10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -62,9 +58,7 @@ description: Variables in memory after executing helix_simple.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -72,25 +66,19 @@ description: Variables in memory after executing helix_simple.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -102,9 +90,7 @@ description: Variables in memory after executing helix_simple.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -119,9 +105,8 @@ description: Variables in memory after executing helix_simple.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "isClosed": false
     }
   }
 }

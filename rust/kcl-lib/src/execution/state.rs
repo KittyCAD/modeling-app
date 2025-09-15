@@ -1,27 +1,26 @@
-use std::sync::Arc;
+use std::{str::FromStr, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use schemars::JsonSchema;
+use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
-    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs,
+    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, SourceRange,
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen, annotations,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, annotations,
         cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
-        types::{self, NumericType},
+        types::NumericType,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
-    source_range::SourceRange,
 };
 
 /// State for executing a program.
@@ -107,6 +106,9 @@ pub(super) struct ModuleState {
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
+
+    pub(super) allowed_warnings: Vec<&'static str>,
+    pub(super) denied_warnings: Vec<&'static str>,
 }
 
 impl ExecState {
@@ -132,9 +134,35 @@ impl ExecState {
     }
 
     /// Log a warning.
-    pub fn warn(&mut self, mut e: CompilationError) {
-        e.severity = Severity::Warning;
+    pub fn warn(&mut self, mut e: CompilationError, name: &'static str) {
+        debug_assert!(annotations::WARN_VALUES.contains(&name));
+
+        if self.mod_local.allowed_warnings.contains(&name) {
+            return;
+        }
+
+        if self.mod_local.denied_warnings.contains(&name) {
+            e.severity = Severity::Error;
+        } else {
+            e.severity = Severity::Warning;
+        }
+
         self.global.errors.push(e);
+    }
+
+    pub fn warn_experimental(&mut self, feature_name: &str, source_range: SourceRange) {
+        let Some(severity) = self.mod_local.settings.experimental_features.severity() else {
+            return;
+        };
+        let error = CompilationError {
+            source_range,
+            message: format!("Use of {feature_name} is experimental and may change or be removed."),
+            suggestion: None,
+            severity,
+            tag: crate::errors::Tag::None,
+        };
+
+        self.global.errors.push(error);
     }
 
     pub fn clear_units_warnings(&mut self, source_range: &SourceRange) {
@@ -270,7 +298,7 @@ impl ExecState {
         }
     }
 
-    pub fn length_unit(&self) -> UnitLen {
+    pub fn length_unit(&self) -> UnitLength {
         self.mod_local.settings.default_length_units
     }
 
@@ -302,6 +330,7 @@ impl ExecState {
     pub(crate) fn error_with_outputs(
         &self,
         error: KclError,
+        main_ref: Option<EnvironmentRef>,
         default_planes: Option<DefaultPlanes>,
     ) -> KclErrorWithOutputs {
         let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = self
@@ -314,6 +343,9 @@ impl ExecState {
         KclErrorWithOutputs::new(
             error,
             self.errors().to_vec(),
+            main_ref
+                .map(|main_ref| self.mod_local.variables(main_ref))
+                .unwrap_or_default(),
             #[cfg(feature = "artifact-graph")]
             self.global.root_module_artifacts.operations.clone(),
             #[cfg(feature = "artifact-graph")]
@@ -482,12 +514,10 @@ impl ModuleState {
             module_exports: Default::default(),
             explicit_length_units: false,
             path,
-            settings: MetaSettings {
-                default_length_units: Default::default(),
-                default_angle_units: Default::default(),
-                kcl_version: "0.1".to_owned(),
-            },
+            settings: Default::default(),
             artifacts: Default::default(),
+            allowed_warnings: Vec::new(),
+            denied_warnings: Vec::new(),
         }
     }
 
@@ -499,13 +529,25 @@ impl ModuleState {
     }
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {
-    pub default_length_units: types::UnitLen,
-    pub default_angle_units: types::UnitAngle,
+    pub default_length_units: UnitLength,
+    pub default_angle_units: UnitAngle,
+    pub experimental_features: annotations::WarningLevel,
     pub kcl_version: String,
+}
+
+impl Default for MetaSettings {
+    fn default() -> Self {
+        MetaSettings {
+            default_length_units: UnitLength::Millimeters,
+            default_angle_units: UnitAngle::Degrees,
+            experimental_features: annotations::WarningLevel::Deny,
+            kcl_version: "1.0".to_owned(),
+        }
+    }
 }
 
 impl MetaSettings {
@@ -520,18 +562,32 @@ impl MetaSettings {
             match &*p.inner.key.name {
                 annotations::SETTINGS_UNIT_LENGTH => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = types::UnitLen::from_str(value, annotation.as_source_range())?;
+                    let value = super::types::length_from_str(value, annotation.as_source_range())?;
                     self.default_length_units = value;
                     updated_len = true;
                 }
                 annotations::SETTINGS_UNIT_ANGLE => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = types::UnitAngle::from_str(value, annotation.as_source_range())?;
+                    let value = super::types::angle_from_str(value, annotation.as_source_range())?;
                     self.default_angle_units = value;
                 }
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_number(&p.inner.value)?;
                     self.kcl_version = value;
+                }
+                annotations::SETTINGS_EXPERIMENTAL_FEATURES => {
+                    let value = annotations::expect_ident(&p.inner.value)?;
+                    let value = annotations::WarningLevel::from_str(value).map_err(|_| {
+                        KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Invalid value for {} settings property, expected one of: {}",
+                                annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+                                annotations::WARN_LEVELS.join(", ")
+                            ),
+                            annotation.as_source_ranges(),
+                        ))
+                    })?;
+                    self.experimental_features = value;
                 }
                 name => {
                     return Err(KclError::new_semantic(KclErrorDetails::new(

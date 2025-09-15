@@ -2,12 +2,13 @@ import type { PlatformPath } from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
+import type { IElectronAPI } from '@root/interface'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
   FILE_EXT,
 } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 
@@ -35,19 +36,20 @@ export const PATHS = {
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
 export async function getProjectMetaByRouteId(
-  readAppSettingsFile: () => Promise<DeepPartial<Configuration>>,
+  readAppSettingsFile: (
+    electron: IElectronAPI
+  ) => Promise<DeepPartial<Configuration>>,
   readLocalStorageAppSettingsFile: () => DeepPartial<Configuration> | Error,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<ProjectRoute | undefined> {
   if (!id) return undefined
 
-  const onDesktop = isDesktop()
   const isPlaywright = localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
   if (configuration === undefined || isPlaywright) {
-    configuration = onDesktop
-      ? await readAppSettingsFile()
+    configuration = window.electron
+      ? await readAppSettingsFile(window.electron)
       : readLocalStorageAppSettingsFile()
   }
 
@@ -169,7 +171,7 @@ export function safeEncodeForRouterPaths(dynamicValue: string): string {
  * Works on all OS!
  */
 export function getStringAfterLastSeparator(path: string): string {
-  return path.split(window.electron.sep).pop() || ''
+  return path.split(fsManager.path.sep).pop() || ''
 }
 
 /**
@@ -193,6 +195,31 @@ export function getProjectDirectoryFromKCLFilePath(
   return ''
 }
 
+export function parentPathRelativeToProject(
+  absoluteFilePath: string,
+  applicationProjectDirectory: string
+): string {
+  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
+  const [iAmABlankString, _projectDirectory, ...rest] =
+    desktopSafePathSplit(replacedPath)
+  if (iAmABlankString === '') {
+    return desktopSafePathJoin(rest)
+  }
+  return ''
+}
+
+export function parentPathRelativeToApplicationDirectory(
+  absoluteFilePath: string,
+  applicationProjectDirectory: string
+): string {
+  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
+  const [iAmABlankString, ...rest] = desktopSafePathSplit(replacedPath)
+  if (iAmABlankString === '') {
+    return desktopSafePathJoin(rest)
+  }
+  return ''
+}
+
 /**
  * Use this for only web related paths not paths in OS or on disk
  * e.g. document.location.pathname
@@ -211,11 +238,44 @@ export function webSafeJoin(paths: string[]): string {
  * Splits any paths safely based on the runtime
  */
 export function desktopSafePathSplit(path: string): string[] {
-  return isDesktop()
-    ? path.split(window?.electron?.sep)
+  return window.electron
+    ? path.split(window.electron.sep)
     : webSafePathSplit(path)
 }
 
 export function desktopSafePathJoin(paths: string[]): string {
-  return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
+  return window.electron ? paths.join(window.electron.sep) : webSafeJoin(paths)
+}
+
+/**
+ * Don't pass a folder path, only files with extensions for best results.
+ */
+export const enforceFileEXT = (
+  filePath: string,
+  ext: string | null
+): string | null => {
+  if (ext === null) {
+    return null
+  }
+  return filePath ? (filePath.endsWith(ext) ? filePath : filePath + ext) : null
+}
+
+export const getEXTNoPeriod = (filePath: string) => {
+  const extension = filePath.split('.').pop() || null
+  return extension
+}
+
+export const getEXTWithPeriod = (filePath: string) => {
+  let extension = getEXTNoPeriod(filePath)
+  if (extension) {
+    extension = '.' + extension
+  }
+  return extension
+}
+
+export const getParentAbsolutePath = (absolutePath: string) => {
+  const split = desktopSafePathSplit(absolutePath)
+  split.pop()
+  const joined = desktopSafePathJoin(split)
+  return joined
 }

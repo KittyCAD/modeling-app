@@ -68,10 +68,10 @@ mod log;
 mod lsp;
 mod modules;
 mod parsing;
+mod project;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
-mod source_range;
 pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
@@ -92,16 +92,17 @@ pub use errors::{
 pub use execution::{
     ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d, bust_cache, clear_mem_cache,
     typed_path::TypedPath,
-    types::{UnitAngle, UnitLen},
 };
+pub use kcl_error::SourceRange;
 pub use lsp::{
+    ToLspRange,
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use modules::ModuleId;
 pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
-pub use settings::types::{Configuration, UnitLength, project::ProjectConfiguration};
-pub use source_range::SourceRange;
+pub use project::ProjectManager;
+pub use settings::types::{Configuration, project::ProjectConfiguration};
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::{recast_dir, walk_dir};
 
@@ -112,7 +113,7 @@ pub mod exec {
     pub use crate::execution::{ArtifactCommand, Operation};
     pub use crate::execution::{
         DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
-        types::{NumericType, UnitAngle, UnitLen, UnitType},
+        types::{NumericType, UnitType},
     };
 }
 
@@ -194,8 +195,7 @@ pub use lsp::test_util::kcl_lsp_server;
 impl Program {
     pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationError>), KclError> {
         let module_id = ModuleId::default();
-        let tokens = parsing::token::lex(input, module_id)?;
-        let (ast, errs) = parsing::parse_tokens(tokens).0?;
+        let (ast, errs) = parsing::parse_str(input, module_id).0?;
 
         Ok((
             ast.map(|ast| Program {
@@ -208,8 +208,7 @@ impl Program {
 
     pub fn parse_no_errs(input: &str) -> Result<Program, KclError> {
         let module_id = ModuleId::default();
-        let tokens = parsing::token::lex(input, module_id)?;
-        let ast = parsing::parse_tokens(tokens).parse_errs_as_err()?;
+        let ast = parsing::parse_str(input, module_id).parse_errs_as_err()?;
 
         Ok(Program {
             ast,
@@ -229,11 +228,10 @@ impl Program {
     /// Change the meta settings for the kcl file.
     pub fn change_default_units(
         &self,
-        length_units: Option<execution::types::UnitLen>,
-        angle_units: Option<execution::types::UnitAngle>,
+        length_units: Option<kittycad_modeling_cmds::units::UnitLength>,
     ) -> Result<Self, KclError> {
         Ok(Self {
-            ast: self.ast.change_default_units(length_units, angle_units)?,
+            ast: self.ast.change_default_units(length_units)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }
@@ -256,11 +254,11 @@ impl Program {
 
     pub fn recast(&self) -> String {
         // Use the default options until we integrate into the UI the ability to change them.
-        self.ast.recast(&Default::default(), 0)
+        self.ast.recast_top(&Default::default(), 0)
     }
 
     pub fn recast_with_options(&self, options: &FormatOptions) -> String {
-        self.ast.recast(options, 0)
+        self.ast.recast_top(options, 0)
     }
 
     /// Create an empty program.

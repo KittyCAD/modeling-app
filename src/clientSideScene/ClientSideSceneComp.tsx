@@ -23,12 +23,12 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import type { ConstrainInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/sourceRange'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import {
   codeManager,
@@ -38,10 +38,10 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { err, reportRejection, trap } from '@src/lib/trap'
-import { throttle, toSync } from '@src/lib/utils'
 import type { useSettings } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { throttle, toSync } from '@src/lib/utils'
 import type { SegmentOverlay } from '@src/machines/modelingMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
@@ -69,10 +69,14 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 
 export const ClientSideScene = ({
   cameraControls,
+  enableTouchControls,
 }: {
   cameraControls: ReturnType<
     typeof useSettings
   >['modeling']['mouseControls']['current']
+  enableTouchControls: ReturnType<
+    typeof useSettings
+  >['modeling']['enableTouchControls']['current']
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()
@@ -85,6 +89,9 @@ export const ClientSideScene = ({
       cameraMouseDragGuards[cameraControls]
   }, [cameraControls])
   useEffect(() => {
+    sceneInfra.camControls.initTouchControls(enableTouchControls)
+  }, [enableTouchControls])
+  useEffect(() => {
     sceneInfra.updateOtherSelectionColors(
       state?.context?.selectionRanges?.otherSelections || []
     )
@@ -95,7 +102,7 @@ export const ClientSideScene = ({
     const canvas = canvasRef.current
     canvas.appendChild(sceneInfra.renderer.domElement)
     canvas.appendChild(sceneInfra.labelRenderer.domElement)
-    sceneInfra.onWindowResize()
+    sceneInfra.onCanvasResized()
     sceneInfra.animate()
     canvas.addEventListener(
       'mousemove',
@@ -121,6 +128,38 @@ export const ClientSideScene = ({
         toSync(sceneInfra.onMouseUp, reportRejection)
       )
       sceneEntitiesManager.tearDownSketch({ removeAxis: true })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    // Detect canvas size changes
+    const observer = new ResizeObserver(() => {
+      sceneInfra.onCanvasResized()
+      sceneInfra.camControls.onWindowResize()
+    })
+    observer.observe(canvas)
+
+    // Detect dpr changes
+    let media = window.matchMedia(
+      `(resolution: ${window.devicePixelRatio}dppx)`
+    )
+    function handleChange() {
+      media.removeEventListener('change', handleChange)
+      media = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`)
+      media.addEventListener('change', handleChange)
+
+      sceneInfra.onCanvasResized()
+      sceneInfra.camControls.onWindowResize()
+    }
+    media.addEventListener('change', handleChange)
+
+    return () => {
+      observer.disconnect()
+      media.removeEventListener('change', handleChange)
     }
   }, [])
 
@@ -491,6 +530,7 @@ const ConstraintSymbol = ({
 
   const _node = useMemo(
     () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [kclManager.ast, pathToNode]
   )
   if (err(_node)) return
@@ -655,11 +695,13 @@ export const CamDebugSettings = () => {
 
   useEffect(() => {
     sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [sceneInfra])
   useEffect(() => {
     if (camSettings.type === 'perspective' && camSettings.fov) {
       setFov(camSettings.fov)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [(camSettings as any)?.fov])
 
   return (

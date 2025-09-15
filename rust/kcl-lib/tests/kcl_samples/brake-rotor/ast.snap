@@ -479,13 +479,13 @@ description: Result of parsing brake-rotor.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "raw": "90",
+            "raw": "90deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 90.0,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "moduleId": 0,
@@ -516,13 +516,13 @@ description: Result of parsing brake-rotor.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "raw": "30",
+            "raw": "30deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 30.0,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "moduleId": 0,
@@ -590,13 +590,13 @@ description: Result of parsing brake-rotor.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "raw": "5",
+            "raw": "5deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 5.0,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "moduleId": 0,
@@ -3778,13 +3778,13 @@ description: Result of parsing brake-rotor.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "start": 0,
@@ -4926,13 +4926,13 @@ description: Result of parsing brake-rotor.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "360",
+                  "raw": "360deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 360.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 }
               },
@@ -5564,13 +5564,13 @@ description: Result of parsing brake-rotor.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "90",
+                  "raw": "90deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 90.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 },
                 "moduleId": 0,
@@ -5708,13 +5708,13 @@ description: Result of parsing brake-rotor.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "90",
+                  "raw": "90deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 90.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 },
                 "moduleId": 0,
@@ -6299,13 +6299,13 @@ description: Result of parsing brake-rotor.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -6416,14 +6416,7 @@ description: Result of parsing brake-rotor.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -7046,14 +7039,7 @@ description: Result of parsing brake-rotor.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -7539,13 +7525,13 @@ description: Result of parsing brake-rotor.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "360",
+                      "raw": "360deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 360.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -7594,14 +7580,7 @@ description: Result of parsing brake-rotor.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               }
             ],
             "commentStart": 0,

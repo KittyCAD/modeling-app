@@ -7,6 +7,7 @@ pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
 pub mod clone;
+pub mod constraints;
 pub mod csg;
 pub mod edge;
 pub mod extrude;
@@ -42,7 +43,6 @@ pub type StdFn = fn(
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct StdFnProps {
     pub name: String,
-    pub deprecated: bool,
     pub include_in_feature_tree: bool,
 }
 
@@ -50,7 +50,6 @@ impl StdFnProps {
     fn default(name: &str) -> Self {
         Self {
             name: name.to_owned(),
-            deprecated: false,
             include_in_feature_tree: false,
         }
     }
@@ -463,6 +462,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("appearance", "hexString") => (
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
             StdFnProps::default("std::appearance::hexString"),
+        ),
+        ("sketch2", "parallel") => (
+            |e, a| Box::pin(crate::std::constraints::parallel(e, a)),
+            StdFnProps::default("std::sketch2::parallel").include_in_feature_tree(),
         ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")

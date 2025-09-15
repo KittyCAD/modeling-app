@@ -1,6 +1,11 @@
 import env from '@src/env'
+import {
+  generateDomainsFromBaseDomain,
+  processEnv,
+  viteEnv,
+  windowElectronProcessEnv,
+} from '@src/env'
 import { vi } from 'vitest'
-import { viteEnv, windowElectronProcessEnv, processEnv } from '@src/env'
 
 describe('@src/env', () => {
   describe('default export', () => {
@@ -8,23 +13,20 @@ describe('@src/env', () => {
       // vite > node.js
       const expected = {
         NODE_ENV: 'test',
+        VITE_KITTYCAD_BASE_DOMAIN: 'dev.zoo.dev',
         VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
         VITE_KITTYCAD_API_WEBSOCKET_URL:
           'wss://api.dev.zoo.dev/ws/modeling/commands',
         VITE_KITTYCAD_API_TOKEN: 'redacted',
         VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
         VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-        PROD: undefined,
-        TEST: 'true',
-        DEV: '1',
-        CI: 'true',
+        POOL: '',
       }
       const actual = env()
+      // Gotcha: If this fails you need a token in .env.development.local
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       //@ts-ignore I do not want this token in our logs for any reason.
       actual.VITE_KITTYCAD_API_TOKEN = 'redacted'
-      //@ts-ignore need to hard code this for localhost and CI
-      actual.CI = 'true'
       expect(actual).toStrictEqual(expected)
     })
   })
@@ -34,15 +36,9 @@ describe('@src/env', () => {
       // We only need to match against EnvironmentVariables
       const actual = viteEnv()
       expect(typeof actual.NODE_ENV).toBe('string')
-      expect(typeof actual.VITE_KITTYCAD_API_BASE_URL).toBe('string')
-      expect(typeof actual.VITE_KITTYCAD_API_WEBSOCKET_URL).toBe('string')
+      // Gotcha: If this fails you need a token in .env.development.local
       expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
-      expect(typeof actual.VITE_KITTYCAD_SITE_BASE_URL).toBe('string')
-      expect(typeof actual.VITE_KITTYCAD_SITE_APP_URL).toBe('string')
-      expect(typeof actual.PROD).toBe('boolean')
-      expect(typeof actual.TEST).toBe('string')
-      expect(typeof actual.DEV).toBe('boolean')
-      // Don't check CI...
+      expect(typeof actual.VITE_KITTYCAD_BASE_DOMAIN).toBe('string')
     })
   })
   describe('windowElectronProcessEnv', () => {
@@ -63,10 +59,6 @@ describe('@src/env', () => {
               VITE_KITTYCAD_API_TOKEN: 'redacted',
               VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
               VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-              PROD: undefined,
-              TEST: 'true',
-              DEV: '1',
-              CI: undefined,
             },
           },
         })
@@ -78,10 +70,6 @@ describe('@src/env', () => {
           VITE_KITTYCAD_API_TOKEN: 'redacted',
           VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
           VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
-          PROD: undefined,
-          TEST: 'true',
-          DEV: '1',
-          CI: undefined,
         }
         const actual = windowElectronProcessEnv()
         expect(actual).toStrictEqual(expected)
@@ -103,15 +91,41 @@ describe('@src/env', () => {
       const actual = processEnv()
       expect(!!actual).toBe(true)
       expect(typeof actual?.NODE_ENV).toBe('string')
-      expect(typeof actual?.VITE_KITTYCAD_API_BASE_URL).toBe('string')
-      expect(typeof actual?.VITE_KITTYCAD_API_WEBSOCKET_URL).toBe('string')
+      expect(typeof actual?.VITE_KITTYCAD_BASE_DOMAIN).toBe('string')
+      // Gotcha: If this fails you need a token in .env.development.local
       expect(typeof actual?.VITE_KITTYCAD_API_TOKEN).toBe('string')
-      expect(typeof actual?.VITE_KITTYCAD_SITE_BASE_URL).toBe('string')
-      expect(typeof actual?.VITE_KITTYCAD_SITE_APP_URL).toBe('string')
-      expect(typeof actual?.PROD).toBe('string')
-      expect(typeof actual?.TEST).toBe('string')
-      expect(typeof actual?.DEV).toBe('string')
-      // Don't check CI...
+    })
+  })
+  describe('generateDomainsFromBaseDomain', () => {
+    it('should generate domains with the empty string', () => {
+      const expected = {
+        API_URL: 'https://api.',
+        SITE_URL: 'https://',
+        WEBSOCKET_URL: 'wss://api./ws/modeling/commands',
+        APP_URL: 'https://app.',
+      }
+      const actual = generateDomainsFromBaseDomain('')
+      expect(actual).toStrictEqual(expected)
+    })
+    it('should generate dev.zoo domains', () => {
+      const expected = {
+        API_URL: 'https://api.zoo.dev',
+        SITE_URL: 'https://zoo.dev',
+        WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
+        APP_URL: 'https://app.zoo.dev',
+      }
+      const actual = generateDomainsFromBaseDomain('zoo.dev')
+      expect(actual).toStrictEqual(expected)
+    })
+    it('should generate dev.dev.zoo domains', () => {
+      const expected = {
+        API_URL: 'https://api.dev.zoo.dev',
+        SITE_URL: 'https://dev.zoo.dev',
+        WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
+        APP_URL: 'https://app.dev.zoo.dev',
+      }
+      const actual = generateDomainsFromBaseDomain('dev.zoo.dev')
+      expect(actual).toStrictEqual(expected)
     })
   })
 })

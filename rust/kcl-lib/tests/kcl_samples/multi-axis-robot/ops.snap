@@ -11,9 +11,9 @@ description: Operations executed multi-axis-robot.kcl
         "type": "Number",
         "value": 25.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "export",
@@ -29,9 +29,9 @@ description: Operations executed multi-axis-robot.kcl
         "type": "Number",
         "value": 60.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "export",
@@ -47,9 +47,9 @@ description: Operations executed multi-axis-robot.kcl
         "type": "Number",
         "value": 110.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "export",
@@ -65,9 +65,9 @@ description: Operations executed multi-axis-robot.kcl
         "type": "Number",
         "value": 80.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "export",
@@ -84,12 +84,8 @@ description: Operations executed multi-axis-robot.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -106,12 +102,8 @@ description: Operations executed multi-axis-robot.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -128,12 +120,8 @@ description: Operations executed multi-axis-robot.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -150,12 +138,8 @@ description: Operations executed multi-axis-robot.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -172,12 +156,8 @@ description: Operations executed multi-axis-robot.kcl
         "value": 31.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -194,12 +174,8 @@ description: Operations executed multi-axis-robot.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -216,12 +192,8 @@ description: Operations executed multi-axis-robot.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -237,9 +209,9 @@ description: Operations executed multi-axis-robot.kcl
         "type": "Number",
         "value": -10.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "export",
@@ -256,12 +228,8 @@ description: Operations executed multi-axis-robot.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -278,12 +246,8 @@ description: Operations executed multi-axis-robot.kcl
         "value": 3.75,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -300,12 +264,8 @@ description: Operations executed multi-axis-robot.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -433,12 +393,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -468,12 +424,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -553,12 +505,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 3.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -588,12 +536,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -661,12 +605,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -745,12 +685,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": -0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -792,33 +728,10 @@ description: Operations executed multi-axis-robot.kcl
       "name": "extrude",
       "unlabeledArg": {
         "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
         },
         "sourceRange": []
       },
@@ -829,12 +742,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": -0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -850,33 +759,10 @@ description: Operations executed multi-axis-robot.kcl
       "name": "appearance",
       "unlabeledArg": {
         "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
         },
         "sourceRange": []
       },
@@ -953,12 +839,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": -2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1014,12 +896,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1049,12 +927,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1122,12 +996,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1157,12 +1027,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1277,12 +1143,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1361,12 +1223,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1422,12 +1280,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1523,12 +1377,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1584,12 +1434,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1619,12 +1465,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1739,12 +1581,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1800,12 +1638,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": -0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1861,12 +1695,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": -0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1885,12 +1715,8 @@ description: Operations executed multi-axis-robot.kcl
         "value": 7.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1944,12 +1770,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": -0.01,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2005,12 +1827,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2066,12 +1884,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2167,12 +1981,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.4,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2202,12 +2012,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2313,12 +2119,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2374,12 +2176,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2409,12 +2207,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2505,12 +2299,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.2,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2566,12 +2356,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2601,12 +2387,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2712,12 +2494,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2838,6 +2616,7 @@ description: Operations executed multi-axis-robot.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

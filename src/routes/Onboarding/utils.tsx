@@ -6,37 +6,37 @@ import {
 } from 'react-router-dom'
 import { type SnapshotFrom, waitFor } from 'xstate'
 
+import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { Logo } from '@src/components/Logo'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { browserAxialFan, fanParts } from '@src/lib/exampleKcl'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { joinRouterPaths, PATHS } from '@src/lib/paths'
-import { commandBarActor, systemIOActor } from '@src/lib/singletons'
-import { err, reportRejection } from '@src/lib/trap'
-import { settingsActor } from '@src/lib/singletons'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
 import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
   ONBOARDING_PROJECT_NAME,
   ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
-import toast from 'react-hot-toast'
-import type CodeManager from '@src/lang/codeManager'
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import { browserAxialFan, fanParts } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { KclManager } from '@src/lang/KclSingleton'
-import { Logo } from '@src/components/Logo'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
-  isOnboardingPath,
   type OnboardingPath,
+  isOnboardingPath,
   onboardingPaths,
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import { PATHS, joinRouterPaths } from '@src/lib/paths'
+import { commandBarActor, systemIOActor } from '@src/lib/singletons'
+import { settingsActor } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import toast from 'react-hot-toast'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -502,8 +502,8 @@ export function useOnboardingHighlight(elementId: string) {
  * Utility hook to set the pane state on mount and unmount.
  */
 export function useOnboardingPanes(
-  onMount: SidebarType[] | undefined = [],
-  onUnmount: SidebarType[] | undefined = []
+  onMount: SidebarId[] | undefined = [],
+  onUnmount: SidebarId[] | undefined = []
 ) {
   const { send } = useModelingContext()
   useEffect(() => {
@@ -521,6 +521,7 @@ export function useOnboardingPanes(
           openPanes: onUnmount,
         },
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [send])
 }
 
@@ -567,6 +568,7 @@ export function useOnModelingCmdGroupReadyOnce(
     if (isReadyOnce) {
       callback()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [isReadyOnce, ...deps])
 }
 

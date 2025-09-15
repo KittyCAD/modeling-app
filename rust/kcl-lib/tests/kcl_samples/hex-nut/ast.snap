@@ -223,7 +223,7 @@ description: Result of parsing hex-nut.kcl
                                     "end": 0,
                                     "left": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -287,7 +287,7 @@ description: Result of parsing hex-nut.kcl
                                   },
                                   {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
                                     "moduleId": 0,
                                     "object": {
@@ -842,7 +842,7 @@ description: Result of parsing hex-nut.kcl
                                       "elements": [
                                         {
                                           "commentStart": 0,
-                                          "computed": false,
+                                          "computed": true,
                                           "end": 0,
                                           "moduleId": 0,
                                           "object": {
@@ -882,7 +882,7 @@ description: Result of parsing hex-nut.kcl
                                         },
                                         {
                                           "commentStart": 0,
-                                          "computed": false,
+                                          "computed": true,
                                           "end": 0,
                                           "moduleId": 0,
                                           "object": {

@@ -1,8 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type {
-  EntityType_type,
-  ModelingCmdReq_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { EntityType, ModelingCmdReq } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
@@ -48,6 +45,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, uuidv4 } from '@src/lib/utils'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type { PlaneVisibilityMap } from '@src/machines/modelingMachine'
 
 interface ExecuteArgs {
@@ -110,6 +108,11 @@ export class KclManager extends EventTarget {
   private _variables: VariableMap = {}
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
+  /**
+   * Since the operations reference the code, we need to store the code that the
+   * operations were executed on.
+   */
+  lastSuccessfulCode: string = ''
   private _logs: string[] = []
   private _errors: KCLError[] = []
   private _diagnostics: Diagnostic[] = []
@@ -158,6 +161,7 @@ export class KclManager extends EventTarget {
 
     // These belonged to the previous file
     this.lastSuccessfulOperations = []
+    this.lastSuccessfulCode = ''
     this.lastSuccessfulVariables = {}
 
     // Without this, when leaving a project which has errors and opening another project which doesn't,
@@ -456,11 +460,21 @@ export class KclManager extends EventTarget {
     this.isExecuting = true
     await this.ensureWasmInit()
 
+    const codeThatExecuted = this.singletons.codeManager.code
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.singletons.codeManager.currentFilePath || undefined,
       rustContext: this.singletons.rustContext,
     })
+
+    const livePathsToWatch = Object.values(execState.filenames)
+      .filter((file) => {
+        return file?.type === 'Local'
+      })
+      .map((file) => {
+        return file.value
+      })
+    kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
 
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
@@ -506,6 +520,7 @@ export class KclManager extends EventTarget {
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
+      this.lastSuccessfulCode = codeThatExecuted
     }
     this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
@@ -560,6 +575,7 @@ export class KclManager extends EventTarget {
     }
     this._ast = { ...newAst }
 
+    const codeThatExecuted = this.singletons.codeManager.code
     const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
       rustContext: this.singletons.rustContext,
@@ -571,6 +587,7 @@ export class KclManager extends EventTarget {
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
+      this.lastSuccessfulCode = codeThatExecuted
     }
     await this.updateArtifactGraph(execState.artifactGraph)
     return null
@@ -771,7 +788,7 @@ export class KclManager extends EventTarget {
     setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)
   }
   /** TODO: this function is hiding unawaited asynchronous work */
-  setSelectionFilter(filter: EntityType_type[]) {
+  setSelectionFilter(filter: EntityType[]) {
     setSelectionFilter(filter, this.engineCommandManager)
   }
 
@@ -804,7 +821,7 @@ export class KclManager extends EventTarget {
   }
 }
 
-const defaultSelectionFilter: EntityType_type[] = [
+const defaultSelectionFilter: EntityType[] = [
   'face',
   'edge',
   'solid2d',
@@ -827,7 +844,7 @@ function setSelectionFilterToDefault(
 
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilter(
-  filter: EntityType_type[],
+  filter: EntityType[],
   engineCommandManager: EngineCommandManager,
   selectionsToRestore?: Selections
 ) {
@@ -848,7 +865,7 @@ function setSelectionFilter(
     })
     return
   }
-  const modelingCmd: ModelingCmdReq_type[] = []
+  const modelingCmd: ModelingCmdReq[] = []
   engineEvents.forEach((event) => {
     if (event.type === 'modeling_cmd_req') {
       modelingCmd.push({

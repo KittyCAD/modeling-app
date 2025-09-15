@@ -9,7 +9,29 @@ description: Variables in memory after executing bottle.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -29,9 +51,7 @@ description: Variables in memory after executing bottle.kcl
               26.666666666666668
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -60,9 +80,7 @@ description: Variables in memory after executing bottle.kcl
               26.666666666666668
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -79,9 +97,7 @@ description: Variables in memory after executing bottle.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -98,9 +114,7 @@ description: Variables in memory after executing bottle.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -110,9 +124,7 @@ description: Variables in memory after executing bottle.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -120,25 +132,19 @@ description: Variables in memory after executing bottle.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -150,9 +156,7 @@ description: Variables in memory after executing bottle.kcl
             -62.5,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -161,16 +165,11 @@ description: Variables in memory after executing bottle.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 202.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -179,12 +178,8 @@ description: Variables in memory after executing bottle.kcl
     "value": 220.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "bottleLength": {
@@ -192,12 +187,8 @@ description: Variables in memory after executing bottle.kcl
     "value": 125.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "bottleNeck": {
@@ -240,9 +231,7 @@ description: Variables in memory after executing bottle.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -254,23 +243,41 @@ description: Variables in memory after executing bottle.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
             "artifactId": "[uuid]",
-            "value": [],
+            "value": [
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudeArc"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              }
+            ],
             "sketch": {
               "type": "Sketch",
               "id": "[uuid]",
@@ -290,9 +297,7 @@ description: Variables in memory after executing bottle.kcl
                     26.666666666666668
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -321,9 +326,7 @@ description: Variables in memory after executing bottle.kcl
                     26.666666666666668
                   ],
                   "type": "ArcThreePoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -340,9 +343,7 @@ description: Variables in memory after executing bottle.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -359,9 +360,7 @@ description: Variables in memory after executing bottle.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -371,9 +370,7 @@ description: Variables in memory after executing bottle.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XY",
@@ -381,25 +378,19 @@ description: Variables in memory after executing bottle.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -411,9 +402,7 @@ description: Variables in memory after executing bottle.kcl
                   -62.5,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -422,21 +411,14 @@ description: Variables in memory after executing bottle.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 202.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -447,9 +429,7 @@ description: Variables in memory after executing bottle.kcl
             22.5,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -458,16 +438,11 @@ description: Variables in memory after executing bottle.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 18.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -511,9 +486,7 @@ description: Variables in memory after executing bottle.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -525,23 +498,41 @@ description: Variables in memory after executing bottle.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
             "artifactId": "[uuid]",
-            "value": [],
+            "value": [
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudeArc"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [],
+                "tag": null,
+                "type": "extrudePlane"
+              }
+            ],
             "sketch": {
               "type": "Sketch",
               "id": "[uuid]",
@@ -561,9 +552,7 @@ description: Variables in memory after executing bottle.kcl
                     26.666666666666668
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -592,9 +581,7 @@ description: Variables in memory after executing bottle.kcl
                     26.666666666666668
                   ],
                   "type": "ArcThreePoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -611,9 +598,7 @@ description: Variables in memory after executing bottle.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -630,9 +615,7 @@ description: Variables in memory after executing bottle.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -642,9 +625,7 @@ description: Variables in memory after executing bottle.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XY",
@@ -652,25 +633,19 @@ description: Variables in memory after executing bottle.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -682,9 +657,7 @@ description: Variables in memory after executing bottle.kcl
                   -62.5,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -693,21 +666,14 @@ description: Variables in memory after executing bottle.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 202.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -718,9 +684,7 @@ description: Variables in memory after executing bottle.kcl
             22.5,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -729,16 +693,11 @@ description: Variables in memory after executing bottle.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 18.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -747,12 +706,8 @@ description: Variables in memory after executing bottle.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "neckDepth": {
@@ -760,12 +715,8 @@ description: Variables in memory after executing bottle.kcl
     "value": 18.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "neckDiameter": {
@@ -773,12 +724,8 @@ description: Variables in memory after executing bottle.kcl
     "value": 45.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "wallThickness": {
@@ -786,12 +733,8 @@ description: Variables in memory after executing bottle.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

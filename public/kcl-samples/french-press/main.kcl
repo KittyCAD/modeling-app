@@ -13,11 +13,11 @@ handleThickness = 0.65
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [carafeDiameter / 2, 5.7])
   |> angledLine(angle = 0, length = 0.1, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = -0.75, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = -0.75, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> revolve(angle = 360, axis = Y)
+  |> revolve(angle = 360deg, axis = Y)
 
 // Create an angled plane to sketch the supports
 plane001 = {
@@ -32,19 +32,19 @@ sketch002 = startSketchOn(plane001)
   |> startProfile(at = [carafeDiameter / 2, 5.7])
   |> xLine(length = 0.1)
   |> yLine(length = -5.2, tag = $edge1)
-  |> arc(angleStart = 180, angleEnd = 205, radius = 0.3)
-  |> angledLine(angle = -60, length = 0.6, tag = $edge2)
-  |> arc(angleStart = 30, angleEnd = -120, radius = 0.6)
-  |> angledLine(angle = 150, endAbsoluteY = -0.2, tag = $edge3)
-  |> arc(angleStart = 60, angleEnd = 90, radius = 0.5)
+  |> arc(angleStart = 180deg, angleEnd = 205deg, radius = 0.3)
+  |> angledLine(angle = -60deg, length = 0.6, tag = $edge2)
+  |> arc(angleStart = 30deg, angleEnd = -120deg, radius = 0.6)
+  |> angledLine(angle = 150deg, endAbsoluteY = -0.2, tag = $edge3)
+  |> arc(angleStart = 60deg, angleEnd = 90deg, radius = 0.5)
   |> xLine(endAbsolute = 0.1, tag = $edgeLen)
   |> yLine(length = 0.1)
   |> xLine(length = segLen(edgeLen) + 0.035, tag = $edge4)
-  |> arc(angleStart = 90, angleEnd = 60, radius = 0.6)
-  |> angledLine(angle = 150, length = -segLen(edge3) + 0.035, tag = $edge5)
-  |> arc(angleStart = -120, angleEnd = 30, radius = 0.5)
-  |> angledLine(angle = -60, length = -segLen(edge2) + 0.035, tag = $edge6)
-  |> arc(angleStart = 205, angleEnd = 180, radius = 0.6)
+  |> arc(angleStart = 90deg, angleEnd = 60deg, radius = 0.6)
+  |> angledLine(angle = 150deg, length = -segLen(edge3) + 0.035, tag = $edge5)
+  |> arc(angleStart = -120deg, angleEnd = 30deg, radius = 0.5)
+  |> angledLine(angle = -60deg, length = -segLen(edge2) + 0.035, tag = $edge6)
+  |> arc(angleStart = 205deg, angleEnd = 180deg, radius = 0.6)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 0.75)
@@ -52,7 +52,7 @@ sketch002 = startSketchOn(plane001)
        axis = [0, 0, 1],
        center = [0, 0, 0],
        instances = 4,
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
 
@@ -65,7 +65,7 @@ extrude001 = extrude(sketch003, length = 0.050)
 sketch004 = startSketchOn(extrude001, face = END)
   |> startProfile(at = [0.3, 0.17])
   |> yLine(length = 1.2)
-  |> arc(angleStart = 90, angleEnd = -30, radius = 1.2)
+  |> arc(angleStart = 90deg, angleEnd = -30deg, radius = 1.2)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> patternCircular2d(
@@ -81,9 +81,9 @@ extrude002 = extrude(sketch004, length = -0.050)
 sketch005 = startSketchOn(XZ)
   |> startProfile(at = [0.15, 1.11])
   |> xLine(endAbsolute = carafeDiameter / 2 - 0.2)
-  |> angledLine(angle = 30, endAbsoluteX = carafeDiameter / 2 - 0.07, tag = $seg1)
-  |> angledLine(angle = -60, length = 0.050)
-  |> angledLine(angle = 30, length = -segLen(seg1))
+  |> angledLine(angle = 30deg, endAbsoluteX = carafeDiameter / 2 - 0.07, tag = $seg1)
+  |> angledLine(angle = -60deg, length = 0.050)
+  |> angledLine(angle = 30deg, length = -segLen(seg1))
   |> xLine(endAbsolute = 0.15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -93,11 +93,11 @@ sketch005 = startSketchOn(XZ)
 sketch006 = startSketchOn(XZ)
   |> startProfile(at = [0.1, 1])
   |> line(end = [0.1, 0])
-  |> angledLine(angle = 10, endAbsoluteX = 0.05)
+  |> angledLine(angle = 10deg, endAbsoluteX = 0.05)
   |> yLine(length = 10)
   |> line(end = [0.6, 0])
   |> yLine(length = -.05)
-  |> tangentialArc(radius = 0.6, angle = -90)
+  |> tangentialArc(radius = 0.6, angle = -90deg)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> revolve(axis = Y)
@@ -115,7 +115,7 @@ sketch008 = startSketchOn(extrude003, face = END)
   |> patternCircular2d(
        center = [0, 0],
        instances = 8,
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
 
@@ -127,7 +127,7 @@ sketch009 = startSketchOn(extrude003, face = END)
   |> patternCircular2d(
        center = [0, 0],
        instances = 4,
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
 

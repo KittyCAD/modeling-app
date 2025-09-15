@@ -35,25 +35,24 @@ import {
   rectangularSelection,
 } from '@codemirror/view'
 import interact from '@replit/codemirror-interact'
-import env from '@src/env'
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useRef } from 'react'
 
 import { useLspContext } from '@src/components/LspProvider'
 import CodeEditor from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'
+import { historyCompartment } from '@src/editor/compartments'
 import { lineHighlightField } from '@src/editor/highlightextension'
 import { modelingMachineEvent } from '@src/editor/manager'
-import { historyCompartment } from '@src/editor/compartments'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
-import { Themes, getSystemTheme } from '@src/lib/theme'
-import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
 import { useSettings } from '@src/lib/singletons'
+import { Themes, getSystemTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
 import {
   editorIsMountedSelector,
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
-import { reportRejection } from '@src/lib/trap'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -148,45 +147,43 @@ export const KclEditorPane = () => {
     if (kclLSP) extensions.push(Prec.highest(kclLSP))
     if (copilotLSP) extensions.push(copilotLSP)
 
-    // These extensions have proven to mess with vitest
-    if (!env().TEST) {
-      extensions.push(
-        lintGutter(),
-        lineNumbers(),
-        highlightActiveLineGutter(),
-        highlightSpecialChars(),
-        foldGutter(),
-        EditorState.allowMultipleSelections.of(true),
-        indentOnInput(),
-        bracketMatching(),
-        closeBrackets(),
-        highlightActiveLine(),
-        highlightSelectionMatches(),
-        syntaxHighlighting(defaultHighlightStyle, {
-          fallback: true,
-        }),
-        rectangularSelection(),
-        dropCursor(),
-        interact({
-          rules: [
-            // a rule for a number dragger
-            {
-              // the regexp matching the value
-              regexp: onMouseDragRegex,
-              // set cursor to "ew-resize" on hover
-              cursor: 'ew-resize',
-              // change number value based on mouse X movement on drag
-              onDrag: (text, setText, e) => {
-                onMouseDragMakeANewNumber(text, setText, e)
-              },
+    extensions.push(
+      lintGutter(),
+      lineNumbers(),
+      highlightActiveLineGutter(),
+      highlightSpecialChars(),
+      foldGutter(),
+      EditorState.allowMultipleSelections.of(true),
+      indentOnInput(),
+      bracketMatching(),
+      closeBrackets(),
+      highlightActiveLine(),
+      highlightSelectionMatches(),
+      syntaxHighlighting(defaultHighlightStyle, {
+        fallback: true,
+      }),
+      rectangularSelection(),
+      dropCursor(),
+      interact({
+        rules: [
+          // a rule for a number dragger
+          {
+            // the regexp matching the value
+            regexp: onMouseDragRegex,
+            // set cursor to "ew-resize" on hover
+            cursor: 'ew-resize',
+            // change number value based on mouse X movement on drag
+            onDrag: (text, setText, e) => {
+              onMouseDragMakeANewNumber(text, setText, e)
             },
-          ],
-        })
-      )
-      if (textWrapping.current) extensions.push(EditorView.lineWrapping)
-    }
+          },
+        ],
+      })
+    )
+    if (textWrapping.current) extensions.push(EditorView.lineWrapping)
 
     return extensions
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
 
   const initialCode = useRef(codeManager.code)

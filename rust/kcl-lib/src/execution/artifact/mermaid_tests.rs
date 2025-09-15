@@ -73,11 +73,21 @@ impl Artifact {
                 ids
             }
             Artifact::Plane(_) => Vec::new(),
-            Artifact::Path(a) => vec![a.plane_id],
+            Artifact::Path(a) => {
+                let mut ids = vec![a.plane_id];
+                if let Some(inner_path_id) = a.inner_path_id {
+                    ids.push(inner_path_id);
+                }
+                if let Some(outer_path_id) = a.outer_path_id {
+                    ids.push(outer_path_id);
+                }
+                ids
+            }
             Artifact::Segment(a) => vec![a.path_id],
             Artifact::Solid2d(a) => vec![a.path_id],
             Artifact::StartSketchOnFace(a) => vec![a.face_id],
             Artifact::StartSketchOnPlane(a) => vec![a.plane_id],
+            Artifact::PlaneOfFace(a) => vec![a.face_id],
             Artifact::Sweep(a) => vec![a.path_id],
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
@@ -103,7 +113,8 @@ impl Artifact {
             }
             Artifact::Plane(a) => a.path_ids.clone(),
             Artifact::Path(a) => {
-                // Note: Don't include these since they're parents: plane_id.
+                // Note: Don't include these since they're parents: plane_id,
+                // inner_path_id, outer_path_id.
                 let mut ids = a.seg_ids.clone();
                 if let Some(sweep_id) = a.sweep_id {
                     ids.push(sweep_id);
@@ -139,6 +150,10 @@ impl Artifact {
             }
             Artifact::StartSketchOnPlane { .. } => {
                 // Note: Don't include these since they're parents: plane_id.
+                Vec::new()
+            }
+            Artifact::PlaneOfFace { .. } => {
+                // Note: Don't include these since they're parents: face_id.
                 Vec::new()
             }
             Artifact::Sweep(a) => {
@@ -252,6 +267,7 @@ impl ArtifactGraph {
                 }
                 Artifact::StartSketchOnFace { .. }
                 | Artifact::StartSketchOnPlane { .. }
+                | Artifact::PlaneOfFace { .. }
                 | Artifact::Sweep(_)
                 | Artifact::Wall(_)
                 | Artifact::Cap(_)
@@ -367,6 +383,14 @@ impl ArtifactGraph {
                 writeln!(
                     output,
                     "{prefix}{id}[\"StartSketchOnPlane<br>{:?}\"]",
+                    code_ref_display(code_ref)
+                )?;
+                node_path_display(output, prefix, None, code_ref)?;
+            }
+            Artifact::PlaneOfFace(PlaneOfFace { code_ref, .. }) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"PlaneOfFace<br>{:?}\"]",
                     code_ref_display(code_ref)
                 )?;
                 node_path_display(output, prefix, None, code_ref)?;

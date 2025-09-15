@@ -1,21 +1,34 @@
 import { executeAstMock } from '@src/lang/langHelpers'
 import {
-  type CallExpressionKw,
+  type SourceRange,
+  type KclValue,
   formatNumberValue,
   parse,
   resultIsOk,
 } from '@src/lang/wasm'
-import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
+import type { KclExpression } from '@src/lib/commandTypes'
 import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
+// Type guard for number value items
+type KclNumber<T = KclValue> = T extends { type: 'Number' } ? T : never
+function isNumberValueItem(item: KclValue): item is KclNumber {
+  return item.type === 'Number'
+}
+
 /**
  * Calculate the value of the KCL expression,
  * given the value and the variables that are available in memory.
+ * @param value - KCL expression to evaluate
+ * @param allowArrays - Allow array values in result
+ * @returns AST node and formatted value, or error
  */
-export async function getCalculatedKclExpressionValue(value: string) {
+export async function getCalculatedKclExpressionValue(
+  value: string,
+  allowArrays?: boolean
+) {
   // Create a one-line program that assigns the value to a variable
   const dummyProgramCode = `${DUMMY_VARIABLE_NAME} = ${value}`
   const pResult = parse(dummyProgramCode)
@@ -38,6 +51,52 @@ export async function getCalculatedKclExpressionValue(value: string) {
     resultDeclaration?.type === 'VariableDeclaration' &&
     resultDeclaration?.declaration.init
   const varValue = execState.variables[DUMMY_VARIABLE_NAME]
+
+  // Handle array values when allowArrays is true
+  if (
+    allowArrays &&
+    varValue &&
+    (varValue.type === 'Tuple' || varValue.type === 'HomArray')
+  ) {
+    // Reject empty arrays as they're not useful for geometric operations
+    if (varValue.value.length === 0) {
+      const valueAsString = 'NAN'
+      return {
+        astNode: variableDeclaratorAstNode,
+        valueAsString,
+      }
+    }
+
+    // Validate that all array elements are numbers
+    const allElementsAreNumbers = varValue.value.every(isNumberValueItem)
+
+    if (!allElementsAreNumbers) {
+      const valueAsString = 'NAN'
+      return {
+        astNode: variableDeclaratorAstNode,
+        valueAsString,
+      }
+    }
+
+    const arrayValues = varValue.value.map((item: KclValue) => {
+      if (isNumberValueItem(item)) {
+        const formatted = formatNumberValue(item.value, item.ty)
+        if (!err(formatted)) {
+          return formatted
+        }
+        return String(item.value)
+      }
+      return String(item)
+    })
+
+    const valueAsString = `[${arrayValues.join(', ')}]`
+
+    return {
+      astNode: variableDeclaratorAstNode,
+      valueAsString,
+    }
+  }
+
   // If the value is a number, attempt to format it with units.
   const resultValueWithUnits = (() => {
     if (!varValue || varValue.type !== 'Number') {
@@ -61,8 +120,14 @@ export async function getCalculatedKclExpressionValue(value: string) {
   }
 }
 
-export async function stringToKclExpression(value: string) {
-  const calculatedResult = await getCalculatedKclExpressionValue(value)
+export async function stringToKclExpression(
+  value: string,
+  allowArrays?: boolean
+) {
+  const calculatedResult = await getCalculatedKclExpressionValue(
+    value,
+    allowArrays
+  )
   if (err(calculatedResult) || 'errors' in calculatedResult) {
     return calculatedResult
   } else if (!calculatedResult.astNode) {
@@ -75,22 +140,6 @@ export async function stringToKclExpression(value: string) {
   } satisfies KclExpression
 }
 
-export async function retrieveArgFromPipedCallExpression(
-  callExpression: CallExpressionKw,
-  name: string
-): Promise<KclCommandValue | undefined> {
-  const arg = callExpression.arguments.find(
-    (a) => a.label?.type === 'Identifier' && a.label?.name === name
-  )
-  if (
-    arg?.type === 'LabeledArg' &&
-    (arg.arg.type === 'Name' || arg.arg.type === 'Literal')
-  ) {
-    const value = arg.arg.type === 'Name' ? arg.arg.name.name : arg.arg.raw
-    const result = await stringToKclExpression(value)
-    if (!(err(result) || 'errors' in result)) {
-      return result
-    }
-  }
-  return undefined
+export function getStringValue(code: string, range: SourceRange): string {
+  return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
 }

@@ -1,12 +1,11 @@
 use anyhow::Result;
-use schemars::JsonSchema;
 use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
     SourceRange,
     errors::Suggestion,
-    lsp::IntoDiagnostic,
+    lsp::{IntoDiagnostic, ToLspRange, to_lsp_edit},
     parsing::ast::types::{Node as AstNode, Program},
     walk::Node,
 };
@@ -30,9 +29,9 @@ where
 }
 
 /// Specific discovered lint rule Violation of a particular Finding.
-#[derive(Clone, Debug, ts_rs::TS, Serialize, JsonSchema)]
+#[derive(Clone, Debug, ts_rs::TS, Serialize)]
 #[ts(export)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass, pyo3_stub_gen::derive::gen_stub_pyclass)]
 #[serde(rename_all = "camelCase")]
 pub struct Discovered {
     /// Zoo Lint Finding information.
@@ -65,6 +64,7 @@ impl Discovered {
 }
 
 #[cfg(feature = "pyo3")]
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pyo3::pymethods]
 impl Discovered {
     #[getter]
@@ -102,7 +102,7 @@ impl IntoDiagnostic for &Discovered {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.finding.title.to_owned();
         let source_range = self.pos;
-        let edit = self.suggestion.as_ref().map(|s| s.to_lsp_edit(code));
+        let edit = self.suggestion.as_ref().map(|s| to_lsp_edit(s, code));
 
         vec![Diagnostic {
             range: source_range.to_lsp_range(code),
@@ -124,9 +124,9 @@ impl IntoDiagnostic for &Discovered {
 }
 
 /// Abstract lint problem type.
-#[derive(Clone, Debug, PartialEq, ts_rs::TS, Serialize, JsonSchema)]
+#[derive(Clone, Debug, PartialEq, ts_rs::TS, Serialize)]
 #[ts(export)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass, pyo3_stub_gen::derive::gen_stub_pyclass)]
 #[serde(rename_all = "camelCase")]
 pub struct Finding {
     /// Unique identifier for this particular issue.
@@ -156,6 +156,7 @@ impl Finding {
 }
 
 #[cfg(feature = "pyo3")]
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pyo3::pymethods]
 impl Finding {
     #[getter]

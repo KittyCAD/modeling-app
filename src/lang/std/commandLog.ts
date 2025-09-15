@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { OkWebSocketResponseData } from '@kittycad/lib'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 
 export enum CommandLogType {
@@ -21,7 +21,7 @@ export type CommandLog =
     }
   | {
       type: CommandLogType.ReceiveReliable
-      data: Models['OkWebSocketResponseData_type']
+      data: OkWebSocketResponseData
       id: string
       cmd_type?: string
     }

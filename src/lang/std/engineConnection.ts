@@ -1,18 +1,25 @@
-import type { Models } from '@kittycad/lib'
+import type {
+  ClientMetrics,
+  HighlightSetEntity,
+  OkModelingCmdResponse,
+  RtcSessionDescription,
+  WebSocketRequest,
+  WebSocketResponse,
+} from '@kittycad/lib'
 import env from '@src/env'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { BSON } from 'bson'
 
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import type { CommandLog } from '@src/lang/std/commandLog'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import type { SourceRange } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/sourceRange'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
 import type RustContext from '@src/lib/rustContext'
@@ -29,9 +36,7 @@ import { withWebSocketURL } from '@src/lib/withBaseURL'
 
 const pingIntervalMs = 1_000
 
-function isHighlightSetEntity_type(
-  data: any
-): data is Models['HighlightSetEntity_type'] {
+function isHighlightSetEntity_type(data: any): data is HighlightSetEntity {
   return data.entity_id && data.sequence
 }
 
@@ -39,8 +44,6 @@ interface NewTrackArgs {
   conn: EngineConnection
   mediaStream: MediaStream
 }
-
-type ClientMetrics = Models['ClientMetrics_type']
 
 type Value<T, U> = U extends undefined
   ? { type: T; value: U }
@@ -56,6 +59,7 @@ export enum EngineConnectionStateType {
   ConnectionEstablished = 'connection-established',
   Disconnecting = 'disconnecting',
   Disconnected = 'disconnected',
+  Paused = 'paused',
 }
 
 export enum DisconnectingType {
@@ -206,6 +210,7 @@ export type EngineConnectionState =
   | State<EngineConnectionStateType.Connecting, ConnectingValue>
   | State<EngineConnectionStateType.ConnectionEstablished, void>
   | State<EngineConnectionStateType.Disconnecting, DisconnectingValue>
+  | State<EngineConnectionStateType.Paused, void>
   | State<EngineConnectionStateType.Disconnected, void>
 
 export enum EngineConnectionEvents {
@@ -231,7 +236,7 @@ export enum EngineConnectionEvents {
 }
 
 function toRTCSessionDescriptionInit(
-  desc: Models['RtcSessionDescription_type']
+  desc: RtcSessionDescription
 ): RTCSessionDescriptionInit | undefined {
   if (desc.type === 'unspecified') {
     console.error('Invalid SDP answer: type is "unspecified".')
@@ -410,7 +415,7 @@ class EngineConnection extends EventTarget {
     this.websocket.addEventListener('open', this.onWebSocketOpen)
 
     this.websocket?.addEventListener('message', ((event: MessageEvent) => {
-      const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+      const message: WebSocketResponse = JSON.parse(event.data)
       if (!('resp' in message)) return
 
       let resp = message.resp
@@ -1007,13 +1012,11 @@ class EngineConnection extends EventTarget {
             return
           }
 
-          const message: Models['WebSocketResponse_type'] = JSON.parse(
-            event.data
-          )
+          const message: WebSocketResponse = JSON.parse(event.data)
 
-          if (!message.success) {
-            const errorsString = message?.errors
-              ?.map((error) => {
+          if (!message.success && 'errors' in message) {
+            const errorsString = message.errors
+              .map((error: { error_code: string; message: string }) => {
                 return `  - ${error.error_code}: ${error.message}`
               })
               .join('\n')
@@ -1031,7 +1034,7 @@ class EngineConnection extends EventTarget {
               console.error(`Error from server:\n${errorsString}`)
             }
 
-            const firstError = message?.errors[0]
+            const firstError = message.errors[0]
             if (firstError.error_code === 'auth_token_invalid') {
               this.state = {
                 type: EngineConnectionStateType.Disconnecting,
@@ -1062,6 +1065,9 @@ class EngineConnection extends EventTarget {
             return
           }
 
+          if (!('resp' in message)) {
+            return
+          }
           let resp = message.resp
 
           // If there's no body to the response, we can bail here.
@@ -1160,7 +1166,7 @@ class EngineConnection extends EventTarget {
                   return this.pc?.setLocalDescription(offer).then(() => {
                     this.send({
                       type: 'sdp_offer',
-                      offer: offer as Models['RtcSessionDescription_type'],
+                      offer: offer as RtcSessionDescription,
                     })
                     this.state = {
                       type: EngineConnectionStateType.Connecting,
@@ -1244,7 +1250,7 @@ class EngineConnection extends EventTarget {
 
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
-  unreliableSend(message: Models['WebSocketRequest_type']) {
+  unreliableSend(message: WebSocketRequest) {
     if (this.unreliableDataChannel?.readyState !== 'open') return
 
     // TODO(paultag): Add in logic to determine the connection state and
@@ -1255,7 +1261,7 @@ class EngineConnection extends EventTarget {
   }
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
-  send(message: Models['WebSocketRequest_type']) {
+  send(message: WebSocketRequest) {
     // Not connected, don't send anything
     if (this.websocket?.readyState !== 1) return
 
@@ -1308,20 +1314,17 @@ class EngineConnection extends EventTarget {
       )
     } else {
       this.state = {
-        type: EngineConnectionStateType.Disconnecting,
-        value: {
-          type: DisconnectingType.Pause,
-        },
+        type: EngineConnectionStateType.Paused,
       }
     }
     this.triggeredStart = false
   }
 }
 
-type ModelTypes = Models['OkModelingCmdResponse_type']['type']
+type ModelTypes = OkModelingCmdResponse['type']
 
 type UnreliableResponses = Extract<
-  Models['OkModelingCmdResponse_type'],
+  OkModelingCmdResponse,
   { type: 'highlight_set_entity' | 'camera_drag_move' }
 >
 export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
@@ -1333,9 +1336,7 @@ export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
 // as it manages events in a more familiar way to other developers.
 export interface Subscription<T extends ModelTypes> {
   event: T
-  callback: (
-    data: Extract<Models['OkModelingCmdResponse_type'], { type: T }>
-  ) => void
+  callback: (data: Extract<OkModelingCmdResponse, { type: T }>) => void
 }
 
 export enum EngineCommandManagerEvents {
@@ -1368,12 +1369,12 @@ interface PendingMessage {
   command: EngineCommand
   range: SourceRange
   idToRangeMap: { [key: string]: SourceRange }
-  resolve: (data: [Models['WebSocketResponse_type']]) => void
+  resolve: (data: [WebSocketResponse]) => void
   // BOTH resolve and reject get passed back to the rust side which
   // assumes it is this type! Do not change it!
   // Format your errors as this type!
-  reject: (reason: [Models['WebSocketResponse_type']]) => void
-  promise: Promise<[Models['WebSocketResponse_type']]>
+  reject: (reason: [WebSocketResponse]) => void
+  promise: Promise<[WebSocketResponse]>
   isSceneCommand: boolean
 }
 export class EngineCommandManager extends EventTarget {
@@ -1731,13 +1732,13 @@ export class EngineCommandManager extends EventTarget {
   }
 
   handleMessage(event: MessageEvent) {
-    let message: Models['WebSocketResponse_type'] | null = null
+    let message: WebSocketResponse | null = null
 
     if (event.data instanceof ArrayBuffer) {
       // BSON deserialize the command.
       message = BSON.deserialize(
         new Uint8Array(event.data)
-      ) as Models['WebSocketResponse_type']
+      ) as WebSocketResponse
       // The request id comes back as binary and we want to get the uuid
       // string from that.
       if (message.request_id) {
@@ -1776,7 +1777,7 @@ export class EngineCommandManager extends EventTarget {
     if (
       !(
         pending &&
-        message.success &&
+        'resp' in message &&
         (message.resp.type === 'modeling' ||
           message.resp.type === 'modeling_batch' ||
           message.resp.type === 'export')
@@ -1792,9 +1793,14 @@ export class EngineCommandManager extends EventTarget {
     pending.resolve([message])
     delete this.pendingCommands[message.request_id || '']
 
-    if (message.resp.type === 'export' && message.request_id) {
+    if (
+      'resp' in message &&
+      message.resp.type === 'export' &&
+      message.request_id
+    ) {
       this.responseMap[message.request_id] = message.resp
     } else if (
+      'resp' in message &&
       message.resp.type === 'modeling' &&
       pending.command.type === 'modeling_cmd_req' &&
       message.request_id
@@ -1814,11 +1820,12 @@ export class EngineCommandManager extends EventTarget {
 
       this.responseMap[message.request_id] = message.resp
     } else if (
+      'resp' in message &&
       message.resp.type === 'modeling_batch' &&
       pending.command.type === 'modeling_cmd_batch_req'
     ) {
       let individualPendingResponses: {
-        [key: string]: Models['WebSocketRequest_type']
+        [key: string]: WebSocketRequest
       } = {}
       pending.command.requests.forEach(({ cmd, cmd_id }) => {
         individualPendingResponses[cmd_id] = {
@@ -2003,9 +2010,7 @@ export class EngineCommandManager extends EventTarget {
   async sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
-  ): Promise<
-    Models['WebSocketResponse_type'] | [Models['WebSocketResponse_type']] | null
-  > {
+  ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
     if (this.engineConnection === undefined) {
       return Promise.resolve(null)
     }
@@ -2188,7 +2193,7 @@ export class EngineCommandManager extends EventTarget {
       idToRangeMap: PendingMessage['idToRangeMap']
     },
     isSceneCommand = false
-  ): Promise<[Models['WebSocketResponse_type']]> {
+  ): Promise<[WebSocketResponse]> {
     const { promise, resolve, reject } = promiseFactory<any>()
     this.pendingCommands[id] = {
       resolve,

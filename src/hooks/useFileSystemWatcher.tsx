@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { isDesktop } from '@src/lib/isDesktop'
 import { reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
 
 type Path = string
 
@@ -18,7 +19,7 @@ export const useFileSystemWatcher = (
 ): void => {
   // Used to track this instance of useFileSystemWatcher.
   // Assign to ref so it doesn't change between renders.
-  const key = useRef(Math.random().toString())
+  const key = useRef(uuidv4())
 
   const [output, setOutput] = useState<
     { eventType: string; path: string } | undefined
@@ -30,12 +31,13 @@ export const useFileSystemWatcher = (
   useEffect(() => {
     if (!output) return
     callback(output.eventType, output.path).catch(reportRejection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [output])
 
   // On component teardown obliterate all watchers.
   useEffect(() => {
     // The hook is useless on web.
-    if (!isDesktop()) return
+    if (!window.electron) return
 
     const cbWatcher = (eventType: string, path: string) => {
       setOutput({ eventType, path })
@@ -52,9 +54,11 @@ export const useFileSystemWatcher = (
       window.electron.watchFileOn(path, key.current, cbWatcher)
     }
 
+    const electron = window.electron
     return () => {
       for (let path of pathsTracked) {
-        window.electron.watchFileOff(path, key.current)
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+        electron.watchFileOff(path, key.current)
       }
     }
   }, [pathsTracked])
@@ -80,5 +84,6 @@ export const useFileSystemWatcher = (
     const [, pathsRemaining] = difference(pathsTracked, paths)
     const [pathsAdded] = difference(paths, pathsTracked)
     setPathsTracked(pathsRemaining.concat(pathsAdded))
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [hasDiff])
 }

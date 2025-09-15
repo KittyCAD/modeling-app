@@ -2,7 +2,11 @@ import { useEffect, useRef } from 'react'
 
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import {
+  findAllChildrenAndOrderByPlaceInCode,
+  getNodeFromPath,
+} from '@src/lang/queryAst'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SegmentArtifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -13,7 +17,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
 import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/sourceRange'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
 import {
   getEventForSelectWithPoint,
   selectDefaultSketchPlane,
@@ -26,17 +30,15 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
+import { engineStreamActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { getModuleId } from '@src/lib/utils'
-import { engineStreamActor } from '@src/lib/singletons'
 import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import type {
   EdgeCutInfo,
   ExtrudeFacePlane,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
-import { findAllChildrenAndOrderByPlaceInCode } from '@src/lang/modifyAst/boolean'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -85,6 +87,7 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, engineStreamState, context?.sketchEnginePathId])
 
   useEffect(() => {
@@ -109,7 +112,9 @@ export function useEngineConnectionSubscriptions() {
               }
 
               const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-              if (await selectOffsetSketchPlane(artifact)) {
+              const offsetPlaneSelected =
+                await selectOffsetSketchPlane(artifact)
+              if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
                 return
               }
 
@@ -263,7 +268,7 @@ export function useEngineConnectionSubscriptions() {
                   zAxis: [z_axis.x, z_axis.y, z_axis.z],
                   yAxis: [y_axis.x, y_axis.y, y_axis.z],
                   position: [origin.x, origin.y, origin.z].map(
-                    (num) => num / sceneInfra._baseUnitMultiplier
+                    (num) => num / sceneInfra.baseUnitMultiplier
                   ) as [number, number, number],
                   sketchPathToNode,
                   extrudePathToNode,
@@ -277,5 +282,6 @@ export function useEngineConnectionSubscriptions() {
         : () => {},
     })
     return unSub
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, engineStreamState, state])
 }

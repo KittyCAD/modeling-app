@@ -1,6 +1,6 @@
+import ReactJsonView from '@microlink/react-json-view'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
-import ReactJson from 'react-json-view'
 
 import type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 import type { Path } from '@rust/kcl-lib/bindings/Path'
@@ -55,7 +55,7 @@ export const MemoryPane = () => {
     <div className="h-full relative">
       <div className="absolute inset-0 p-2 flex flex-col items-start">
         <div className="overflow-auto h-full w-full pb-12">
-          <ReactJson
+          <ReactJsonView
             src={ProcessedMemory}
             collapsed={1}
             collapseStringsAfterLength={60}

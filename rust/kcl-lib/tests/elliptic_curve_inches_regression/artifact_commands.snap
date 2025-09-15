@@ -1,0 +1,242 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands elliptic_curve_inches_regression.kcl
+---
+{
+  "rust/kcl-lib/tests/elliptic_curve_inches_regression/input.kcl": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 2302.7323843617596,
+          "y": 1545.7213341658817,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "ellipse",
+          "center": {
+            "x": 0.0,
+            "y": 1545.7213433999998
+          },
+          "major_axis": {
+            "x": 2302.732377,
+            "y": 0.0
+          },
+          "minor_radius": 426.8591158,
+          "start_angle": {
+            "unit": "degrees",
+            "value": 0.0
+          },
+          "end_angle": {
+            "unit": "degrees",
+            "value": 180.0
+          }
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "bezier",
+          "control1": {
+            "x": 381.18912839999996,
+            "y": -648.6776714,
+            "z": 0.0
+          },
+          "control2": {
+            "x": 822.1615509999999,
+            "y": -753.3404034,
+            "z": 0.0
+          },
+          "end": {
+            "x": 1275.198872,
+            "y": -677.4812459999999,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "bezier",
+          "control1": {
+            "x": 453.03732099999996,
+            "y": 75.8591574,
+            "z": 0.0
+          },
+          "control2": {
+            "x": 918.1395658,
+            "y": 332.24022959999996,
+            "z": 0.0
+          },
+          "end": {
+            "x": 1366.2393299999999,
+            "y": 335.0833024,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "bezier",
+          "control1": {
+            "x": 448.0997641999999,
+            "y": 2.8430728,
+            "z": 0.0
+          },
+          "control2": {
+            "x": 879.1970732,
+            "y": -247.85180299999996,
+            "z": 0.0
+          },
+          "end": {
+            "x": 1222.6556954,
+            "y": -280.4740644,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "bezier",
+          "control1": {
+            "x": 343.4586222,
+            "y": -32.6222614,
+            "z": 0.0
+          },
+          "control2": {
+            "x": 599.2785576,
+            "y": 152.8281424,
+            "z": 0.0
+          },
+          "end": {
+            "x": 741.3708566,
+            "y": 622.8719825999999,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "close_path",
+        "path_id": "[uuid]"
+      }
+    }
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::sketch2": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": [],
+  "std::vector": []
+}

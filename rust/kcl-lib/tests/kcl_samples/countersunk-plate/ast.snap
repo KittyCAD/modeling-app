@@ -823,13 +823,13 @@ description: Result of parsing countersunk-plate.kcl
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
-                              "raw": "90",
+                              "raw": "90deg",
                               "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
                                 "value": 90.0,
-                                "suffix": "None"
+                                "suffix": "Deg"
                               }
                             },
                             "moduleId": 0,
@@ -1105,13 +1105,13 @@ description: Result of parsing countersunk-plate.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "90",
+                          "raw": "90deg",
                           "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
                             "value": 90.0,
-                            "suffix": "None"
+                            "suffix": "Deg"
                           }
                         },
                         "start": 0,
@@ -1551,13 +1551,13 @@ description: Result of parsing countersunk-plate.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "90",
+                          "raw": "90deg",
                           "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
                             "value": 90.0,
-                            "suffix": "None"
+                            "suffix": "Deg"
                           }
                         },
                         "start": 0,
@@ -2082,14 +2082,7 @@ description: Result of parsing countersunk-plate.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               }
             ],
             "commentStart": 0,

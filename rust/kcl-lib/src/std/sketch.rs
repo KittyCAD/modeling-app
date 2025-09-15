@@ -1,14 +1,15 @@
 //! Functions related to sketching.
 
+use std::f64;
+
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq};
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::{shared::PathSegment, units::UnitLength};
 use parse_display::{Display, FromStr};
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::{
@@ -20,13 +21,15 @@ use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSk
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Sketch,
-        SketchSurface, Solid, TagEngineInfo, TagIdentifier,
-        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
+        BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
+        Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
+        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{
         args::{Args, TyF64},
+        axis_or_reference::Axis2dOrEdgeReference,
+        planes::inner_plane_of,
         utils::{
             TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
             intersection_with_parallel_line, point_to_len_unit, point_to_mm, untyped_point_to_mm,
@@ -35,7 +38,7 @@ use crate::{
 };
 
 /// A tag for a face.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "snake_case", untagged)]
 pub enum FaceTag {
@@ -79,9 +82,24 @@ impl FaceTag {
             }),
         }
     }
+
+    pub async fn get_face_id_from_tag(
+        &self,
+        exec_state: &mut ExecState,
+        args: &Args,
+        must_be_planar: bool,
+    ) -> Result<uuid::Uuid, KclError> {
+        match self {
+            FaceTag::Tag(t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
+            _ => Err(KclError::new_type(KclErrorDetails::new(
+                "Could not find the face corresponding to this tag".to_string(),
+                vec![args.source_range],
+            ))),
+        }
+    }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -216,7 +234,7 @@ async fn inner_involute_circular(
         },
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
@@ -352,7 +370,7 @@ async fn straight_line(
         },
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
@@ -570,7 +588,7 @@ async fn inner_angled_line_length(
         },
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
@@ -764,7 +782,7 @@ pub async fn inner_angled_line_that_intersects(
 
 /// Data for start sketch on.
 /// You can start a sketch on a plane or an solid.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 #[allow(clippy::large_enum_variant)]
@@ -775,7 +793,7 @@ pub enum SketchData {
 }
 
 /// Orientation data that can be used to construct a plane, not a plane in itself.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 #[allow(clippy::large_enum_variant)]
@@ -810,8 +828,11 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
         exec_state,
     )?;
     let face = args.get_kw_arg_opt("face", &RuntimeType::tagged_face(), exec_state)?;
+    let normal_to_face = args.get_kw_arg_opt("normalToFace", &RuntimeType::tagged_face(), exec_state)?;
+    let align_axis = args.get_kw_arg_opt("alignAxis", &RuntimeType::Primitive(PrimitiveType::Axis2d), exec_state)?;
+    let normal_offset = args.get_kw_arg_opt("normalOffset", &RuntimeType::length(), exec_state)?;
 
-    match inner_start_sketch_on(data, face, exec_state, &args).await? {
+    match inner_start_sketch_on(data, face, normal_to_face, align_axis, normal_offset, exec_state, &args).await? {
         SketchSurface::Plane(value) => Ok(KclValue::Plane { value }),
         SketchSurface::Face(value) => Ok(KclValue::Face { value }),
     }
@@ -820,9 +841,43 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 async fn inner_start_sketch_on(
     plane_or_solid: SketchData,
     face: Option<FaceTag>,
+    normal_to_face: Option<FaceTag>,
+    align_axis: Option<Axis2dOrEdgeReference>,
+    normal_offset: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<SketchSurface, KclError> {
+    let face = match (face, normal_to_face, &align_axis, &normal_offset) {
+        (Some(_), Some(_), _, _) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "You cannot give both `face` and `normalToFace` params, you have to choose one or the other."
+                    .to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(face), None, None, None) => Some(face),
+        (_, Some(_), None, _) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`alignAxis` is required if `normalToFace` is specified.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (_, None, Some(_), _) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`normalToFace` is required if `alignAxis` is specified.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (_, None, _, Some(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`normalToFace` is required if `normalOffset` is specified.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (_, Some(face), Some(_), _) => Some(face),
+        (None, None, None, None) => None,
+    };
+
     match plane_or_solid {
         SketchData::PlaneOrientation(plane_data) => {
             let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
@@ -830,12 +885,6 @@ async fn inner_start_sketch_on(
         }
         SketchData::Plane(plane) => {
             if plane.value == crate::exec::PlaneType::Uninit {
-                if plane.info.origin.units == UnitLen::Unknown {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Origin of plane has unknown units".to_string(),
-                        vec![args.source_range],
-                    )));
-                }
                 let plane = make_sketch_plane_from_orientation(plane.info.into_plane_data(), exec_state, args).await?;
                 Ok(SketchSurface::Plane(plane))
             } else {
@@ -860,20 +909,93 @@ async fn inner_start_sketch_on(
                     vec![args.source_range],
                 )));
             };
-            let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
+            if let Some(align_axis) = align_axis {
+                let plane_of = inner_plane_of(*solid, tag, exec_state, args).await?;
 
-            #[cfg(feature = "artifact-graph")]
-            {
+                let offset = normal_offset.map_or(0.0, |x| x.n);
+                let (x_axis, y_axis, normal_offset) = match align_axis {
+                    Axis2dOrEdgeReference::Axis { direction, origin: _ } => {
+                        if (direction[0].n - 1.0).abs() < f64::EPSILON {
+                            //X axis chosen
+                            (
+                                plane_of.info.x_axis,
+                                plane_of.info.z_axis,
+                                plane_of.info.y_axis * offset,
+                            )
+                        } else if (direction[0].n + 1.0).abs() < f64::EPSILON {
+                            // -X axis chosen
+                            (
+                                plane_of.info.x_axis.negated(),
+                                plane_of.info.z_axis,
+                                plane_of.info.y_axis * offset,
+                            )
+                        } else if (direction[1].n - 1.0).abs() < f64::EPSILON {
+                            // Y axis chosen
+                            (
+                                plane_of.info.y_axis,
+                                plane_of.info.z_axis,
+                                plane_of.info.x_axis * offset,
+                            )
+                        } else if (direction[1].n + 1.0).abs() < f64::EPSILON {
+                            // -Y axis chosen
+                            (
+                                plane_of.info.y_axis.negated(),
+                                plane_of.info.z_axis,
+                                plane_of.info.x_axis * offset,
+                            )
+                        } else {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Unsupported axis detected. This function only supports using X, -X, Y and -Y."
+                                    .to_owned(),
+                                vec![args.source_range],
+                            )));
+                        }
+                    }
+                    Axis2dOrEdgeReference::Edge(_) => {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Use of an edge here is unsupported, please specify an `Axis2d` (e.g. `X`) instead."
+                                .to_owned(),
+                            vec![args.source_range],
+                        )));
+                    }
+                };
+                let origin = Point3d::new(0.0, 0.0, 0.0, plane_of.info.origin.units);
+                let plane_data = PlaneData::Plane(PlaneInfo {
+                    origin: plane_of.project(origin) + normal_offset,
+                    x_axis,
+                    y_axis,
+                    z_axis: x_axis.axes_cross_product(&y_axis),
+                });
+                let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
+
                 // Create artifact used only by the UI, not the engine.
-                let id = exec_state.next_uuid();
-                exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
-                    id: ArtifactId::from(id),
-                    face_id: face.artifact_id,
-                    code_ref: CodeRef::placeholder(args.source_range),
-                }));
-            }
+                #[cfg(feature = "artifact-graph")]
+                {
+                    let id = exec_state.next_uuid();
+                    exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
+                        id: ArtifactId::from(id),
+                        plane_id: plane.artifact_id,
+                        code_ref: CodeRef::placeholder(args.source_range),
+                    }));
+                }
 
-            Ok(SketchSurface::Face(face))
+                Ok(SketchSurface::Plane(plane))
+            } else {
+                let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
+
+                #[cfg(feature = "artifact-graph")]
+                {
+                    // Create artifact used only by the UI, not the engine.
+                    let id = exec_state.next_uuid();
+                    exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
+                        id: ArtifactId::from(id),
+                        face_id: face.artifact_id,
+                        code_ref: CodeRef::placeholder(args.source_range),
+                    }));
+                }
+
+                Ok(SketchSurface::Face(face))
+            }
         }
     }
 }
@@ -899,7 +1021,7 @@ async fn start_sketch_on_face(
     }))
 }
 
-async fn make_sketch_plane_from_orientation(
+pub async fn make_sketch_plane_from_orientation(
     data: PlaneData,
     exec_state: &mut ExecState,
     args: &Args,
@@ -1039,6 +1161,7 @@ pub(crate) async fn inner_start_profile(
         artifact_id: path_id.into(),
         on: sketch_surface.clone(),
         paths: vec![],
+        inner_paths: vec![],
         units,
         mirror: Default::default(),
         meta: vec![args.source_range.into()],
@@ -1060,6 +1183,7 @@ pub(crate) async fn inner_start_profile(
             Default::default()
         },
         start: current_path,
+        is_closed: false,
     };
     Ok(sketch)
 }
@@ -1116,6 +1240,19 @@ pub(crate) async fn inner_close(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    if sketch.is_closed {
+        exec_state.warn(
+            crate::CompilationError {
+                source_range: args.source_range,
+                message: "This sketch is already closed. Remove this unnecessary `close()` call".to_string(),
+                suggestion: None,
+                severity: crate::errors::Severity::Warning,
+                tag: crate::errors::Tag::Unnecessary,
+            },
+            annotations::WARN_UNNECESSARY_CLOSE,
+        );
+        return Ok(sketch);
+    }
     let from = sketch.current_pen_position()?;
     let to = point_to_len_unit(sketch.start.get_from(), from.units);
 
@@ -1141,12 +1278,12 @@ pub(crate) async fn inner_close(
         },
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
-
     new_sketch.paths.push(current_path);
+    new_sketch.is_closed = true;
 
     Ok(new_sketch)
 }
@@ -1267,7 +1404,7 @@ pub async fn absolute_arc(
         p3: end,
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
@@ -1310,7 +1447,9 @@ pub async fn relative_arc(
                     start: a_start,
                     end: a_end,
                     center: KPoint2d::from(untyped_point_to_mm(center, from.units)).map(LengthUnit),
-                    radius: LengthUnit(from.units.adjust_to(radius, UnitLen::Mm).0),
+                    radius: LengthUnit(
+                        crate::execution::types::adjust_length(from.units, radius, UnitLength::Millimeters).0,
+                    ),
                     relative: false,
                 },
             }),
@@ -1333,7 +1472,7 @@ pub async fn relative_arc(
         ccw,
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
@@ -1406,7 +1545,7 @@ async fn inner_tangential_arc(
 }
 
 /// Data to draw a tangential arc.
-#[derive(Debug, Clone, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum TangentialArcData {
@@ -1502,7 +1641,7 @@ async fn inner_tangential_arc_radius_angle(
         },
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
@@ -1591,7 +1730,7 @@ async fn inner_tangential_arc_to_point(
         ccw: result.ccw > 0,
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
@@ -1718,7 +1857,7 @@ async fn inner_bezier_curve(
         },
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
@@ -1748,7 +1887,7 @@ pub async fn subtract_2d(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 }
 
 async fn inner_subtract_2d(
-    sketch: Sketch,
+    mut sketch: Sketch,
     tool: Vec<Sketch>,
     exec_state: &mut ExecState,
     args: Args,
@@ -1764,8 +1903,8 @@ async fn inner_subtract_2d(
             )
             .await?;
 
-        // suggestion (mike)
-        // we also hide the source hole since its essentially "consumed" by this operation
+        // Hide the source hole since it's no longer its own profile,
+        // it's just used to modify some other profile.
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from(&args),
@@ -1775,8 +1914,16 @@ async fn inner_subtract_2d(
                 }),
             )
             .await?;
+
+        // NOTE: We don't look at the inner paths of the hole/tool sketch.
+        // So if you have circle A, and it has a circular hole cut out (B),
+        // then you cut A out of an even bigger circle C, we will lose that info.
+        // Not really sure what to do about this.
+        sketch.inner_paths.extend_from_slice(&hole_sketch.paths);
     }
 
+    // Returns the input sketch, exactly as it was, zero modifications.
+    // This means the edges from `tool` are basically ignored, they're not in the output.
     Ok(sketch)
 }
 
@@ -1851,19 +1998,13 @@ async fn inner_elliptic_point(
 
 /// Draw an elliptical arc.
 pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(crate::CompilationError {
-        source_range: args.source_range,
-        message: "Use of elliptic is currently experimental and the interface may change.".to_string(),
-        suggestion: None,
-        severity: crate::errors::Severity::Warning,
-        tag: crate::errors::Tag::None,
-    });
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
     let angle_start = args.get_kw_arg("angleStart", &RuntimeType::degrees(), exec_state)?;
     let angle_end = args.get_kw_arg("angleEnd", &RuntimeType::degrees(), exec_state)?;
-    let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::length(), exec_state)?;
+    let major_radius = args.get_kw_arg_opt("majorRadius", &RuntimeType::length(), exec_state)?;
+    let major_axis = args.get_kw_arg_opt("majorAxis", &RuntimeType::point2d(), exec_state)?;
     let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -1873,6 +2014,7 @@ pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         angle_start,
         angle_end,
         major_radius,
+        major_axis,
         minor_radius,
         tag,
         exec_state,
@@ -1890,7 +2032,8 @@ pub(crate) async fn inner_elliptic(
     center: [TyF64; 2],
     angle_start: TyF64,
     angle_end: TyF64,
-    major_radius: TyF64,
+    major_radius: Option<TyF64>,
+    major_axis: Option<[TyF64; 2]>,
     minor_radius: TyF64,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -1901,13 +2044,39 @@ pub(crate) async fn inner_elliptic(
 
     let (center_u, _) = untype_point(center);
 
+    let major_axis = match (major_axis, major_radius) {
+        (Some(_), Some(_)) | (None, None) => {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Provide either `majorAxis` or `majorRadius`.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(major_axis), None) => major_axis,
+        (None, Some(major_radius)) => [
+            major_radius.clone(),
+            TyF64 {
+                n: 0.0,
+                ty: major_radius.ty,
+            },
+        ],
+    };
     let start_angle = Angle::from_degrees(angle_start.to_degrees());
     let end_angle = Angle::from_degrees(angle_end.to_degrees());
+    let major_axis_magnitude = (major_axis[0].to_length_units(from.units) * major_axis[0].to_length_units(from.units)
+        + major_axis[1].to_length_units(from.units) * major_axis[1].to_length_units(from.units))
+    .sqrt();
     let to = [
-        center_u[0] + major_radius.to_length_units(from.units) * libm::cos(end_angle.to_radians()),
-        center_u[1] + minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
+        major_axis_magnitude * libm::cos(end_angle.to_radians()),
+        minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
+    ];
+    let major_axis_angle = libm::atan2(major_axis[1].n, major_axis[0].n);
+
+    let point = [
+        center_u[0] + to[0] * libm::cos(major_axis_angle) - to[1] * libm::sin(major_axis_angle),
+        center_u[1] + to[0] * libm::sin(major_axis_angle) + to[1] * libm::cos(major_axis_angle),
     ];
 
+    let axis = major_axis.map(|x| x.to_mm());
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
@@ -1915,8 +2084,8 @@ pub(crate) async fn inner_elliptic(
                 path: sketch.id.into(),
                 segment: PathSegment::Ellipse {
                     center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
-                    major_radius: LengthUnit(from.units.adjust_to(major_radius.to_mm(), UnitLen::Mm).0),
-                    minor_radius: LengthUnit(from.units.adjust_to(minor_radius.to_mm(), UnitLen::Mm).0),
+                    major_axis: axis.map(LengthUnit).into(),
+                    minor_radius: LengthUnit(minor_radius.to_mm()),
                     start_angle,
                     end_angle,
                 },
@@ -1927,11 +2096,11 @@ pub(crate) async fn inner_elliptic(
     let current_path = Path::Ellipse {
         ccw: start_angle < end_angle,
         center: center_u,
-        major_radius: major_radius.to_mm(),
+        major_axis: axis,
         minor_radius: minor_radius.to_mm(),
         base: BasePath {
             from: from.ignore_units(),
-            to,
+            to: point,
             tag: tag.clone(),
             units: sketch.units,
             geo_meta: GeoMeta {
@@ -1940,7 +2109,7 @@ pub(crate) async fn inner_elliptic(
             },
         },
     };
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
@@ -2000,13 +2169,6 @@ async fn inner_hyperbolic_point(
 
 /// Draw a hyperbolic arc.
 pub async fn hyperbolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(crate::CompilationError {
-        source_range: args.source_range,
-        message: "Use of hyperbolic is currently experimental and the interface may change.".to_string(),
-        suggestion: None,
-        severity: crate::errors::Severity::Warning,
-        tag: crate::errors::Tag::None,
-    });
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let semi_major = args.get_kw_arg("semiMajor", &RuntimeType::length(), exec_state)?;
@@ -2111,7 +2273,7 @@ pub(crate) async fn inner_hyperbolic(
         },
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
@@ -2162,13 +2324,6 @@ async fn inner_parabolic_point(
 
 /// Draw a parabolic arc.
 pub async fn parabolic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(crate::CompilationError {
-        source_range: args.source_range,
-        message: "Use of parabolic is currently experimental and the interface may change.".to_string(),
-        suggestion: None,
-        severity: crate::errors::Severity::Warning,
-        tag: crate::errors::Tag::None,
-    });
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let coefficients = args.get_kw_arg_opt(
@@ -2331,7 +2486,7 @@ pub(crate) async fn inner_parabolic(
         },
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }
@@ -2353,13 +2508,6 @@ fn conic_tangent(coefficients: [f64; 6], point: [f64; 2]) -> [f64; 2] {
 
 /// Draw a conic section
 pub async fn conic(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    exec_state.warn(crate::CompilationError {
-        source_range: args.source_range,
-        message: "Use of conics is currently experimental and the interface may change.".to_string(),
-        suggestion: None,
-        severity: crate::errors::Severity::Warning,
-        tag: crate::errors::Tag::None,
-    });
     let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
 
     let start_tangent = args.get_kw_arg_opt("startTangent", &RuntimeType::point2d(), exec_state)?;
@@ -2492,7 +2640,7 @@ pub(crate) async fn inner_conic(
         },
     };
 
-    let mut new_sketch = sketch.clone();
+    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state);
     }

@@ -874,13 +874,13 @@ description: Result of parsing wing-spar.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "76",
+                      "raw": "76deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 76.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2576,13 +2576,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -2765,13 +2765,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -2963,13 +2963,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3300,13 +3300,13 @@ description: Result of parsing wing-spar.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -3464,13 +3464,13 @@ description: Result of parsing wing-spar.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -3637,13 +3637,13 @@ description: Result of parsing wing-spar.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4328,13 +4328,13 @@ description: Result of parsing wing-spar.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4517,13 +4517,13 @@ description: Result of parsing wing-spar.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4706,13 +4706,13 @@ description: Result of parsing wing-spar.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -5036,13 +5036,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -5209,13 +5209,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -5382,13 +5382,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -6167,13 +6167,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -6458,13 +6458,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -6635,13 +6635,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -7190,14 +7190,7 @@ description: Result of parsing wing-spar.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -7640,13 +7633,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -7817,13 +7810,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -7994,13 +7987,13 @@ description: Result of parsing wing-spar.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -8549,14 +8542,7 @@ description: Result of parsing wing-spar.kcl
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "unlabeled": null
               },
               {
                 "arguments": [

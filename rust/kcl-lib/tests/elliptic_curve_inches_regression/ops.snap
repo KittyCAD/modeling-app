@@ -1,0 +1,274 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed elliptic_curve_inches_regression.kcl
+---
+{
+  "rust/kcl-lib/tests/elliptic_curve_inches_regression/input.kcl": [
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "elliptic",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "angleEnd": {
+          "value": {
+            "type": "Number",
+            "value": 180.0,
+            "ty": {
+              "degrees": null,
+              "type": "Known",
+              "type": "Angle"
+            }
+          },
+          "sourceRange": []
+        },
+        "angleStart": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "degrees": null,
+              "type": "Known",
+              "type": "Angle"
+            }
+          },
+          "sourceRange": []
+        },
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "Number",
+                "value": 60.855171,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "majorAxis": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": 90.658755,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "minorRadius": {
+          "value": {
+            "type": "Number",
+            "value": 16.805477,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::appearance": [],
+  "std::array": [],
+  "std::math": [
+    {
+      "type": "VariableDeclaration",
+      "name": "PI",
+      "value": {
+        "type": "Number",
+        "value": 3.141592653589793,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "E",
+      "value": {
+        "type": "Number",
+        "value": 2.718281828459045,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "TAU",
+      "value": {
+        "type": "Number",
+        "value": 6.283185307179586,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::prelude": [
+    {
+      "type": "VariableDeclaration",
+      "name": "START",
+      "value": {
+        "type": "String",
+        "value": "start"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "END",
+      "value": {
+        "type": "String",
+        "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "NEW",
+      "value": {
+        "type": "String",
+        "value": "new"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "MERGE",
+      "value": {
+        "type": "String",
+        "value": "merge"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::sketch": [],
+  "std::sketch2": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": [],
+  "std::vector": []
+}

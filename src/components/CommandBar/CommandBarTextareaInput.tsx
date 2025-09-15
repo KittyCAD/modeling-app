@@ -63,7 +63,7 @@ function CommandBarTextareaInput({
               | undefined) || (arg.defaultValue as string)
           }
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.shiftKey) {
+            if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             } else if (
               event.key === 'Enter' &&
@@ -117,8 +117,10 @@ const useTextareaAutoGrow = (ref: RefObject<HTMLTextAreaElement>) => {
 
     return () => {
       if (ref.current === null) return
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       ref.current.removeEventListener('input', listener)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [ref.current])
 }
 

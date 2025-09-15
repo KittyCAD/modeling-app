@@ -334,6 +334,19 @@ test.describe('Feature Tree pane', () => {
       await cmdBar.progressCmdBar()
       await editor.expectEditor.toContain(editedParameterValue)
     })
+
+    await test.step('Edit the parameter value in the editor', async () => {
+      await editor.replaceCode('23 * 2', '42')
+      await editor.expectEditor.toContain('= 42')
+      // Wait for the code to be executed.
+      await page.waitForTimeout(2000)
+      // The parameter value should be updated in the feature tree.
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Parameter',
+        0
+      )
+      await expect(operationButton.getByTestId('value-detail')).toHaveText('42')
+    })
   })
   test(`User can edit an offset plane operation from the feature tree`, async ({
     context,
@@ -381,26 +394,23 @@ test.describe('Feature Tree pane', () => {
       await cmdBar.expectState({
         commandName: 'Offset plane',
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'offset',
         currentArgValue: initialInput,
         headerArguments: {
-          Plane: '1 plane',
-          Distance: initialInput,
+          Offset: initialInput,
         },
-        highlightedHeaderArg: 'distance',
+        highlightedHeaderArg: 'offset',
       })
     })
 
-    await test.step('Edit the distance argument and submit', async () => {
+    await test.step('Edit the offset argument and submit', async () => {
       await expect(cmdBar.currentArgumentInput).toBeVisible()
       await cmdBar.currentArgumentInput.locator('.cm-content').fill(newInput)
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Plane: '1 plane',
-          // We show the calculated value in the argument summary
-          Distance: '15',
+          Offset: '15',
         },
         commandName: 'Offset plane',
       })

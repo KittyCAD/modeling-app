@@ -1,26 +1,41 @@
-import type { Models } from '@kittycad/lib'
-import env from '@src/env'
+import type { User } from '@kittycad/lib'
+import { users, oauth2 } from '@kittycad/lib'
+import env, {
+  updateEnvironment,
+  updateEnvironmentPool,
+  generateDomainsFromBaseDomain,
+} from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
-
-import { COOKIE_NAME, OAUTH2_DEVICE_CLIENT_ID } from '@src/lib/constants'
 import {
-  getUser as getUserDesktop,
-  readTokenFile,
-  writeTokenFile,
+  LEGACY_COOKIE_NAME,
+  OAUTH2_DEVICE_CLIENT_ID,
+  COOKIE_NAME_PREFIX,
+} from '@src/lib/constants'
+import {
+  listAllEnvironments,
+  readEnvironmentConfigurationPool,
+  readEnvironmentConfigurationToken,
+  readEnvironmentFile,
+  writeEnvironmentConfigurationToken,
+  writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 
 export interface UserContext {
-  user?: Models['User_type']
+  user?: User
   token: string
 }
 
 export type Events =
   | {
       type: 'Log out'
+    }
+  | {
+      type: 'Log out all'
     }
   | {
       type: 'Log in'
@@ -32,15 +47,12 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 /**
  * Determine which token do we have persisted to initialize the auth machine
  */
-const persistedCookie = getCookie(COOKIE_NAME)
-const persistedLocalStorage = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+const persistedCookie = getCookie()
 const persistedDevToken = env().VITE_KITTYCAD_API_TOKEN
-export const persistedToken =
-  persistedDevToken || persistedCookie || persistedLocalStorage
+export const persistedToken = persistedDevToken || persistedCookie || ''
 console.log('Initial persisted token')
 console.table([
   ['cookie', !!persistedCookie],
-  ['local storage', !!persistedLocalStorage],
   ['api token', !!persistedDevToken],
 ])
 
@@ -52,7 +64,7 @@ export const authMachine = setup({
       | {
           type: 'xstate.done.actor.check-logged-in'
           output: {
-            user: Models['User_type']
+            user: User
             token: string
           }
         }
@@ -62,6 +74,7 @@ export const authMachine = setup({
       getUser(input)
     ),
     logout: fromPromise(logout),
+    logoutAllEnvironments: fromPromise(logoutAllEnvironments),
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwAWQ9gBspuQCYAnAGYAHPYCsx+4ccAaEAE9E1q7YcoZyxrYR1m7mcrYAvnE+aFh4BMTk1LSQjExgAE55VHnYKmIAhuhkRQC2qcLikpDSDPJKSCBqGlo67QYI9gDs5tge5o6h5vau7oY+-v3mA9jWco4u5iu21ua2YcYJSRg4Eln0zJkABFQYrbqdmtoMun2GA7YjxuPmLqvGNh5zRCfJaOcyLUzuAYuFyGcwHEDJY6NCAAeQwTEuskUd3UDx6oD6Im2wUcAzkMJ2cjBxlMgIWLmwZLWljecjJTjh8IYVAgcF0iJxXUez0QIgGxhJZIpu2ptL8AWwtje1nCW2iq1shns8MRdXSlGRjEFeKevUQjkcy3sqwGHimbg83nlCF22GMytVUWMMUc8USCKO2BOdCN7Xu3VNBKMKsVFp2hm2vu+1id83slkVrgTxhcW0pNJ1geDkDR6GNEZFCAT1kZZLk9cMLltb0WdPMjewjjC1mzOZCtk5CSAA */
@@ -101,11 +114,31 @@ export const authMachine = setup({
         'Log out': {
           target: 'loggingOut',
         },
+        'Log out all': {
+          target: 'loggingOutAllEnvironments',
+        },
       },
     },
     loggingOut: {
       invoke: {
         src: 'logout',
+        onDone: 'loggedOut',
+        onError: {
+          target: 'loggedIn',
+          actions: [
+            ({ event }) => {
+              console.error(
+                'Error while logging out',
+                'error' in event ? `: ${event.error}` : ''
+              )
+            },
+          ],
+        },
+      },
+    },
+    loggingOutAllEnvironments: {
+      invoke: {
+        src: 'logoutAllEnvironments',
         onDone: 'loggedOut',
         onError: {
           target: 'loggedIn',
@@ -138,17 +171,34 @@ export const authMachine = setup({
 })
 
 async function getUser(input: { token?: string }) {
-  const token = await getAndSyncStoredToken(input)
-  const url = withAPIBaseURL('/user')
-  const headers: { [key: string]: string } = {
-    'Content-Type': 'application/json',
+  if (window.electron) {
+    const environment =
+      (await readEnvironmentFile(window.electron)) ||
+      env().VITE_KITTYCAD_BASE_DOMAIN ||
+      ''
+    updateEnvironment(environment)
+
+    // Update the pool
+    const cachedPool = await readEnvironmentConfigurationPool(
+      window.electron,
+      environment
+    )
+    updateEnvironmentPool(environment, cachedPool)
   }
+
+  let token = ''
+  try {
+    token = await getAndSyncStoredToken(input)
+  } catch (e) {
+    console.error(e)
+  }
+  const client = createKCClient(token)
 
   /**
    * We do not want to store a token or a user since the developer is running
-   * the application locally. They know what they are doing.
+   * the application and dependencies locally. They know what they are doing.
    */
-  if (env().DEV && env().VITE_KITTYCAD_API_TOKEN === 'localhost') {
+  if (env().VITE_KITTYCAD_API_TOKEN === 'localhost') {
     return {
       user: undefined,
       token: 'localhost',
@@ -156,39 +206,36 @@ async function getUser(input: { token?: string }) {
   }
 
   if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
-  if (token) headers['Authorization'] = `Bearer ${token}`
 
-  const userPromise = isDesktop()
-    ? getUserDesktop(token)
-    : fetch(url, {
-        method: 'GET',
-        credentials: 'include',
-        headers,
-      })
-        .then((res) => res.json())
-        .catch((err) => console.error('error from Browser getUser', err))
-
-  const user = await userPromise
+  const me = await kcCall(() => users.get_user_self({ client }))
+  if (me instanceof Error) return Promise.reject(me)
 
   // Necessary here because we use Kurt's API key in CI
   if (localStorage.getItem('FORCE_NO_IMAGE')) {
-    user.image = ''
+    me.image = ''
   }
-
-  if ('error_code' in user) return Promise.reject(new Error(user.message))
 
   markOnce('code/didAuth')
   return {
-    user: user as Models['User_type'],
+    user: me,
     token,
   }
 }
 
-export function getCookie(cname: string): string | null {
+export function getCookie(): string | null {
   if (isDesktop()) {
     return null
   }
 
+  const baseDomain = env().VITE_KITTYCAD_BASE_DOMAIN
+  if (baseDomain === 'zoo.dev' || baseDomain === 'zoogov.dev') {
+    return getCookieByName(LEGACY_COOKIE_NAME)
+  } else {
+    return getCookieByName(COOKIE_NAME_PREFIX + baseDomain)
+  }
+}
+
+function getCookieByName(cname: string): string | null {
   let name = cname + '='
   let decodedCookie = decodeURIComponent(document.cookie)
   let ca = decodedCookie.split(';')
@@ -215,59 +262,105 @@ async function getAndSyncStoredToken(input: {
     return VITE_KITTYCAD_API_TOKEN
   }
 
-  const inputToken = input.token && input.token !== '' ? input.token : ''
-  const cookieToken = getCookie(COOKIE_NAME)
-  const localStorageToken = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
-  const token = inputToken || cookieToken || localStorageToken
+  const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
 
+  // Find possible tokens
+  const inputToken = input.token && input.token !== '' ? input.token : ''
+  const cookieToken = getCookie()
+  const fileToken =
+    window.electron && environmentName
+      ? await readEnvironmentConfigurationToken(
+          window.electron,
+          environmentName
+        )
+      : ''
+  const token = inputToken || cookieToken || fileToken
+
+  // Log what tokens we found
   console.log('Token used for authentication')
   console.table([
     ['persisted token', !!inputToken],
     ['cookie', !!cookieToken],
-    ['local storage', !!localStorageToken],
     ['api token', !!VITE_KITTYCAD_API_TOKEN],
+    ['file token', !!fileToken],
   ])
+
+  // If you found a token
   if (token) {
-    if (isDesktop()) {
+    // Write it to disk to sync it for desktop!
+    if (window.electron) {
       // has just logged in, update storage
-      localStorage.setItem(TOKEN_PERSIST_KEY, token)
-      await writeTokenFile(token)
+      if (environmentName)
+        await writeEnvironmentConfigurationToken(
+          window.electron,
+          environmentName,
+          token
+        )
     }
     return token
   }
+
+  // If you are web and you made it this far, you do not get a token
   if (!isDesktop()) return ''
-  const fileToken = isDesktop() ? await readTokenFile() : ''
-  // prefer other above, but file will ensure login persists after app updates
+
   if (!fileToken) return ''
-  // has token in file, update localStorage
-  localStorage.setItem(TOKEN_PERSIST_KEY, fileToken)
+  // default desktop login workflow to always read from disk, file will ensure login persists after app updates
   return fileToken
 }
 
+/**
+ * Logout function that will do a default logout within the AuthMachine
+ */
 async function logout() {
+  return logoutEnvironment()
+}
+
+/**
+ * Logout function that will do a specific environment logout if environment name is passed in
+ */
+async function logoutEnvironment(requestedDomain?: string) {
+  // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
-  if (isDesktop()) {
+  if (window.electron) {
     try {
-      let token = await readTokenFile()
+      const domain = requestedDomain || env().VITE_KITTYCAD_BASE_DOMAIN
+      let token = ''
+      if (domain) {
+        token = await readEnvironmentConfigurationToken(window.electron, domain)
+      } else {
+        return new Error('Unable to logout, cannot find domain')
+      }
 
       if (token) {
         try {
-          await fetch(withAPIBaseURL('/oauth2/token/revoke'), {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-              token: token,
-              client_id: OAUTH2_DEVICE_CLIENT_ID,
-            }).toString(),
-          })
+          const apiUrlBase = (() => {
+            try {
+              const u = new URL(domain)
+              return u.origin
+            } catch {
+              const d = generateDomainsFromBaseDomain(domain)
+              return d.API_URL
+            }
+          })()
+
+          const client = createKCClient(token, apiUrlBase)
+          await kcCall(() =>
+            oauth2.oauth2_token_revoke({
+              client,
+              body: {
+                token,
+                client_id: OAUTH2_DEVICE_CLIENT_ID,
+              },
+            })
+          )
         } catch (e) {
           console.error('Error revoking token:', e)
         }
 
-        await writeTokenFile('')
+        if (domain) {
+          await writeEnvironmentConfigurationToken(window.electron, domain, '')
+        }
+        await writeEnvironmentFile(window.electron, '')
         return Promise.resolve(null)
       }
     } catch (e) {
@@ -279,4 +372,20 @@ async function logout() {
     method: 'POST',
     credentials: 'include',
   })
+}
+
+/**
+ * To logout you need to revoke the token via the `oauth2/token/revoke` deleting the token off disk for electron
+ * will not be sufficient.
+ */
+async function logoutAllEnvironments() {
+  if (!window.electron) {
+    return new Error('unimplemented for web')
+  }
+  const environments = await listAllEnvironments(window.electron)
+  for (let i = 0; i < environments.length; i++) {
+    const environmentName = environments[i]
+    // Make the oauth2/token/revoke request per environment
+    await logoutEnvironment(environmentName)
+  }
 }

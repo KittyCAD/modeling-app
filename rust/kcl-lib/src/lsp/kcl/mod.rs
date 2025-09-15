@@ -43,10 +43,10 @@ use tower_lsp::{
 use crate::{
     ModuleId, Program, SourceRange,
     docs::kcl_doc::ModData,
-    errors::LspSuggestion,
     exec::KclValue,
-    execution::{cache, kcl_value::FunctionSource},
+    execution::cache,
     lsp::{
+        LspSuggestion, ToLspRange,
         backend::Backend as _,
         kcl::hover::{Hover, HoverOpts},
         util::IntoDiagnostic,
@@ -555,23 +555,23 @@ impl Backend {
             // We need to check if we are on the last token of the line.
             // If we are starting from the end of the last line just add 1 to the line.
             // Check if we are on the last token of the line.
-            if let Some(line) = params.text.lines().nth(position.line as usize) {
-                if line.len() == position.character as usize {
-                    // We are on the last token of the line.
-                    // We need to add a new line.
-                    let semantic_token = SemanticToken {
-                        delta_line: position.line - last_position.line + 1,
-                        delta_start: 0,
-                        length: (token.end - token.start) as u32,
-                        token_type: token_type_index,
-                        token_modifiers_bitset,
-                    };
+            if let Some(line) = params.text.lines().nth(position.line as usize)
+                && line.len() == position.character as usize
+            {
+                // We are on the last token of the line.
+                // We need to add a new line.
+                let semantic_token = SemanticToken {
+                    delta_line: position.line - last_position.line + 1,
+                    delta_start: 0,
+                    length: (token.end - token.start) as u32,
+                    token_type: token_type_index,
+                    token_modifiers_bitset,
+                };
 
-                    semantic_tokens.push(semantic_token);
+                semantic_tokens.push(semantic_token);
 
-                    last_position = Position::new(position.line + 1, 0);
-                    continue;
-                }
+                last_position = Position::new(position.line + 1, 0);
+                continue;
             }
 
             let semantic_token = SemanticToken {
@@ -860,7 +860,7 @@ impl Backend {
         // Now let's perform the rename on the ast.
         ast.rename_symbol(new_name, pos);
         // Now recast it.
-        let recast = ast.recast(&Default::default(), 0);
+        let recast = ast.recast_top(&Default::default(), 0);
 
         Ok(Some((current_code.to_string(), recast)))
     }
@@ -1043,13 +1043,10 @@ impl LanguageServer for Backend {
             Hover::Function { name, range } => {
                 let (sig, docs) = if let Some(Some(result)) = with_cached_var(&name, |value| {
                     match value {
-                        // User-defined or KCL std function
-                        KclValue::Function {
-                            value: FunctionSource::User { ast, .. },
-                            ..
-                        } => {
+                        // User-defined function
+                        KclValue::Function { value, .. } if !value.is_std => {
                             // TODO get docs from comments
-                            Some((ast.signature(), ""))
+                            Some((value.ast.signature(), ""))
                         }
                         _ => None,
                     }
@@ -1375,15 +1372,15 @@ impl LanguageServer for Backend {
         }
 
         // Check if we have context.
-        if let Some(context) = params.context {
-            if let Some(character) = context.trigger_character {
-                for character in character.chars() {
-                    // Check if we are on a ( or a ,.
-                    if character == '(' || character == ',' {
-                        if let Some(signature) = check_char(character) {
-                            return Ok(Some(signature.clone()));
-                        }
-                    }
+        if let Some(context) = params.context
+            && let Some(character) = context.trigger_character
+        {
+            for character in character.chars() {
+                // Check if we are on a ( or a ,.
+                if (character == '(' || character == ',')
+                    && let Some(signature) = check_char(character)
+                {
+                    return Ok(Some(signature.clone()));
                 }
             }
         }
@@ -1480,7 +1477,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
         // Now recast it.
-        let recast = ast.recast(
+        let recast = ast.recast_top(
             &crate::parsing::ast::types::FormatOptions {
                 tab_size: params.options.tab_size as usize,
                 insert_final_newline: params.options.insert_final_newline.unwrap_or(false),

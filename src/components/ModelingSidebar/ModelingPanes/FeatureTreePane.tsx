@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
-import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -12,11 +12,12 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useKclContext } from '@src/lang/KclProvider'
+import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
+import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   filterOperations,
   getOperationIcon,
@@ -24,12 +25,20 @@ import {
   getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
+import type { DefaultPlaneStr } from '@src/lib/planes'
 import {
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
+import {
+  codeManager,
+  commandBarActor,
   editorManager,
   kclManager,
   rustContext,
   sceneInfra,
 } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 import {
   featureTreeMachine,
   featureTreeMachineDefaultContext,
@@ -39,12 +48,6 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
-import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
-import {
-  selectDefaultSketchPlane,
-  selectOffsetSketchPlane,
-} from '@src/lib/selections'
-import type { DefaultPlaneStr } from '@src/lib/planes'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -72,6 +75,36 @@ export const FeatureTreePane = () => {
         },
         scrollToError: () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
+        },
+        sendTranslateCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Translate', groupId: 'modeling' },
+          })
+        },
+        sendRotateCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Rotate', groupId: 'modeling' },
+          })
+        },
+        sendScaleCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Scale', groupId: 'modeling' },
+          })
+        },
+        sendCloneCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Clone', groupId: 'modeling' },
+          })
+        },
+        sendAppearanceCommand: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Appearance', groupId: 'modeling' },
+          })
         },
         sendSelectionEvent: ({ context }) => {
           if (!context.targetSourceRange) {
@@ -141,6 +174,10 @@ export const FeatureTreePane = () => {
       ? kclManager.execState.operations
       : longestErrorOperationList
     : kclManager.lastSuccessfulOperations
+  // We use the code that corresponds to the operations. In case this is an
+  // error on the first run, fall back to whatever is currently in the code
+  // editor.
+  const operationsCode = kclManager.lastSuccessfulCode || codeManager.code
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = filterOperations(unfilteredOperationList)
@@ -151,11 +188,13 @@ export const FeatureTreePane = () => {
     if (codeOpen && isEditorMounted) {
       featureTreeSend({ type: 'codePaneOpened' })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [modelingState.context.store.openPanes, isEditorMounted])
 
   // Watch for changes in the selection and send an event to the feature tree machine
   useEffect(() => {
     featureTreeSend({ type: 'selected' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [lastSelectionEvent])
 
   function goToError() {
@@ -208,6 +247,7 @@ export const FeatureTreePane = () => {
                 <OperationItem
                   key={key}
                   item={operation}
+                  code={operationsCode}
                   send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
                 />
@@ -234,6 +274,7 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   const visible = props.visible
   const handleToggleVisible = useCallback(() => {
     props.onVisibilityChange()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.onVisibilityChange])
 
   return (
@@ -304,7 +345,10 @@ const OperationItemWrapper = ({
             {customSuffix && customSuffix}
           </div>
           {valueDetail && (
-            <code className="px-1 text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs">
+            <code
+              data-testid="value-detail"
+              className="px-1 text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+            >
               {valueDetail.display}
             </code>
           )}
@@ -327,6 +371,7 @@ const OperationItemWrapper = ({
  */
 const OperationItem = (props: {
   item: Operation
+  code: string
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
   sketchNoFace: boolean
 }) => {
@@ -336,14 +381,14 @@ const OperationItem = (props: {
     () =>
       props.item.type === 'VariableDeclaration'
         ? {
-            display: kclContext.code.slice(
+            display: props.code.slice(
               props.item.sourceRange[0],
               props.item.sourceRange[1]
             ),
             calculated: props.item.value,
           }
         : undefined,
-    [props.item, kclContext.code]
+    [props.item, props.code]
   )
 
   const variableName = useMemo(() => {
@@ -358,13 +403,20 @@ const OperationItem = (props: {
         diag.from >= props.item.sourceRange[0] &&
         diag.to <= props.item.sourceRange[1]
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclContext.diagnostics.length])
 
-  function selectOperation() {
+  async function selectOperation() {
     if (props.sketchNoFace) {
       if (isOffsetPlane(props.item)) {
-        const artifact = findOperationArtifact(props.item)
-        void selectOffsetSketchPlane(artifact)
+        const artifact = findOperationPlaneArtifact(
+          props.item,
+          kclManager.artifactGraph
+        )
+        const result = await selectOffsetSketchPlane(artifact)
+        if (err(result)) {
+          console.error(result)
+        }
       }
     } else {
       if (props.item.type === 'GroupEnd') {
@@ -379,10 +431,6 @@ const OperationItem = (props: {
     }
   }
 
-  /**
-   * For now we can only enter the "edit" flow for the startSketchOn operation.
-   * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
-   */
   function enterEditFlow() {
     if (
       props.item.type === 'StdLibCall' ||
@@ -434,6 +482,18 @@ const OperationItem = (props: {
     }
   }
 
+  function enterScaleFlow() {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
+      props.send({
+        type: 'enterScaleFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
   function enterCloneFlow() {
     if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
@@ -447,7 +507,11 @@ const OperationItem = (props: {
   }
 
   function deleteOperation() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'GroupBegin' ||
+      props.item.type === 'VariableDeclaration'
+    ) {
       props.send({
         type: 'deleteOperation',
         data: {
@@ -459,7 +523,10 @@ const OperationItem = (props: {
 
   function startSketchOnOffsetPlane() {
     if (isOffsetPlane(props.item)) {
-      const artifact = findOperationArtifact(props.item)
+      const artifact = findOperationPlaneArtifact(
+        props.item,
+        kclManager.artifactGraph
+      )
       if (artifact?.id) {
         sceneInfra.modelingSend({
           type: 'Enter sketch',
@@ -561,7 +628,7 @@ const OperationItem = (props: {
                 !stdLibMap[props.item.name]?.supportsTransform
               }
             >
-              Set translate
+              Translate
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={enterRotateFlow}
@@ -571,7 +638,17 @@ const OperationItem = (props: {
                 !stdLibMap[props.item.name]?.supportsTransform
               }
             >
-              Set rotate
+              Rotate
+            </ContextMenuItem>,
+            <ContextMenuItem
+              onClick={enterScaleFlow}
+              data-testid="context-menu-set-scale"
+              disabled={
+                props.item.type !== 'GroupBegin' &&
+                !stdLibMap[props.item.name]?.supportsTransform
+              }
+            >
+              Scale
             </ContextMenuItem>,
             <ContextMenuItem
               onClick={enterCloneFlow}
@@ -583,6 +660,12 @@ const OperationItem = (props: {
             >
               Clone
             </ContextMenuItem>,
+          ]
+        : []),
+      ...(props.item.type === 'StdLibCall' ||
+      props.item.type === 'GroupBegin' ||
+      props.item.type === 'VariableDeclaration'
+        ? [
             <ContextMenuItem
               onClick={deleteOperation}
               hotkey="Delete"
@@ -593,6 +676,7 @@ const OperationItem = (props: {
           ]
         : []),
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [props.item, props.send]
   )
 
@@ -606,7 +690,9 @@ const OperationItem = (props: {
       variableName={variableName}
       valueDetail={valueDetail}
       menuItems={menuItems}
-      onClick={selectOperation}
+      onClick={() => {
+        void selectOperation()
+      }}
       onDoubleClick={props.sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
       errors={errors}
       greyedOut={!enabled}
@@ -642,6 +728,7 @@ const DefaultPlanes = () => {
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [sketchNoFace]
   )
 
@@ -714,18 +801,4 @@ const DefaultPlanes = () => {
       <div className="h-px bg-chalkboard-50/20 my-2" />
     </div>
   )
-}
-
-type StdLibCallOp = Extract<Operation, { type: 'StdLibCall' }>
-
-const isOffsetPlane = (item: Operation): item is StdLibCallOp => {
-  return item.type === 'StdLibCall' && item.name === 'offsetPlane'
-}
-
-const findOperationArtifact = (item: StdLibCallOp) => {
-  const nodePath = JSON.stringify(item.nodePath)
-  const artifact = [...kclManager.artifactGraph.values()].find(
-    (a) => JSON.stringify((a as Plane).codeRef?.nodePath) === nodePath
-  )
-  return artifact
 }

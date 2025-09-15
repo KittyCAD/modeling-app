@@ -1,19 +1,19 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { topLevelRange } from '@src/lang/util'
 import type { ParseResult } from '@src/lang/wasm'
 import {
+  assertParse,
+  errFromErrWithOutputs,
   formatNumberLiteral,
   parse,
-  errFromErrWithOutputs,
   rustImplPathToNode,
-  assertParse,
 } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { topLevelRange } from '@src/lang/util'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 
 beforeEach(async () => {
   await initPromise
@@ -47,11 +47,11 @@ it('formats numbers with units', () => {
 describe('test errFromErrWithOutputs', () => {
   it('converts KclErrorWithOutputs to KclError', () => {
     const blob =
-      '{"error":{"kind":"internal","details":{"sourceRanges":[],"backtrace":[],"msg":"Cache busted"}},"nonFatal":[],"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null}'
+      '{"error":{"kind":"internal","details":{"sourceRanges":[],"backtrace":[],"msg":"Cache busted"}},"nonFatal":[],"variables":{},"operations":[],"artifactCommands":[],"artifactGraph":{"map":{}},"filenames":{},"sourceFiles":{},"defaultPlanes":null}'
     const error = errFromErrWithOutputs(blob)
     const errorStr = JSON.stringify(error)
     expect(errorStr).toEqual(
-      '{"kind":"internal","sourceRange":[0,0,0],"msg":"Cache busted","kclBacktrace":[],"nonFatal":[],"operations":[],"artifactGraph":{},"filenames":{},"defaultPlanes":null}'
+      '{"kind":"internal","sourceRange":[0,0,0],"msg":"Cache busted","kclBacktrace":[],"nonFatal":[],"variables":{},"operations":[],"artifactGraph":{},"filenames":{},"defaultPlanes":null}'
     )
   })
 })

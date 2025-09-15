@@ -1,7 +1,32 @@
-import type {
-  TextToCad_type,
-  TextToCadMultiFileIteration_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { TextToCad, TextToCadMultiFileIteration } from '@kittycad/lib'
+import { ActionButton } from '@src/components/ActionButton'
+import { fsManager } from '@src/lang/std/fileSystemManager'
+import { base64Decode } from '@src/lang/wasm'
+import { isDesktop } from '@src/lib/isDesktop'
+import { SafeRenderer } from '@src/lib/markdown'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
+import { sendTelemetry } from '@src/lib/textToCadTelemetry'
+import { reportRejection } from '@src/lib/trap'
+import type { FileMeta } from '@src/lib/types'
+import {
+  useProjectDirectoryPath,
+  useRequestedFileName,
+  useRequestedProjectName,
+} from '@src/machines/systemIO/hooks'
+import {
+  SystemIOMachineEvents,
+  waitForIdleState,
+} from '@src/machines/systemIO/utils'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
+import {
+  Marked,
+  type MarkedOptions,
+  escape,
+  unescape,
+} from '@ts-stack/markdown'
 import { useCallback, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import type { Mesh } from 'three'
@@ -21,33 +46,6 @@ import {
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { ActionButton } from '@src/components/ActionButton'
-import { base64Decode } from '@src/lang/wasm'
-import { isDesktop } from '@src/lib/isDesktop'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS } from '@src/lib/paths'
-import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
-import { sendTelemetry } from '@src/lib/textToCadTelemetry'
-import { reportRejection } from '@src/lib/trap'
-import {
-  SystemIOMachineEvents,
-  waitForIdleState,
-} from '@src/machines/systemIO/utils'
-import {
-  useProjectDirectoryPath,
-  useRequestedFileName,
-  useRequestedProjectName,
-} from '@src/machines/systemIO/hooks'
-import { commandBarActor } from '@src/lib/singletons'
-import type { FileMeta } from '@src/lib/types'
-import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import {
-  Marked,
-  type MarkedOptions,
-  escape,
-  unescape,
-} from '@ts-stack/markdown'
-import { SafeRenderer } from '@src/lib/markdown'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -182,7 +180,7 @@ export function ToastTextToCadSuccess({
   rootProjectName,
 }: {
   toastId: string
-  data: TextToCad_type & { fileName: string }
+  data: TextToCad & { fileName: string }
   navigate: (to: string) => void
   token?: string
   settings?: {
@@ -253,7 +251,7 @@ export function ToastTextToCadSuccess({
     scene.add(camera)
 
     // Get the base64 encoded GLB file
-    const buffer = base64Decode(data.outputs[OUTPUT_KEY])
+    const buffer = base64Decode(data.outputs?.[OUTPUT_KEY] || '')
 
     if (buffer instanceof Error) {
       toast.error('Error loading GLB file: ' + buffer.message)
@@ -343,6 +341,7 @@ export function ToastTextToCadSuccess({
         animationRequestRef.current = undefined
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   return (
@@ -418,7 +417,8 @@ export function ToastTextToCadSuccess({
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 sendTelemetry(modelId, 'accepted', token)
-                const path = `${projectDirectoryPath}${window.electron.path.sep}${projectName}${window.electron.sep}${fileName}`
+                const sep = fsManager.path.sep
+                const path = `${projectDirectoryPath}${sep}${projectName}${sep}${fileName}`
                 navigate(`${PATHS.FILE}/${encodeURIComponent(path)}`)
 
                 toast.dismiss(toastId)
@@ -514,7 +514,7 @@ export function ToastPromptToEditCadSuccess({
   toastId: string
   oldCodeWebAppOnly: string
   oldFiles: FileMeta[]
-  data: TextToCadMultiFileIteration_type
+  data: TextToCadMultiFileIteration
   token?: string
 }) {
   const modelId = data.id

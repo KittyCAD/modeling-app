@@ -98,7 +98,13 @@ test.describe('Testing Gizmo', () => {
       await page.waitForTimeout(100)
       await page.mouse.click(clickPosition.x, clickPosition.y)
       await page.mouse.move(0, 0)
-      await u.waitForCmdReceive('default_camera_look_at')
+
+      // We use different camera commands for top/bottom cf. all others.
+      if (['top view', 'bottom view'].includes(testDescription)) {
+        await u.waitForCmdReceive('default_camera_set_view')
+      } else {
+        await u.waitForCmdReceive('default_camera_look_at')
+      }
       await u.clearCommandLogs()
 
       await u.sendCustomCmd({
@@ -270,11 +276,12 @@ test.describe(`Testing gizmo, fixture-based`, () => {
       )
     })
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    const bodyDimensions = { width: 1000, height: 500 }
+    await page.setBodyDimensions(bodyDimensions)
 
     await homePage.goToModelingScene()
-    const u = await getUtils(page)
-    await u.waitForPageLoad()
+    await editor.closePane()
+    await scene.settled(cmdBar)
 
     await test.step(`Setup`, async () => {
       await scene.expectState({
@@ -284,17 +291,23 @@ test.describe(`Testing gizmo, fixture-based`, () => {
         },
       })
     })
-    const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
+    const [clickCircle, moveToCircle] = scene.makeMouseHelpers(
+      582 / bodyDimensions.width,
+      217 / bodyDimensions.height,
+      { format: 'ratio' }
+    )
 
     await test.step(`Select an edge of this circle`, async () => {
       const circleSnippet = 'circle(center = [818.33, 168.1], radius = 182.8)'
       await moveToCircle()
       await clickCircle()
+      await editor.openPane()
       await editor.expectState({
         activeLines: ['|>' + circleSnippet],
-        highlightedCode: circleSnippet,
+        highlightedCode: '',
         diagnostics: [],
       })
+      await editor.closePane()
     })
 
     await test.step(`Center on selection from menu`, async () => {

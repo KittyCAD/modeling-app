@@ -1,7 +1,7 @@
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
-    self as kcmc, EnableSketchMode, ModelingCmd,
+    self as kcmc, EnableSketchMode, FaceIsPlanar, ModelingCmd,
     ok_response::OkModelingCmdResponse,
     shared::ExtrusionFaceCapType,
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
@@ -128,6 +128,13 @@ pub struct Path {
     /// this can be used as input for another composite solid.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub composite_solid_id: Option<ArtifactId>,
+    /// The hole, if any, from a subtract2d() call.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub inner_path_id: Option<ArtifactId>,
+    /// The `Path` that this is a hole of, if any. The inverse link of
+    /// `inner_path_id`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub outer_path_id: Option<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -176,6 +183,15 @@ pub enum SweepSubType {
 pub struct Solid2d {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct PlaneOfFace {
+    pub id: ArtifactId,
+    pub face_id: ArtifactId,
+    pub code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -318,6 +334,7 @@ pub enum Artifact {
     Path(Path),
     Segment(Segment),
     Solid2d(Solid2d),
+    PlaneOfFace(PlaneOfFace),
     StartSketchOnFace(StartSketchOnFace),
     StartSketchOnPlane(StartSketchOnPlane),
     Sweep(Sweep),
@@ -339,6 +356,7 @@ impl Artifact {
             Artifact::Solid2d(a) => a.id,
             Artifact::StartSketchOnFace(a) => a.id,
             Artifact::StartSketchOnPlane(a) => a.id,
+            Artifact::PlaneOfFace(a) => a.id,
             Artifact::Sweep(a) => a.id,
             Artifact::Wall(a) => a.id,
             Artifact::Cap(a) => a.id,
@@ -360,6 +378,7 @@ impl Artifact {
             Artifact::Solid2d(_) => None,
             Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
             Artifact::StartSketchOnPlane(a) => Some(&a.code_ref),
+            Artifact::PlaneOfFace(a) => Some(&a.code_ref),
             Artifact::Sweep(a) => Some(&a.code_ref),
             Artifact::Wall(_) => None,
             Artifact::Cap(_) => None,
@@ -380,6 +399,7 @@ impl Artifact {
             | Artifact::Segment(_)
             | Artifact::Solid2d(_)
             | Artifact::StartSketchOnFace(_)
+            | Artifact::PlaneOfFace(_)
             | Artifact::StartSketchOnPlane(_)
             | Artifact::Sweep(_) => None,
             Artifact::Wall(a) => Some(&a.face_code_ref),
@@ -399,6 +419,7 @@ impl Artifact {
             Artifact::Solid2d(_) => Some(new),
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
+            Artifact::PlaneOfFace { .. } => Some(new),
             Artifact::Sweep(a) => a.merge(new),
             Artifact::Wall(a) => a.merge(new),
             Artifact::Cap(a) => a.merge(new),
@@ -443,6 +464,8 @@ impl Path {
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_id(&mut self.solid2d_id, new.solid2d_id);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
+        merge_opt_id(&mut self.inner_path_id, new.inner_path_id);
+        merge_opt_id(&mut self.outer_path_id, new.outer_path_id);
 
         None
     }
@@ -579,10 +602,10 @@ pub(super) fn build_artifact_graph(
         // current plane ID.
         // THIS IS THE ONLY THING WE CAN ASSUME IS ALWAYS SEQUENTIAL SINCE ITS PART OF THE
         // SAME ATOMIC COMMANDS BATCHING.
-        if let ModelingCmd::StartPath(_) = artifact_command.command {
-            if let Some(plane_id) = current_plane_id {
-                path_to_plane_id_map.insert(artifact_command.cmd_id, plane_id);
-            }
+        if let ModelingCmd::StartPath(_) = artifact_command.command
+            && let Some(plane_id) = current_plane_id
+        {
+            path_to_plane_id_map.insert(artifact_command.cmd_id, plane_id);
         }
         if let ModelingCmd::SketchModeDisable(_) = artifact_command.command {
             current_plane_id = None;
@@ -751,6 +774,13 @@ fn artifacts_to_update(
                 code_ref,
             })]);
         }
+        ModelingCmd::FaceIsPlanar(FaceIsPlanar { object_id, .. }) => {
+            return Ok(vec![Artifact::PlaneOfFace(PlaneOfFace {
+                id,
+                face_id: object_id.into(),
+                code_ref,
+            })]);
+        }
         ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) => {
             let existing_plane = artifacts.get(&ArtifactId::new(*entity_id));
             match existing_plane {
@@ -805,6 +835,8 @@ fn artifacts_to_update(
                 solid2d_id: None,
                 code_ref,
                 composite_solid_id: None,
+                inner_path_id: None,
+                outer_path_id: None,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
@@ -924,6 +956,8 @@ fn artifacts_to_update(
                         solid2d_id: None,
                         code_ref: code_ref.clone(),
                         composite_solid_id: None,
+                        inner_path_id: None,
+                        outer_path_id: None,
                     }
                 };
 
@@ -950,9 +984,11 @@ fn artifacts_to_update(
         | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
         | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
+        | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. })
         | ModelingCmd::Sweep(kcmc::Sweep { target, .. }) => {
             let sub_type = match cmd {
                 ModelingCmd::Extrude(_) => SweepSubType::Extrusion,
+                ModelingCmd::ExtrudeToReference(_) => SweepSubType::Extrusion,
                 ModelingCmd::TwistExtrude(_) => SweepSubType::ExtrusionTwist,
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
@@ -974,6 +1010,13 @@ fn artifacts_to_update(
                 let mut new_path = path.clone();
                 new_path.sweep_id = Some(id);
                 return_arr.push(Artifact::Path(new_path));
+                if let Some(inner_path_id) = path.inner_path_id
+                    && let Some(inner_path_artifact) = artifacts.get(&inner_path_id)
+                    && let Artifact::Path(mut inner_path_artifact) = inner_path_artifact.clone()
+                {
+                    inner_path_artifact.sweep_id = Some(id);
+                    return_arr.push(Artifact::Path(inner_path_artifact))
+                }
             }
             return Ok(return_arr);
         }
@@ -1030,14 +1073,19 @@ fn artifacts_to_update(
                     continue;
                 };
                 last_path = Some(path);
-                let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                    KclError::new_internal(KclErrorDetails::new(
+                let Some(path_sweep_id) = path.sweep_id else {
+                    // If the path doesn't have a sweep ID, check if it's a
+                    // hole.
+                    if path.outer_path_id.is_some() {
+                        continue; // hole not handled
+                    }
+                    return Err(KclError::new_internal(KclErrorDetails::new(
                         format!(
-                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none:\n{id:#?}\n{path:#?}"
                         ),
                         vec![range],
-                    ))
-                })?;
+                    )));
+                };
                 let extra_artifact = exec_artifacts.values().find(|a| {
                     if let Artifact::StartSketchOnFace(s) = a {
                         s.face_id == face_id
@@ -1084,14 +1132,19 @@ fn artifacts_to_update(
                     let Some(face_id) = face.face_id.map(ArtifactId::new) else {
                         continue;
                     };
-                    let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                        KclError::new_internal(KclErrorDetails::new(
+                    let Some(path_sweep_id) = path.sweep_id else {
+                        // If the path doesn't have a sweep ID, check if it's a
+                        // hole.
+                        if path.outer_path_id.is_some() {
+                            continue; // hole not handled
+                        }
+                        return Err(KclError::new_internal(KclErrorDetails::new(
                             format!(
-                                "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                                "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none:\n{id:#?}\n{path:#?}"
                             ),
                             vec![range],
-                        ))
-                    })?;
+                        )));
+                    };
                     let extra_artifact = exec_artifacts.values().find(|a| {
                         if let Artifact::StartSketchOnFace(s) = a {
                             s.face_id == face_id
@@ -1265,6 +1318,24 @@ fn artifacts_to_update(
             })];
             // We could add the reverse graph edge connecting from the edge to
             // the helix here, but it's not useful right now.
+            return Ok(return_arr);
+        }
+        ModelingCmd::Solid2dAddHole(solid2d_add_hole) => {
+            let mut return_arr = Vec::new();
+            // Add the hole to the outer.
+            let outer_path = artifacts.get(&ArtifactId::new(solid2d_add_hole.object_id));
+            if let Some(Artifact::Path(path)) = outer_path {
+                let mut new_path = path.clone();
+                new_path.inner_path_id = Some(ArtifactId::new(solid2d_add_hole.hole_id));
+                return_arr.push(Artifact::Path(new_path));
+            }
+            // Add the outer to the hole.
+            let inner_solid2d = artifacts.get(&ArtifactId::new(solid2d_add_hole.hole_id));
+            if let Some(Artifact::Path(path)) = inner_solid2d {
+                let mut new_path = path.clone();
+                new_path.outer_path_id = Some(ArtifactId::new(solid2d_add_hole.object_id));
+                return_arr.push(Artifact::Path(new_path));
+            }
             return Ok(return_arr);
         }
         ModelingCmd::BooleanIntersection(_) | ModelingCmd::BooleanSubtract(_) | ModelingCmd::BooleanUnion(_) => {

@@ -1,25 +1,38 @@
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import type { ActorRefFrom } from 'xstate'
+import env from '@src/env'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
-import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
+import {
+  writeEnvironmentConfigurationPool,
+  writeEnvironmentFile,
+} from '@src/lib/desktop'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   everyKclSample,
   findKclSample,
   kclSamplesManifestWithNoMultipleFiles,
 } from '@src/lib/kclSamples'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
-import toast from 'react-hot-toast'
-import { reportRejection } from '@src/lib/trap'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   getStringAfterLastSeparator,
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
+import { reportRejection } from '@src/lib/trap'
+import { returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
+import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
+import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
+import { waitForIdleState } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  determineProjectFilePathFromPrompt,
+} from '@src/machines/systemIO/utils'
+import toast from 'react-hot-toast'
+import type { ActorRefFrom } from 'xstate'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -79,9 +92,10 @@ function onSubmitKCLSampleCreation({
       if (!isProjectNew) {
         requestedFiles.forEach((requestedFile) => {
           const subDirectoryName = projectPathPart
-          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
-            projectFolderName: requestedFile.requestedProjectName,
-          })
+          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(
+            systemIOActor.getSnapshot().context,
+            { projectFolderName: requestedFile.requestedProjectName }
+          )
           const uniqueSubDirectoryName = getUniqueProjectName(
             subDirectoryName,
             firstLevelDirectories
@@ -120,13 +134,15 @@ function onSubmitKCLSampleCreation({
 
 export function createApplicationCommands({
   systemIOActor,
+  mlEphantManagerActor,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  mlEphantManagerActor: MlEphantManagerActor
 }) {
   const textToCADCommand: Command = {
     name: 'Text-to-CAD',
     description: 'Generate parts from text prompts.',
-    displayName: 'Text-to-CAD Create',
+    displayName: 'Create Project using Text-to-CAD',
     groupId: 'application',
     needsReview: false,
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
@@ -135,11 +151,59 @@ export function createApplicationCommands({
       if (record) {
         const requestedProjectName = record.newProjectName || record.projectName
         const requestedPrompt = record.prompt
-        const isProjectNew = !!record.newProjectName
+
+        const { folders } = systemIOActor.getSnapshot().context
+
+        const uniqueProjectPath = getUniqueProjectName(
+          requestedProjectName,
+          folders
+        )
+        const uniquePromptFilePath = determineProjectFilePathFromPrompt(
+          systemIOActor.getSnapshot().context,
+          {
+            existingProjectName: uniqueProjectPath,
+            requestedPrompt,
+          }
+        )
+
         systemIOActor.send({
-          type: SystemIOMachineEvents.generateTextToCAD,
-          data: { requestedPrompt, requestedProjectName, isProjectNew },
+          type: SystemIOMachineEvents.importFileFromURL,
+          data: {
+            requestedProjectName: uniqueProjectPath,
+            requestedCode: '',
+            requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
+          },
         })
+
+        // TODO: Remove this await and instead add a call back or something
+        // to the event above
+        waitForIdleState({ systemIOActor })
+          .then(() => {
+            mlEphantManagerActor.send({
+              type: MlEphantManagerTransitions.PromptCreateModel,
+              // It's always going to be a fresh directory since it's a new
+              // project.
+              projectForPromptOutput: {
+                name: '',
+                path: uniquePromptFilePath,
+                children: [],
+                readWriteAccess: true,
+                metadata: {
+                  accessed: '',
+                  created: '',
+                  modified: '',
+                  permission: null,
+                  type: null,
+                  size: 0,
+                },
+                kcl_file_count: 0,
+                directory_count: 0,
+                default_file: '',
+              },
+              prompt: requestedPrompt,
+            })
+          })
+          .catch(reportRejection)
       }
     },
     args: {
@@ -150,7 +214,8 @@ export function createApplicationCommands({
         options: isDesktop()
           ? [
               { name: 'New project', value: 'newProject' },
-              { name: 'Existing project', value: 'existingProject' },
+              // TODO: figure out what to do with this step
+              // { name: 'Existing project', value: 'existingProject' },
             ]
           : [{ name: 'Overwrite', value: 'existingProject' }],
         valueSummary(value) {
@@ -231,11 +296,12 @@ export function createApplicationCommands({
             systemIOActor,
             isProjectNew,
           })
-        } else if (data.source === 'local' && data.path) {
+        } else if (window.electron && data.source === 'local' && data.path) {
+          const electron = window.electron
           const clonePath = data.path
           const fileNameWithExtension = getStringAfterLastSeparator(clonePath)
           const readFileContentsAndCreateNewFile = async () => {
-            const text = await window.electron.readFile(clonePath, 'utf8')
+            const text = await electron.readFile(clonePath, 'utf8')
             systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {
@@ -360,7 +426,7 @@ export function createApplicationCommands({
         hidden: !isDesktop(),
         defaultValue: '',
         valueSummary: (value) => {
-          return isDesktop() ? window.electron.path.basename(value) : ''
+          return window.electron ? window.electron.path.basename(value) : ''
         },
         required: (commandContext) =>
           isDesktop() &&
@@ -447,7 +513,81 @@ export function createApplicationCommands({
     },
   }
 
+  const switchEnvironmentsCommand: Command = {
+    name: 'switch-environments',
+    displayName: 'Switch environments',
+    description:
+      'Switch between different environments to connect your application runtime',
+    needsReview: false,
+    icon: 'importFile',
+    groupId: 'application',
+    onSubmit: (data) => {
+      if (!window.electron) {
+        console.error(new Error('No file system present'))
+        return
+      }
+      if (data) {
+        const requestedEnvironmentFormatted = returnSelfOrGetHostNameFromURL(
+          data.environment
+        )
+        writeEnvironmentFile(window.electron, requestedEnvironmentFormatted)
+          .then(() => {
+            // Reload the application and it will trigger the correct sign in workflow for the new environment
+            window.location.reload()
+          })
+          .catch(reportRejection)
+      }
+    },
+    args: {
+      environment: {
+        inputType: 'string',
+        required: true,
+      },
+    },
+  }
+
+  const choosePoolCommand: Command = {
+    name: 'choose-pool',
+    displayName: 'Choose pool',
+    description: 'Switch between different engine pools',
+    needsReview: true,
+    icon: 'importFile',
+    groupId: 'application',
+    onSubmit: (data) => {
+      if (!window.electron) {
+        console.error(new Error('No file system present'))
+        return
+      }
+      if (data) {
+        const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+        if (environmentName)
+          writeEnvironmentConfigurationPool(
+            window.electron,
+            environmentName,
+            data.pool
+          )
+            .then(() => {
+              // Reload the application and it will trigger the correct sign in workflow for the new environment
+              window.location.reload()
+            })
+            .catch(reportRejection)
+      }
+    },
+    args: {
+      pool: {
+        inputType: 'string',
+        required: false,
+      },
+    },
+  }
+
   return isDesktop()
-    ? [textToCADCommand, addKCLFileToProject, createASampleDesktopOnly]
+    ? [
+        textToCADCommand,
+        addKCLFileToProject,
+        createASampleDesktopOnly,
+        switchEnvironmentsCommand,
+        choosePoolCommand,
+      ]
     : [textToCADCommand, addKCLFileToProject]
 }

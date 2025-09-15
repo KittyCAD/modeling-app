@@ -1,18 +1,20 @@
-use std::ops::{Add, AddAssign, Mul};
+use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 
 use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, websocket::ModelingCmdReq};
+use kittycad_modeling_cmds::{
+    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
+};
 use parse_display::{Display, FromStr};
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, UnitLen, types::NumericType,
+        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
+        types::{NumericType, adjust_length},
     },
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{args::TyF64, sketch::PlaneData},
@@ -21,7 +23,7 @@ use crate::{
 type Point3D = kcmc::shared::Point3d<f64>;
 
 /// A geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -50,7 +52,7 @@ impl Geometry {
 }
 
 /// A geometry including an imported geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -74,7 +76,7 @@ impl GeometryWithImportedGeometry {
 }
 
 /// A set of geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::vec_box)]
@@ -93,7 +95,7 @@ impl From<Geometry> for Geometries {
 }
 
 /// Data for an imported geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ImportedGeometry {
@@ -142,7 +144,7 @@ impl ImportedGeometry {
 }
 
 /// Data for a solid, sketch, or an imported geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
@@ -205,7 +207,7 @@ impl SolidOrSketchOrImportedGeometry {
 }
 
 /// Data for a solid or an imported geometry.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
@@ -251,7 +253,7 @@ impl SolidOrImportedGeometry {
 }
 
 /// A helix.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Helix {
@@ -267,12 +269,12 @@ pub struct Helix {
     pub ccw: bool,
     /// The cylinder the helix was created on.
     pub cylinder_id: Option<uuid::Uuid>,
-    pub units: UnitLen,
+    pub units: UnitLength,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Plane {
@@ -289,7 +291,7 @@ pub struct Plane {
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PlaneInfo {
@@ -313,7 +315,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -337,7 +339,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -361,7 +363,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -385,7 +387,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -409,7 +411,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -433,7 +435,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -561,10 +563,19 @@ impl Plane {
     pub fn is_standard(&self) -> bool {
         !matches!(self.value, PlaneType::Custom | PlaneType::Uninit)
     }
+
+    /// Project a point onto a plane by calculating how far away it is and moving it along the
+    /// normal of the plane so that it now lies on the plane.
+    pub fn project(&self, point: Point3d) -> Point3d {
+        let v = point - self.info.origin;
+        let dot = v.axes_dot_product(&self.info.z_axis);
+
+        point - self.info.z_axis * dot
+    }
 }
 
 /// A face.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Face {
@@ -580,13 +591,13 @@ pub struct Face {
     pub y_axis: Point3d,
     /// The solid the face is on.
     pub solid: Box<Solid>,
-    pub units: UnitLen,
+    pub units: UnitLength,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 
 /// Type for a plane.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[display(style = "camelCase")]
 pub enum PlaneType {
@@ -607,14 +618,19 @@ pub enum PlaneType {
     Uninit,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct Sketch {
     /// The id of the sketch (this will change when the engine's reference to it changes).
     pub id: uuid::Uuid,
     /// The paths in the sketch.
+    /// Only paths on the "outside" i.e. the perimeter.
+    /// Does not include paths "inside" the profile (for example, edges made by subtracting a profile)
     pub paths: Vec<Path>,
+    /// Inner paths, resulting from subtract2d to carve profiles out of the sketch.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub inner_paths: Vec<Path>,
     /// What the sketch is on (can be a plane or a face).
     pub on: SketchSurface,
     /// The starting path.
@@ -630,10 +646,17 @@ pub struct Sketch {
     /// If the sketch includes a mirror.
     #[serde(skip)]
     pub mirror: Option<uuid::Uuid>,
-    pub units: UnitLen,
+    pub units: UnitLength,
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+    /// If not given, defaults to true.
+    #[serde(default = "very_true", skip_serializing_if = "is_true")]
+    pub is_closed: bool,
+}
+
+fn is_true(b: &bool) -> bool {
+    *b
 }
 
 impl Sketch {
@@ -673,7 +696,7 @@ impl Sketch {
 }
 
 /// A sketch type.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum SketchSurface {
@@ -717,7 +740,7 @@ pub(crate) enum GetTangentialInfoFromPathsResult {
     Ellipse {
         center: [f64; 2],
         ccw: bool,
-        major_radius: f64,
+        major_axis: [f64; 2],
         _minor_radius: f64,
     },
 }
@@ -736,10 +759,10 @@ impl GetTangentialInfoFromPathsResult {
             } => [center[0] + radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
             GetTangentialInfoFromPathsResult::Ellipse {
                 center,
-                major_radius,
+                major_axis,
                 ccw,
                 ..
-            } => [center[0] + major_radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
+            } => [center[0] + major_axis[0], center[1] + if *ccw { -1.0 } else { 1.0 }],
         }
     }
 }
@@ -799,7 +822,7 @@ impl Sketch {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct Solid {
@@ -811,8 +834,6 @@ pub struct Solid {
     pub value: Vec<ExtrudeSurface>,
     /// The sketch.
     pub sketch: Sketch,
-    /// The height of the solid.
-    pub height: f64,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
@@ -821,7 +842,7 @@ pub struct Solid {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
     /// The units of the solid.
-    pub units: UnitLen,
+    pub units: UnitLength,
     /// Is this a sectional solid?
     pub sectional: bool,
     /// Metadata.
@@ -833,14 +854,10 @@ impl Solid {
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
     }
-
-    pub(crate) fn height_in_mm(&self) -> f64 {
-        self.units.adjust_to(self.height, UnitLen::Mm).0
-    }
 }
 
 /// A fillet or a chamfer.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EdgeCut {
@@ -903,22 +920,22 @@ impl EdgeCut {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
     pub y: f64,
-    pub units: UnitLen,
+    pub units: UnitLength,
 }
 
 impl Point2d {
     pub const ZERO: Self = Self {
         x: 0.0,
         y: 0.0,
-        units: UnitLen::Mm,
+        units: UnitLength::Millimeters,
     };
 
-    pub fn new(x: f64, y: f64, units: UnitLen) -> Self {
+    pub fn new(x: f64, y: f64, units: UnitLength) -> Self {
         Self { x, y, units }
     }
 
@@ -935,13 +952,13 @@ impl Point2d {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema, Default)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, Default)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,
     pub y: f64,
     pub z: f64,
-    pub units: UnitLen,
+    pub units: Option<UnitLength>,
 }
 
 impl Point3d {
@@ -949,10 +966,10 @@ impl Point3d {
         x: 0.0,
         y: 0.0,
         z: 0.0,
-        units: UnitLen::Mm,
+        units: Some(UnitLength::Millimeters),
     };
 
-    pub fn new(x: f64, y: f64, z: f64, units: UnitLen) -> Self {
+    pub fn new(x: f64, y: f64, z: f64, units: Option<UnitLength>) -> Self {
         Self { x, y, z, units }
     }
 
@@ -969,7 +986,7 @@ impl Point3d {
             x: self.y * other.z - self.z * other.y,
             y: self.z * other.x - self.x * other.z,
             z: self.x * other.y - self.y * other.x,
-            units: UnitLen::Unknown,
+            units: None,
         }
     }
 
@@ -990,11 +1007,11 @@ impl Point3d {
             x: self.x / len,
             y: self.y / len,
             z: self.z / len,
-            units: UnitLen::Unknown,
+            units: None,
         }
     }
 
-    pub fn as_3_dims(&self) -> ([f64; 3], UnitLen) {
+    pub fn as_3_dims(&self) -> ([f64; 3], Option<UnitLength>) {
         let p = [self.x, self.y, self.z];
         let u = self.units;
         (p, u)
@@ -1016,7 +1033,7 @@ impl From<[TyF64; 3]> for Point3d {
             x: p[0].n,
             y: p[1].n,
             z: p[2].n,
-            units: p[0].ty.expect_length(),
+            units: p[0].ty.as_length(),
         }
     }
 }
@@ -1029,10 +1046,18 @@ impl From<Point3d> for Point3D {
 
 impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
     fn from(p: Point3d) -> Self {
-        Self {
-            x: LengthUnit(p.units.adjust_to(p.x, UnitLen::Mm).0),
-            y: LengthUnit(p.units.adjust_to(p.y, UnitLen::Mm).0),
-            z: LengthUnit(p.units.adjust_to(p.z, UnitLen::Mm).0),
+        if let Some(units) = p.units {
+            Self {
+                x: LengthUnit(adjust_length(units, p.x, UnitLength::Millimeters).0),
+                y: LengthUnit(adjust_length(units, p.y, UnitLength::Millimeters).0),
+                z: LengthUnit(adjust_length(units, p.z, UnitLength::Millimeters).0),
+            }
+        } else {
+            Self {
+                x: LengthUnit(p.x),
+                y: LengthUnit(p.y),
+                z: LengthUnit(p.z),
+            }
         }
     }
 }
@@ -1057,6 +1082,37 @@ impl AddAssign for Point3d {
     }
 }
 
+impl Sub for Point3d {
+    type Output = Point3d;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let (x, y, z) = if rhs.units != self.units
+            && let Some(sunits) = self.units
+            && let Some(runits) = rhs.units
+        {
+            (
+                adjust_length(runits, rhs.x, sunits).0,
+                adjust_length(runits, rhs.y, sunits).0,
+                adjust_length(runits, rhs.z, sunits).0,
+            )
+        } else {
+            (rhs.x, rhs.y, rhs.z)
+        };
+        Point3d {
+            x: self.x - x,
+            y: self.y - y,
+            z: self.z - z,
+            units: self.units,
+        }
+    }
+}
+
+impl SubAssign for Point3d {
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs
+    }
+}
+
 impl Mul<f64> for Point3d {
     type Output = Point3d;
 
@@ -1071,7 +1127,7 @@ impl Mul<f64> for Point3d {
 }
 
 /// A base path.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BasePath {
@@ -1081,7 +1137,7 @@ pub struct BasePath {
     /// The to point.
     #[ts(type = "[number, number]")]
     pub to: [f64; 2],
-    pub units: UnitLen,
+    pub units: UnitLength,
     /// The tag of the path.
     pub tag: Option<TagNode>,
     /// Metadata.
@@ -1102,7 +1158,7 @@ impl BasePath {
 }
 
 /// Geometry metadata.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct GeoMeta {
@@ -1114,7 +1170,7 @@ pub struct GeoMeta {
 }
 
 /// A path.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Path {
@@ -1219,7 +1275,7 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
         center: [f64; 2],
-        major_radius: f64,
+        major_axis: [f64; 2],
         minor_radius: f64,
         ccw: bool,
     },
@@ -1228,41 +1284,6 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
-}
-
-/// What kind of path is this?
-#[derive(Display)]
-enum PathType {
-    ToPoint,
-    Base,
-    TangentialArc,
-    TangentialArcTo,
-    Circle,
-    CircleThreePoint,
-    Horizontal,
-    AngledLineTo,
-    Arc,
-    Ellipse,
-    Conic,
-}
-
-impl From<&Path> for PathType {
-    fn from(value: &Path) -> Self {
-        match value {
-            Path::ToPoint { .. } => Self::ToPoint,
-            Path::TangentialArcTo { .. } => Self::TangentialArcTo,
-            Path::TangentialArc { .. } => Self::TangentialArc,
-            Path::Circle { .. } => Self::Circle,
-            Path::CircleThreePoint { .. } => Self::CircleThreePoint,
-            Path::Horizontal { .. } => Self::Horizontal,
-            Path::AngledLineTo { .. } => Self::AngledLineTo,
-            Path::Base { .. } => Self::Base,
-            Path::Arc { .. } => Self::Arc,
-            Path::ArcThreePoint { .. } => Self::Arc,
-            Path::Ellipse { .. } => Self::Ellipse,
-            Path::Conic { .. } => Self::Conic,
-        }
-    }
 }
 
 impl Path {
@@ -1471,13 +1492,13 @@ impl Path {
             // TODO: (bc) fix me
             Path::Ellipse {
                 center,
-                major_radius,
+                major_axis,
                 minor_radius,
                 ccw,
                 ..
             } => GetTangentialInfoFromPathsResult::Ellipse {
                 center: *center,
-                major_radius: *major_radius,
+                major_axis: *major_axis,
                 _minor_radius: *minor_radius,
                 ccw: *ccw,
             },
@@ -1510,7 +1531,7 @@ fn linear_distance(
 }
 
 /// An extrude surface.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ExtrudeSurface {
@@ -1522,7 +1543,7 @@ pub enum ExtrudeSurface {
 }
 
 // Chamfer surface.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ChamferSurface {
@@ -1536,7 +1557,7 @@ pub struct ChamferSurface {
 }
 
 // Fillet surface.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FilletSurface {
@@ -1550,7 +1571,7 @@ pub struct FilletSurface {
 }
 
 /// An extruded plane.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudePlane {
@@ -1564,7 +1585,7 @@ pub struct ExtrudePlane {
 }
 
 /// An extruded arc.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudeArc {

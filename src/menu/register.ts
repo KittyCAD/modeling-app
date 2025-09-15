@@ -1,25 +1,22 @@
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
 import {
   authActor,
   commandBarActor,
   editorManager,
   settingsActor,
 } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 
 export function modelingMenuCallbackMostActions(
   settings: SettingsType,
   navigate: NavigateFunction,
-  filePath: string,
-  project: Project | undefined,
-  token: string | undefined
+  filePath: string
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -124,9 +121,19 @@ export function modelingMenuCallbackMostActions(
         data: { name: 'format-code', groupId: 'code' },
       })
     } else if (data.menuLabel === 'Edit.Undo') {
-      editorManager.undo()
+      if (activeFocusIsInput()) {
+        document.execCommand('undo')
+        // Cleaner, but can't import 'electron' to this file:
+        // webContents.getFocusedWebContents()?.undo()
+      } else {
+        editorManager.undo()
+      }
     } else if (data.menuLabel === 'Edit.Redo') {
-      editorManager.redo()
+      if (activeFocusIsInput()) {
+        document.execCommand('redo')
+      } else {
+        editorManager.redo()
+      }
     } else if (data.menuLabel === 'View.Orthographic view') {
       settingsActor.send({
         type: 'set.modeling.cameraProjection',
@@ -183,8 +190,6 @@ export function modelingMenuCallbackMostActions(
           },
         })
         .catch(reportRejection)
-    } else if (data.menuLabel === 'View.Standard views.Refresh') {
-      globalThis?.window?.location.reload()
     } else if (data.menuLabel === 'View.Named views.Create named view') {
       commandBarActor.send({
         type: 'Find and select command',

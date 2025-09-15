@@ -1019,13 +1019,13 @@ description: Result of parsing keyboard.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "7",
+                      "raw": "7deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 7.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -3068,7 +3068,7 @@ description: Result of parsing keyboard.kcl
                                 "elements": [
                                   {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
                                     "moduleId": 0,
                                     "object": {
@@ -3108,7 +3108,7 @@ description: Result of parsing keyboard.kcl
                                   },
                                   {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
                                     "moduleId": 0,
                                     "object": {
@@ -3213,13 +3213,13 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "180",
+                                "raw": "180deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 180.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -3237,13 +3237,13 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "270",
+                                "raw": "270deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 270.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -3460,13 +3460,13 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "90",
+                                "raw": "90deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 90.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             }
@@ -3561,13 +3561,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "90",
+                                  "raw": "90deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 90.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "start": 0,
@@ -3712,13 +3712,13 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "90",
+                                "raw": "90deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 90.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             }
@@ -3955,13 +3955,13 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "90",
+                                "raw": "90deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 90.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             }
@@ -4462,14 +4462,7 @@ description: Result of parsing keyboard.kcl
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
+                          "unlabeled": null
                         }
                       ],
                       "commentStart": 0,
@@ -10197,7 +10190,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -10286,7 +10279,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -10545,13 +10538,13 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "47.15",
+                                "raw": "47.15deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 47.15,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -10612,7 +10605,7 @@ description: Result of parsing keyboard.kcl
                                 "operator": "+",
                                 "right": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -10733,7 +10726,7 @@ description: Result of parsing keyboard.kcl
                                 "operator": "+",
                                 "right": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -11084,13 +11077,13 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "47.15",
+                                "raw": "47.15deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 47.15,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -11151,7 +11144,7 @@ description: Result of parsing keyboard.kcl
                                 "operator": "+",
                                 "right": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -11403,13 +11396,13 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "47.15",
+                                "raw": "47.15deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 47.15,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -11638,7 +11631,7 @@ description: Result of parsing keyboard.kcl
                                 "operator": "+",
                                 "right": {
                                   "commentStart": 0,
-                                  "computed": false,
+                                  "computed": true,
                                   "end": 0,
                                   "moduleId": 0,
                                   "object": {
@@ -12296,7 +12289,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -12385,7 +12378,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -12480,13 +12473,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "47.15",
+                                  "raw": "47.15deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 47.15,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "moduleId": 0,
@@ -12495,13 +12488,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "6",
+                                  "raw": "6deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 6.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "start": 0,
@@ -12529,13 +12522,13 @@ description: Result of parsing keyboard.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "47.15",
+                                    "raw": "47.15deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 47.15,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "moduleId": 0,
@@ -12544,13 +12537,13 @@ description: Result of parsing keyboard.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "6",
+                                    "raw": "6deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 6.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "start": 0,
@@ -12563,13 +12556,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "180",
+                                  "raw": "180deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 180.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "start": 0,
@@ -12670,13 +12663,13 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "47.15",
+                                "raw": "47.15deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 47.15,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -12779,13 +12772,13 @@ description: Result of parsing keyboard.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "47.15",
+                                    "raw": "47.15deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 47.15,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "moduleId": 0,
@@ -12794,13 +12787,13 @@ description: Result of parsing keyboard.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "11",
+                                    "raw": "11deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 11.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "start": 0,
@@ -12813,13 +12806,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "180",
+                                  "raw": "180deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 180.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "start": 0,
@@ -12844,13 +12837,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "47.15",
+                                  "raw": "47.15deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 47.15,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "moduleId": 0,
@@ -12859,13 +12852,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "11",
+                                  "raw": "11deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 11.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "start": 0,
@@ -13240,7 +13233,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -13329,7 +13322,7 @@ description: Result of parsing keyboard.kcl
                                     "operator": "+",
                                     "right": {
                                       "commentStart": 0,
-                                      "computed": false,
+                                      "computed": true,
                                       "end": 0,
                                       "moduleId": 0,
                                       "object": {
@@ -13427,13 +13420,13 @@ description: Result of parsing keyboard.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "47.15",
+                                    "raw": "47.15deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 47.15,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "moduleId": 0,
@@ -13442,13 +13435,13 @@ description: Result of parsing keyboard.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "6",
+                                    "raw": "6deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 6.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "start": 0,
@@ -13461,13 +13454,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "180",
+                                  "raw": "180deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 180.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "start": 0,
@@ -13492,13 +13485,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "47.15",
+                                  "raw": "47.15deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 47.15,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "moduleId": 0,
@@ -13507,13 +13500,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "6",
+                                  "raw": "6deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 6.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "start": 0,
@@ -13614,13 +13607,13 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "47.15",
+                                "raw": "47.15deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 47.15,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -13729,13 +13722,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "47.15",
+                                  "raw": "47.15deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 47.15,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "moduleId": 0,
@@ -13744,13 +13737,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "11",
+                                  "raw": "11deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 11.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "start": 0,
@@ -13778,13 +13771,13 @@ description: Result of parsing keyboard.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "47.15",
+                                    "raw": "47.15deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 47.15,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "moduleId": 0,
@@ -13793,13 +13786,13 @@ description: Result of parsing keyboard.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "raw": "11",
+                                    "raw": "11deg",
                                     "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
                                       "value": 11.0,
-                                      "suffix": "None"
+                                      "suffix": "Deg"
                                     }
                                   },
                                   "start": 0,
@@ -13812,13 +13805,13 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "180",
+                                  "raw": "180deg",
                                   "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
                                     "value": 180.0,
-                                    "suffix": "None"
+                                    "suffix": "Deg"
                                   }
                                 },
                                 "start": 0,

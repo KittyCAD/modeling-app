@@ -15,10 +15,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3375,
-            "end": 3381,
+            "commentStart": 3288,
+            "end": 3294,
             "moduleId": 0,
-            "start": 3375,
+            "start": 3288,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -29,10 +29,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3419,
-            "end": 3431,
+            "commentStart": 3332,
+            "end": 3344,
             "moduleId": 0,
-            "start": 3419,
+            "start": 3332,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -59,10 +59,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.45,
             "tag": {
-              "commentStart": 3375,
-              "end": 3381,
+              "commentStart": 3288,
+              "end": 3294,
               "moduleId": 0,
-              "start": 3375,
+              "start": 3288,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -71,9 +71,7 @@ description: Variables in memory after executing hammer.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -83,9 +81,7 @@ description: Variables in memory after executing hammer.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 292.09999999999997,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -93,25 +89,19 @@ description: Variables in memory after executing hammer.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -123,9 +113,7 @@ description: Variables in memory after executing hammer.kcl
             0.45,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -144,11 +132,8 @@ description: Variables in memory after executing hammer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -159,21 +144,15 @@ description: Variables in memory after executing hammer.kcl
             "n": 0.05,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -236,10 +215,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 617,
-            "end": 623,
+            "commentStart": 623,
+            "end": 629,
             "moduleId": 0,
-            "start": 617,
+            "start": 623,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -271,10 +250,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 779,
-            "end": 785,
+            "commentStart": 788,
+            "end": 794,
             "moduleId": 0,
-            "start": 779,
+            "start": 788,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -292,10 +271,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 863,
-            "end": 869,
+            "commentStart": 875,
+            "end": 881,
             "moduleId": 0,
-            "start": 863,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -342,9 +321,7 @@ description: Variables in memory after executing hammer.kcl
               11.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -366,9 +343,7 @@ description: Variables in memory after executing hammer.kcl
               11.92
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -397,9 +372,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -416,9 +389,7 @@ description: Variables in memory after executing hammer.kcl
               11.423675253019796
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -435,9 +406,7 @@ description: Variables in memory after executing hammer.kcl
               11.77770605137785
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -454,10 +423,10 @@ description: Variables in memory after executing hammer.kcl
               11.77770605137785
             ],
             "tag": {
-              "commentStart": 617,
-              "end": 623,
+              "commentStart": 623,
+              "end": 629,
               "moduleId": 0,
-              "start": 617,
+              "start": 623,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -466,9 +435,7 @@ description: Variables in memory after executing hammer.kcl
               12.78
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -490,9 +457,7 @@ description: Variables in memory after executing hammer.kcl
               12.85
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -509,9 +474,7 @@ description: Variables in memory after executing hammer.kcl
               12.85
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -533,9 +496,7 @@ description: Variables in memory after executing hammer.kcl
               12.799999999999999
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -547,10 +508,10 @@ description: Variables in memory after executing hammer.kcl
               12.799999999999999
             ],
             "tag": {
-              "commentStart": 779,
-              "end": 785,
+              "commentStart": 788,
+              "end": 794,
               "moduleId": 0,
-              "start": 779,
+              "start": 788,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -559,9 +520,7 @@ description: Variables in memory after executing hammer.kcl
               11.674999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -583,9 +542,7 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -597,10 +554,10 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "tag": {
-              "commentStart": 863,
-              "end": 869,
+              "commentStart": 875,
+              "end": 881,
               "moduleId": 0,
-              "start": 863,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -609,9 +566,7 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -628,9 +583,7 @@ description: Variables in memory after executing hammer.kcl
               11.664073112848925
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -652,9 +605,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -671,9 +622,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -690,9 +639,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -702,9 +649,7 @@ description: Variables in memory after executing hammer.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -712,25 +657,19 @@ description: Variables in memory after executing hammer.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -742,9 +681,7 @@ description: Variables in memory after executing hammer.kcl
             0.33,
             11.26
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -771,16 +708,11 @@ description: Variables in memory after executing hammer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -838,10 +770,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 617,
-            "end": 623,
+            "commentStart": 623,
+            "end": 629,
             "moduleId": 0,
-            "start": 617,
+            "start": 623,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -873,10 +805,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 779,
-            "end": 785,
+            "commentStart": 788,
+            "end": 794,
             "moduleId": 0,
-            "start": 779,
+            "start": 788,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -894,10 +826,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 863,
-            "end": 869,
+            "commentStart": 875,
+            "end": 881,
             "moduleId": 0,
-            "start": 863,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -944,9 +876,7 @@ description: Variables in memory after executing hammer.kcl
               11.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -968,9 +898,7 @@ description: Variables in memory after executing hammer.kcl
               11.92
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -999,9 +927,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1018,9 +944,7 @@ description: Variables in memory after executing hammer.kcl
               11.423675253019796
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1037,9 +961,7 @@ description: Variables in memory after executing hammer.kcl
               11.77770605137785
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1056,10 +978,10 @@ description: Variables in memory after executing hammer.kcl
               11.77770605137785
             ],
             "tag": {
-              "commentStart": 617,
-              "end": 623,
+              "commentStart": 623,
+              "end": 629,
               "moduleId": 0,
-              "start": 617,
+              "start": 623,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -1068,9 +990,7 @@ description: Variables in memory after executing hammer.kcl
               12.78
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1092,9 +1012,7 @@ description: Variables in memory after executing hammer.kcl
               12.85
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1111,9 +1029,7 @@ description: Variables in memory after executing hammer.kcl
               12.85
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1135,9 +1051,7 @@ description: Variables in memory after executing hammer.kcl
               12.799999999999999
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1149,10 +1063,10 @@ description: Variables in memory after executing hammer.kcl
               12.799999999999999
             ],
             "tag": {
-              "commentStart": 779,
-              "end": 785,
+              "commentStart": 788,
+              "end": 794,
               "moduleId": 0,
-              "start": 779,
+              "start": 788,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1161,9 +1075,7 @@ description: Variables in memory after executing hammer.kcl
               11.674999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1185,9 +1097,7 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1199,10 +1109,10 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "tag": {
-              "commentStart": 863,
-              "end": 869,
+              "commentStart": 875,
+              "end": 881,
               "moduleId": 0,
-              "start": 863,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -1211,9 +1121,7 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1230,9 +1138,7 @@ description: Variables in memory after executing hammer.kcl
               11.664073112848925
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1254,9 +1160,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1273,9 +1177,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1292,9 +1194,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1304,9 +1204,7 @@ description: Variables in memory after executing hammer.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -1314,25 +1212,19 @@ description: Variables in memory after executing hammer.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1344,9 +1236,7 @@ description: Variables in memory after executing hammer.kcl
             0.33,
             11.26
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1373,16 +1263,11 @@ description: Variables in memory after executing hammer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1455,9 +1340,7 @@ description: Variables in memory after executing hammer.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1479,9 +1362,7 @@ description: Variables in memory after executing hammer.kcl
               0.05
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1503,9 +1384,7 @@ description: Variables in memory after executing hammer.kcl
               7.94044665012407
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1527,9 +1406,7 @@ description: Variables in memory after executing hammer.kcl
               12.8
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1546,9 +1423,7 @@ description: Variables in memory after executing hammer.kcl
               12.8
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1565,9 +1440,7 @@ description: Variables in memory after executing hammer.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1584,9 +1457,7 @@ description: Variables in memory after executing hammer.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1596,9 +1467,7 @@ description: Variables in memory after executing hammer.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -1606,25 +1475,19 @@ description: Variables in memory after executing hammer.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1636,9 +1499,7 @@ description: Variables in memory after executing hammer.kcl
             0.01,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1647,16 +1508,11 @@ description: Variables in memory after executing hammer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1757,9 +1613,7 @@ description: Variables in memory after executing hammer.kcl
               0.1645798706418925
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1776,9 +1630,7 @@ description: Variables in memory after executing hammer.kcl
               0.266295824562643
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1795,9 +1647,7 @@ description: Variables in memory after executing hammer.kcl
               0.26629582456264306
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1814,9 +1664,7 @@ description: Variables in memory after executing hammer.kcl
               0.16457987064189253
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1833,9 +1681,7 @@ description: Variables in memory after executing hammer.kcl
               0.000000000000000034290110376125894
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1852,9 +1698,7 @@ description: Variables in memory after executing hammer.kcl
               -0.16457987064189247
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1871,9 +1715,7 @@ description: Variables in memory after executing hammer.kcl
               -0.266295824562643
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1890,9 +1732,7 @@ description: Variables in memory after executing hammer.kcl
               -0.26629582456264306
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1909,9 +1749,7 @@ description: Variables in memory after executing hammer.kcl
               -0.16457987064189256
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1928,9 +1766,7 @@ description: Variables in memory after executing hammer.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1940,9 +1776,7 @@ description: Variables in memory after executing hammer.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -1950,25 +1784,19 @@ description: Variables in memory after executing hammer.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1980,9 +1808,7 @@ description: Variables in memory after executing hammer.kcl
             0.28,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1991,16 +1817,11 @@ description: Variables in memory after executing hammer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -2025,9 +1846,7 @@ description: Variables in memory after executing hammer.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2049,9 +1868,7 @@ description: Variables in memory after executing hammer.kcl
             0.05
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2073,9 +1890,7 @@ description: Variables in memory after executing hammer.kcl
             7.94044665012407
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2097,9 +1912,7 @@ description: Variables in memory after executing hammer.kcl
             12.8
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2116,9 +1929,7 @@ description: Variables in memory after executing hammer.kcl
             12.8
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2135,9 +1946,7 @@ description: Variables in memory after executing hammer.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2154,9 +1963,7 @@ description: Variables in memory after executing hammer.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -2166,9 +1973,7 @@ description: Variables in memory after executing hammer.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -2176,25 +1981,19 @@ description: Variables in memory after executing hammer.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2206,9 +2005,7 @@ description: Variables in memory after executing hammer.kcl
           0.01,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2217,9 +2014,7 @@ description: Variables in memory after executing hammer.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "headSideProfile": {
@@ -2276,10 +2071,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 617,
-            "end": 623,
+            "commentStart": 623,
+            "end": 629,
             "moduleId": 0,
-            "start": 617,
+            "start": 623,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2311,10 +2106,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 779,
-            "end": 785,
+            "commentStart": 788,
+            "end": 794,
             "moduleId": 0,
-            "start": 779,
+            "start": 788,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2332,10 +2127,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 863,
-            "end": 869,
+            "commentStart": 875,
+            "end": 881,
             "moduleId": 0,
-            "start": 863,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2382,9 +2177,7 @@ description: Variables in memory after executing hammer.kcl
               11.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2406,9 +2199,7 @@ description: Variables in memory after executing hammer.kcl
               11.92
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2437,9 +2228,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2456,9 +2245,7 @@ description: Variables in memory after executing hammer.kcl
               11.423675253019796
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2475,9 +2262,7 @@ description: Variables in memory after executing hammer.kcl
               11.77770605137785
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2494,10 +2279,10 @@ description: Variables in memory after executing hammer.kcl
               11.77770605137785
             ],
             "tag": {
-              "commentStart": 617,
-              "end": 623,
+              "commentStart": 623,
+              "end": 629,
               "moduleId": 0,
-              "start": 617,
+              "start": 623,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2506,9 +2291,7 @@ description: Variables in memory after executing hammer.kcl
               12.78
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2530,9 +2313,7 @@ description: Variables in memory after executing hammer.kcl
               12.85
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2549,9 +2330,7 @@ description: Variables in memory after executing hammer.kcl
               12.85
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2573,9 +2352,7 @@ description: Variables in memory after executing hammer.kcl
               12.799999999999999
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2587,10 +2364,10 @@ description: Variables in memory after executing hammer.kcl
               12.799999999999999
             ],
             "tag": {
-              "commentStart": 779,
-              "end": 785,
+              "commentStart": 788,
+              "end": 794,
               "moduleId": 0,
-              "start": 779,
+              "start": 788,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -2599,9 +2376,7 @@ description: Variables in memory after executing hammer.kcl
               11.674999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2623,9 +2398,7 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2637,10 +2410,10 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "tag": {
-              "commentStart": 863,
-              "end": 869,
+              "commentStart": 875,
+              "end": 881,
               "moduleId": 0,
-              "start": 863,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2649,9 +2422,7 @@ description: Variables in memory after executing hammer.kcl
               11.624999999999998
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2668,9 +2439,7 @@ description: Variables in memory after executing hammer.kcl
               11.664073112848925
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2692,9 +2461,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2711,9 +2478,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2730,9 +2495,7 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -2742,9 +2505,7 @@ description: Variables in memory after executing hammer.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -2752,25 +2513,19 @@ description: Variables in memory after executing hammer.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2782,9 +2537,7 @@ description: Variables in memory after executing hammer.kcl
             0.33,
             11.26
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2811,16 +2564,11 @@ description: Variables in memory after executing hammer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -2833,34 +2581,26 @@ description: Variables in memory after executing hammer.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 330.2,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2940,9 +2680,7 @@ description: Variables in memory after executing hammer.kcl
               -0.5625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2965,9 +2703,7 @@ description: Variables in memory after executing hammer.kcl
               -0.6125
             ],
             "type": "Arc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2984,9 +2720,7 @@ description: Variables in memory after executing hammer.kcl
               -0.6125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3015,9 +2749,7 @@ description: Variables in memory after executing hammer.kcl
               -0.6125
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3039,9 +2771,7 @@ description: Variables in memory after executing hammer.kcl
               -1.15
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3058,9 +2788,7 @@ description: Variables in memory after executing hammer.kcl
               -1.6
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3077,9 +2805,7 @@ description: Variables in memory after executing hammer.kcl
               -1.6
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3096,9 +2822,7 @@ description: Variables in memory after executing hammer.kcl
               -1.6
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -3108,9 +2832,7 @@ description: Variables in memory after executing hammer.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 330.2,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -3118,25 +2840,19 @@ description: Variables in memory after executing hammer.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3148,9 +2864,7 @@ description: Variables in memory after executing hammer.kcl
             -4.0,
             -1.6
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3159,16 +2873,11 @@ description: Variables in memory after executing hammer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": -14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -3234,9 +2943,7 @@ description: Variables in memory after executing hammer.kcl
               -0.5547664043757057
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3258,9 +2965,7 @@ description: Variables in memory after executing hammer.kcl
               -0.37
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3282,9 +2987,7 @@ description: Variables in memory after executing hammer.kcl
               0.37
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3306,9 +3009,7 @@ description: Variables in memory after executing hammer.kcl
               0.56
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3325,9 +3026,7 @@ description: Variables in memory after executing hammer.kcl
               -0.56
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3344,9 +3043,7 @@ description: Variables in memory after executing hammer.kcl
               -0.56
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -3356,9 +3053,7 @@ description: Variables in memory after executing hammer.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 330.2,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -3366,25 +3061,19 @@ description: Variables in memory after executing hammer.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3396,9 +3085,7 @@ description: Variables in memory after executing hammer.kcl
             3.39,
             -0.56
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3407,16 +3094,11 @@ description: Variables in memory after executing hammer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": -14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -3496,9 +3178,7 @@ description: Variables in memory after executing hammer.kcl
               0.5625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3521,9 +3201,7 @@ description: Variables in memory after executing hammer.kcl
               0.6125
             ],
             "type": "Arc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3540,9 +3218,7 @@ description: Variables in memory after executing hammer.kcl
               0.6125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3571,9 +3247,7 @@ description: Variables in memory after executing hammer.kcl
               0.6125
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3595,9 +3269,7 @@ description: Variables in memory after executing hammer.kcl
               1.15
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3614,9 +3286,7 @@ description: Variables in memory after executing hammer.kcl
               1.6
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3633,9 +3303,7 @@ description: Variables in memory after executing hammer.kcl
               1.6
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3652,9 +3320,7 @@ description: Variables in memory after executing hammer.kcl
               1.6
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -3664,9 +3330,7 @@ description: Variables in memory after executing hammer.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 330.2,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -3674,25 +3338,19 @@ description: Variables in memory after executing hammer.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3704,9 +3362,7 @@ description: Variables in memory after executing hammer.kcl
             -4.0,
             1.6
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3715,16 +3371,11 @@ description: Variables in memory after executing hammer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": -14.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },

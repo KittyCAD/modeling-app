@@ -1,18 +1,23 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
-import type { Models } from '@kittycad/lib'
+import type { OkModelingCmdResponse, WebSocketRequest } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D, Object3DEventMap } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
+  EXTRA_SEGMENT_HANDLE,
+  SEGMENT_BLUE,
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
 import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import { getNodeFromPath, isSingleCursorInPipe } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
@@ -24,7 +29,6 @@ import type {
   Program,
   SourceRange,
 } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -36,6 +40,7 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
+import { engineStreamActor } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
@@ -44,9 +49,8 @@ import {
   isOverlap,
   uuidv4,
 } from '@src/lib/utils'
-import { engineStreamActor } from '@src/lib/singletons'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
-import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -70,7 +74,7 @@ export type Selections = {
 export async function getEventForSelectWithPoint({
   data,
 }: Extract<
-  Models['OkModelingCmdResponse_type'],
+  OkModelingCmdResponse,
   { type: 'select_with_point' }
 >): Promise<ModelingMachineEvent | null> {
   if (!data?.entity_id) {
@@ -214,7 +218,7 @@ export function handleSelectionBatch({
 }: {
   selections: Selections
 }): {
-  engineEvents: Models['WebSocketRequest_type'][]
+  engineEvents: WebSocketRequest[]
   codeMirrorSelection: EditorSelection
   updateSceneObjectColors: () => void
 } {
@@ -230,7 +234,7 @@ export function handleSelectionBatch({
             .range || defaultSourceRange(),
       })
   })
-  const engineEvents: Models['WebSocketRequest_type'][] =
+  const engineEvents: WebSocketRequest[] =
     resetAndSetEngineEntitySelectionCmds(selectionToEngine)
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
@@ -279,7 +283,7 @@ export function processCodeMirrorRanges({
   artifactGraph: ArtifactGraph
 }): null | {
   modelingEvent: ModelingMachineEvent
-  engineEvents: Models['WebSocketRequest_type'][]
+  engineEvents: WebSocketRequest[]
 } {
   const isChange =
     codeMirrorRanges.length !== selectionRanges?.graphSelections?.length ||
@@ -369,11 +373,15 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     })
 
     const color = groupHasCursor
-      ? 0x0000ff
+      ? SEGMENT_BLUE
       : segmentGroup?.userData?.baseColor || 0xffffff
-    segmentGroup.traverse(
-      (child) => child instanceof Mesh && child.material.color.set(color)
-    )
+    segmentGroup.traverse((child) => {
+      child instanceof Mesh && child.material.color.set(color)
+    })
+    // This is only needed if we want the extra segment to be blue when selected, even if it's still hovered
+    updateExtraSegments(segmentGroup, 'selected', groupHasCursor)
+    updateExtraSegments(segmentGroup, 'hoveringLine', false)
+
     // TODO if we had access to the xstate context and therefore selections
     // we wouldn't need to set this here,
     // it would be better to treat xstate context as the source of truth instead of having
@@ -382,9 +390,24 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
   })
 }
 
+export function updateExtraSegments(
+  parent: Object3D | null,
+  className: string,
+  value: boolean
+) {
+  const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
+  if (extraSegmentGroup) {
+    extraSegmentGroup.traverse((child) => {
+      if (child instanceof CSS2DObject) {
+        child.element.classList.toggle(className, value)
+      }
+    })
+  }
+}
+
 function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[]
-): Models['WebSocketRequest_type'][] {
+): WebSocketRequest[] {
   if (!engineCommandManager.engineConnection?.isReady()) {
     return []
   }
@@ -711,12 +734,11 @@ export async function sendSelectEventToEngine(
   if (isArray(res)) {
     res = res[0]
   }
-  if (
-    res?.success &&
-    res?.resp?.type === 'modeling' &&
-    res?.resp?.data?.modeling_response.type === 'select_with_point'
-  )
-    return res?.resp?.data?.modeling_response?.data
+  const singleRes = res
+  if (isModelingResponse(singleRes)) {
+    const mr = singleRes.resp.data.modeling_response
+    if (mr.type === 'select_with_point') return mr.data
+  }
   return { entity_id: '' }
 }
 
@@ -883,77 +905,76 @@ export function selectDefaultSketchPlane(
   return true
 }
 
-export async function selectOffsetSketchPlane(artifact: Artifact | undefined) {
-  return new Promise((resolve) => {
-    if (artifact?.type === 'plane') {
-      const planeId = artifact.id
-      void sceneEntitiesManager
-        .getFaceDetails(planeId)
-        .then((planeInfo) => {
-          // Apply camera-based orientation logic similar to default planes
-          let zAxis: [number, number, number] = [
-            planeInfo.z_axis.x,
-            planeInfo.z_axis.y,
-            planeInfo.z_axis.z,
-          ]
-          let yAxis: [number, number, number] = [
-            planeInfo.y_axis.x,
-            planeInfo.y_axis.y,
-            planeInfo.y_axis.z,
-          ]
+export async function selectOffsetSketchPlane(
+  artifact: Artifact | undefined
+): Promise<Error | boolean> {
+  if (artifact?.type !== 'plane') {
+    return new Error(
+      `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`
+    )
+  }
+  const planeId = artifact.id
+  try {
+    const planeInfo = await sceneEntitiesManager.getFaceDetails(planeId)
 
-          // Get camera vector to determine which side of the plane we're viewing from
-          const camVector = sceneInfra.camControls.camera.position
-            .clone()
-            .sub(sceneInfra.camControls.target)
+    // Apply camera-based orientation logic similar to default planes
+    let zAxis: [number, number, number] = [
+      planeInfo.z_axis.x,
+      planeInfo.z_axis.y,
+      planeInfo.z_axis.z,
+    ]
+    let yAxis: [number, number, number] = [
+      planeInfo.y_axis.x,
+      planeInfo.y_axis.y,
+      planeInfo.y_axis.z,
+    ]
 
-          // Determine the canonical (absolute) plane orientation
-          const absZAxis: [number, number, number] = [
-            Math.abs(zAxis[0]),
-            Math.abs(zAxis[1]),
-            Math.abs(zAxis[2]),
-          ]
+    // Get camera vector to determine which side of the plane we're viewing from
+    const camVector = sceneInfra.camControls.camera.position
+      .clone()
+      .sub(sceneInfra.camControls.target)
 
-          // Find the dominant axis (like default planes do)
-          const maxComponent = Math.max(...absZAxis)
-          const dominantAxisIndex = absZAxis.indexOf(maxComponent)
+    // Determine the canonical (absolute) plane orientation
+    const absZAxis: [number, number, number] = [
+      Math.abs(zAxis[0]),
+      Math.abs(zAxis[1]),
+      Math.abs(zAxis[2]),
+    ]
 
-          // Check camera position against canonical orientation (like default planes)
-          const cameraComponents = [camVector.x, camVector.y, camVector.z]
-          let negated = cameraComponents[dominantAxisIndex] < 0
-          if (dominantAxisIndex === 1) {
-            // offset of the XZ is being weird, not sure if this is a camera bug
-            negated = !negated
-          }
-          sceneInfra.modelingSend({
-            type: 'Select sketch plane',
-            data: {
-              type: 'offsetPlane',
-              zAxis,
-              yAxis,
-              position: [
-                planeInfo.origin.x,
-                planeInfo.origin.y,
-                planeInfo.origin.z,
-              ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
-                number,
-                number,
-                number,
-              ],
-              planeId,
-              pathToNode: artifact.codeRef.pathToNode,
-              negated,
-            },
-          })
-          resolve(true)
-        })
-        .catch((error) => {
-          console.error('Error getting face details:', error)
-          resolve(false)
-        })
-    } else {
-      // selectOffsetSketchPlane called with an invalid artifact type',
-      resolve(false)
+    // Find the dominant axis (like default planes do)
+    const maxComponent = Math.max(...absZAxis)
+    const dominantAxisIndex = absZAxis.indexOf(maxComponent)
+
+    // Check camera position against canonical orientation (like default planes)
+    const cameraComponents = [camVector.x, camVector.y, camVector.z]
+    let negated = cameraComponents[dominantAxisIndex] < 0
+    if (dominantAxisIndex === 1) {
+      // offset of the XZ is being weird, not sure if this is a camera bug
+      negated = !negated
     }
-  })
+    sceneInfra.modelingSend({
+      type: 'Select sketch plane',
+      data: {
+        type: 'offsetPlane',
+        zAxis,
+        yAxis,
+        position: [
+          planeInfo.origin.x,
+          planeInfo.origin.y,
+          planeInfo.origin.z,
+        ].map((num) => num / sceneInfra.baseUnitMultiplier) as [
+          number,
+          number,
+          number,
+        ],
+        planeId,
+        pathToNode: artifact.codeRef.pathToNode,
+        negated,
+      },
+    })
+  } catch (err) {
+    console.error(err)
+    return new Error('Error getting face details')
+  }
+  return true
 }

@@ -29,9 +29,8 @@ use kcmc::{
         WebSocketResponse,
     },
 };
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{self as kcmc, units::UnitLength};
 use parse_display::{Display, FromStr};
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use uuid::Uuid;
@@ -40,7 +39,7 @@ use web_time::Instant;
 use crate::{
     SourceRange,
     errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator, PlaneInfo, Point3d, types::UnitLen},
+    execution::{DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
 };
 
 lazy_static::lazy_static! {
@@ -52,55 +51,55 @@ lazy_static::lazy_static! {
             (
                 PlaneName::Xy,
                 PlaneInfo {
-                    origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+                    origin: Point3d::new(0.0, 0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(1.0, 0.0, 0.0, None),
+                    y_axis: Point3d::new(0.0, 1.0, 0.0, None),
+                    z_axis: Point3d::new(0.0, 0.0, 1.0, None),
                 },
             ),
             (
                 PlaneName::NegXy,
                 PlaneInfo {
-                    origin: Point3d::new( 0.0, 0.0,  0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(-1.0, 0.0,  0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new( 0.0, 1.0,  0.0, UnitLen::Unknown),
-                    z_axis: Point3d::new( 0.0, 0.0, -1.0, UnitLen::Unknown),
+                    origin: Point3d::new( 0.0, 0.0,  0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(-1.0, 0.0,  0.0, None),
+                    y_axis: Point3d::new( 0.0, 1.0,  0.0, None),
+                    z_axis: Point3d::new( 0.0, 0.0, -1.0, None),
                 },
             ),
             (
                 PlaneName::Xz,
                 PlaneInfo {
-                    origin: Point3d::new(0.0,  0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(1.0,  0.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new(0.0,  0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new(0.0,  0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(1.0,  0.0, 0.0, None),
+                    y_axis: Point3d::new(0.0,  0.0, 1.0, None),
+                    z_axis: Point3d::new(0.0, -1.0, 0.0, None),
                 },
             ),
             (
                 PlaneName::NegXz,
                 PlaneInfo {
-                    origin: Point3d::new( 0.0, 0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new( 0.0, 0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new( 0.0, 1.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new( 0.0, 0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(-1.0, 0.0, 0.0, None),
+                    y_axis: Point3d::new( 0.0, 0.0, 1.0, None),
+                    z_axis: Point3d::new( 0.0, 1.0, 0.0, None),
                 },
             ),
             (
                 PlaneName::Yz,
                 PlaneInfo {
-                    origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new(0.0, 0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(0.0, 1.0, 0.0, None),
+                    y_axis: Point3d::new(0.0, 0.0, 1.0, None),
+                    z_axis: Point3d::new(1.0, 0.0, 0.0, None),
                 },
             ),
             (
                 PlaneName::NegYz,
                 PlaneInfo {
-                    origin: Point3d::new( 0.0,  0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new( 0.0, -1.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new( 0.0,  0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(-1.0,  0.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new( 0.0,  0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new( 0.0, -1.0, 0.0, None),
+                    y_axis: Point3d::new( 0.0,  0.0, 1.0, None),
+                    z_axis: Point3d::new(-1.0,  0.0, 0.0, None),
                 },
             ),
         ]);
@@ -721,6 +720,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             WebSocketResponse::Success(success) => Ok(success.resp),
             WebSocketResponse::Failure(fail) => {
                 let _request_id = fail.request_id;
+                if fail.errors.is_empty() {
+                    return Err(KclError::new_engine(KclErrorDetails::new(
+                        "Failure response with no error details".to_owned(),
+                        vec![source_range],
+                    )));
+                }
                 Err(KclError::new_engine(KclErrorDetails::new(
                     fail.errors
                         .iter()
@@ -768,6 +773,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                             vec![],
                         ))
                     })?;
+                    if errors.is_empty() {
+                        return Err(KclError::new_engine(KclErrorDetails::new(
+                            "Failure response for batch with no error details".to_owned(),
+                            vec![source_range],
+                        )));
+                    }
                     return Err(KclError::new_engine(KclErrorDetails::new(
                         errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
                         vec![source_range],
@@ -833,7 +844,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn close(&self);
 }
 
-#[derive(Debug, Hash, Eq, Copy, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Display, FromStr)]
+#[derive(Debug, Hash, Eq, Copy, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Display, FromStr)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum PlaneName {
@@ -880,14 +891,14 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
     let token = if let Some(token) = token {
         token
     } else if let Ok(token) = std::env::var("KITTYCAD_API_TOKEN") {
-        if let Ok(zoo_token) = zoo_token_env {
-            if zoo_token != token {
-                return Err(anyhow::anyhow!(
-                    "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
-                    token,
-                    zoo_token
-                ));
-            }
+        if let Ok(zoo_token) = zoo_token_env
+            && zoo_token != token
+        {
+            return Err(anyhow::anyhow!(
+                "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
+                token,
+                zoo_token
+            ));
         }
         token
     } else if let Ok(token) = zoo_token_env {
@@ -905,14 +916,14 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
     if let Some(addr) = engine_addr {
         client.set_base_url(addr);
     } else if let Ok(addr) = std::env::var("ZOO_HOST") {
-        if let Ok(kittycad_host) = kittycad_host_env {
-            if kittycad_host != addr {
-                return Err(anyhow::anyhow!(
-                    "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
-                    kittycad_host,
-                    addr
-                ));
-            }
+        if let Ok(kittycad_host) = kittycad_host_env
+            && kittycad_host != addr
+        {
+            return Err(anyhow::anyhow!(
+                "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
+                kittycad_host,
+                addr
+            ));
         }
         client.set_base_url(addr);
     } else if let Ok(addr) = kittycad_host_env {

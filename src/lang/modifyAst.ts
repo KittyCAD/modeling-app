@@ -1,11 +1,11 @@
 import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
-import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
+  createExpressionStatement,
   createIdentifier,
   createImportAsSelector,
   createImportStatement,
@@ -26,11 +26,7 @@ import {
   isNodeSafeToReplace,
   isNodeSafeToReplacePath,
 } from '@src/lang/queryAst'
-import {
-  ARG_INDEX_FIELD,
-  LABELED_ARG_FIELD,
-  UNLABELED_ARG,
-} from '@src/lang/queryAstConstants'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   addTagForSketchOnFace,
@@ -47,6 +43,7 @@ import type {
   ArrayExpression,
   CallExpressionKw,
   Expr,
+  ExpressionStatement,
   Literal,
   PathToNode,
   PipeExpression,
@@ -64,10 +61,11 @@ import type {
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
+import { ARG_AT } from '@src/lang/constants'
+import type { Coords2d } from '@src/lang/std/sketch'
 import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
-import { ARG_AT } from '@src/lang/constants'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -106,7 +104,7 @@ export function insertNewStartProfileAt(
   node: Node<Program>,
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
-  at: [number, number],
+  at: Coords2d,
   insertType: 'start' | 'end' = 'end'
 ):
   | {
@@ -337,64 +335,6 @@ export function mutateObjExpProp(
   return false
 }
 
-export function addShell({
-  node,
-  sweepName,
-  faces,
-  thickness,
-  insertIndex,
-  variableName,
-}: {
-  node: Node<Program>
-  sweepName: string
-  faces: Expr[]
-  thickness: Expr
-  insertIndex?: number
-  variableName?: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(node)
-  const name =
-    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
-  const shell = createCallExpressionStdLibKw(
-    'shell',
-    createLocalName(sweepName),
-    [
-      createLabeledArg('faces', createArrayExpression(faces)),
-      createLabeledArg('thickness', thickness),
-    ]
-  )
-
-  const variable = createVariableDeclaration(name, shell)
-  const insertAt =
-    insertIndex !== undefined
-      ? insertIndex
-      : modifiedAst.body.length
-        ? modifiedAst.body.length
-        : 0
-
-  if (modifiedAst.body.length) {
-    modifiedAst.body.splice(insertAt, 0, variable)
-  } else {
-    modifiedAst.body.push(variable)
-  }
-
-  const argIndex = 0
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
 export function sketchOnExtrudedFace(
   node: Node<Program>,
   sketchPathToNode: PathToNode,
@@ -479,56 +419,6 @@ export function sketchOnExtrudedFace(
 }
 
 /**
- * Append an offset plane to the AST
- */
-export function addOffsetPlane({
-  node,
-  plane,
-  insertIndex,
-  offset,
-  planeName,
-}: {
-  node: Node<Program>
-  plane: Node<Literal> | Node<Name> // Can be DefaultPlaneStr or string for offsetPlanes
-  insertIndex?: number
-  offset: Expr
-  planeName?: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(node)
-  const newPlaneName =
-    planeName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.PLANE)
-
-  const newPlane = createVariableDeclaration(
-    newPlaneName,
-    createCallExpressionStdLibKw('offsetPlane', plane, [
-      createLabeledArg('offset', offset),
-    ])
-  )
-
-  const insertAt =
-    insertIndex !== undefined
-      ? insertIndex
-      : modifiedAst.body.length
-        ? modifiedAst.body.length
-        : 0
-
-  modifiedAst.body.length
-    ? modifiedAst.body.splice(insertAt, 0, newPlane)
-    : modifiedAst.body.push(newPlane)
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['unlabeled', UNLABELED_ARG],
-  ]
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
-/**
  * Add an import call to load a part
  */
 export function addModuleImport({
@@ -559,125 +449,6 @@ export function addModuleImport({
     ['body', ''],
     [importIndex, 'index'],
     ['path', 'ImportStatement'],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
-/**
- * Append a helix to the AST
- */
-export function addHelix({
-  node,
-  axis,
-  cylinder,
-  revolutions,
-  angleStart,
-  radius,
-  length,
-  ccw,
-  insertIndex,
-  variableName,
-}: {
-  node: Node<Program>
-  axis?: Node<Literal> | Node<Name | CallExpressionKw>
-  cylinder?: VariableDeclarator
-  revolutions: Expr
-  angleStart: Expr
-  radius?: Expr
-  length?: Expr
-  ccw?: boolean
-  insertIndex?: number
-  variableName?: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(node)
-  const name =
-    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
-  const modeArgs: CallExpressionKw['arguments'] = []
-  if (axis && radius) {
-    modeArgs.push(createLabeledArg('axis', axis))
-    modeArgs.push(createLabeledArg('radius', radius))
-    if (length) {
-      modeArgs.push(createLabeledArg('length', length))
-    }
-  } else if (cylinder) {
-    modeArgs.push(
-      createLabeledArg('cylinder', createLocalName(cylinder.id.name))
-    )
-  }
-
-  // Extra labeled args expressions
-  const ccwExpr = ccw ? [createLabeledArg('ccw', createLiteral(ccw))] : []
-
-  const variable = createVariableDeclaration(
-    name,
-    createCallExpressionStdLibKw(
-      'helix',
-      null, // Not in a pipeline
-      [
-        ...modeArgs,
-        createLabeledArg('revolutions', revolutions),
-        createLabeledArg('angleStart', angleStart),
-        ...ccwExpr,
-      ]
-    )
-  )
-
-  const insertAt =
-    insertIndex !== undefined
-      ? insertIndex
-      : modifiedAst.body.length
-        ? modifiedAst.body.length
-        : 0
-
-  modifiedAst.body.length
-    ? modifiedAst.body.splice(insertAt, 0, variable)
-    : modifiedAst.body.push(variable)
-  const argIndex = 0
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
-/**
- * Add clone statement
- */
-export function addClone({
-  ast,
-  geometryName,
-  variableName,
-}: {
-  ast: Node<Program>
-  geometryName: string
-  variableName: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(ast)
-  const variable = createVariableDeclaration(
-    variableName,
-    createCallExpressionStdLibKw('clone', createLocalName(geometryName), [])
-  )
-
-  modifiedAst.body.push(variable)
-  const insertAt = modifiedAst.body.length - 1
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
   ]
 
   return {
@@ -1246,17 +1017,24 @@ export function createPathToNodeForLastVariable(
   return pathToCall
 }
 
-export function setCallInAst(
-  ast: Node<Program>,
-  call: Node<CallExpressionKw>,
-  nodeToEdit?: PathToNode,
-  pathIfPipe?: PathToNode
-): Error | PathToNode {
+export function setCallInAst({
+  ast,
+  call,
+  pathToEdit,
+  pathIfNewPipe,
+  variableIfNewDecl,
+}: {
+  ast: Node<Program>
+  call: Node<CallExpressionKw>
+  pathToEdit?: PathToNode
+  pathIfNewPipe?: PathToNode
+  variableIfNewDecl?: string
+}): Error | PathToNode {
   let pathToNode: PathToNode | undefined
-  if (nodeToEdit) {
+  if (pathToEdit) {
     const result = getNodeFromPath<CallExpressionKw>(
       ast,
-      nodeToEdit,
+      pathToEdit,
       'CallExpressionKw'
     )
     if (err(result)) {
@@ -1264,26 +1042,51 @@ export function setCallInAst(
     }
 
     Object.assign(result.node, call)
-    pathToNode = nodeToEdit
-  } else {
-    if (!call.unlabeled && pathIfPipe) {
-      const pipe = getNodeFromPath<PipeExpression>(
-        ast,
-        pathIfPipe,
-        'PipeExpression'
-      )
-      if (err(pipe)) {
-        return pipe
-      }
-      pipe.node.body.push(call)
-      pathToNode = pathIfPipe
-    } else {
-      const name = findUniqueName(ast, call.callee.name.name)
-      const declaration = createVariableDeclaration(name, call)
-      ast.body.push(declaration)
-      const toFirstKwarg = call.arguments.length > 0
-      pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
+    pathToNode = pathToEdit
+  } else if (pathIfNewPipe) {
+    const pipe = getNodeFromPath<PipeExpression>(
+      ast,
+      pathIfNewPipe,
+      'PipeExpression'
+    )
+    if (err(pipe)) {
+      return pipe
     }
+    if (pipe.node.type === 'PipeExpression') {
+      pipe.node.body.push(call)
+    } else if (pipe.node.type === 'CallExpressionKw') {
+      const expression = getNodeFromPath<ExpressionStatement>(
+        ast,
+        pathIfNewPipe,
+        'ExpressionStatement'
+      )
+      if (err(expression) || expression.node.type !== 'ExpressionStatement') {
+        return new Error('Could not retrieve ExpressionStatement')
+      }
+
+      expression.node.expression = createPipeExpression([
+        expression.node.expression,
+        call,
+      ])
+    } else {
+      return new Error(
+        'Expected pipeIfPipe to be a PipeExpression or CallExpressionKw'
+      )
+    }
+    pathToNode = pathIfNewPipe
+  } else if (variableIfNewDecl) {
+    const name = findUniqueName(ast, variableIfNewDecl)
+    const declaration = createVariableDeclaration(name, call)
+    ast.body.push(declaration)
+    const toFirstKwarg = call.arguments.length > 0
+    pathToNode = createPathToNodeForLastVariable(ast, toFirstKwarg)
+  } else {
+    ast.body.push(createExpressionStatement(call))
+    pathToNode = [
+      ['body', ''],
+      [ast.body.length - 1, 'index'],
+      ['expression', 'ExpressionStatement'],
+    ]
   }
 
   return pathToNode

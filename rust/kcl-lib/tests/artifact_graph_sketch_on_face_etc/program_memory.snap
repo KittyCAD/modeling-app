@@ -58,9 +58,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -84,9 +82,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -103,9 +99,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -122,9 +116,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -134,9 +126,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -144,25 +134,19 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -174,9 +158,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -191,16 +173,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -252,9 +229,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               5.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -271,9 +246,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               0.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -290,9 +263,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               0.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -309,9 +280,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               0.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -323,17 +292,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -388,9 +353,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     8.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -414,9 +377,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -433,9 +394,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -452,9 +411,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -464,9 +421,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -474,25 +429,19 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -504,9 +453,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   0.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -521,21 +468,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 6.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -546,9 +486,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             -0.5,
             0.5
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -557,16 +495,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 5.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -632,9 +565,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               3.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -651,9 +582,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               1.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -670,9 +599,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               1.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -689,9 +616,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               1.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -703,17 +628,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -761,9 +682,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     5.5
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -780,9 +699,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     0.5
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -799,9 +716,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     0.5
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -818,9 +733,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     0.5
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -832,17 +745,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "solid": {
                   "type": "Solid",
@@ -897,9 +806,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           8.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -923,9 +830,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           0.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -942,9 +847,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           0.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -961,9 +864,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           0.0
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       }
                     ],
                     "on": {
@@ -973,9 +874,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "x": 0.0,
                         "y": 0.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       "type": "plane",
                       "value": "XZ",
@@ -983,25 +882,19 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "x": 1.0,
                         "y": 0.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": -1.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       }
                     },
                     "start": {
@@ -1013,9 +906,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         0.0,
                         0.0
                       ],
-                      "units": {
-                        "type": "Mm"
-                      },
+                      "units": "mm",
                       "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
@@ -1030,21 +921,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
-                  "height": 6.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  },
+                  "units": "mm",
                   "sectional": false
                 },
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "start": {
                 "from": [
@@ -1055,9 +939,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   -0.5,
                   0.5
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1066,21 +948,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 5.0,
             "startCapId": null,
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -1091,9 +966,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             1.0,
             1.5
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1108,16 +981,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 4.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1169,9 +1037,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               15.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1188,9 +1054,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               13.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1207,9 +1071,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               14.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1226,9 +1088,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               14.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1240,17 +1100,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -1312,9 +1168,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     3.5
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1331,9 +1185,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     1.5
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1350,9 +1202,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     1.5
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1369,9 +1219,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     1.5
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -1383,17 +1231,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "solid": {
                   "type": "Solid",
@@ -1441,9 +1285,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           5.5
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -1460,9 +1302,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           0.5
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -1479,9 +1319,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           0.5
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       {
                         "__geoMeta": {
@@ -1498,9 +1336,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           0.5
                         ],
                         "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       }
                     ],
                     "on": {
@@ -1512,17 +1348,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "x": 1.0,
                         "y": 0.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       },
                       "solid": {
                         "type": "Solid",
@@ -1577,9 +1409,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                                 8.0
                               ],
                               "type": "ToPoint",
-                              "units": {
-                                "type": "Mm"
-                              }
+                              "units": "mm"
                             },
                             {
                               "__geoMeta": {
@@ -1603,9 +1433,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                                 0.0
                               ],
                               "type": "ToPoint",
-                              "units": {
-                                "type": "Mm"
-                              }
+                              "units": "mm"
                             },
                             {
                               "__geoMeta": {
@@ -1622,9 +1450,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                                 0.0
                               ],
                               "type": "ToPoint",
-                              "units": {
-                                "type": "Mm"
-                              }
+                              "units": "mm"
                             },
                             {
                               "__geoMeta": {
@@ -1641,9 +1467,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                                 0.0
                               ],
                               "type": "ToPoint",
-                              "units": {
-                                "type": "Mm"
-                              }
+                              "units": "mm"
                             }
                           ],
                           "on": {
@@ -1653,9 +1477,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               "x": 0.0,
                               "y": 0.0,
                               "z": 0.0,
-                              "units": {
-                                "type": "Mm"
-                              }
+                              "units": "mm"
                             },
                             "type": "plane",
                             "value": "XZ",
@@ -1663,25 +1485,19 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               "x": 1.0,
                               "y": 0.0,
                               "z": 0.0,
-                              "units": {
-                                "type": "Unknown"
-                              }
+                              "units": null
                             },
                             "yAxis": {
                               "x": 0.0,
                               "y": 0.0,
                               "z": 1.0,
-                              "units": {
-                                "type": "Unknown"
-                              }
+                              "units": null
                             },
                             "zAxis": {
                               "x": 0.0,
                               "y": -1.0,
                               "z": 0.0,
-                              "units": {
-                                "type": "Unknown"
-                              }
+                              "units": null
                             }
                           },
                           "start": {
@@ -1693,9 +1509,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               0.0,
                               0.0
                             ],
-                            "units": {
-                              "type": "Mm"
-                            },
+                            "units": "mm",
                             "tag": null,
                             "__geoMeta": {
                               "id": "[uuid]",
@@ -1710,21 +1524,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
-                          "units": {
-                            "type": "Mm"
-                          }
+                          "units": "mm"
                         },
-                        "height": 6.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
-                        "units": {
-                          "type": "Mm"
-                        },
+                        "units": "mm",
                         "sectional": false
                       },
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "start": {
                       "from": [
@@ -1735,9 +1542,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         -0.5,
                         0.5
                       ],
-                      "units": {
-                        "type": "Mm"
-                      },
+                      "units": "mm",
                       "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
@@ -1746,21 +1551,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
-                  "height": 5.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  },
+                  "units": "mm",
                   "sectional": false
                 },
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "start": {
                 "from": [
@@ -1771,9 +1569,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   1.0,
                   1.5
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1788,21 +1584,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 4.0,
             "startCapId": null,
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -1813,9 +1602,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             -3.0,
             14.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1824,16 +1611,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 3.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1868,9 +1650,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             8.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1894,9 +1674,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1913,9 +1691,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1932,9 +1708,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1944,9 +1718,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -1954,25 +1726,19 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1984,9 +1750,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2001,9 +1765,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch002": {
@@ -2027,9 +1789,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             5.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2046,9 +1806,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             0.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2065,9 +1823,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             0.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2084,9 +1840,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             0.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2098,17 +1852,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -2163,9 +1913,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   8.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2189,9 +1937,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2208,9 +1954,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2227,9 +1971,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2239,9 +1981,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -2249,25 +1989,19 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2279,9 +2013,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2296,21 +2028,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 6.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -2321,9 +2046,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           -0.5,
           0.5
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2332,9 +2055,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch003": {
@@ -2365,9 +2086,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             3.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2384,9 +2103,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             1.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2403,9 +2120,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             1.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2422,9 +2137,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             1.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2436,17 +2149,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -2494,9 +2203,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   5.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2513,9 +2220,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   0.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2532,9 +2237,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   0.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2551,9 +2254,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   0.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2565,17 +2266,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -2630,9 +2327,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         8.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -2656,9 +2351,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -2675,9 +2368,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -2694,9 +2385,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -2706,9 +2395,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -2716,25 +2403,19 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -2746,9 +2427,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Mm"
-                    },
+                    "units": "mm",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -2763,21 +2442,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
-                "height": 6.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "sectional": false
               },
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "start": {
               "from": [
@@ -2788,9 +2460,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 -0.5,
                 0.5
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2799,21 +2469,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 5.0,
           "startCapId": null,
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -2824,9 +2487,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           1.0,
           1.5
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2841,9 +2502,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch004": {
@@ -2867,9 +2526,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             15.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2886,9 +2543,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             13.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2905,9 +2560,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             14.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2924,9 +2577,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             14.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2938,17 +2589,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -3010,9 +2657,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   3.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3029,9 +2674,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3048,9 +2691,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3067,9 +2708,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -3081,17 +2720,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -3139,9 +2774,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         5.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -3158,9 +2791,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         0.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -3177,9 +2808,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         0.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -3196,9 +2825,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         0.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -3210,17 +2837,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "solid": {
                       "type": "Solid",
@@ -3275,9 +2898,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               8.0
                             ],
                             "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
+                            "units": "mm"
                           },
                           {
                             "__geoMeta": {
@@ -3301,9 +2922,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               0.0
                             ],
                             "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
+                            "units": "mm"
                           },
                           {
                             "__geoMeta": {
@@ -3320,9 +2939,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               0.0
                             ],
                             "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
+                            "units": "mm"
                           },
                           {
                             "__geoMeta": {
@@ -3339,9 +2956,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               0.0
                             ],
                             "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
+                            "units": "mm"
                           }
                         ],
                         "on": {
@@ -3351,9 +2966,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "x": 0.0,
                             "y": 0.0,
                             "z": 0.0,
-                            "units": {
-                              "type": "Mm"
-                            }
+                            "units": "mm"
                           },
                           "type": "plane",
                           "value": "XZ",
@@ -3361,25 +2974,19 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "x": 1.0,
                             "y": 0.0,
                             "z": 0.0,
-                            "units": {
-                              "type": "Unknown"
-                            }
+                            "units": null
                           },
                           "yAxis": {
                             "x": 0.0,
                             "y": 0.0,
                             "z": 1.0,
-                            "units": {
-                              "type": "Unknown"
-                            }
+                            "units": null
                           },
                           "zAxis": {
                             "x": 0.0,
                             "y": -1.0,
                             "z": 0.0,
-                            "units": {
-                              "type": "Unknown"
-                            }
+                            "units": null
                           }
                         },
                         "start": {
@@ -3391,9 +2998,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             0.0,
                             0.0
                           ],
-                          "units": {
-                            "type": "Mm"
-                          },
+                          "units": "mm",
                           "tag": null,
                           "__geoMeta": {
                             "id": "[uuid]",
@@ -3408,21 +3013,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         },
                         "artifactId": "[uuid]",
                         "originalId": "[uuid]",
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
-                      "height": 6.0,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
-                      "units": {
-                        "type": "Mm"
-                      },
+                      "units": "mm",
                       "sectional": false
                     },
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   "start": {
                     "from": [
@@ -3433,9 +3031,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       -0.5,
                       0.5
                     ],
-                    "units": {
-                      "type": "Mm"
-                    },
+                    "units": "mm",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -3444,21 +3040,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
-                "height": 5.0,
                 "startCapId": null,
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "sectional": false
               },
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "start": {
               "from": [
@@ -3469,9 +3058,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 1.0,
                 1.5
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3486,21 +3073,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 4.0,
           "startCapId": null,
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -3511,9 +3091,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           -3.0,
           14.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3522,9 +3100,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   }
 }

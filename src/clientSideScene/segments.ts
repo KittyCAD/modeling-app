@@ -1,4 +1,4 @@
-import type { NormalBufferAttributes, Texture } from 'three'
+import type { NormalBufferAttributes } from 'three'
 import {
   BoxGeometry,
   BufferGeometry,
@@ -14,8 +14,6 @@ import {
   LineDashedMaterial,
   Mesh,
   MeshBasicMaterial,
-  Points,
-  PointsMaterial,
   Shape,
   SphereGeometry,
   Vector2,
@@ -39,6 +37,7 @@ import {
   CIRCLE_SEGMENT,
   CIRCLE_SEGMENT_BODY,
   CIRCLE_SEGMENT_DASH,
+  CIRCLE_SEGMENT_RADIUS_BODY,
   CIRCLE_THREE_POINT_HANDLE1,
   CIRCLE_THREE_POINT_HANDLE2,
   CIRCLE_THREE_POINT_HANDLE3,
@@ -50,6 +49,7 @@ import {
   HIDE_HOVER_SEGMENT_LENGTH,
   HIDE_SEGMENT_LENGTH,
   PROFILE_START,
+  SEGMENT_BLUE,
   SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
@@ -64,7 +64,6 @@ import {
   THREE_POINT_ARC_SEGMENT_BODY,
   THREE_POINT_ARC_SEGMENT_DASH,
   getParentGroup,
-  CIRCLE_SEGMENT_RADIUS_BODY,
 } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
@@ -75,24 +74,24 @@ import {
   SEGMENT_LENGTH_LABEL_TEXT,
 } from '@src/clientSideScene/sceneUtils'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
+import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import type { Coords2d } from '@src/lang/std/sketch'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
 import type { PathToNode } from '@src/lang/wasm'
 import { getTangentialArcToInfo } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
+import { commandBarActor } from '@src/lib/singletons'
 import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { isClockwise, normaliseAngle, roundOff } from '@src/lib/utils'
 import { getTangentPointFromPreviousArc } from '@src/lib/utils2d'
-import { commandBarActor } from '@src/lib/singletons'
 import type {
   SegmentOverlay,
   SegmentOverlayPayload,
   SegmentOverlays,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
-import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -103,7 +102,6 @@ interface CreateSegmentArgs {
   isDraftSegment?: boolean
   scale?: number
   callExpName: string
-  texture: Texture
   theme: Themes
   isSelected?: boolean
   sceneInfra: SceneInfra
@@ -152,7 +150,6 @@ class StraightSegment implements SegmentUtils {
     isDraftSegment,
     scale = 1,
     callExpName,
-    texture,
     theme,
     isSelected = false,
     sceneInfra,
@@ -164,7 +161,7 @@ class StraightSegment implements SegmentUtils {
     const { from, to } = input
     const baseColor =
       callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
     const meshType = isDraftSegment
       ? STRAIGHT_SEGMENT_DASH
       : STRAIGHT_SEGMENT_BODY
@@ -202,7 +199,8 @@ class StraightSegment implements SegmentUtils {
     // All segment types get an extra segment handle,
     // Which is a little plus sign that appears at the origin of the segment
     // and can be dragged to insert a new segment
-    const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
+    const extraSegmentGroup = createExtraSegmentHandle(scale, theme)
+    extraSegmentGroup.scale.set(scale, scale, scale)
 
     // Segment decorators that only apply to non-close segments
     if (callExpName !== 'close') {
@@ -312,7 +310,9 @@ class StraightSegment implements SegmentUtils {
 
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
     if (extraSegmentGroup) {
-      const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
+      const offset = new Vector2(to[0] - from[0], to[1] - from[1])
+      const offsetFromBase = offset
+        .clone()
         .normalize()
         .multiplyScalar(EXTRA_SEGMENT_OFFSET_PX * scale)
       extraSegmentGroup.position.set(
@@ -321,7 +321,10 @@ class StraightSegment implements SegmentUtils {
         0
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = isHandlesVisible
+
+      const segmentLengthInScreenSpace = offset.length() / scale
+      extraSegmentGroup.visible =
+        !sceneInfra.selected && segmentLengthInScreenSpace > 130
     }
 
     if (labelGroup) {
@@ -387,7 +390,6 @@ class TangentialArcToSegment implements SegmentUtils {
     pathToNode,
     isDraftSegment,
     scale = 1,
-    texture,
     theme,
     isSelected,
     sceneInfra,
@@ -410,11 +412,11 @@ class TangentialArcToSegment implements SegmentUtils {
       scale,
     })
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
     const body = new MeshBasicMaterial({ color })
     const mesh = new Mesh(geometry, body)
     const arrowGroup = createArrowhead(scale, theme, color)
-    const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
+    const extraSegmentGroup = createExtraSegmentHandle(scale, theme)
 
     group.name = TANGENTIAL_ARC_TO_SEGMENT
     mesh.userData.type = meshName
@@ -511,7 +513,10 @@ class TangentialArcToSegment implements SegmentUtils {
         0
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = isHandlesVisible
+
+      const segmentLengthInScreenSpace = arcInfo.arcLength / scale
+      extraSegmentGroup.visible =
+        !sceneInfra.selected && segmentLengthInScreenSpace > 70
     }
 
     const tangentialArcSegmentBody = group.children.find(
@@ -594,7 +599,7 @@ class CircleSegment implements SegmentUtils {
     }
     const { from, center, radius } = input
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     const group = new Group()
     const geometry = createArcGeometry({
@@ -846,7 +851,7 @@ class CircleThreePointSegment implements SegmentUtils {
     )
     const center: [number, number] = [center_x, center_y]
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     const group = new Group()
     const geometry = createArcGeometry({
@@ -1054,7 +1059,7 @@ class ArcSegment implements SegmentUtils {
     }
     const { from, to, center, radius, ccw } = input
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     // Calculate start and end angles
     const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
@@ -1418,7 +1423,7 @@ class ThreePointArcSegment implements SegmentUtils {
     )
     const center: [number, number] = [center_x, center_y]
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     // Calculate start and end angles
     const startAngle = Math.atan2(p1[1] - center[1], p1[0] - center[0])
@@ -1634,7 +1639,7 @@ export function createProfileStartHandle({
 
   const geometry = new BoxGeometry(size, size, size) // in pixels scaled later
   const baseColor = getThemeColorForThreeJs(theme)
-  const color = isSelected ? 0x0000ff : baseColor
+  const color = isSelected ? SEGMENT_BLUE : baseColor
   const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
 
@@ -1718,36 +1723,30 @@ function createCircleThreePointHandle(
   return circleCenterGroup
 }
 
-function createExtraSegmentHandle(
-  scale: number,
-  texture: Texture,
-  theme: Themes
-): Group {
-  const particleMaterial = new PointsMaterial({
-    size: 12, // in pixels
-    map: texture,
-    transparent: true,
-    opacity: 0,
-    depthTest: false,
-  })
+function createExtraSegmentHandle(scale: number, theme: Themes): Group {
+  const extraSegmentGroup = new Group()
+  extraSegmentGroup.userData.type = EXTRA_SEGMENT_HANDLE
+  extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
+
   const mat = new MeshBasicMaterial({
     transparent: true,
     color: getThemeColorForThreeJs(theme),
     opacity: 0,
   })
-  const particleGeometry = new BufferGeometry().setFromPoints([
-    new Vector3(0, 0, 0),
-  ])
   const sphereMesh = new Mesh(new SphereGeometry(6, 12, 12), mat) // sphere radius in pixels
-  const particle = new Points(particleGeometry, particleMaterial)
-  particle.userData.ignoreColorChange = true
-  particle.userData.type = EXTRA_SEGMENT_HANDLE
-
-  const extraSegmentGroup = new Group()
-  extraSegmentGroup.userData.type = EXTRA_SEGMENT_HANDLE
-  extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
   extraSegmentGroup.add(sphereMesh)
-  extraSegmentGroup.add(particle)
+
+  const handleDiv = document.createElement('div')
+  handleDiv.classList.add('extra-segment-handle')
+  handleDiv.style.color = `#${getThemeColorForThreeJs(theme).toString(16).padStart(6, '0')}`
+
+  const cssObject = new CSS2DObject(handleDiv)
+  cssObject.userData.ignoreColorChange = true
+  cssObject.userData.type = EXTRA_SEGMENT_HANDLE
+  cssObject.position.set(0, 0, 0)
+
+  extraSegmentGroup.add(cssObject)
+
   extraSegmentGroup.scale.set(scale, scale, scale)
   return extraSegmentGroup
 }

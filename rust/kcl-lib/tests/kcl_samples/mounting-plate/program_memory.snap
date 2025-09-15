@@ -28,12 +28,8 @@ description: Variables in memory after executing mounting-plate.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "filletRadius": {
@@ -41,12 +37,8 @@ description: Variables in memory after executing mounting-plate.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "holeIndex": {
@@ -54,12 +46,8 @@ description: Variables in memory after executing mounting-plate.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "holeRadius": {
@@ -67,12 +55,8 @@ description: Variables in memory after executing mounting-plate.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "part": {
@@ -137,6 +121,41 @@ description: Variables in memory after executing mounting-plate.kcl
             "value": "basePlateEdge4"
           },
           "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -165,9 +184,7 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -191,9 +208,7 @@ description: Variables in memory after executing mounting-plate.kcl
               -5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -217,9 +232,7 @@ description: Variables in memory after executing mounting-plate.kcl
               -5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -243,9 +256,7 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -262,9 +273,124 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -2.25,
+              4.25
+            ],
+            "from": [
+              -2.0,
+              4.25
+            ],
+            "radius": 0.25,
+            "tag": null,
+            "to": [
+              -2.0,
+              4.25
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              2.25,
+              4.25
+            ],
+            "from": [
+              2.5,
+              4.25
+            ],
+            "radius": 0.25,
+            "tag": null,
+            "to": [
+              2.5,
+              4.25
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -2.25,
+              -4.25
+            ],
+            "from": [
+              -2.0,
+              -4.25
+            ],
+            "radius": 0.25,
+            "tag": null,
+            "to": [
+              -2.0,
+              -4.25
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              2.25,
+              -4.25
+            ],
+            "from": [
+              2.5,
+              -4.25
+            ],
+            "radius": 0.25,
+            "tag": null,
+            "to": [
+              2.5,
+              -4.25
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              2.0,
+              0.0
+            ],
+            "radius": 2.0,
+            "tag": null,
+            "to": [
+              2.0,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
@@ -274,9 +400,7 @@ description: Variables in memory after executing mounting-plate.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -284,25 +408,19 @@ description: Variables in memory after executing mounting-plate.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -314,9 +432,7 @@ description: Variables in memory after executing mounting-plate.kcl
             -3.0,
             5.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -343,11 +459,8 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -358,12 +471,8 @@ description: Variables in memory after executing mounting-plate.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -376,12 +485,8 @@ description: Variables in memory after executing mounting-plate.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -394,12 +499,8 @@ description: Variables in memory after executing mounting-plate.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -412,21 +513,15 @@ description: Variables in memory after executing mounting-plate.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -435,12 +530,8 @@ description: Variables in memory after executing mounting-plate.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "plateThickness": {
@@ -448,12 +539,8 @@ description: Variables in memory after executing mounting-plate.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "plateWidth": {
@@ -461,12 +548,8 @@ description: Variables in memory after executing mounting-plate.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "rectShape": {
@@ -497,9 +580,7 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -523,9 +604,7 @@ description: Variables in memory after executing mounting-plate.kcl
             -5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -549,9 +628,7 @@ description: Variables in memory after executing mounting-plate.kcl
             -5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -575,9 +652,7 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -594,9 +669,7 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -606,9 +679,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -616,25 +687,19 @@ description: Variables in memory after executing mounting-plate.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -646,9 +711,7 @@ description: Variables in memory after executing mounting-plate.kcl
           -3.0,
           5.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -675,9 +738,7 @@ description: Variables in memory after executing mounting-plate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch001": {
@@ -689,34 +750,26 @@ description: Variables in memory after executing mounting-plate.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   }

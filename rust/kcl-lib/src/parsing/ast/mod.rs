@@ -3,7 +3,7 @@ pub mod types;
 
 use crate::{
     ModuleId,
-    parsing::ast::types::{BinaryPart, BodyItem, Expr, LiteralIdentifier},
+    parsing::ast::types::{BinaryPart, BodyItem, Expr},
 };
 
 impl BodyItem {
@@ -37,6 +37,8 @@ impl Expr {
             Expr::IfExpression(expr) => expr.module_id,
             Expr::LabelledExpression(expr) => expr.expr.module_id(),
             Expr::AscribedExpression(expr) => expr.expr.module_id(),
+            Expr::SketchBlock(expr) => expr.module_id,
+            Expr::SketchVar(expr) => expr.module_id,
             Expr::None(none) => none.module_id,
         }
     }
@@ -56,15 +58,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.module_id,
             BinaryPart::IfExpression(e) => e.module_id,
             BinaryPart::AscribedExpression(e) => e.module_id,
-        }
-    }
-}
-
-impl LiteralIdentifier {
-    pub fn module_id(&self) -> ModuleId {
-        match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.module_id,
-            LiteralIdentifier::Literal(literal) => literal.module_id,
+            BinaryPart::SketchVar(e) => e.module_id,
         }
     }
 }

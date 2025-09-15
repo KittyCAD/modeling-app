@@ -5,7 +5,6 @@ use std::{fmt, iter::Enumerate, num::NonZeroUsize, str::FromStr};
 
 use anyhow::Result;
 use parse_display::Display;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokeniser::Input;
 use tower_lsp::lsp_types::SemanticTokenType;
@@ -16,10 +15,9 @@ use winnow::{
 };
 
 use crate::{
-    CompilationError, ModuleId,
+    CompilationError, ModuleId, SourceRange,
     errors::KclError,
     parsing::ast::types::{ItemVisibility, VariableKind},
-    source_range::SourceRange,
 };
 
 mod tokeniser;
@@ -29,7 +27,7 @@ pub(crate) use tokeniser::RESERVED_WORDS;
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
 pub const NUM_SUFFIXES: [&str; 10] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad", "?"];
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
 #[repr(u32)]
 pub enum NumericSuffix {
     None,
@@ -145,7 +143,7 @@ impl TokenStream {
         self.tokens.is_empty()
     }
 
-    pub fn as_slice(&self) -> TokenSlice {
+    pub fn as_slice(&self) -> TokenSlice<'_> {
         TokenSlice::from(self)
     }
 }

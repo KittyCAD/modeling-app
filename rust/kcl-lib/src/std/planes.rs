@@ -1,14 +1,15 @@
 //! Standard library plane helpers.
 
 use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Color};
-use kittycad_modeling_cmds::{self as kcmc, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData};
+use kittycad_modeling_cmds::{
+    self as kcmc, ok_response::OkModelingCmdResponse, units::UnitLength, websocket::OkWebSocketResponseData,
+};
 
 use super::{
     args::TyF64,
     sketch::{FaceTag, PlaneData},
 };
 use crate::{
-    UnitLen,
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, KclValue, Metadata, ModelingCmdMeta, Plane, PlaneType, types::RuntimeType},
     std::Args,
@@ -25,7 +26,7 @@ pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         .map(|value| KclValue::Plane { value })
 }
 
-async fn inner_plane_of(
+pub(crate) async fn inner_plane_of(
     solid: crate::execution::Solid,
     face: FaceTag,
     exec_state: &mut ExecState,
@@ -61,7 +62,8 @@ async fn inner_plane_of(
 
     // Query the engine to learn what plane, if any, this face is on.
     let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
-    let meta = args.into();
+    let plane_id = exec_state.id_generator().next_uuid();
+    let meta = ModelingCmdMeta::with_id(&args.ctx, args.source_range, plane_id);
     let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar { object_id: face_id });
     let plane_resp = exec_state.send_modeling_cmd(meta, cmd).await?;
     let OkWebSocketResponseData::Modeling {
@@ -87,7 +89,7 @@ async fn inner_plane_of(
     let Some(origin) = planar.origin else { return not_planar };
 
     // Engine always returns measurements in mm.
-    let engine_units = UnitLen::Mm;
+    let engine_units = Some(UnitLength::Millimeters);
     let x_axis = crate::execution::Point3d {
         x: x_axis.x,
         y: x_axis.y,
@@ -123,13 +125,10 @@ async fn inner_plane_of(
     };
     let plane_info = plane_info.make_right_handed();
 
-    // Engine doesn't send back an ID, so let's just make a new plane ID.
-    let plane_id = exec_state.id_generator().next_uuid();
     Ok(Plane {
         artifact_id: plane_id.into(),
         id: plane_id,
-        // Engine doesn't know about the ID we created, so set this to Uninit.
-        value: PlaneType::Uninit,
+        value: PlaneType::Custom,
         info: plane_info,
         meta: vec![Metadata {
             source_range: args.source_range,
@@ -157,7 +156,7 @@ async fn inner_offset_plane(
     plane.value = PlaneType::Custom;
 
     let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-    plane.info.origin += normal * offset.to_length_units(plane.info.origin.units);
+    plane.info.origin += normal * offset.to_length_units(plane.info.origin.units.unwrap_or(UnitLength::Millimeters));
     make_offset_plane_in_engine(&plane, exec_state, args).await?;
 
     Ok(plane)
@@ -217,25 +216,25 @@ mod tests {
                 x: 0.0,
                 y: 0.0,
                 z: 0.0,
-                units: UnitLen::Mm,
+                units: Some(UnitLength::Millimeters),
             },
             x_axis: Point3d {
                 x: 1.0,
                 y: 0.0,
                 z: 0.0,
-                units: UnitLen::Mm,
+                units: None,
             },
             y_axis: Point3d {
                 x: 0.0,
                 y: 1.0,
                 z: 0.0,
-                units: UnitLen::Mm,
+                units: None,
             },
             z_axis: Point3d {
                 x: 0.0,
                 y: 0.0,
                 z: -1.0,
-                units: UnitLen::Mm,
+                units: None,
             },
         };
 

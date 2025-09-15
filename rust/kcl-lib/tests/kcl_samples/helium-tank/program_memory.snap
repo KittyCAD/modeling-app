@@ -8,12 +8,8 @@ description: Variables in memory after executing helium-tank.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "bracket": {
@@ -22,7 +18,120 @@ description: Variables in memory after executing helium-tank.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3430,
+            "end": 3436,
+            "moduleId": 0,
+            "start": 3430,
+            "type": "TagDeclarator",
+            "value": "seg04"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3566,
+            "end": 3572,
+            "moduleId": 0,
+            "start": 3566,
+            "type": "TagDeclarator",
+            "value": "seg05"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2771,
+            "end": 2777,
+            "moduleId": 0,
+            "start": 2771,
+            "type": "TagDeclarator",
+            "value": "seg06"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2923,
+            "end": 2929,
+            "moduleId": 0,
+            "start": 2923,
+            "type": "TagDeclarator",
+            "value": "seg07"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -42,9 +151,7 @@ description: Variables in memory after executing helium-tank.kcl
               4.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -66,9 +173,7 @@ description: Variables in memory after executing helium-tank.kcl
               3.6861841993004627
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -85,10 +190,10 @@ description: Variables in memory after executing helium-tank.kcl
               3.6861841993004627
             ],
             "tag": {
-              "commentStart": 3388,
-              "end": 3394,
+              "commentStart": 3430,
+              "end": 3436,
               "moduleId": 0,
-              "start": 3388,
+              "start": 3430,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -97,9 +202,7 @@ description: Variables in memory after executing helium-tank.kcl
               3.934384254789443
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -116,9 +219,7 @@ description: Variables in memory after executing helium-tank.kcl
               5.200565651519425
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -135,10 +236,10 @@ description: Variables in memory after executing helium-tank.kcl
               5.200565651519425
             ],
             "tag": {
-              "commentStart": 3521,
-              "end": 3527,
+              "commentStart": 3566,
+              "end": 3572,
               "moduleId": 0,
-              "start": 3521,
+              "start": 3566,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -147,9 +248,7 @@ description: Variables in memory after executing helium-tank.kcl
               5.407153607102693
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -166,9 +265,7 @@ description: Variables in memory after executing helium-tank.kcl
               5.407153607102693
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -185,9 +282,157 @@ description: Variables in memory after executing helium-tank.kcl
               4.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -0.1,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.10000000000000028,
+              -0.0
+            ],
+            "from": [
+              -0.1,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "type": "TangentialArc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.8244880726674695,
+              3.8909722103727105
+            ],
+            "from": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "tag": {
+              "commentStart": 2771,
+              "end": 2777,
+              "moduleId": 0,
+              "start": 2771,
+              "type": "TagDeclarator",
+              "value": "seg06"
+            },
+            "to": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "type": "TangentialArc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "tag": null,
+            "to": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.6012261299528445,
+              5.157153607102692
+            ],
+            "from": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "tag": {
+              "commentStart": 2923,
+              "end": 2929,
+              "moduleId": 0,
+              "start": 2923,
+              "type": "TagDeclarator",
+              "value": "seg07"
+            },
+            "to": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "type": "TangentialArc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              5.282153607102692
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": "in"
           }
         ],
         "on": {
@@ -197,9 +442,7 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 510.54,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -207,25 +450,19 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -237,9 +474,7 @@ description: Variables in memory after executing helium-tank.kcl
             0.0,
             4.5
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -254,20 +489,23 @@ description: Variables in memory after executing helium-tank.kcl
           "seg05": {
             "type": "TagIdentifier",
             "value": "seg05"
+          },
+          "seg06": {
+            "type": "TagIdentifier",
+            "value": "seg06"
+          },
+          "seg07": {
+            "type": "TagIdentifier",
+            "value": "seg07"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -292,9 +530,7 @@ description: Variables in memory after executing helium-tank.kcl
             4.625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -316,9 +552,7 @@ description: Variables in memory after executing helium-tank.kcl
             3.7885782048365866
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -335,10 +569,10 @@ description: Variables in memory after executing helium-tank.kcl
             3.7885782048365866
           ],
           "tag": {
-            "commentStart": 2738,
-            "end": 2744,
+            "commentStart": 2771,
+            "end": 2777,
             "moduleId": 0,
-            "start": 2738,
+            "start": 2771,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -347,9 +581,7 @@ description: Variables in memory after executing helium-tank.kcl
             3.9126782325810767
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -366,9 +598,7 @@ description: Variables in memory after executing helium-tank.kcl
             5.1788596293110585
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -385,10 +615,10 @@ description: Variables in memory after executing helium-tank.kcl
             5.1788596293110585
           ],
           "tag": {
-            "commentStart": 2887,
-            "end": 2893,
+            "commentStart": 2923,
+            "end": 2929,
             "moduleId": 0,
-            "start": 2887,
+            "start": 2923,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -397,9 +627,7 @@ description: Variables in memory after executing helium-tank.kcl
             5.282153607102692
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -416,9 +644,7 @@ description: Variables in memory after executing helium-tank.kcl
             5.282153607102692
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -435,9 +661,7 @@ description: Variables in memory after executing helium-tank.kcl
             4.625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -447,9 +671,7 @@ description: Variables in memory after executing helium-tank.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 510.54,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -457,25 +679,19 @@ description: Variables in memory after executing helium-tank.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -487,9 +703,7 @@ description: Variables in memory after executing helium-tank.kcl
           0.0,
           4.625
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -508,9 +722,7 @@ description: Variables in memory after executing helium-tank.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "bracketProfile": {
@@ -519,7 +731,120 @@ description: Variables in memory after executing helium-tank.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3430,
+            "end": 3436,
+            "moduleId": 0,
+            "start": 3430,
+            "type": "TagDeclarator",
+            "value": "seg04"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3566,
+            "end": 3572,
+            "moduleId": 0,
+            "start": 3566,
+            "type": "TagDeclarator",
+            "value": "seg05"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2771,
+            "end": 2777,
+            "moduleId": 0,
+            "start": 2771,
+            "type": "TagDeclarator",
+            "value": "seg06"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2923,
+            "end": 2929,
+            "moduleId": 0,
+            "start": 2923,
+            "type": "TagDeclarator",
+            "value": "seg07"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -539,9 +864,7 @@ description: Variables in memory after executing helium-tank.kcl
               4.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -563,9 +886,7 @@ description: Variables in memory after executing helium-tank.kcl
               3.6861841993004627
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -582,10 +903,10 @@ description: Variables in memory after executing helium-tank.kcl
               3.6861841993004627
             ],
             "tag": {
-              "commentStart": 3388,
-              "end": 3394,
+              "commentStart": 3430,
+              "end": 3436,
               "moduleId": 0,
-              "start": 3388,
+              "start": 3430,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -594,9 +915,7 @@ description: Variables in memory after executing helium-tank.kcl
               3.934384254789443
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -613,9 +932,7 @@ description: Variables in memory after executing helium-tank.kcl
               5.200565651519425
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -632,10 +949,10 @@ description: Variables in memory after executing helium-tank.kcl
               5.200565651519425
             ],
             "tag": {
-              "commentStart": 3521,
-              "end": 3527,
+              "commentStart": 3566,
+              "end": 3572,
               "moduleId": 0,
-              "start": 3521,
+              "start": 3566,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -644,9 +961,7 @@ description: Variables in memory after executing helium-tank.kcl
               5.407153607102693
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -663,9 +978,7 @@ description: Variables in memory after executing helium-tank.kcl
               5.407153607102693
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -682,9 +995,157 @@ description: Variables in memory after executing helium-tank.kcl
               4.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -0.1,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.10000000000000028,
+              -0.0
+            ],
+            "from": [
+              -0.1,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "type": "TangentialArc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.8244880726674695,
+              3.8909722103727105
+            ],
+            "from": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "tag": {
+              "commentStart": 2771,
+              "end": 2777,
+              "moduleId": 0,
+              "start": 2771,
+              "type": "TagDeclarator",
+              "value": "seg06"
+            },
+            "to": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "type": "TangentialArc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "tag": null,
+            "to": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.6012261299528445,
+              5.157153607102692
+            ],
+            "from": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "tag": {
+              "commentStart": 2923,
+              "end": 2929,
+              "moduleId": 0,
+              "start": 2923,
+              "type": "TagDeclarator",
+              "value": "seg07"
+            },
+            "to": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "type": "TangentialArc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              5.282153607102692
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": "in"
           }
         ],
         "on": {
@@ -694,9 +1155,7 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 510.54,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -704,25 +1163,19 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -734,9 +1187,7 @@ description: Variables in memory after executing helium-tank.kcl
             0.0,
             4.5
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -751,20 +1202,23 @@ description: Variables in memory after executing helium-tank.kcl
           "seg05": {
             "type": "TagIdentifier",
             "value": "seg05"
+          },
+          "seg06": {
+            "type": "TagIdentifier",
+            "value": "seg06"
+          },
+          "seg07": {
+            "type": "TagIdentifier",
+            "value": "seg07"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -774,7 +1228,120 @@ description: Variables in memory after executing helium-tank.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3430,
+            "end": 3436,
+            "moduleId": 0,
+            "start": 3430,
+            "type": "TagDeclarator",
+            "value": "seg04"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3566,
+            "end": 3572,
+            "moduleId": 0,
+            "start": 3566,
+            "type": "TagDeclarator",
+            "value": "seg05"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2771,
+            "end": 2777,
+            "moduleId": 0,
+            "start": 2771,
+            "type": "TagDeclarator",
+            "value": "seg06"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2923,
+            "end": 2929,
+            "moduleId": 0,
+            "start": 2923,
+            "type": "TagDeclarator",
+            "value": "seg07"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "type": "Sketch",
         "id": "[uuid]",
@@ -794,9 +1361,7 @@ description: Variables in memory after executing helium-tank.kcl
               4.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -818,9 +1383,7 @@ description: Variables in memory after executing helium-tank.kcl
               3.6861841993004627
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -837,10 +1400,10 @@ description: Variables in memory after executing helium-tank.kcl
               3.6861841993004627
             ],
             "tag": {
-              "commentStart": 3388,
-              "end": 3394,
+              "commentStart": 3430,
+              "end": 3436,
               "moduleId": 0,
-              "start": 3388,
+              "start": 3430,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -849,9 +1412,7 @@ description: Variables in memory after executing helium-tank.kcl
               3.934384254789443
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -868,9 +1429,7 @@ description: Variables in memory after executing helium-tank.kcl
               5.200565651519425
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -887,10 +1446,10 @@ description: Variables in memory after executing helium-tank.kcl
               5.200565651519425
             ],
             "tag": {
-              "commentStart": 3521,
-              "end": 3527,
+              "commentStart": 3566,
+              "end": 3572,
               "moduleId": 0,
-              "start": 3521,
+              "start": 3566,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -899,9 +1458,7 @@ description: Variables in memory after executing helium-tank.kcl
               5.407153607102693
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -918,9 +1475,7 @@ description: Variables in memory after executing helium-tank.kcl
               5.407153607102693
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -937,9 +1492,157 @@ description: Variables in memory after executing helium-tank.kcl
               4.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -0.1,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.10000000000000028,
+              -0.0
+            ],
+            "from": [
+              -0.1,
+              4.625
+            ],
+            "tag": null,
+            "to": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "type": "TangentialArc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.8244880726674695,
+              3.8909722103727105
+            ],
+            "from": [
+              -2.7527910181235886,
+              3.7885782048365866
+            ],
+            "tag": {
+              "commentStart": 2771,
+              "end": 2777,
+              "moduleId": 0,
+              "start": 2771,
+              "type": "TagDeclarator",
+              "value": "seg06"
+            },
+            "to": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "type": "TangentialArc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.9475890417939956,
+              3.9126782325810767
+            ],
+            "tag": null,
+            "to": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": false,
+            "center": [
+              -2.6012261299528445,
+              5.157153607102692
+            ],
+            "from": [
+              -2.7243270990793707,
+              5.1788596293110585
+            ],
+            "tag": {
+              "commentStart": 2923,
+              "end": 2929,
+              "moduleId": 0,
+              "start": 2923,
+              "type": "TagDeclarator",
+              "value": "seg07"
+            },
+            "to": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "type": "TangentialArc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -2.6012261299528445,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              5.282153607102692
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              5.282153607102692
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              4.625
+            ],
+            "type": "ToPoint",
+            "units": "in"
           }
         ],
         "on": {
@@ -949,9 +1652,7 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 510.54,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -959,25 +1660,19 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -989,9 +1684,7 @@ description: Variables in memory after executing helium-tank.kcl
             0.0,
             4.5
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1006,20 +1699,23 @@ description: Variables in memory after executing helium-tank.kcl
           "seg05": {
             "type": "TagIdentifier",
             "value": "seg05"
+          },
+          "seg06": {
+            "type": "TagIdentifier",
+            "value": "seg06"
+          },
+          "seg07": {
+            "type": "TagIdentifier",
+            "value": "seg07"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1028,12 +1724,8 @@ description: Variables in memory after executing helium-tank.kcl
     "value": 0.09,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "capEnd001": {
@@ -1081,9 +1773,7 @@ description: Variables in memory after executing helium-tank.kcl
               1.675
             ],
             "type": "Circle",
-            "units": {
-              "type": "Feet"
-            }
+            "units": "ft"
           }
         ],
         "on": {
@@ -1093,9 +1783,7 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 120.31578947368422,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1103,25 +1791,19 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1133,9 +1815,7 @@ description: Variables in memory after executing helium-tank.kcl
             2.125,
             20.1
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1144,16 +1824,11 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": -5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1164,6 +1839,13 @@ description: Variables in memory after executing helium-tank.kcl
       "id": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
@@ -1197,9 +1879,32 @@ description: Variables in memory after executing helium-tank.kcl
               0.0775
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0775
+            ],
+            "from": [
+              4.636842105263159,
+              0.0775
+            ],
+            "radius": 4.636842105263159,
+            "tag": null,
+            "to": [
+              4.636842105263159,
+              0.0775
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
@@ -1209,9 +1914,7 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 510.54,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1219,25 +1922,19 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1249,9 +1946,7 @@ description: Variables in memory after executing helium-tank.kcl
             4.736842105263158,
             0.0775
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1260,16 +1955,11 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.75,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1278,12 +1968,8 @@ description: Variables in memory after executing helium-tank.kcl
     "value": 1.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "seg01": {
@@ -1344,6 +2030,13 @@ description: Variables in memory after executing helium-tank.kcl
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -1371,9 +2064,32 @@ description: Variables in memory after executing helium-tank.kcl
               0.0625
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0625
+            ],
+            "from": [
+              4.65,
+              0.0625
+            ],
+            "radius": 4.65,
+            "tag": null,
+            "to": [
+              4.65,
+              0.0625
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
@@ -1383,9 +2099,7 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 510.54,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1393,25 +2107,19 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1423,9 +2131,7 @@ description: Variables in memory after executing helium-tank.kcl
             4.75,
             0.0625
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1434,16 +2140,11 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1452,21 +2153,17 @@ description: Variables in memory after executing helium-tank.kcl
     "value": 9.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tankHeight": {
     "type": "Number",
     "value": 2.5,
     "ty": {
+      "ft": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Feet"
+      "type": "Length"
     }
   },
   "tankRevolve": {
@@ -1523,10 +2220,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 843,
-            "end": 849,
+            "commentStart": 858,
+            "end": 864,
             "moduleId": 0,
-            "start": 843,
+            "start": 858,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1537,10 +2234,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 922,
-            "end": 928,
+            "commentStart": 937,
+            "end": 943,
             "moduleId": 0,
-            "start": 922,
+            "start": 937,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -1551,10 +2248,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 980,
-            "end": 986,
+            "commentStart": 998,
+            "end": 1004,
             "moduleId": 0,
-            "start": 980,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1565,10 +2262,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1061,
-            "end": 1067,
+            "commentStart": 1079,
+            "end": 1085,
             "moduleId": 0,
-            "start": 1061,
+            "start": 1079,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -1650,9 +2347,7 @@ description: Variables in memory after executing helium-tank.kcl
               29.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1669,9 +2364,7 @@ description: Variables in memory after executing helium-tank.kcl
               29.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1693,9 +2386,7 @@ description: Variables in memory after executing helium-tank.kcl
               29.26579798566743
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1717,9 +2408,7 @@ description: Variables in memory after executing helium-tank.kcl
               28.855373813676625
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1741,9 +2430,7 @@ description: Variables in memory after executing helium-tank.kcl
               28.721171799344056
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1765,9 +2452,7 @@ description: Variables in memory after executing helium-tank.kcl
               28.521171799344053
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1784,10 +2469,10 @@ description: Variables in memory after executing helium-tank.kcl
               28.521171799344053
             ],
             "tag": {
-              "commentStart": 843,
-              "end": 849,
+              "commentStart": 858,
+              "end": 864,
               "moduleId": 0,
-              "start": 843,
+              "start": 858,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1796,9 +2481,7 @@ description: Variables in memory after executing helium-tank.kcl
               24.746171799344033
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1810,10 +2493,10 @@ description: Variables in memory after executing helium-tank.kcl
               24.746171799344033
             ],
             "tag": {
-              "commentStart": 922,
-              "end": 928,
+              "commentStart": 937,
+              "end": 943,
               "moduleId": 0,
-              "start": 922,
+              "start": 937,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -1822,9 +2505,7 @@ description: Variables in memory after executing helium-tank.kcl
               1.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1841,10 +2522,10 @@ description: Variables in memory after executing helium-tank.kcl
               1.5
             ],
             "tag": {
-              "commentStart": 980,
-              "end": 986,
+              "commentStart": 998,
+              "end": 1004,
               "moduleId": 0,
-              "start": 980,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1853,9 +2534,7 @@ description: Variables in memory after executing helium-tank.kcl
               -0.499999999999992
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1867,10 +2546,10 @@ description: Variables in memory after executing helium-tank.kcl
               -0.499999999999992
             ],
             "tag": {
-              "commentStart": 1061,
-              "end": 1067,
+              "commentStart": 1079,
+              "end": 1085,
               "moduleId": 0,
-              "start": 1061,
+              "start": 1079,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -1879,9 +2558,7 @@ description: Variables in memory after executing helium-tank.kcl
               -0.49999999999998285
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1898,9 +2575,7 @@ description: Variables in memory after executing helium-tank.kcl
               -0.37499999999998285
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1917,9 +2592,7 @@ description: Variables in memory after executing helium-tank.kcl
               -0.37499999999998285
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1941,9 +2614,7 @@ description: Variables in memory after executing helium-tank.kcl
               1.500000000000017
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1960,9 +2631,7 @@ description: Variables in memory after executing helium-tank.kcl
               24.74617179934405
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1984,9 +2653,7 @@ description: Variables in memory after executing helium-tank.kcl
               27.82117179934405
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2003,9 +2670,7 @@ description: Variables in memory after executing helium-tank.kcl
               27.82117179934405
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2022,9 +2687,7 @@ description: Variables in memory after executing helium-tank.kcl
               30.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2041,9 +2704,7 @@ description: Variables in memory after executing helium-tank.kcl
               30.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2060,9 +2721,7 @@ description: Variables in memory after executing helium-tank.kcl
               30.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -2072,9 +2731,7 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -2082,25 +2739,19 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2112,9 +2763,7 @@ description: Variables in memory after executing helium-tank.kcl
             0.625,
             30.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2141,16 +2790,11 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -2175,9 +2819,7 @@ description: Variables in memory after executing helium-tank.kcl
             29.4
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2194,9 +2836,7 @@ description: Variables in memory after executing helium-tank.kcl
             29.4
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2218,9 +2858,7 @@ description: Variables in memory after executing helium-tank.kcl
             29.26579798566743
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2242,9 +2880,7 @@ description: Variables in memory after executing helium-tank.kcl
             28.855373813676625
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2266,9 +2902,7 @@ description: Variables in memory after executing helium-tank.kcl
             28.721171799344056
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2290,9 +2924,7 @@ description: Variables in memory after executing helium-tank.kcl
             28.521171799344053
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2309,10 +2941,10 @@ description: Variables in memory after executing helium-tank.kcl
             28.521171799344053
           ],
           "tag": {
-            "commentStart": 843,
-            "end": 849,
+            "commentStart": 858,
+            "end": 864,
             "moduleId": 0,
-            "start": 843,
+            "start": 858,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -2321,9 +2953,7 @@ description: Variables in memory after executing helium-tank.kcl
             24.746171799344033
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2335,10 +2965,10 @@ description: Variables in memory after executing helium-tank.kcl
             24.746171799344033
           ],
           "tag": {
-            "commentStart": 922,
-            "end": 928,
+            "commentStart": 937,
+            "end": 943,
             "moduleId": 0,
-            "start": 922,
+            "start": 937,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -2347,9 +2977,7 @@ description: Variables in memory after executing helium-tank.kcl
             1.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2366,10 +2994,10 @@ description: Variables in memory after executing helium-tank.kcl
             1.5
           ],
           "tag": {
-            "commentStart": 980,
-            "end": 986,
+            "commentStart": 998,
+            "end": 1004,
             "moduleId": 0,
-            "start": 980,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2378,9 +3006,7 @@ description: Variables in memory after executing helium-tank.kcl
             -0.499999999999992
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2392,10 +3018,10 @@ description: Variables in memory after executing helium-tank.kcl
             -0.499999999999992
           ],
           "tag": {
-            "commentStart": 1061,
-            "end": 1067,
+            "commentStart": 1079,
+            "end": 1085,
             "moduleId": 0,
-            "start": 1061,
+            "start": 1079,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -2404,9 +3030,7 @@ description: Variables in memory after executing helium-tank.kcl
             -0.49999999999998285
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2423,9 +3047,7 @@ description: Variables in memory after executing helium-tank.kcl
             -0.37499999999998285
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2442,9 +3064,7 @@ description: Variables in memory after executing helium-tank.kcl
             -0.37499999999998285
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2466,9 +3086,7 @@ description: Variables in memory after executing helium-tank.kcl
             1.500000000000017
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2485,9 +3103,7 @@ description: Variables in memory after executing helium-tank.kcl
             24.74617179934405
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2509,9 +3125,7 @@ description: Variables in memory after executing helium-tank.kcl
             27.82117179934405
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2528,9 +3142,7 @@ description: Variables in memory after executing helium-tank.kcl
             27.82117179934405
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2547,9 +3159,7 @@ description: Variables in memory after executing helium-tank.kcl
             30.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2566,9 +3176,7 @@ description: Variables in memory after executing helium-tank.kcl
             30.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -2585,9 +3193,7 @@ description: Variables in memory after executing helium-tank.kcl
             30.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -2597,9 +3203,7 @@ description: Variables in memory after executing helium-tank.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -2607,25 +3211,19 @@ description: Variables in memory after executing helium-tank.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2637,9 +3235,7 @@ description: Variables in memory after executing helium-tank.kcl
           0.625,
           30.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2666,9 +3262,7 @@ description: Variables in memory after executing helium-tank.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "valve": {
@@ -2683,10 +3277,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1835,
-            "end": 1841,
+            "commentStart": 1862,
+            "end": 1868,
             "moduleId": 0,
-            "start": 1835,
+            "start": 1862,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2697,10 +3291,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1879,
-            "end": 1889,
+            "commentStart": 1906,
+            "end": 1916,
             "moduleId": 0,
-            "start": 1879,
+            "start": 1906,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -2727,10 +3321,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.6578947368421053,
             "tag": {
-              "commentStart": 1835,
-              "end": 1841,
+              "commentStart": 1862,
+              "end": 1868,
               "moduleId": 0,
-              "start": 1835,
+              "start": 1862,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2739,9 +3333,7 @@ description: Variables in memory after executing helium-tank.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -2751,9 +3343,7 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 749.3,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2761,25 +3351,19 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2791,9 +3375,7 @@ description: Variables in memory after executing helium-tank.kcl
             0.6578947368421053,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2812,11 +3394,8 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 1.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -2827,21 +3406,15 @@ description: Variables in memory after executing helium-tank.kcl
             "n": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -2857,10 +3430,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1835,
-            "end": 1841,
+            "commentStart": 1862,
+            "end": 1868,
             "moduleId": 0,
-            "start": 1835,
+            "start": 1862,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2871,10 +3444,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1879,
-            "end": 1889,
+            "commentStart": 1906,
+            "end": 1916,
             "moduleId": 0,
-            "start": 1879,
+            "start": 1906,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -2901,10 +3474,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.6578947368421053,
             "tag": {
-              "commentStart": 1835,
-              "end": 1841,
+              "commentStart": 1862,
+              "end": 1868,
               "moduleId": 0,
-              "start": 1835,
+              "start": 1862,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2913,9 +3486,7 @@ description: Variables in memory after executing helium-tank.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -2925,9 +3496,7 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 749.3,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2935,25 +3504,19 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2965,9 +3528,7 @@ description: Variables in memory after executing helium-tank.kcl
             0.6578947368421053,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2986,11 +3547,8 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 1.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -3001,21 +3559,15 @@ description: Variables in memory after executing helium-tank.kcl
             "n": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -3026,6 +3578,13 @@ description: Variables in memory after executing helium-tank.kcl
       "id": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
@@ -3059,9 +3618,32 @@ description: Variables in memory after executing helium-tank.kcl
               2.525
             ],
             "type": "Circle",
-            "units": {
-              "type": "Feet"
-            }
+            "units": "ft"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              2.525
+            ],
+            "from": [
+              0.032051282051282055,
+              2.525
+            ],
+            "radius": 0.032051282051282055,
+            "tag": null,
+            "to": [
+              0.032051282051282055,
+              2.525
+            ],
+            "type": "Circle",
+            "units": "ft"
           }
         ],
         "on": {
@@ -3071,9 +3653,7 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -3081,25 +3661,19 @@ description: Variables in memory after executing helium-tank.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3111,9 +3685,7 @@ description: Variables in memory after executing helium-tank.kcl
             0.4166666666666667,
             30.299999999999997
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3122,16 +3694,11 @@ description: Variables in memory after executing helium-tank.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 1.3,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -3140,12 +3707,8 @@ description: Variables in memory after executing helium-tank.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

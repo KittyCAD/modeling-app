@@ -71,10 +71,6 @@ async fn unparse_test(test: &Test) {
 
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
-    if DISABLED_SAMPLES.contains(&dir_name) {
-        eprintln!("Skipping disabled sample: {}", dir_name);
-        return;
-    }
     let t = test(dir_name, dir_path.join("main.kcl"));
     super::execute_test(&t, true, true).await;
 }
@@ -292,9 +288,6 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
     })
 }
 
-// Some samples may be temporarily disabled for various reasons
-const DISABLED_SAMPLES: [&str; 1] = ["ball-joint-rod-end"];
-
 // Function to scan the directory and generate the manifest.json
 fn generate_kcl_manifest(dir: &Path) -> Result<()> {
     let mut manifest = Vec::new();
@@ -304,7 +297,6 @@ fn generate_kcl_manifest(dir: &Path) -> Result<()> {
         .follow_links(true)
         .into_iter()
         .filter_map(|e| e.ok())
-        .filter(|e| !DISABLED_SAMPLES.contains(&e.file_name().to_string_lossy().as_ref()))
         .collect();
 
     // Sort directories by name for consistent ordering

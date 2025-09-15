@@ -1,0 +1,56 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing complex_expr_as_array_index.kcl
+---
+{
+  "arr": {
+    "type": "HomArray",
+    "value": [
+      {
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 3.0,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      }
+    ]
+  },
+  "two": {
+    "type": "Number",
+    "value": 2.0,
+    "ty": {
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
+    }
+  }
+}

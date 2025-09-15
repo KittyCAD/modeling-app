@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
-import { defaultSourceRange } from '@src/lang/sourceRange'
 import { codeToIdSelections } from '@src/lib/selections'
 import { editorManager, kclManager } from '@src/lib/singletons'
 import { trap } from '@src/lib/trap'
@@ -113,6 +113,7 @@ function DisplayObj({
     } else {
       setHasCursor(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [node.start, node.end, node.type])
 
   return (

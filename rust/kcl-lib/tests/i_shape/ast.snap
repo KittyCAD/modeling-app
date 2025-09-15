@@ -115,7 +115,7 @@ description: Result of parsing i_shape.kcl
                 "end": 0,
                 "left": {
                   "commentStart": 0,
-                  "computed": false,
+                  "computed": true,
                   "end": 0,
                   "moduleId": 0,
                   "object": {
@@ -157,7 +157,7 @@ description: Result of parsing i_shape.kcl
                 "operator": "+",
                 "right": {
                   "commentStart": 0,
-                  "computed": false,
+                  "computed": true,
                   "end": 0,
                   "moduleId": 0,
                   "object": {
@@ -203,7 +203,7 @@ description: Result of parsing i_shape.kcl
               "operator": "+",
               "right": {
                 "commentStart": 0,
-                "computed": false,
+                "computed": true,
                 "end": 0,
                 "moduleId": 0,
                 "object": {
@@ -249,7 +249,7 @@ description: Result of parsing i_shape.kcl
             "operator": "+",
             "right": {
               "commentStart": 0,
-              "computed": false,
+              "computed": true,
               "end": 0,
               "moduleId": 0,
               "object": {
@@ -935,7 +935,7 @@ description: Result of parsing i_shape.kcl
                         "end": 0,
                         "left": {
                           "commentStart": 0,
-                          "computed": false,
+                          "computed": true,
                           "end": 0,
                           "moduleId": 0,
                           "object": {
@@ -2670,7 +2670,7 @@ description: Result of parsing i_shape.kcl
                               "end": 0,
                               "left": {
                                 "commentStart": 0,
-                                "computed": false,
+                                "computed": true,
                                 "end": 0,
                                 "moduleId": 0,
                                 "object": {
@@ -2712,7 +2712,7 @@ description: Result of parsing i_shape.kcl
                               "operator": "+",
                               "right": {
                                 "commentStart": 0,
-                                "computed": false,
+                                "computed": true,
                                 "end": 0,
                                 "moduleId": 0,
                                 "object": {
@@ -2758,7 +2758,7 @@ description: Result of parsing i_shape.kcl
                             "operator": "+",
                             "right": {
                               "commentStart": 0,
-                              "computed": false,
+                              "computed": true,
                               "end": 0,
                               "moduleId": 0,
                               "object": {

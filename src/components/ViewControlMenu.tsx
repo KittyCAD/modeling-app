@@ -5,24 +5,25 @@ import {
   ContextMenu,
   ContextMenuDivider,
   ContextMenuItem,
-  ContextMenuItemRefresh,
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { getSelectedPlaneId } from '@src/lang/queryAst'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
-import { kclManager, sceneInfra } from '@src/lib/singletons'
-import { err, reportRejection } from '@src/lib/trap'
-import { useSettings } from '@src/lib/singletons'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import type { Selections } from '@src/lib/selections'
 import {
   selectDefaultSketchPlane,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
+import { kclManager, sceneInfra, settingsActor } from '@src/lib/singletons'
+import { useSettings } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  const selectedPlaneId = getCurrentPlaneId(
+  const selectedPlaneId = getSelectedPlaneId(
     modelingState.context.selectionRanges
   )
 
@@ -30,6 +31,23 @@ export function useViewControlMenuItems() {
   const shouldLockView =
     modelingState.matches('Sketch') &&
     !settings.app.allowOrbitInSketchMode.current
+
+  const sketching = modelingState.matches('Sketch')
+  const snapToGrid = settings.modeling.snapToGrid.current
+
+  // Check if there's a valid selection with source range for "View KCL source code"
+  const firstValidSelection = useMemo(() => {
+    return modelingState.context.selectionRanges.graphSelections.find(
+      (selection) => {
+        return (
+          selection.codeRef?.range &&
+          selection.codeRef.range[0] !== undefined &&
+          selection.codeRef.range[1] !== undefined
+        )
+      }
+    )
+  }, [modelingState.context.selectionRanges.graphSelections])
+
   const menuItems = useMemo(
     () => [
       ...Object.entries(VIEW_NAMES_SEMANTIC).map(([axisName, axisSemantic]) => (
@@ -64,6 +82,41 @@ export function useViewControlMenuItems() {
       >
         Center view on selection
       </ContextMenuItem>,
+      <ContextMenuItem
+        onClick={() => {
+          if (firstValidSelection?.codeRef?.range) {
+            // First, open the code pane if it's not already open
+            if (!modelingState.context.store.openPanes.includes('code')) {
+              modelingSend({
+                type: 'Set context',
+                data: {
+                  openPanes: [...modelingState.context.store.openPanes, 'code'],
+                },
+              })
+            }
+
+            // Navigate to the source code location
+            modelingSend({
+              type: 'Set selection',
+              data: {
+                selectionType: 'singleCodeCursor',
+                selection: {
+                  artifact: firstValidSelection.artifact,
+                  codeRef: firstValidSelection.codeRef,
+                },
+                scrollIntoView: true,
+              },
+            })
+          } else {
+            toast.error(
+              'No valid selection with source range found. Please select a valid element.'
+            )
+          }
+        }}
+        disabled={!firstValidSelection}
+      >
+        View KCL source code
+      </ContextMenuItem>,
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
@@ -90,10 +143,36 @@ export function useViewControlMenuItems() {
       >
         Start sketch on selection
       </ContextMenuItem>,
-      <ContextMenuDivider />,
-      <ContextMenuItemRefresh />,
+      ...(sketching
+        ? [
+            <ContextMenuDivider />,
+            <ContextMenuItem
+              icon={snapToGrid ? 'checkmark' : undefined}
+              hotkey={SNAP_TO_GRID_HOTKEY}
+              onClick={() => {
+                settingsActor.send({
+                  type: 'set.modeling.snapToGrid',
+                  data: {
+                    level: 'project',
+                    value: !snapToGrid,
+                  },
+                })
+              }}
+            >
+              Snap to Grid
+            </ContextMenuItem>,
+          ]
+        : []),
     ],
-    [VIEW_NAMES_SEMANTIC, shouldLockView, selectedPlaneId]
+    [
+      shouldLockView,
+      selectedPlaneId,
+      firstValidSelection,
+      modelingSend,
+      modelingState.context.store.openPanes,
+      sketching,
+      snapToGrid,
+    ]
   )
   return menuItems
 }
@@ -111,22 +190,4 @@ export function ViewControlContextMenu({
       {...props}
     />
   )
-}
-
-function getCurrentPlaneId(selectionRanges: Selections): string | null {
-  const defaultPlane = selectionRanges.otherSelections.find(
-    (selection) => typeof selection === 'object' && 'name' in selection
-  )
-  if (defaultPlane) {
-    return defaultPlane.id
-  }
-
-  const planeSelection = selectionRanges.graphSelections.find(
-    (selection) => selection.artifact?.type === 'plane'
-  )
-  if (planeSelection) {
-    return planeSelection.artifact?.id || null
-  }
-
-  return null
 }

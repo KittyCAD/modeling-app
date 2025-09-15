@@ -1,5 +1,5 @@
 import type { KCLError } from '@src/lang/errors'
-import { kclErrorsToDiagnostics, toUtf16, toUtf8 } from '@src/lang/errors'
+import { kclErrorsToDiagnostics, toUtf8, toUtf16 } from '@src/lang/errors'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 
@@ -41,6 +41,7 @@ describe('test kclErrToDiagnostic', () => {
         sourceRange: topLevelRange(0, 1),
         kclBacktrace: [],
         nonFatal: [],
+        variables: {},
         operations: [],
         artifactGraph: defaultArtifactGraph(),
         filenames: {},
@@ -54,6 +55,7 @@ describe('test kclErrToDiagnostic', () => {
         sourceRange: topLevelRange(4, 5),
         kclBacktrace: [],
         nonFatal: [],
+        variables: {},
         operations: [],
         artifactGraph: defaultArtifactGraph(),
         filenames: {},

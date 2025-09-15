@@ -114,9 +114,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               317.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -140,9 +138,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               99.94
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -159,9 +155,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               99.94
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -185,9 +179,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               317.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -204,9 +196,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               317.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -216,9 +206,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -226,25 +214,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -256,9 +238,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             75.8,
             317.2
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -289,11 +269,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 100.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -304,12 +281,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             "n": 20.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -322,12 +295,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             "n": 50.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -347,12 +316,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             "n": 50.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -366,9 +331,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           }
         }
       ],
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -455,9 +418,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               278.35
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -481,9 +442,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               146.08
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -507,9 +466,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               146.08
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -526,9 +483,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               278.35
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -545,9 +500,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               278.35
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -559,17 +512,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -680,9 +629,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                     317.2
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -706,9 +653,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                     99.94
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -725,9 +670,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                     99.94
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -751,9 +694,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                     317.2
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -770,9 +711,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                     317.2
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -782,9 +721,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -792,25 +729,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -822,9 +753,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   75.8,
                   317.2
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -855,11 +784,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 100.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -870,12 +796,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   "n": 20.0,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "mm",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -888,12 +810,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   "n": 50.0,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "mm",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -913,12 +831,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   "n": 50.0,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "mm",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -932,14 +846,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 }
               }
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -950,9 +860,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             159.25,
             278.35
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -975,16 +883,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 50.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1071,9 +974,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             317.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1097,9 +998,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             99.94
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1116,9 +1015,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             99.94
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1142,9 +1039,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             317.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1161,9 +1056,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             317.2
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1173,9 +1066,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -1183,25 +1074,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1213,9 +1098,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           75.8,
           317.2
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1246,9 +1129,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch002": {
@@ -1279,9 +1160,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             278.35
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1305,9 +1184,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             146.08
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1331,9 +1208,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             146.08
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1350,9 +1225,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             278.35
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1369,9 +1242,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             278.35
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1383,17 +1254,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -1504,9 +1371,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   317.2
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1530,9 +1395,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   99.94
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1549,9 +1412,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   99.94
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1575,9 +1436,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   317.2
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1594,9 +1453,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   317.2
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1606,9 +1463,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -1616,25 +1471,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1646,9 +1495,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 75.8,
                 317.2
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1679,11 +1526,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 100.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1694,12 +1538,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "n": 20.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -1712,12 +1552,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "n": 50.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -1737,12 +1573,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "n": 50.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -1756,14 +1588,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               }
             }
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -1774,9 +1602,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           159.25,
           278.35
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1799,9 +1625,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch003": {
@@ -1832,9 +1656,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             277.34
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1858,9 +1680,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             172.53999999999996
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1884,9 +1704,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             172.53999999999996
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1903,9 +1721,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             277.34
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1922,9 +1738,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             277.34
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1936,17 +1750,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -2057,9 +1867,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   317.2
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2083,9 +1891,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   99.94
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2102,9 +1908,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   99.94
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2128,9 +1932,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   317.2
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2147,9 +1949,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   317.2
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2159,9 +1959,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -2169,25 +1967,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2199,9 +1991,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 75.8,
                 317.2
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2232,11 +2022,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 100.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2247,12 +2034,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "n": 20.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -2265,12 +2048,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "n": 50.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -2290,12 +2069,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "n": 50.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -2309,14 +2084,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               }
             }
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -2327,9 +2098,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           -69.1,
           277.34
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2352,9 +2121,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   }
 }

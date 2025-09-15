@@ -5,8 +5,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { Command } from '@src/lib/commandTypes'
 import { sortCommands } from '@src/lib/commandUtils'
-import { getActorNextEvents } from '@src/lib/utils'
 import { commandBarActor } from '@src/lib/singletons'
+import { getActorNextEvents } from '@src/lib/utils'
 
 function CommandComboBox({
   options,
@@ -42,6 +42,7 @@ function CommandComboBox({
   useEffect(() => {
     const results = fuse.search(query).map((result) => result.item)
     setFilteredOptions(query.length > 0 ? results : sortedOptions)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [query, sortedOptions])
 
   function handleSelection(command: Command) {

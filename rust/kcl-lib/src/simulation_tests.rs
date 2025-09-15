@@ -8,6 +8,7 @@ use indexmap::IndexMap;
 use crate::{
     ExecOutcome, ExecState, ExecutorContext, ModuleId,
     errors::KclError,
+    exec::KclValue,
     execution::{EnvironmentRef, ModuleArtifactState},
 };
 #[cfg(feature = "artifact-graph")]
@@ -158,10 +159,7 @@ fn parse(test_name: &str) {
 
 fn parse_test(test: &Test) {
     let input = test.read();
-    let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
-
-    // Parse the tokens into an AST.
-    let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_tokens(tokens).unwrap());
+    let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_str(&input, ModuleId::default()).unwrap());
     assert_snapshot(test, "Result of parsing", || {
         insta::assert_json_snapshot!("ast", parse_res, {
             ".**.start" => 0,
@@ -178,11 +176,10 @@ async fn unparse(test_name: &str) {
 async fn unparse_test(test: &Test) {
     // Parse into an AST
     let input = test.read();
-    let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
-    let ast = crate::parsing::parse_tokens(tokens).unwrap();
+    let ast = crate::parsing::parse_str(&input, ModuleId::default()).unwrap();
 
     // Check recasting.
-    let actual = ast.recast(&Default::default(), 0);
+    let actual = ast.recast_top(&Default::default(), 0);
     let input_result = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Result of unparsing", || {
             insta::assert_snapshot!("unparsed", actual);
@@ -259,24 +256,25 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     panic!("Step data was empty");
                 }
             }
-            let (outcome, module_state) = exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
-
-            let mem_result = catch_unwind(AssertUnwindSafe(|| {
-                assert_snapshot(test, "Variables in memory after executing", || {
-                    insta::assert_json_snapshot!("program_memory", outcome.variables, {
-                         ".**.sourceRange" => Vec::new(),
-                    })
+            let ok_snap = catch_unwind(AssertUnwindSafe(|| {
+                assert_snapshot(test, "Execution success", || {
+                    insta::assert_json_snapshot!("execution_success", ())
                 })
             }));
+
+            let (outcome, module_state) = exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
+
+            assert_common_snapshots(test, outcome.variables);
 
             #[cfg(not(feature = "artifact-graph"))]
             drop(module_state);
             #[cfg(feature = "artifact-graph")]
             assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
-            mem_result.unwrap();
+
+            ok_snap.unwrap();
         }
         Err(e) => {
-            let ok_path = test.output_dir.join("program_memory.snap");
+            let ok_path = test.output_dir.join("execution_success.snap");
             let previously_passed = std::fs::exists(&ok_path).unwrap();
             match e.error {
                 crate::errors::ExecError::Kcl(error) => {
@@ -304,6 +302,8 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         })
                     }));
 
+                    assert_common_snapshots(test, error.variables);
+
                     #[cfg(feature = "artifact-graph")]
                     {
                         let module_state = e
@@ -323,6 +323,19 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             };
         }
     }
+}
+
+/// Assert snapshots that should happen both when KCL execution succeeds and
+/// when it results in an error.
+fn assert_common_snapshots(test: &Test, variables: IndexMap<String, KclValue>) {
+    let mem_result = catch_unwind(AssertUnwindSafe(|| {
+        assert_snapshot(test, "Variables in memory after executing", || {
+            insta::assert_json_snapshot!("program_memory", variables, {
+                 ".**.sourceRange" => Vec::new(),
+            })
+        })
+    }));
+    mem_result.unwrap();
 }
 
 /// Assert snapshots for artifacts that should happen both when KCL execution
@@ -3739,6 +3752,176 @@ mod rect_helper {
 }
 mod plane_of {
     const TEST_NAME: &str = "plane_of";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod complex_expr_as_array_index {
+    const TEST_NAME: &str = "complex_expr_as_array_index";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod elliptic_curve_inches_regression {
+    const TEST_NAME: &str = "elliptic_curve_inches_regression";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod tag_inner_face {
+    const TEST_NAME: &str = "tag_inner_face";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod double_close {
+    const TEST_NAME: &str = "double_close";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod revolve_on_face {
+    const TEST_NAME: &str = "revolve_on_face";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod subtract_self {
+    const TEST_NAME: &str = "subtract_self";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod subtract_self_multiple_tools {
+    const TEST_NAME: &str = "subtract_self_multiple_tools";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod union_self {
+    const TEST_NAME: &str = "union_self";
 
     /// Test parsing KCL.
     #[test]

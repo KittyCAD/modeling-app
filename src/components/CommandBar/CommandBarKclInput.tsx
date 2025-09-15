@@ -24,16 +24,16 @@ import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { kclManager } from '@src/lib/singletons'
+import { useSettings } from '@src/lib/singletons'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { getSystemTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
-import { useSettings } from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
-import styles from './CommandBarKclInput.module.css'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import styles from './CommandBarKclInput.module.css'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -72,6 +72,7 @@ function CommandBarKclInput({
     return !err(node) && node && node.node.type === 'VariableDeclarator'
       ? [node.node.start, node.node.end, node.node.moduleId]
       : undefined
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.ast, commandBarState.context.argumentsToSubmit.nodeToEdit])
   const defaultValue = useMemo(
     () =>
@@ -80,6 +81,7 @@ function CommandBarKclInput({
           ? arg.defaultValue(commandBarState.context, argMachineContext)
           : arg.defaultValue
         : '',
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [arg.defaultValue, commandBarState.context, argMachineContext]
   )
   const initialVariableName = useMemo(() => {
@@ -94,6 +96,7 @@ function CommandBarKclInput({
       'variableName' in previouslySetValue
       ? previouslySetValue.variableName
       : arg.name
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [
     arg.variableName,
     commandBarState.context,
@@ -117,6 +120,8 @@ function CommandBarKclInput({
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const editorRef = useRef<HTMLDivElement>(null)
 
+  const allowArrays = arg.allowArrays ?? false
+
   const {
     calcResult,
     newVariableInsertIndex,
@@ -131,6 +136,7 @@ function CommandBarKclInput({
     initialVariableName,
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
+    allowArrays,
   })
 
   const varMentionData: Completion[] = prevVariables.map((v) => {
@@ -191,7 +197,7 @@ function CommandBarKclInput({
           },
         },
         {
-          key: 'Shift-Backspace',
+          key: 'Meta-Backspace',
           run: () => {
             stepBack()
             return true
@@ -220,6 +226,7 @@ function CommandBarKclInput({
         },
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg, editorRef])
 
   useEffect(() => {
