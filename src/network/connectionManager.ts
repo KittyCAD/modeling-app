@@ -574,7 +574,7 @@ export class ConnectionManager extends EventTarget {
   // this.connection.websocket.addEventListener('message') handler
   handleMessage(event: MessageEvent) {
     if (!this.rustContext) {
-      console.error('rustContext is undefined not processing event:', event)
+      console.warn('rustContext is undefined not processing event:', event)
       return
     }
 
@@ -601,7 +601,7 @@ export class ConnectionManager extends EventTarget {
         message: 'received a null message from the engine',
       })
       // We should never get here.
-      console.error('Received a null message from the engine', event)
+      console.warn('Received a null message from the engine', event)
       return
     }
 
@@ -614,7 +614,7 @@ export class ConnectionManager extends EventTarget {
     }
 
     this.rustContext.sendResponse(message).catch((error) => {
-      console.error('Error sending response to rust', error)
+      console.warn('Error sending response to rust', error)
       EngineDebugger.addLog({
         label: 'rustContext.sendResponse',
         message: 'error sending response to rust',
@@ -759,7 +759,7 @@ export class ConnectionManager extends EventTarget {
       width: 256,
       height: 256,
       setStreamIsReady: () => {
-        console.error('This is a NO OP. Should not be called in web.')
+        console.warn('This is a NO OP. Should not be called in web.')
       },
       callbackOnUnitTestingConnection: () => {
         console.log('what is happening, why is rust doing this!')
@@ -952,7 +952,7 @@ export class ConnectionManager extends EventTarget {
   // removal during cleanUp. It can help prevent multiple runtime initializations of events.
   trackListener(name: string, eventListenerTracked: IEventListenerTracked) {
     if (this.allEventListeners.has(name)) {
-      console.error(
+      console.warn(
         `You are trying to track something twice, good luck! you're crashing. ${name}`
       )
       return
@@ -1018,7 +1018,7 @@ export class ConnectionManager extends EventTarget {
             eventListenerTracked.callback
           )
         } else {
-          console.error(`untracked listener type ${type}`)
+          console.warn(`untracked listener type ${type}`)
         }
       }
     )
@@ -1122,7 +1122,7 @@ export class ConnectionManager extends EventTarget {
       })
       return BSON.serialize(resp[0])
     } catch (e) {
-      console.error(e)
+      console.warn(e)
       if (isArray(e) && e.length > 0) {
         EngineDebugger.addLog({
           label: 'sendCommand',
@@ -1172,7 +1172,7 @@ export class ConnectionManager extends EventTarget {
 
   async setPlaneHidden(id: string, hidden: boolean) {
     if (this.connection === undefined) {
-      console.error('setPlaneHidden - this.connection is undefined')
+      console.warn('setPlaneHidden - this.connection is undefined')
       EngineDebugger.addLog({
         label: 'setPlaneHidden',
         message:

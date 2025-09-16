@@ -188,7 +188,7 @@ export class Connection extends EventTarget {
           return
       }
       if (!this.handleMessage) {
-        console.error('unable to process message, handleMessage is missing')
+        console.warn('unable to process message, handleMessage is missing')
         return
       }
       this.handleMessage(event)
@@ -288,7 +288,7 @@ export class Connection extends EventTarget {
    */
   trackListener(name: string, eventListenerTracked: IEventListenerTracked) {
     if (this.allEventListeners.has(name)) {
-      console.error(
+      console.warn(
         `You are trying to track something twice, good luck! you're crashing: ${name}. This is actually bad.`
       )
       return
@@ -363,24 +363,24 @@ export class Connection extends EventTarget {
       )
       this.cleanUpTimeouts()
     } catch (error) {
-      console.error('Failed to set remote description:', error)
+      console.warn('Failed to set remote description:', error)
       this.disconnectAll()
     }
   }
 
   createPeerConnection() {
     if (!this.deferredPeerConnection?.resolve) {
-      console.error('deferredPeerConnection resolve is undefined')
+      console.warn('deferredPeerConnection resolve is undefined')
       return
     }
 
     if (!this.deferredConnection?.resolve) {
-      console.error('deferredConnection resolve is undefined')
+      console.warn('deferredConnection resolve is undefined')
       return
     }
 
     if (!this.deferredMediaStreamAndWebrtcStatsCollector?.resolve) {
-      console.error(
+      console.warn(
         'deferredMediaStreamAndWebrtcStatsCollector resolve is undefined'
       )
       return
@@ -553,7 +553,7 @@ export class Connection extends EventTarget {
 
   createWebSocketConnection() {
     if (!this.deferredSdpAnswer?.resolve) {
-      console.error('deferredSdpAnswer resolve is undefined')
+      console.warn('deferredSdpAnswer resolve is undefined')
       return
     }
 
@@ -723,7 +723,7 @@ export class Connection extends EventTarget {
 
   disconnectWebsocket() {
     if (!this.websocket) {
-      console.error('websocket is undefined unable to disconnect')
+      console.warn('websocket is undefined unable to disconnect')
       return
     }
 
@@ -742,7 +742,7 @@ export class Connection extends EventTarget {
         metadata: { id: this.id },
       })
     } else {
-      console.error(
+      console.warn(
         `websocket is defined but readyState is wrong ${this.websocket.readyState}`
       )
     }
@@ -780,7 +780,7 @@ export class Connection extends EventTarget {
 
   disconnectPeerConnection() {
     if (!this.peerConnection) {
-      console.error('peerConnection is undefined')
+      console.warn('peerConnection is undefined')
       return
     }
 
@@ -832,7 +832,7 @@ export class Connection extends EventTarget {
             eventListenerTracked.callback
           )
         } else {
-          console.error(`untracked listener type ${type}`)
+          console.warn(`untracked listener type ${type}`)
         }
       }
     )
@@ -853,7 +853,7 @@ export class Connection extends EventTarget {
 
   addIceCandidate(candidate: RTCIceCandidateInit) {
     if (!this.peerConnection) {
-      console.error('do not do this, crashing!')
+      console.warn('do not do this, crashing!')
       return
     }
 
@@ -879,17 +879,17 @@ export class Connection extends EventTarget {
   // WebSocketRequest type!
   unreliableSend(message: WebSocketRequest) {
     if (!this.unreliableDataChannel) {
-      console.error('race condition my guy, unreliableSend')
+      console.warn('race condition my guy, unreliableSend')
       return
     }
 
     if (this.unreliableDataChannel.readyState === 'connecting') {
-      console.error('sending message while unreliableDataChannel is connecting')
+      console.warn('sending message while unreliableDataChannel is connecting')
       return
     }
 
     if (this.unreliableDataChannel.readyState === 'closing') {
-      console.error('sending message while unreliableDataChannel is closing')
+      console.warn('sending message while unreliableDataChannel is closing')
       return
     }
 
@@ -907,7 +907,7 @@ export class Connection extends EventTarget {
 
   send(message: WebSocketRequest) {
     if (!this.websocket) {
-      console.error('send, websocket is undefined')
+      console.warn('send, websocket is undefined')
       return
     }
 
