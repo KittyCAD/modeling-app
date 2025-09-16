@@ -26,6 +26,7 @@ import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { ManualReconnection } from '@src/components/ManualReconnection'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
+import { useOnFileRoute } from '@src/hooks/network/useOnFileRoute'
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -226,6 +227,9 @@ export const ConnectionStream = (props: {
         setShowManualConnect(true)
       })
     },
+  })
+  useOnFileRoute({
+    successfullyConnected,
   })
 
   return (
