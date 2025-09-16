@@ -101,7 +101,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
 
           // Don't fire a re-execution if the codeManager already knows about this change,
           // which would be evident if we already have matching code there.
-          if (isCodeTheSame(code, codeManager.code)) {
+          if (!isCodeTheSame(code, codeManager.code)) {
             codeManager.updateCodeStateEditor(code)
             await kclManager.executeCode()
           }
