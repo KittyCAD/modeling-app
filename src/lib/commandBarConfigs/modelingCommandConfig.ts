@@ -230,7 +230,7 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     solids: Selections
     instances: KclCommandValue
-    axis: KclCommandValue | string
+    axis: string
     center: KclCommandValue
     arcDegrees?: KclCommandValue
     rotateDuplicates?: boolean
@@ -1225,11 +1225,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       axis: {
         inputType: 'options',
         required: true,
-        defaultValue: '[0, 0, 1]',
+        defaultValue: 'Z',
         options: [
-          { name: 'X-axis', value: '[1, 0, 0]' },
-          { name: 'Y-axis', value: '[0, 1, 0]' },
-          { name: 'Z-axis', value: '[0, 0, 1]' },
+          { name: 'X-axis', value: 'X' },
+          { name: 'Y-axis', value: 'Y' },
+          { name: 'Z-axis', value: 'Z' },
         ],
       },
       center: {
