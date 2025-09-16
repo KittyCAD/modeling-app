@@ -97,8 +97,12 @@ export function RouteProvider({ children }: { children: ReactNode }) {
           // Your current file is changed, read it from disk and write it into the code manager and execute the AST
           let code = await window.electron.readFile(path, { encoding: 'utf-8' })
           code = normalizeLineEndings(code)
-          codeManager.updateCodeStateEditor(code)
-          await kclManager.executeCode()
+
+          // Don't fire a re-execution if the codeManager already knows about this change
+          if (code !== normalizeLineEndings(codeManager.code)) {
+            codeManager.updateCodeStateEditor(code)
+            await kclManager.executeCode()
+          }
         }
       } else if (
         (isImportedInCurrentFile || isInExecStateFilenames) &&
