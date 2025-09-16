@@ -22,7 +22,8 @@ use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
+        ArtifactId, EngineIdGenerator, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch,
+        SketchSurface, Solid,
         types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -349,13 +350,15 @@ pub(crate) async fn do_post_extrude<'a>(
     } else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.
-        let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
-            return Err(KclError::new_type(KclErrorDetails::new(
-                "Expected a non-empty sketch".to_owned(),
-                vec![args.source_range],
-            )));
-        };
-        any_edge_id
+
+        EngineIdGenerator::new(sketch.id).get_curve_id().into()
+        // let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
+        //     return Err(KclError::new_type(KclErrorDetails::new(
+        //         "Expected a non-empty sketch".to_owned(),
+        //         vec![args.source_range],
+        //     )));
+        // };
+        // any_edge_id
     };
 
     let mut sketch = sketch.clone();
