@@ -11,14 +11,14 @@ import { useEffect } from 'react'
 export function useOnWebsocketClose({ callback }: { callback: () => void }) {
   useEffect(() => {
     const onWebsocketClose = (event: CustomEvent) => {
-      if (event?.detail?.websocketCloseEventCode === '1006') {
+      if (event?.detail?.code === '1006') {
         // Most likely your internet is out. Do not try to auto reconnect
         // This will result in an infinite loop
         EngineDebugger.addLog({
           label: 'useOnWebsocketClose',
           message: 'detected infinite loop',
           metadata: {
-            webSocketCloseEventCode: event?.detail?.websocketCloseEventCode,
+            code: event?.detail?.code,
           },
         })
         return

@@ -830,7 +830,9 @@ export class ConnectionManager extends EventTarget {
     // It was torn down from a websocket close.
     if (options?.websocketClosed) {
       this.dispatchEvent(
-        new CustomEvent(EngineCommandManagerEvents.WebsocketClosed, {})
+        new CustomEvent(EngineCommandManagerEvents.WebsocketClosed, {
+          detail: { code: options.code },
+        })
       )
     } else if (options?.peerConnectionClosed) {
       this.dispatchEvent(

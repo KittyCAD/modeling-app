@@ -330,6 +330,7 @@ export interface ManagerTearDown {
   peerConnectionFailed?: boolean
   peerConnectionDisconnected?: boolean
   peerConnectionClosed?: boolean
+  code?: string
 }
 
 // 7.4.1 Defined Status Codes from RFC 6455 The WebSocket Protocol

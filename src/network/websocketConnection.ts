@@ -410,10 +410,10 @@ export const createOnWebSocketClose = ({
     websocket.removeEventListener('message', onWebSocketMessage)
     dispatchEvent(
       new CustomEvent(EngineConnectionEvents.Offline, {
-        detail: { websocketCloseEventCode: event.code },
+        detail: { name: event.code },
       })
     )
-    tearDownManager({ websocketClosed: true })
+    tearDownManager({ websocketClosed: true, code: event.code.toString() })
   }
   return onDataChannelClose
 }
