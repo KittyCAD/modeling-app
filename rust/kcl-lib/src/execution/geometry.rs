@@ -773,7 +773,7 @@ impl Sketch {
         tag: NodeRef<'_, TagDeclarator>,
         current_path: &Path,
         exec_state: &ExecState,
-        surface: &Option<ExtrudeSurface>,
+        surface: Option<&ExtrudeSurface>,
     ) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
@@ -783,7 +783,7 @@ impl Sketch {
                 id: base.geo_meta.id,
                 sketch: self.id,
                 path: Some(current_path.clone()),
-                surface: surface.clone(),
+                surface: surface.cloned(),
             },
         ));
 
