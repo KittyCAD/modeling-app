@@ -376,7 +376,6 @@ description: Variables in memory after executing tag_inner_face.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",

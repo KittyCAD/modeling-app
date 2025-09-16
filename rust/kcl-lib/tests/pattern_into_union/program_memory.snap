@@ -296,7 +296,6 @@ description: Variables in memory after executing pattern_into_union.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -3.28740157480315,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -548,7 +547,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -750,7 +748,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -952,7 +949,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1154,7 +1150,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1356,7 +1351,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1558,7 +1552,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1760,7 +1753,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1962,7 +1954,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2164,7 +2155,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2366,7 +2356,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2568,7 +2557,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2770,7 +2758,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2972,7 +2959,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -3174,7 +3160,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -3376,7 +3361,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -3578,7 +3562,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -3780,7 +3763,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -3982,7 +3964,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -4184,7 +4165,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -4386,7 +4366,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -4588,7 +4567,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -4795,7 +4773,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -4997,7 +4974,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -5199,7 +5175,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -5401,7 +5376,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -5603,7 +5577,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -5805,7 +5778,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6007,7 +5979,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6209,7 +6180,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6411,7 +6381,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6613,7 +6582,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6815,7 +6783,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7017,7 +6984,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7219,7 +7185,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7421,7 +7386,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7623,7 +7587,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7825,7 +7788,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8027,7 +7989,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8229,7 +8190,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8431,7 +8391,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8633,7 +8592,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8835,7 +8793,6 @@ description: Variables in memory after executing pattern_into_union.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [

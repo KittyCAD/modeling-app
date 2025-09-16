@@ -241,7 +241,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -431,7 +430,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -621,7 +619,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -811,7 +808,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1001,7 +997,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1191,7 +1186,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1381,7 +1375,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1571,7 +1564,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1761,7 +1753,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1951,7 +1942,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2141,7 +2131,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2331,7 +2320,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2521,7 +2509,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2711,7 +2698,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2901,7 +2887,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3091,7 +3076,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3281,7 +3265,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3471,7 +3454,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3661,7 +3643,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3851,7 +3832,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4041,7 +4021,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4231,7 +4210,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4421,7 +4399,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4611,7 +4588,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4806,7 +4782,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -4996,7 +4971,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5186,7 +5160,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5376,7 +5349,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5566,7 +5538,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5756,7 +5727,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5946,7 +5916,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6136,7 +6105,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6326,7 +6294,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6516,7 +6483,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6706,7 +6672,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6896,7 +6861,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7086,7 +7050,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7276,7 +7239,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7466,7 +7428,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7656,7 +7617,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7846,7 +7806,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8036,7 +7995,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8226,7 +8184,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8416,7 +8373,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8606,7 +8562,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8796,7 +8751,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -8986,7 +8940,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9176,7 +9129,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9389,7 +9341,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9579,7 +9530,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9769,7 +9719,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9959,7 +9908,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10746,7 +10694,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -2.4,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -11431,7 +11378,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -2.4,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -12294,7 +12240,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -2.4,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -13099,7 +13044,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -2.4,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -14776,7 +14720,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -14966,7 +14909,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15156,7 +15098,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15346,7 +15287,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 34.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -15538,7 +15478,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -15728,7 +15667,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 34.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

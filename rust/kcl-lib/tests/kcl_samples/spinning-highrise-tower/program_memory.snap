@@ -188,7 +188,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": -0.2,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -384,7 +383,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 84.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -597,7 +595,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -780,7 +777,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -963,7 +959,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1146,7 +1141,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1329,7 +1323,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1512,7 +1505,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1695,7 +1687,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -1878,7 +1869,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2061,7 +2051,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2244,7 +2233,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2427,7 +2415,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2610,7 +2597,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2793,7 +2779,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -2976,7 +2961,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3159,7 +3143,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3342,7 +3325,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3525,7 +3507,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 4.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",
@@ -3764,7 +3745,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": -5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -3983,7 +3963,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 1.7,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -4310,7 +4289,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -4338,7 +4316,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -4662,7 +4639,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -4690,7 +4666,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -5014,7 +4989,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -5042,7 +5016,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -5366,7 +5339,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -5394,7 +5366,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -5718,7 +5689,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -5746,7 +5716,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -6070,7 +6039,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -6098,7 +6066,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -6422,7 +6389,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -6450,7 +6416,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -6774,7 +6739,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -6802,7 +6766,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -7126,7 +7089,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -7154,7 +7116,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -7478,7 +7439,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -7506,7 +7466,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -7830,7 +7789,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -7858,7 +7816,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -8182,7 +8139,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -8210,7 +8166,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -8534,7 +8489,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -8562,7 +8516,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -8886,7 +8839,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -8914,7 +8866,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -9238,7 +9189,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -9266,7 +9216,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -9590,7 +9539,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -9618,7 +9566,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -9942,7 +9889,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.7,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -9970,7 +9916,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -1.2,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -10271,7 +10216,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 1.7,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "m",

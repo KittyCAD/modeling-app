@@ -143,7 +143,6 @@ description: Variables in memory after executing tangential_arc.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

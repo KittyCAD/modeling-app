@@ -653,6 +653,8 @@ impl FnData {
             return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
             return "hole(${0:holeSketch}, ${1:%})".to_owned();
+        } else if self.name == "extrude" {
+            return "extrude(length = ${0:10})".to_owned();
         }
         let mut args = Vec::new();
         let mut index = 0;
