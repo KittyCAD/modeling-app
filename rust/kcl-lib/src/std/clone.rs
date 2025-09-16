@@ -237,10 +237,11 @@ async fn fix_sketch_tags_and_references(
     }
 
     // Map the surface tags to the new surface ids.
-    let mut surface_id_map: HashMap<String, ExtrudeSurface> = HashMap::new();
-    for surface in surfaces.unwrap_or_default().iter() {
+    let mut surface_id_map: HashMap<String, &ExtrudeSurface> = HashMap::new();
+    let surfaces = surfaces.unwrap_or_default();
+    for surface in surfaces.iter() {
         if let Some(tag) = surface.get_tag() {
-            surface_id_map.insert(tag.to_string(), surface.clone());
+            surface_id_map.insert(tag.name.clone(), surface);
         }
     }
 
@@ -252,7 +253,7 @@ async fn fix_sketch_tags_and_references(
         if let Some(tag) = path.get_tag() {
             let mut surface = None;
             if let Some(found_surface) = surface_id_map.get(&tag.name) {
-                let mut new_surface = found_surface.clone();
+                let mut new_surface = (*found_surface).clone();
                 let Some(new_face_id) = entity_id_map.get(&new_surface.face_id()).copied() else {
                     anyhow::bail!(
                         "Failed to find new face id for old face id: {:?}",
@@ -263,7 +264,7 @@ async fn fix_sketch_tags_and_references(
                 surface = Some(new_surface);
             }
 
-            new_sketch.add_tag(&tag.clone(), &path, exec_state, &surface);
+            new_sketch.add_tag(&tag, &path, exec_state, surface.as_ref());
         }
     }
 
