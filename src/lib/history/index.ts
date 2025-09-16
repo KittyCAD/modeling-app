@@ -1,4 +1,5 @@
 import { useMemo, useSyncExternalStore } from 'react'
+import { uuidv4 } from '@src/lib/utils'
 
 interface HistoryItem {
   id: string
@@ -74,13 +75,13 @@ export class Stack implements HistoryStack, Subscribable {
     return this.queue.length > 0 && this.cursor < this.queue.length - 1
   }
 
-  addItem(item: HistoryItem) {
+  addItem(item: Omit<HistoryItem, 'id'>) {
     console.log('adding item', this.canRedo())
     if (this.canRedo()) {
       // Clear the redo portion of the history stack
       this.queue = this.cursor < 0 ? [] : this.queue.slice(0, this.cursor + 1)
     }
-    this.queue.push(item)
+    this.queue.push(Object.assign(item, { id: uuidv4() }))
     this.cursor = this.queue.length - 1
     console.log('adding item', this.queue, this.cursor)
     this._snapshot = this.takeSnapshot()

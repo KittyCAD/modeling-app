@@ -22,7 +22,6 @@ import {
 import type { Project } from '@src/lib/project'
 import { historyManager } from '@src/lib/singletons'
 import type { AppMachineContext } from '@src/lib/types'
-import { uuidv4 } from '@src/lib/utils'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,
@@ -578,7 +577,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           window.electron.path.dirname(newPath)
         )
 
-        for (let entry of entries) {
+        for (const entry of entries) {
           if (entry === requestedFileNameWithExtension) {
             return Promise.reject(new Error('Filename already exists.'))
           }
@@ -586,8 +585,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
         await window.electron.rename(oldPath, newPath)
         historyManager.addItem({
-          id: uuidv4(),
-          label: `Renamed ${oldPath} to ${newPath}`,
+          label: `rename-file: ${oldPath} to ${newPath}`,
           undo: () =>
             window.electron
               ?.rename(newPath, oldPath)
