@@ -834,8 +834,6 @@ pub struct Solid {
     pub value: Vec<ExtrudeSurface>,
     /// The sketch.
     pub sketch: Sketch,
-    /// The height of the solid.
-    pub height: f64,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
@@ -855,10 +853,6 @@ pub struct Solid {
 impl Solid {
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
-    }
-
-    pub(crate) fn height_in_mm(&self) -> f64 {
-        adjust_length(self.units, self.height, UnitLength::Millimeters).0
     }
 }
 

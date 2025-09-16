@@ -166,7 +166,6 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -332,7 +331,6 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -498,7 +496,6 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

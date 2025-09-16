@@ -253,7 +253,6 @@ description: Variables in memory after executing truss-structure.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -82.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -484,7 +483,6 @@ description: Variables in memory after executing truss-structure.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": -82.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -776,7 +774,6 @@ description: Variables in memory after executing truss-structure.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1022,7 +1019,6 @@ description: Variables in memory after executing truss-structure.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1268,7 +1264,6 @@ description: Variables in memory after executing truss-structure.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 2.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
@@ -1436,7 +1431,6 @@ description: Variables in memory after executing truss-structure.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": -48.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -1634,7 +1628,6 @@ description: Variables in memory after executing truss-structure.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": -48.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -2150,7 +2143,6 @@ description: Variables in memory after executing truss-structure.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -3739,7 +3731,6 @@ description: Variables in memory after executing truss-structure.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -3905,7 +3896,6 @@ description: Variables in memory after executing truss-structure.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 1.8,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -4179,7 +4169,6 @@ description: Variables in memory after executing truss-structure.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",

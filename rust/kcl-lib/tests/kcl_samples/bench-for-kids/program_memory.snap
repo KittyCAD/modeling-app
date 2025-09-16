@@ -137,7 +137,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "originalId": "[uuid]",
             "units": "cm"
           },
-          "height": 16.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -291,7 +290,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "originalId": "[uuid]",
             "units": "cm"
           },
-          "height": 16.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -445,7 +443,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "originalId": "[uuid]",
             "units": "cm"
           },
-          "height": 16.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -599,7 +596,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "originalId": "[uuid]",
             "units": "cm"
           },
-          "height": 16.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -791,7 +787,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1151,7 +1146,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "originalId": "[uuid]",
             "units": "cm"
           },
-          "height": 20.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1305,7 +1299,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "originalId": "[uuid]",
             "units": "cm"
           },
-          "height": 20.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1461,7 +1454,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": 16.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1615,7 +1607,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": 16.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1797,7 +1788,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": 16.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "cm",
@@ -2101,7 +2091,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": 80.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "cm",
@@ -2433,7 +2422,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": -24.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
