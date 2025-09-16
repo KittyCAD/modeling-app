@@ -253,7 +253,12 @@ async fn fix_sketch_tags_and_references(
             let mut surface = None;
             if let Some(found_surface) = surface_id_map.get(&tag.name) {
                 let mut new_surface = found_surface.clone();
-                let new_face_id = entity_id_map.get(&new_surface.face_id()).copied().unwrap_or_default();
+                let Some(new_face_id) = entity_id_map.get(&new_surface.face_id()).copied() else {
+                    anyhow::bail!(
+                        "Failed to find new face id for old face id: {:?}",
+                        new_surface.face_id()
+                    )
+                };
                 new_surface.set_face_id(new_face_id);
                 surface = Some(new_surface);
             }
