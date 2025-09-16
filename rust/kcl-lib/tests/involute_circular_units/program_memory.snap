@@ -394,7 +394,6 @@ description: Variables in memory after executing involute_circular_units.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": 0.3,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "cm",

@@ -768,7 +768,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1705,7 +1704,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -1747,7 +1745,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 13.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -2684,7 +2681,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -2726,7 +2722,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 13.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -3846,7 +3841,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "originalId": "[uuid]",
                     "units": "mm"
                   },
-                  "height": 5.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": "mm",
@@ -3888,7 +3882,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 13.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -3930,7 +3923,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -5473,7 +5465,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6391,7 +6382,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -7492,7 +7482,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -7534,7 +7523,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",

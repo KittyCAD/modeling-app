@@ -162,7 +162,6 @@ description: Variables in memory after executing lego.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 3.2,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
@@ -443,7 +442,6 @@ description: Variables in memory after executing lego.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 3.2,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -471,7 +469,6 @@ description: Variables in memory after executing lego.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 1.8,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "in",
@@ -695,7 +692,6 @@ description: Variables in memory after executing lego.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 3.2,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -723,7 +719,6 @@ description: Variables in memory after executing lego.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 1.8,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "in",
@@ -947,7 +942,6 @@ description: Variables in memory after executing lego.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 3.2,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -975,7 +969,6 @@ description: Variables in memory after executing lego.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 1.8,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "in",
@@ -1199,7 +1192,6 @@ description: Variables in memory after executing lego.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 3.2,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -1227,7 +1219,6 @@ description: Variables in memory after executing lego.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 1.8,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "in",
@@ -1451,7 +1442,6 @@ description: Variables in memory after executing lego.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 3.2,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -1479,7 +1469,6 @@ description: Variables in memory after executing lego.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 1.8,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "in",
@@ -1703,7 +1692,6 @@ description: Variables in memory after executing lego.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": 3.2,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "in",
@@ -1731,7 +1719,6 @@ description: Variables in memory after executing lego.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 1.8,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "in",
@@ -2041,7 +2028,6 @@ description: Variables in memory after executing lego.kcl
               "originalId": "[uuid]",
               "units": "in"
             },
-            "height": 3.2,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "in",
@@ -2069,7 +2055,6 @@ description: Variables in memory after executing lego.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": -1.7000000000000002,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "in",
@@ -2447,7 +2432,6 @@ description: Variables in memory after executing lego.kcl
                         "originalId": "[uuid]",
                         "units": "in"
                       },
-                      "height": 3.2,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "in",
@@ -2475,7 +2459,6 @@ description: Variables in memory after executing lego.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": -1.7000000000000002,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "in",
@@ -2503,7 +2486,6 @@ description: Variables in memory after executing lego.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 1.8,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "in",
@@ -2851,7 +2833,6 @@ description: Variables in memory after executing lego.kcl
                         "originalId": "[uuid]",
                         "units": "in"
                       },
-                      "height": 3.2,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": "in",
@@ -2879,7 +2860,6 @@ description: Variables in memory after executing lego.kcl
                   "originalId": "[uuid]",
                   "units": "in"
                 },
-                "height": -1.7000000000000002,
                 "startCapId": "[uuid]",
                 "endCapId": null,
                 "units": "in",
@@ -2907,7 +2887,6 @@ description: Variables in memory after executing lego.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "height": 1.8,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": "in",

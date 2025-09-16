@@ -219,7 +219,6 @@ description: Variables in memory after executing parametric.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 9.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

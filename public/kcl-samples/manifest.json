@@ -1,6 +1,16 @@
 [
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "angle-gauge/main.kcl",
+    "multipleFiles": false,
+    "title": "Angle Gauge",
+    "description": "Simple angle gauge function to generate a gauge given an angle",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "axial-fan/main.kcl",
     "multipleFiles": true,
     "title": "PC Fan",
@@ -534,6 +544,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "holder-rod-angle/main.kcl",
+    "multipleFiles": false,
+    "title": "Holder for (shower) rod at a ~45° angle",
+    "description": "This is used to mount a rod to a 45° angled ceiling",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "i-beam/main.kcl",
     "multipleFiles": false,
     "title": "I-beam",
@@ -779,6 +799,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "rack-blanking-panel/main.kcl",
+    "multipleFiles": false,
+    "title": "Rack Blanking Panel - 1U",
+    "description": "A rack blanking panel, also known as a filler panel or spacer blank, is a flat piece of material (usually metal or plastic) designed to fill empty spaces within a server rack. These panels are primarily used to improve airflow and cooling efficiency in server racks",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "radial-flow-centrifugal-impeller/main.kcl",
     "multipleFiles": false,
     "title": "Impeller (Radial-flow)",
@@ -983,6 +1013,16 @@
     "multipleFiles": false,
     "title": "Spur Reduction Gearset",
     "description": "A pair of spur gears meshed together, with an equal module and different number of teeth",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "starlink-mini-bracket/main.kcl",
+    "multipleFiles": false,
+    "title": "Starlink Mini Bracket",
+    "description": "Bracket for holding a starlink device",
     "files": [
       "main.kcl"
     ]
@@ -1211,6 +1251,16 @@
     "multipleFiles": false,
     "title": "Wing Spar",
     "description": "In a fixed-wing aircraft, the spar is often the main structural member of the wing, running spanwise at right angles (or thereabouts depending on wing sweep) to the fuselage. The spar carries flight loads and the weight of the wings while on the ground. Other structural and forming members such as ribs may be attached to the spars",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "zoo-logo/main.kcl",
+    "multipleFiles": false,
+    "title": "Zoo Logo",
+    "description": "The logo for the Zoo Corporation",
     "files": [
       "main.kcl"
     ]

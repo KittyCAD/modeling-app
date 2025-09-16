@@ -234,7 +234,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -1189,7 +1188,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -1420,7 +1418,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -1651,7 +1648,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -1882,7 +1878,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -2113,7 +2108,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -2344,7 +2338,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -2575,7 +2568,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -2806,7 +2798,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -3037,7 +3028,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -3268,7 +3258,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -3499,7 +3488,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -3730,7 +3718,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -3961,7 +3948,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -4192,7 +4178,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -4423,7 +4408,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -4654,7 +4638,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -4849,7 +4832,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -4877,7 +4859,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -5067,7 +5048,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -5095,7 +5075,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -5285,7 +5264,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -5313,7 +5291,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -5503,7 +5480,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -5531,7 +5507,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -5721,7 +5696,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -5749,7 +5723,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -5939,7 +5912,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -5967,7 +5939,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -6157,7 +6128,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -6185,7 +6155,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -6375,7 +6344,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -6403,7 +6371,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -6593,7 +6560,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -6621,7 +6587,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -6811,7 +6776,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -6839,7 +6803,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -7029,7 +6992,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -7057,7 +7019,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -7247,7 +7208,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -7275,7 +7235,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -7465,7 +7424,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -7493,7 +7451,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -7683,7 +7640,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -7711,7 +7667,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -7901,7 +7856,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -7929,7 +7883,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -8119,7 +8072,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "originalId": "[uuid]",
                   "units": "m"
                 },
-                "height": 1.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "m",
@@ -8147,7 +8099,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": -0.75,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "m",
@@ -8421,7 +8372,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -8681,7 +8631,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -8941,7 +8890,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -9201,7 +9149,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -9461,7 +9408,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -9721,7 +9667,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -9981,7 +9926,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -10241,7 +10185,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -10501,7 +10444,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -10761,7 +10703,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -11021,7 +10962,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -11281,7 +11221,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -11541,7 +11480,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -11801,7 +11739,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -12061,7 +11998,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",
@@ -12321,7 +12257,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "originalId": "[uuid]",
             "units": "m"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
           "units": "m",

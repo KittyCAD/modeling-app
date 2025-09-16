@@ -8,10 +8,7 @@ use serde::Serialize;
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::KclError,
-    execution::{
-        ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{NumericType, RuntimeType},
-    },
+    execution::{ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid, types::RuntimeType},
     parsing::ast::types::TagNode,
     std::{Args, extrude::do_post_extrude},
 };
@@ -102,7 +99,6 @@ async fn inner_sweep(
             do_post_extrude(
                 sketch,
                 id.into(),
-                TyF64::new(0.0, NumericType::mm()),
                 sectional.unwrap_or(false),
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),

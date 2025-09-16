@@ -137,7 +137,6 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -269,7 +268,6 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -635,7 +633,6 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
