@@ -1,3 +1,13 @@
+import env from '@src/env'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import {
+  addOffsetPlane,
+  addShell,
+  retrieveFaceSelectionsFromOpArgs,
+  retrieveNonDefaultPlaneSelectionFromOpArg,
+} from '@src/lang/modifyAst/faces'
+import type { StdLibCallOp } from '@src/lang/queryAst'
+import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import {
   type Artifact,
   type ArtifactGraph,
@@ -5,28 +15,18 @@ import {
   assertParse,
   recast,
 } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/lib/selections'
-import { enginelessExecutor } from '@src/lib/testHelpers'
-import { err } from '@src/lib/trap'
-import {
-  addOffsetPlane,
-  addShell,
-  retrieveFaceSelectionsFromOpArgs,
-  retrieveNonDefaultPlaneSelectionFromOpArg,
-} from '@src/lang/modifyAst/faces'
 import { initPromise } from '@src/lang/wasmUtils'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import type { Selection, Selections } from '@src/lib/selections'
 import {
   engineCommandManager,
   kclManager,
   rustContext,
 } from '@src/lib/singletons'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type { KclCommandValue } from '@src/lib/commandTypes'
-import env from '@src/env'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import type { StdLibCallOp } from '@src/lang/queryAst'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 // Unfortunately, we need the real engine here it seems to get sweep faces populated
 beforeAll(async () => {

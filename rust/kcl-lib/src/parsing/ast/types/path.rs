@@ -57,6 +57,8 @@ pub enum Step {
     LabeledExpressionExpr,
     LabeledExpressionLabel,
     AscribedExpressionExpr,
+    SketchBlock,
+    SketchVar,
 }
 
 impl NodePath {
@@ -320,6 +322,21 @@ impl NodePath {
                     return Self::from_expr(&node.expr, range, path);
                 }
                 // TODO: Check the type annotation.
+            }
+            Expr::SketchBlock(node) => {
+                // TODO: sketch-api: implement arguments.
+                if node.contains_range(&range) {
+                    path.push(Step::SketchBlock);
+                    // TODO: sketch-api: implement body.
+                    return Some(path);
+                }
+            }
+            Expr::SketchVar(node) => {
+                // TODO: sketch-api: implement initial.
+                if node.contains_range(&range) {
+                    path.push(Step::SketchVar);
+                    return Some(path);
+                }
             }
             Expr::None(_) => {}
         }

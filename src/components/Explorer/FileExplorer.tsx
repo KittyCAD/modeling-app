@@ -1,17 +1,19 @@
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { uuidv4 } from '@src/lib/utils'
 import {
   type FileExplorerEntry,
-  type FileExplorerRow,
   type FileExplorerRender,
+  type FileExplorerRow,
   type FileExplorerRowContextMenuProps,
+  type FileExplorerDropData,
   isRowFake,
+  shouldDroppedEntryBeMoved,
 } from '@src/components/Explorer/utils'
-import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
-import type { Dispatch } from 'react'
-import { useRef, useState } from 'react'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
+import { uuidv4 } from '@src/lib/utils'
+import type { Dispatch } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export const StatusDot = () => {
   return <span className="text-primary hue-rotate-90">•</span>
@@ -62,11 +64,13 @@ export const FileExplorer = ({
   selectedRow,
   contextMenuRow,
   isRenaming,
+  isCopying,
 }: {
   rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
+  isCopying: boolean
 }) => {
   return (
     <div data-testid="file-explorer" role="presentation" className="relative">
@@ -84,6 +88,7 @@ export const FileExplorer = ({
             selectedRow={selectedRow}
             contextMenuRow={contextMenuRow}
             isRenaming={isRenaming}
+            isCopying={isCopying}
           ></FileExplorerRowElement>
         )
       })}
@@ -98,8 +103,11 @@ function FileExplorerRowContextMenu({
   itemRef,
   onRename,
   onDelete,
+  onCopy,
   onOpenInNewWindow,
   callback,
+  onPaste,
+  isCopying,
 }: FileExplorerRowContextMenuProps) {
   return (
     <ContextMenu
@@ -111,6 +119,16 @@ function FileExplorerRowContextMenu({
         </ContextMenuItem>,
         <ContextMenuItem data-testid="context-menu-delete" onClick={onDelete}>
           Delete
+        </ContextMenuItem>,
+        <ContextMenuItem data-testid="context-menu-copy" onClick={onCopy}>
+          Copy
+        </ContextMenuItem>,
+        <ContextMenuItem
+          disabled={!isCopying}
+          data-testid="context-menu-paste"
+          onClick={onPaste}
+        >
+          Paste
         </ContextMenuItem>,
         <ContextMenuItem
           data-testid="context-menu-open-in-new-window"
@@ -218,12 +236,68 @@ export const FileExplorerRowElement = ({
   selectedRow,
   contextMenuRow,
   isRenaming,
+  isCopying,
 }: {
   row: FileExplorerRender
   selectedRow: FileExplorerEntry | null
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
+  isCopying: boolean
 }) => {
+  const dragPreviewId = `drag-preview-${row.name}`
+  // Adds a preview element that is a pill-shaped element with the row's name
+  const createDragPreviewElem = useCallback(() => {
+    if (!window) {
+      return
+    }
+    const elem = window.document.createElement('div')
+    elem.id = dragPreviewId
+    elem.classList.add(
+      'text-xs',
+      'py-1',
+      'px-2',
+      'rounded-full',
+      'border-primary',
+      'border',
+      'bg-default'
+    )
+    elem.style.position = 'fixed'
+    elem.style.top = '-1000px'
+    elem.innerText = row.name
+    document.body.appendChild(elem)
+    return elem
+  }, [row.name, dragPreviewId])
+
+  // Removes the drag preview element from the DOM
+  const removeDragPreviewElem = useCallback(() => {
+    if (!window) {
+      return
+    }
+    const dragPreviewElem = window.document.getElementById(dragPreviewId)
+    if (dragPreviewElem) {
+      document.body.removeChild(dragPreviewElem)
+    }
+  }, [dragPreviewId])
+
+  const delayRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const delayedRowOpen = useCallback(
+    (timeout: number) => {
+      const handler = () => row.onOpen()
+      delayRef.current = setTimeout(handler, timeout)
+    },
+    [row]
+  )
+
+  // Clean up any missed drag preview elements
+  useEffect(() => {
+    return () => {
+      removeDragPreviewElem()
+      if (delayRef.current) {
+        clearTimeout(delayRef.current)
+      }
+    }
+  }, [removeDragPreviewElem])
+
   const rowElementRef = useRef(null)
   const isSelected =
     row.name === selectedRow?.name && row.parentPath === selectedRow?.parentPath
@@ -258,18 +332,59 @@ export const FileExplorerRowElement = ({
       }}
       draggable="true"
       onDragOver={(event) => {
-        // TODO: the onDrag work is for dragging the DOM element to move folders and files
-        // if (!row.isOpen && row.isFolder) {
-        //   // on drag over, open!
-        //   row.onOpen()
-        // }
-        // event.preventDefault()
+        event.preventDefault()
+        if (!row.isOpen && row.isFolder && !delayRef.current) {
+          delayedRowOpen(400)
+        }
+        event.dataTransfer.dropEffect = 'move'
+        event.currentTarget.classList.add('bg-primary/10')
+      }}
+      onDragLeave={(event) => {
+        event.preventDefault()
+        event.currentTarget.classList.remove('bg-primary/10')
+        if (delayRef.current) {
+          clearTimeout(delayRef.current)
+          delayRef.current = undefined
+        }
       }}
       onDragStart={(event) => {
-        // TODO console.log(event.target.innerText, 'onDragStart')
+        event.dataTransfer.effectAllowed = 'move'
+        event.dataTransfer.setData(
+          'json',
+          JSON.stringify({
+            name: row.name,
+            path: row.path,
+            children: row.children,
+            parentPath: row.parentPath,
+          } satisfies FileExplorerDropData)
+        )
+        const previewElem = createDragPreviewElem()
+        if (previewElem) {
+          event.dataTransfer.setDragImage(previewElem, 0, 0)
+        }
+      }}
+      onDragEnd={() => {
+        removeDragPreviewElem()
       }}
       onDrop={(event) => {
-        // TODO console.log(event.target.innerText, 'onDrop')
+        event.preventDefault()
+        let droppedData: FileExplorerDropData
+        try {
+          droppedData = JSON.parse(event.dataTransfer.getData('json'))
+          if (!('name' in droppedData) || !('path' in droppedData)) {
+            throw new Error('malformed drop data: ' + JSON.stringify(droppedData))
+          }
+        } catch (e) {
+          console.error('invalid JSON in drop event', e)
+          return
+        }
+
+        // Now move the thing!
+        if (shouldDroppedEntryBeMoved(droppedData, row, window.electron?.sep)) {
+          row.onDrop({ src: droppedData })
+        }
+
+        removeDragPreviewElem()
       }}
     >
       <div style={{ width: '0.5rem' }}></div>
@@ -306,9 +421,16 @@ export const FileExplorerRowElement = ({
         onOpenInNewWindow={() => {
           row.onOpenInNewWindow()
         }}
+        onCopy={() => {
+          row.onCopy()
+        }}
         callback={() => {
           row.onContextMenuOpen(row.domIndex)
         }}
+        onPaste={() => {
+          row.onPaste()
+        }}
+        isCopying={isCopying}
       />
     </div>
   )

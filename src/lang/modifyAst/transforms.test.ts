@@ -1,15 +1,3 @@
-import {
-  type Artifact,
-  assertParse,
-  type CodeRef,
-  type PathToNode,
-  type Program,
-  recast,
-} from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/lib/selections'
-import { enginelessExecutor } from '@src/lib/testHelpers'
-import { err } from '@src/lib/trap'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   addAppearance,
@@ -18,6 +6,18 @@ import {
   addScale,
   addTranslate,
 } from '@src/lang/modifyAst/transforms'
+import {
+  type Artifact,
+  type CodeRef,
+  type PathToNode,
+  type Program,
+  assertParse,
+  recast,
+} from '@src/lang/wasm'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type { Selection, Selections } from '@src/lib/selections'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 async function getAstAndArtifactGraph(code: string) {
   const ast = assertParse(code)

@@ -8,12 +8,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
     "value": 95.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "antennaBaseDia": {
@@ -21,12 +17,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
     "value": 0.65,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "antennaCrossSectionProfile": {
@@ -50,9 +42,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             0.08
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -76,9 +66,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             0.08
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -102,9 +90,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             1.1758141679009202
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -126,9 +112,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             1.36
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -152,9 +136,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             1.36
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -171,9 +153,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.78
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -190,9 +170,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.78
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -209,9 +187,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.73
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -228,9 +204,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.7123223304703363
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -247,9 +221,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.5873223304703363
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -266,9 +238,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.5696446609406727
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -285,9 +255,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.4446446609406727
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -304,9 +272,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.4446446609406727
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -323,9 +289,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.41964466094067265
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -342,9 +306,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.41964466094067265
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -361,9 +323,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.25
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -380,9 +340,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             -0.25
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -399,9 +357,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -418,9 +374,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -430,9 +384,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -440,25 +392,19 @@ description: Variables in memory after executing telemetry-antenna.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -470,9 +416,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
           1.5,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -495,9 +439,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "antennaCrossSectionRevolve": {
@@ -674,9 +616,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               0.08
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -700,9 +640,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               0.08
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -726,9 +664,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               1.1758141679009202
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -750,9 +686,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               1.36
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -776,9 +710,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               1.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -795,9 +727,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.78
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -814,9 +744,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.78
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -833,9 +761,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.73
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -852,9 +778,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.7123223304703363
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -871,9 +795,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.5873223304703363
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -890,9 +812,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.5696446609406727
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -909,9 +829,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.4446446609406727
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -928,9 +846,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.4446446609406727
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -947,9 +863,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.41964466094067265
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -966,9 +880,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.41964466094067265
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -985,9 +897,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1004,9 +914,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               -0.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1023,9 +931,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1042,9 +948,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1054,9 +958,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -1064,25 +966,19 @@ description: Variables in memory after executing telemetry-antenna.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1094,9 +990,7 @@ description: Variables in memory after executing telemetry-antenna.kcl
             1.5,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1119,16 +1013,11 @@ description: Variables in memory after executing telemetry-antenna.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1141,34 +1030,26 @@ description: Variables in memory after executing telemetry-antenna.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1177,12 +1058,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
     "value": 1.36,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltDiameter": {
@@ -1190,12 +1067,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
     "value": 0.196,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltPitchCircleDiameter": {
@@ -1203,12 +1076,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "countersink": {
@@ -1220,12 +1089,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "plateThickness": {
@@ -1233,12 +1098,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
     "value": 0.08,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "r": {
@@ -1246,12 +1107,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
     "value": 1.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "seatingDia": {
@@ -1259,12 +1116,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "seg01": {
@@ -1287,12 +1140,8 @@ description: Variables in memory after executing telemetry-antenna.kcl
     "value": 2.14,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

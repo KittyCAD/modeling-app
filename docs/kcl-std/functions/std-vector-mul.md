@@ -43,7 +43,7 @@ assert(v2[2], isEqualTo = 30)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the vector::mul function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-vector-mul0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

@@ -692,7 +692,7 @@ solid001 = extrude(sketch001, length = 5)`
       name: 'rectangle Corner rectangle',
     })
     const lineToolCommand = page.getByRole('option', {
-      name: 'Line',
+      name: 'line Line Start drawing',
     })
     const lineToolButton = page.getByRole('button', {
       name: 'line Line',
@@ -1036,7 +1036,7 @@ theta = 45deg
     await homePage.textToCadBtn.click()
     await cmdBar.expectState({
       stage: 'arguments',
-      commandName: 'Text-to-CAD Create',
+      commandName: 'Create Project using Text-to-CAD',
       currentArgKey: 'prompt',
       currentArgValue: '',
       headerArguments: {

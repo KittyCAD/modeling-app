@@ -2,14 +2,14 @@ import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
-import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import {
   authActor,
   commandBarActor,
   editorManager,
   settingsActor,
 } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 
@@ -190,8 +190,6 @@ export function modelingMenuCallbackMostActions(
           },
         })
         .catch(reportRejection)
-    } else if (data.menuLabel === 'View.Standard views.Refresh') {
-      globalThis?.window?.location.reload()
     } else if (data.menuLabel === 'View.Named views.Create named view') {
       commandBarActor.send({
         type: 'Find and select command',

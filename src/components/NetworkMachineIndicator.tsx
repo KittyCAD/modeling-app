@@ -1,7 +1,7 @@
-import { useContext } from 'react'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
-import type { components } from '@src/lib/machine-api'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import type { components } from '@src/lib/machine-api'
+import { useContext } from 'react'
 
 export const useNetworkMachineStatus = (): StatusBarItemType => {
   const {

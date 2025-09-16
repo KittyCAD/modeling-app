@@ -15,25 +15,29 @@ import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
 import { createActor, setup, spawnChild } from 'xstate'
 
+import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
+import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
 import { createSettings } from '@src/lib/settings/initialSettings'
+import type { AppMachineContext } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
 import {
   engineStreamContextCreate,
   engineStreamMachine,
 } from '@src/machines/engineStreamMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
+import {
+  mlEphantDefaultContext,
+  mlEphantManagerMachine,
+} from '@src/machines/mlEphantManagerMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
-import type { AppMachineContext } from '@src/lib/types'
-import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
-import { commandBarMachine } from '@src/machines/commandBarMachine'
-import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -50,7 +54,6 @@ declare global {
 window.engineCommandManager = engineCommandManager
 
 export const sceneInfra = new SceneInfra(engineCommandManager)
-engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager(engineCommandManager)
@@ -63,6 +66,17 @@ export const kclManager = new KclManager(engineCommandManager, {
   editorManager,
   sceneInfra,
 })
+
+import { initPromise } from '@src/lang/wasmUtils'
+// Initialize KCL version
+import { setKclVersion } from '@src/lib/kclVersion'
+initPromise
+  .then(() => {
+    setKclVersion(kclManager.kclVersion)
+  })
+  .catch((e) => {
+    console.error(e)
+  })
 
 // The most obvious of cyclic dependencies.
 // This is because the   handleOnViewUpdate(viewUpdate: ViewUpdate): void {
@@ -118,13 +132,21 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR, BILLING } =
-  ACTOR_IDS
+const {
+  AUTH,
+  SETTINGS,
+  SYSTEM_IO,
+  ENGINE_STREAM,
+  MLEPHANT_MANAGER,
+  COMMAND_BAR,
+  BILLING,
+} = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
   [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
   [ENGINE_STREAM]: engineStreamMachine,
+  [MLEPHANT_MANAGER]: mlEphantManagerMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
 } as const
@@ -157,6 +179,10 @@ const appMachine = setup({
     spawnChild(appMachineActors[ENGINE_STREAM], {
       systemId: ENGINE_STREAM,
       input: engineStreamContextCreate(),
+    }),
+    spawnChild(appMachineActors[MLEPHANT_MANAGER], {
+      systemId: MLEPHANT_MANAGER,
+      input: mlEphantDefaultContext(),
     }),
     spawnChild(appMachineActors[SYSTEM_IO], {
       systemId: SYSTEM_IO,
@@ -211,6 +237,7 @@ export const getSettings = () => {
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
 sceneInfra.camControls.getSettings = getSettings
+sceneEntitiesManager.getSettings = getSettings
 
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {
@@ -219,13 +246,19 @@ export const useSettings = () =>
     return settings
   })
 
-export const systemIOActor = appActor.system.get(SYSTEM_IO) as ActorRefFrom<
+export type SystemIOActor = ActorRefFrom<
   (typeof appMachineActors)[typeof SYSTEM_IO]
 >
+
+export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
 
 export const engineStreamActor = appActor.system.get(
   ENGINE_STREAM
 ) as ActorRefFrom<(typeof appMachineActors)[typeof ENGINE_STREAM]>
+
+export const mlEphantManagerActor = appActor.system.get(
+  MLEPHANT_MANAGER
+) as ActorRefFrom<(typeof appMachineActors)[typeof MLEPHANT_MANAGER]>
 
 export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
   (typeof appMachineActors)[typeof COMMAND_BAR]

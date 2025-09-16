@@ -8,12 +8,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "case": {
@@ -106,9 +102,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -132,9 +126,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
               73.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -158,9 +150,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
               73.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -184,9 +174,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -196,9 +184,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -206,25 +192,19 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -236,9 +216,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -265,11 +243,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 8.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -280,12 +255,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -298,12 +269,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -316,12 +283,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -334,21 +297,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -357,12 +314,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "caseLength": {
@@ -370,12 +323,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 73.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "caseThickness": {
@@ -383,12 +332,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "caseWidth": {
@@ -396,12 +341,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 38.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "connectorPadding": {
@@ -409,12 +350,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "edge1": {
@@ -442,12 +379,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 58.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "m25Screw": {
@@ -459,12 +392,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 41.4,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "microUsb2Distance": {
@@ -472,12 +401,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 54.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "microUsbWidth": {
@@ -485,12 +410,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 7.4,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "miniHdmiDistance": {
@@ -498,12 +419,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 12.4,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "miniHdmiHole": {
@@ -527,9 +444,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
             22.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -546,9 +461,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
             22.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -565,9 +478,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
             10.799999999999999
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -584,9 +495,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
             10.799999999999999
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -596,9 +505,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -606,25 +513,19 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -636,9 +537,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
           0.0,
           10.799999999999999
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -647,9 +546,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "miniHdmiWidth": {
@@ -657,12 +554,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 11.2,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "rpizLength": {
@@ -670,12 +563,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 65.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "rpizWidth": {
@@ -683,12 +572,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "screwHeight": {
@@ -696,12 +581,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "widthBetweenScrews": {
@@ -709,12 +590,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "value": 23.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

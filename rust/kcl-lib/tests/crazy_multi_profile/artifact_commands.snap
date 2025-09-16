@@ -1365,6 +1365,7 @@ description: Artifact commands crazy_multi_profile.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

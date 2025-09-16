@@ -1654,6 +1654,104 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  fileExplorer: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M4 6H8V7H4V13H8V14H4V16H3V4H4V6ZM17 15H9V12H17V15ZM17 8H9V5H17V8Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  triangleExclamation: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M17.7879 15.25L16.9217 16.75H3.06622L2.20001 15.25L9.12775 3.25H10.8602L17.7879 15.25ZM3.06622 15.75H16.9217L9.99396 3.75L3.06622 15.75ZM9.992 12.9258C10.2689 12.9258 10.462 12.9838 10.5701 13.0986C10.6848 13.2134 10.742 13.3587 10.742 13.5342V13.7168C10.742 13.8923 10.6848 14.0376 10.5701 14.1523C10.462 14.2672 10.269 14.3252 9.992 14.3252C9.71507 14.3252 9.51895 14.2672 9.40411 14.1523C9.29616 14.0375 9.24204 13.8923 9.242 13.7168V13.5342C9.24201 13.3586 9.29616 13.2135 9.40411 13.0986C9.51895 12.9838 9.71507 12.9258 9.992 12.9258ZM10.4383 9.2168L10.1541 11.8721H9.8299L9.54572 9.2168V7.15918H10.4383V9.2168Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  ellipse1: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="10" cy="10" r="3" fill="currentColor" />
+    </svg>
+  ),
+  brain: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="-3 0 28 28"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+    >
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g
+        id="SVGRepo_tracerCarrier"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></g>
+      <g id="SVGRepo_iconCarrier">
+        {' '}
+        <defs>
+          {' '}
+          <style>
+            {
+              '.cls-1{fill: none;stroke: currentColor;stroke-miterlimit:10;stroke-width:1.5px;}'
+            }
+          </style>{' '}
+        </defs>{' '}
+        <g id="brain">
+          {' '}
+          <path
+            className="cls-1"
+            d="M12,4.36V20.59a1.92,1.92,0,0,1-1.91,1.91,1.93,1.93,0,0,1-1.91-1.91v0a2.45,2.45,0,0,1-.48,0,3.35,3.35,0,0,1-3.34-3.34,3.19,3.19,0,0,1,.08-.7A4.29,4.29,0,0,1,3.6,8.79,3.24,3.24,0,0,1,3.41,7.7,3.34,3.34,0,0,1,6.27,4.4v0a2.87,2.87,0,0,1,5.73,0Z"
+          ></path>{' '}
+          <path className="cls-1" d="M6.75,11.05a3.35,3.35,0,0,1,0-6.69"></path>{' '}
+          <path
+            className="cls-1"
+            d="M8.18,13.91h0A3.82,3.82,0,0,1,12,17.73h0"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M9.14,7.23h0A2.86,2.86,0,0,0,12,4.36h0"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M12,4.36V20.59a1.92,1.92,0,0,0,1.91,1.91,1.93,1.93,0,0,0,1.91-1.91v0a2.45,2.45,0,0,0,.48,0,3.35,3.35,0,0,0,3.34-3.34,3.19,3.19,0,0,0-.08-.7,4.29,4.29,0,0,0,.84-7.76,3.24,3.24,0,0,0,.19-1.09,3.34,3.34,0,0,0-2.86-3.3v0a2.87,2.87,0,0,0-5.73,0Z"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M17.25,11.05a3.35,3.35,0,0,0,0-6.69"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M15.82,13.91h0A3.82,3.82,0,0,0,12,17.73h0"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M14.86,7.23h0A2.86,2.86,0,0,1,12,4.36h0"
+          ></path>{' '}
+        </g>{' '}
+      </g>
+    </svg>
+  ),
 } as const
 
 export type CustomIconName = keyof typeof CustomIconMap

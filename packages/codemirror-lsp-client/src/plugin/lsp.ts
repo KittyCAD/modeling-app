@@ -25,18 +25,22 @@ import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
 
 import type { LanguageServerClient } from '../client'
+import { isArray } from '../lib/utils'
 import {
-  lspFormatCodeEvent,
-  lspSemanticTokensEvent,
-  lspRenameEvent,
   lspCodeActionEvent,
+  lspFormatCodeEvent,
+  lspRenameEvent,
+  lspSemanticTokensEvent,
 } from './annotation'
 import lspAutocompleteExt, { CompletionItemKindMap } from './autocomplete'
 import lspFormatExt from './format'
+import lspGoToDefinitionExt from './go-to-definition'
 import lspHoverExt from './hover'
 import lspIndentExt from './indent'
+import lspRenameExt from './rename'
 import type { SemanticToken } from './semantic-tokens'
 import lspSemanticTokensExt, { addToken } from './semantic-tokens'
+import lspSignatureHelpExt from './signature-help'
 import {
   formatContents,
   offsetToPos,
@@ -44,10 +48,6 @@ import {
   posToOffsetOrZero,
   showErrorMessage,
 } from './util'
-import { isArray } from '../lib/utils'
-import lspGoToDefinitionExt from './go-to-definition'
-import lspRenameExt from './rename'
-import lspSignatureHelpExt from './signature-help'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({

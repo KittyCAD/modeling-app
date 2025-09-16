@@ -1,0 +1,59 @@
+// Straight Rung Ladder
+// A basic parametric ladder model with two side rails and evenly spaced rungs. Designed for use in architectural layouts, equipment modeling, or marine/industrial planning.
+
+
+
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// --- Dimensions ---
+ladderHeight = 2000 // total height of the ladder
+ladderWidth = 400 // width between outer edges of side rails
+railDepth = 50 // depth of the side rails
+railThickness = 30 // thickness of the side rails (front to back)
+
+
+rungLength = ladderWidth - (railThickness * 2) // horizontal span between rails
+rungHeight = 20 // height of each rung (rectangle)
+rungDepth = 30 // extrusion depth of each rung
+rungCount = 5 // number of rungs
+rungSpacing = ladderHeight / (rungCount + 1) // vertical spacing between rungs
+
+
+// --- Reference Plane ---
+basePlane = startSketchOn(YZ)
+
+// --- Side Rails ---
+railProfile = startProfile(basePlane, at = [-ladderWidth / 2, 0])
+  |> yLine(length = ladderHeight)
+  |> xLine(length = railThickness)
+  |> yLine(length = -ladderHeight)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = ladderWidth - railThickness,
+       axis = [1, 0],
+     )
+sideRails = extrude(railProfile, length = railDepth)
+
+// --- Rung Geometry ---
+// Rungs are centered within the side rail depth using an offset plane
+rungPlane = offsetPlane(YZ, offset = (railDepth - rungDepth) / 2)
+rungProfile = startProfile(rungPlane, at = [-rungLength / 2, 0])
+  |> yLine(length = rungHeight)
+  |> xLine(length = rungLength)
+  |> yLine(length = -rungHeight)
+  |> close()
+rungBody = extrude(rungProfile, length = rungDepth)
+
+// --- Rung Pattern ---
+// Evenly distributes the rungs up the ladder
+rungs = patternLinear3d(
+       rungBody,
+       instances = rungCount,
+       distance = rungSpacing,
+       axis = [0, 0, 1],
+     )
+  |> translate(z = rungSpacing) // lift to first rung position

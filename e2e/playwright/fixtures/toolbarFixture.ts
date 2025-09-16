@@ -1,5 +1,5 @@
 import { type Locator, type Page, test } from '@playwright/test'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 
@@ -237,13 +237,13 @@ export class ToolbarFixture {
       .click()
   }
 
-  async closePane(paneId: SidebarType) {
+  async closePane(paneId: SidebarId) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async openPane(paneId: SidebarType) {
+  async openPane(paneId: SidebarId) {
     return openPane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async checkIfPaneIsOpen(paneId: SidebarType) {
+  async checkIfPaneIsOpen(paneId: SidebarId) {
     return checkIfPaneIsOpen(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
 
@@ -327,5 +327,14 @@ export class ToolbarFixture {
     await operationButton.click({ button: 'right' })
     await expect(goToDefinitionMenuButton).toBeVisible()
     await goToDefinitionMenuButton.click()
+  }
+
+  async fireTtcPrompt(prompt: string) {
+    await this.openPane('text-to-cad')
+    await expect(
+      this.page.getByTestId('ml-ephant-conversation-input')
+    ).toBeVisible()
+    await this.page.getByTestId('ml-ephant-conversation-input').fill(prompt)
+    await this.page.getByTestId('ml-ephant-conversation-input-button').click()
   }
 }

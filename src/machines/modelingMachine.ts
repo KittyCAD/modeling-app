@@ -1,23 +1,26 @@
+import { sketchSolveMachine } from '@src/machines/sketchSolveMachine'
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
 import { assign, fromPromise, setup } from 'xstate'
-import { sketchSolveMachine } from '@src/machines/sketchSolveMachine'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { Plane } from '@rust/kcl-lib/bindings/Plane'
+import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import { deleteSegment } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
-import type { Setting } from '@src/lib/settings/initialSettings'
-import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import { DRAFT_DASHED_LINE } from '@src/clientSideScene/sceneConstants'
+import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { ModelingMachineContext } from '@src/components/ModelingMachineProvider'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -30,6 +33,7 @@ import {
   applyConstraintHorzVert,
   horzVertInfo,
 } from '@src/components/Toolbar/HorzVert'
+import { intersectInfo } from '@src/components/Toolbar/Intersect'
 import {
   applyRemoveConstrainingValues,
   removeConstrainingValuesInfo,
@@ -55,40 +59,43 @@ import type {
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   EdgeTreatmentType,
-  modifyAstWithEdgeTreatmentAndTag,
   editEdgeTreatment,
+  modifyAstWithEdgeTreatmentAndTag,
 } from '@src/lang/modifyAst/addEdgeTreatment'
+import {
+  addIntersect,
+  addSubtract,
+  addUnion,
+} from '@src/lang/modifyAst/boolean'
+import {
+  deleteSelectionPromise,
+  deletionErrorMessage,
+} from '@src/lang/modifyAst/deleteSelection'
+import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
   addLoft,
   addRevolve,
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
-import {
-  addSubtract,
-  addUnion,
-  addIntersect,
-} from '@src/lang/modifyAst/boolean'
 import { addPatternCircular3D } from '@src/lang/modifyAst/pattern3D'
 import {
-  deleteSelectionPromise,
-  deletionErrorMessage,
-} from '@src/lang/modifyAst/deleteSelection'
-import {
-  addTranslate,
+  addAppearance,
+  addClone,
   addRotate,
   addScale,
-  addClone,
-  addAppearance,
+  addTranslate,
 } from '@src/lang/modifyAst/transforms'
 import {
+  artifactIsPlaneWithPaths,
   getNodeFromPath,
+  isCursorInFunctionDefinition,
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
-  artifactIsPlaneWithPaths,
-  isCursorInFunctionDefinition,
 } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getFaceCodeRef,
   getPathsFromArtifact,
@@ -96,6 +103,11 @@ import {
   getPlaneFromArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/std/sketch'
+import {
+  crossProduct,
+  isCursorInSketchCommandRange,
+  updateSketchDetailsNodePaths,
+} from '@src/lang/util'
 import type {
   Artifact,
   KclValue,
@@ -107,7 +119,8 @@ import type {
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
+import { EXECUTION_TYPE_REAL, VALID_PANE_IDS } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type {
   Axis,
@@ -116,6 +129,7 @@ import type {
   Selections,
 } from '@src/lib/selections'
 import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
+import type { Setting } from '@src/lib/settings/initialSettings'
 import {
   codeManager,
   editorManager,
@@ -127,20 +141,7 @@ import {
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { isDesktop } from '@src/lib/isDesktop'
-import {
-  crossProduct,
-  isCursorInSketchCommandRange,
-  updateSketchDetailsNodePaths,
-} from '@src/lang/util'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import type { Plane } from '@rust/kcl-lib/bindings/Plane'
-import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import { addShell, addOffsetPlane } from '@src/lang/modifyAst/faces'
-import { intersectInfo } from '@src/components/Toolbar/Intersect'
-import { addHelix } from '@src/lang/modifyAst/geometry'
 
 export type SetSelections =
   | {
@@ -287,7 +288,7 @@ export type SegmentOverlayPayload =
 
 export interface Store {
   videoElement?: HTMLVideoElement
-  openPanes: SidebarType[]
+  openPanes: SidebarId[]
   cameraProjection?: Setting<CameraProjectionType>
   useNewSketchMode?: Setting<boolean>
 }
@@ -495,13 +496,27 @@ type PersistedKeys = keyof PersistedModelingContext
 export const PersistedValues: PersistedKeys[] = ['openPanes']
 
 export const getPersistedContext = (): Partial<PersistedModelingContext> => {
-  const c = (typeof window !== 'undefined' &&
-    JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) || {
+  const fallbackContextObject = {
     openPanes: isDesktop()
       ? (['feature-tree', 'code', 'files'] satisfies Store['openPanes'])
       : (['feature-tree', 'code'] satisfies Store['openPanes']),
   }
-  return c
+
+  try {
+    const c: Partial<PersistedModelingContext> =
+      (typeof window !== 'undefined' &&
+        JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) ||
+      fallbackContextObject
+
+    // filter out any invalid IDs at read time
+    if (c.openPanes) {
+      c.openPanes = c.openPanes.filter((p) => VALID_PANE_IDS.includes(p))
+    }
+    return c
+  } catch (e) {
+    console.error(e)
+    return fallbackContextObject
+  }
 }
 
 export interface ModelingMachineContext {
@@ -946,7 +961,11 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
+          sceneEntitiesManager.removeDraftPoint()
           if (!args) return
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
@@ -983,14 +1002,22 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
+          sceneEntitiesManager.removeDraftPoint()
           if (!args) return
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
             sceneInfra.modelingSend({
               type: 'Add center rectangle origin',
-              data: [twoD.x, twoD.y],
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             })
           } else {
             console.error('No intersection point found')
@@ -1016,6 +1043,9 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1025,7 +1055,11 @@ export const modelingMachine = setup({
           if (twoD) {
             sceneInfra.modelingSend({
               type: 'Add circle origin',
-              data: [twoD.x, twoD.y],
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             })
           } else {
             console.error('No intersection point found')
@@ -1050,6 +1084,9 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1059,7 +1096,11 @@ export const modelingMachine = setup({
           if (twoD) {
             sceneInfra.modelingSend({
               type: 'Add first point',
-              data: [twoD.x, twoD.y],
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             })
           } else {
             console.error('No intersection point found')
@@ -1096,12 +1137,15 @@ export const modelingMachine = setup({
         isDraft: true,
         from: event.data,
         scale,
-        theme: sceneInfra._theme,
+        theme: sceneInfra.theme,
       })
       draftPoint.position.copy(position)
       sceneInfra.scene.add(draftPoint)
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1113,7 +1157,11 @@ export const modelingMachine = setup({
               type: 'Add second point',
               data: {
                 p1: event.data,
-                p2: [twoD.x, twoD.y],
+                p2: sceneEntitiesManager.getSnappedDragPoint(
+                  twoD,
+                  args.intersects,
+                  args.mouseEvent
+                ).snappedPoint,
               },
             })
           } else {
@@ -1326,11 +1374,7 @@ export const modelingMachine = setup({
           } else {
             sceneEntitiesManager.removeDraftPoint()
           }
-          updater(
-            group,
-            [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-            orthoFactor
-          )
+          updater(group, snappedPoint, orthoFactor)
         },
       })
     },
@@ -2214,7 +2258,7 @@ export const modelingMachine = setup({
           zAxis: info.sketchDetails.zAxis || null,
           yAxis: info.sketchDetails.yAxis || null,
           origin: info.sketchDetails.origin.map(
-            (a) => a / sceneInfra._baseUnitMultiplier
+            (a) => a / sceneInfra.baseUnitMultiplier
           ) as [number, number, number],
           animateTargetId: info?.sketchDetails?.faceId || '',
         }
@@ -5172,6 +5216,30 @@ export const modelingMachine = setup({
     },
   },
 })
+
+function listenForOriginMove(
+  args: OnMoveCallbackArgs,
+  sketchDetails: SketchDetails
+) {
+  if (!args) return
+  const { intersectionPoint } = args
+  if (!intersectionPoint?.twoD) return
+  const { snappedPoint, isSnapped } = sceneEntitiesManager.getSnappedDragPoint(
+    intersectionPoint.twoD,
+    args.intersects,
+    args.mouseEvent
+  )
+  if (isSnapped) {
+    sceneEntitiesManager.positionDraftPoint({
+      snappedPoint: new Vector2(...snappedPoint),
+      origin: sketchDetails.origin,
+      yAxis: sketchDetails.yAxis,
+      zAxis: sketchDetails.zAxis,
+    })
+  } else {
+    sceneEntitiesManager.removeDraftPoint()
+  }
+}
 
 export function isEditingExistingSketch({
   sketchDetails,

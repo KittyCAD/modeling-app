@@ -1,17 +1,15 @@
 import type { EventFrom, StateFrom } from 'xstate'
-import { settingsActor } from '@src/lib/singletons'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
 import { commandBarActor } from '@src/lib/singletons'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 

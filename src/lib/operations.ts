@@ -19,8 +19,8 @@ import {
   type CallExpressionKw,
   type PipeExpression,
   type Program,
-  pathToNodeFromRustNodePath,
   type VariableDeclaration,
+  pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type {
   HelixModes,

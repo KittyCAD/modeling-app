@@ -1,7 +1,7 @@
 import { ActionButton } from '@src/components/ActionButton'
-import { commandBarActor } from '@src/lib/singletons'
 import env from '@src/env'
 import { writeEnvironmentConfigurationPool } from '@src/lib/desktop'
+import { commandBarActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 
 export function EnvironmentChip() {

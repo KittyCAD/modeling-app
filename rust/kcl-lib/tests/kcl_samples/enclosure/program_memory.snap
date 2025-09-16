@@ -93,9 +93,7 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -119,9 +117,7 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -145,9 +141,7 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -171,9 +165,7 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -190,9 +182,7 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -202,9 +192,7 @@ description: Variables in memory after executing enclosure.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -212,25 +200,19 @@ description: Variables in memory after executing enclosure.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -242,9 +224,7 @@ description: Variables in memory after executing enclosure.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -271,11 +251,8 @@ description: Variables in memory after executing enclosure.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 70.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -286,12 +263,8 @@ description: Variables in memory after executing enclosure.kcl
             "n": 12.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -304,12 +277,8 @@ description: Variables in memory after executing enclosure.kcl
             "n": 12.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -322,12 +291,8 @@ description: Variables in memory after executing enclosure.kcl
             "n": 12.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -340,21 +305,15 @@ description: Variables in memory after executing enclosure.kcl
             "n": 12.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -476,9 +435,7 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -502,9 +459,7 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -528,9 +483,7 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -554,9 +507,7 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -573,9 +524,7 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "innerPaths": [
@@ -600,9 +549,7 @@ description: Variables in memory after executing enclosure.kcl
               13.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -625,9 +572,7 @@ description: Variables in memory after executing enclosure.kcl
               162.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -650,9 +595,7 @@ description: Variables in memory after executing enclosure.kcl
               13.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -675,9 +618,7 @@ description: Variables in memory after executing enclosure.kcl
               162.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -687,9 +628,7 @@ description: Variables in memory after executing enclosure.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -697,25 +636,19 @@ description: Variables in memory after executing enclosure.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -727,9 +660,7 @@ description: Variables in memory after executing enclosure.kcl
             150.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -756,11 +687,8 @@ description: Variables in memory after executing enclosure.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -771,12 +699,8 @@ description: Variables in memory after executing enclosure.kcl
             "n": 12.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -789,12 +713,8 @@ description: Variables in memory after executing enclosure.kcl
             "n": 12.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -807,12 +727,8 @@ description: Variables in memory after executing enclosure.kcl
             "n": 12.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -825,21 +741,15 @@ description: Variables in memory after executing enclosure.kcl
             "n": 12.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -961,9 +871,7 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -987,9 +895,7 @@ description: Variables in memory after executing enclosure.kcl
               172.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1013,9 +919,7 @@ description: Variables in memory after executing enclosure.kcl
               172.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1039,9 +943,7 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1058,9 +960,7 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "innerPaths": [
@@ -1085,9 +985,7 @@ description: Variables in memory after executing enclosure.kcl
               13.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1110,9 +1008,7 @@ description: Variables in memory after executing enclosure.kcl
               162.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1135,9 +1031,7 @@ description: Variables in memory after executing enclosure.kcl
               13.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1160,9 +1054,7 @@ description: Variables in memory after executing enclosure.kcl
               162.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1174,17 +1066,13 @@ description: Variables in memory after executing enclosure.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -1302,9 +1190,7 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1328,9 +1214,7 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1354,9 +1238,7 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1380,9 +1262,7 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1399,9 +1279,7 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "innerPaths": [
@@ -1426,9 +1304,7 @@ description: Variables in memory after executing enclosure.kcl
                     13.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1451,9 +1327,7 @@ description: Variables in memory after executing enclosure.kcl
                     162.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1476,9 +1350,7 @@ description: Variables in memory after executing enclosure.kcl
                     13.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1501,9 +1373,7 @@ description: Variables in memory after executing enclosure.kcl
                     162.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -1513,9 +1383,7 @@ description: Variables in memory after executing enclosure.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XY",
@@ -1523,25 +1391,19 @@ description: Variables in memory after executing enclosure.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -1553,9 +1415,7 @@ description: Variables in memory after executing enclosure.kcl
                   150.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1582,11 +1442,8 @@ description: Variables in memory after executing enclosure.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 3.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -1597,12 +1454,8 @@ description: Variables in memory after executing enclosure.kcl
                   "n": 12.0,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "mm",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -1615,12 +1468,8 @@ description: Variables in memory after executing enclosure.kcl
                   "n": 12.0,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "mm",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -1633,12 +1482,8 @@ description: Variables in memory after executing enclosure.kcl
                   "n": 12.0,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "mm",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -1651,26 +1496,18 @@ description: Variables in memory after executing enclosure.kcl
                   "n": 12.0,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Mm"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "mm",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
                 "tag": null
               }
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -1681,9 +1518,7 @@ description: Variables in memory after executing enclosure.kcl
             153.0,
             3.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1710,11 +1545,8 @@ description: Variables in memory after executing enclosure.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1725,12 +1557,8 @@ description: Variables in memory after executing enclosure.kcl
             "n": 9.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -1743,12 +1571,8 @@ description: Variables in memory after executing enclosure.kcl
             "n": 9.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -1761,12 +1585,8 @@ description: Variables in memory after executing enclosure.kcl
             "n": 9.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -1779,21 +1599,15 @@ description: Variables in memory after executing enclosure.kcl
             "n": 9.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1806,12 +1620,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": 70.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "holeDia": {
@@ -1819,12 +1629,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "length": {
@@ -1832,12 +1638,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": 175.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "rectangleSegmentA001": {
@@ -1928,9 +1730,7 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1954,9 +1754,7 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1980,9 +1778,7 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2006,9 +1802,7 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2025,9 +1819,7 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2037,9 +1829,7 @@ description: Variables in memory after executing enclosure.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -2047,25 +1837,19 @@ description: Variables in memory after executing enclosure.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2077,9 +1861,7 @@ description: Variables in memory after executing enclosure.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2106,9 +1888,7 @@ description: Variables in memory after executing enclosure.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch003": {
@@ -2139,9 +1919,7 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2165,9 +1943,7 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2191,9 +1967,7 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2217,9 +1991,7 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2236,9 +2008,7 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "innerPaths": [
@@ -2263,9 +2033,7 @@ description: Variables in memory after executing enclosure.kcl
             13.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2288,9 +2056,7 @@ description: Variables in memory after executing enclosure.kcl
             162.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2313,9 +2079,7 @@ description: Variables in memory after executing enclosure.kcl
             13.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2338,9 +2102,7 @@ description: Variables in memory after executing enclosure.kcl
             162.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2350,9 +2112,7 @@ description: Variables in memory after executing enclosure.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -2360,25 +2120,19 @@ description: Variables in memory after executing enclosure.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2390,9 +2144,7 @@ description: Variables in memory after executing enclosure.kcl
           150.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2419,9 +2171,7 @@ description: Variables in memory after executing enclosure.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch004": {
@@ -2452,9 +2202,7 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2478,9 +2226,7 @@ description: Variables in memory after executing enclosure.kcl
             172.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2504,9 +2250,7 @@ description: Variables in memory after executing enclosure.kcl
             172.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2530,9 +2274,7 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2549,9 +2291,7 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "innerPaths": [
@@ -2576,9 +2316,7 @@ description: Variables in memory after executing enclosure.kcl
             13.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2601,9 +2339,7 @@ description: Variables in memory after executing enclosure.kcl
             162.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2626,9 +2362,7 @@ description: Variables in memory after executing enclosure.kcl
             13.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2651,9 +2385,7 @@ description: Variables in memory after executing enclosure.kcl
             162.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2665,17 +2397,13 @@ description: Variables in memory after executing enclosure.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -2793,9 +2521,7 @@ description: Variables in memory after executing enclosure.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2819,9 +2545,7 @@ description: Variables in memory after executing enclosure.kcl
                   175.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2845,9 +2569,7 @@ description: Variables in memory after executing enclosure.kcl
                   175.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2871,9 +2593,7 @@ description: Variables in memory after executing enclosure.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2890,9 +2610,7 @@ description: Variables in memory after executing enclosure.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "innerPaths": [
@@ -2917,9 +2635,7 @@ description: Variables in memory after executing enclosure.kcl
                   13.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2942,9 +2658,7 @@ description: Variables in memory after executing enclosure.kcl
                   162.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2967,9 +2681,7 @@ description: Variables in memory after executing enclosure.kcl
                   13.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2992,9 +2704,7 @@ description: Variables in memory after executing enclosure.kcl
                   162.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -3004,9 +2714,7 @@ description: Variables in memory after executing enclosure.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -3014,25 +2722,19 @@ description: Variables in memory after executing enclosure.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -3044,9 +2746,7 @@ description: Variables in memory after executing enclosure.kcl
                 150.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3073,11 +2773,8 @@ description: Variables in memory after executing enclosure.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 3.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -3088,12 +2785,8 @@ description: Variables in memory after executing enclosure.kcl
                 "n": 12.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -3106,12 +2799,8 @@ description: Variables in memory after executing enclosure.kcl
                 "n": 12.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -3124,12 +2813,8 @@ description: Variables in memory after executing enclosure.kcl
                 "n": 12.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -3142,26 +2827,18 @@ description: Variables in memory after executing enclosure.kcl
                 "n": 12.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -3172,9 +2849,7 @@ description: Variables in memory after executing enclosure.kcl
           153.0,
           3.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3201,9 +2876,7 @@ description: Variables in memory after executing enclosure.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "wallThickness": {
@@ -3211,12 +2884,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "width": {
@@ -3224,12 +2893,8 @@ description: Variables in memory after executing enclosure.kcl
     "value": 125.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useKclContext } from '@src/lang/KclProvider'
 import { findUniqueName } from '@src/lang/create'
 import type { PrevVariable } from '@src/lang/queryAst'
@@ -7,10 +6,11 @@ import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
 import type { Expr, SourceRange } from '@src/lang/wasm'
 import { parse, resultIsOk } from '@src/lang/wasm'
 import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
+import type { Selections } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { getInVariableCase } from '@src/lib/utils'
-import type { Selections } from '@src/lib/selections'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -25,11 +25,13 @@ export function useCalculateKclExpression({
   initialVariableName: valueName = '',
   sourceRange,
   selectionRanges,
+  allowArrays,
 }: {
   value: string
   initialVariableName?: string
   sourceRange?: SourceRange
   selectionRanges: Selections
+  allowArrays?: boolean
 }): {
   inputRef: React.RefObject<HTMLInputElement>
   valueNode: Expr | null
@@ -125,7 +127,7 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
-      const result = await getCalculatedKclExpressionValue(value)
+      const result = await getCalculatedKclExpressionValue(value, allowArrays)
       setIsExecuting(false)
       if (result instanceof Error || 'errors' in result || !result.astNode) {
         setCalcResult('NAN')
@@ -145,7 +147,7 @@ export function useCalculateKclExpression({
       setValueNode(null)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [value, availableVarInfo, code, kclManager.variables])
+  }, [value, availableVarInfo, code, kclManager.variables, allowArrays])
 
   return {
     valueNode,

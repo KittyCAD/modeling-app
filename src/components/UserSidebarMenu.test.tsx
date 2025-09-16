@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { User } from '@kittycad/lib'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import {
   Route,
@@ -8,8 +8,6 @@ import {
 } from 'react-router-dom'
 
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
-
-type User = Models['User_type']
 
 describe('UserSidebarMenu tests', () => {
   test("Renders user's name and email if available", async () => {
@@ -47,7 +45,7 @@ describe('UserSidebarMenu tests', () => {
     })
     await waitFor(() => {
       expect(screen.getByTestId('email')).toHaveTextContent(
-        userWellFormed.email
+        userWellFormed.email ?? ''
       )
     })
   })
@@ -57,8 +55,8 @@ describe('UserSidebarMenu tests', () => {
       id: '8675309',
       email: 'kittycad.sidebar.test@example.com',
       image: 'https://placekitten.com/200/200',
-      is_onboarded: false,
       created_at: 'yesteryear',
+      is_onboarded: false,
       updated_at: 'today',
       company: 'Test Company',
       discord: 'Test User#1234',
@@ -81,7 +79,9 @@ describe('UserSidebarMenu tests', () => {
     fireEvent.click(screen.getByTestId('user-sidebar-toggle'))
 
     await waitFor(() => {
-      expect(screen.getByTestId('username')).toHaveTextContent(userNoName.email)
+      expect(screen.getByTestId('username')).toHaveTextContent(
+        userNoName.email ?? ''
+      )
     })
   })
 

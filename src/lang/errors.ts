@@ -13,12 +13,12 @@ import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
+import type { BacktraceItem } from '@rust/kcl-lib/bindings/BacktraceItem'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import { sourceRangeContains } from '@src/lang/sourceRange'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
 import type { ArtifactGraph, VariableMap } from '@src/lang/wasm'
-import type { BacktraceItem } from '@rust/kcl-lib/bindings/BacktraceItem'
-import { sourceRangeContains } from '@src/lang/sourceRange'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {

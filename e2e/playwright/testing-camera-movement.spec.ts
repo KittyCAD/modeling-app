@@ -1,10 +1,10 @@
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
-import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 
 test.describe('Testing Camera Movement', () => {
   /**

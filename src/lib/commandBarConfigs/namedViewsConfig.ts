@@ -1,42 +1,42 @@
 import type {
-  CameraViewState_type,
-  Point3d_type,
-  Point4d_type,
-  WorldCoordinateSystem_type,
-} from '@kittycad/lib/dist/types/src/models'
+  CameraViewState,
+  Point3d,
+  Point4d,
+  WorldCoordinateSystem,
+} from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { isArray } from '@src/lib/utils'
 import toast from 'react-hot-toast'
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { engineCommandManager } from '@src/lib/singletons'
+import { getSettings, settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { getSettings, settingsActor } from '@src/lib/singletons'
 
-function isWorldCoordinateSystemType(
-  x: string
-): x is WorldCoordinateSystem_type {
+function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem {
   return x === 'right_handed_up_z' || x === 'right_handed_up_y'
 }
 
 type Tuple3 = [number, number, number]
 type Tuple4 = [number, number, number, number]
 
-function point3DToNumberArray(value: Point3d_type): Tuple3 {
+function point3DToNumberArray(value: Point3d): Tuple3 {
   return [value.x, value.y, value.z]
 }
-function numberArrayToPoint3D(value: Tuple3): Point3d_type {
+function numberArrayToPoint3D(value: Tuple3): Point3d {
   return {
     x: value[0],
     y: value[1],
     z: value[2],
   }
 }
-function point4DToNumberArray(value: Point4d_type): Tuple4 {
+function point4DToNumberArray(value: Point4d): Tuple4 {
   return [value.x, value.y, value.z, value.w]
 }
-function numberArrayToPoint4D(value: Tuple4): Point4d_type {
+function numberArrayToPoint4D(value: Tuple4): Point4d {
   return {
     x: value[0],
     y: value[1],
@@ -47,14 +47,14 @@ function numberArrayToPoint4D(value: Tuple4): Point4d_type {
 
 function namedViewToCameraViewState(
   namedView: NamedView
-): CameraViewState_type | Error {
+): CameraViewState | Error {
   const worldCoordinateSystem: string = namedView.world_coord_system
 
   if (!isWorldCoordinateSystemType(worldCoordinateSystem)) {
     return new Error('world coordinate system is not typed')
   }
 
-  const cameraViewState: CameraViewState_type = {
+  const cameraViewState: CameraViewState = {
     eye_offset: namedView.eye_offset,
     fov_y: namedView.fov_y,
     ortho_scale_enabled: namedView.ortho_scale_enabled,
@@ -70,7 +70,7 @@ function namedViewToCameraViewState(
 
 function cameraViewStateToNamedView(
   name: string,
-  cameraViewState: CameraViewState_type
+  cameraViewState: CameraViewState
 ): NamedView | Error {
   let pivot_position: Tuple3 | null = null
   let pivot_rotation: Tuple4 | null = null
@@ -124,18 +124,21 @@ export function createNamedViewsCommand() {
             cmd: { type: 'default_camera_get_view' },
           })
 
-        if (!(cameraGetViewResponse && 'resp' in cameraGetViewResponse)) {
+        const r = isArray(cameraGetViewResponse)
+          ? cameraGetViewResponse[0]
+          : cameraGetViewResponse
+
+        if (!r) {
           return toast.error('Unable to create named view, websocket failure')
         }
 
-        if ('modeling_response' in cameraGetViewResponse.resp.data) {
-          if (cameraGetViewResponse.success) {
+        const rr = r
+        if (isModelingResponse(rr)) {
+          if (rr.success) {
             if (
-              cameraGetViewResponse.resp.data.modeling_response.type ===
-              'default_camera_get_view'
+              rr.resp.data.modeling_response.type === 'default_camera_get_view'
             ) {
-              const view =
-                cameraGetViewResponse.resp.data.modeling_response.data
+              const view = rr.resp.data.modeling_response.data
               const requestedView = cameraViewStateToNamedView(
                 data.name,
                 view.view

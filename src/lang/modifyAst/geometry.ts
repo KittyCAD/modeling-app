@@ -9,6 +9,7 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { getAxisExpressionAndIndex } from '@src/lang/modifyAst/sweeps'
 import {
   getVariableExprsFromSelection,
   valueOrVariable,
@@ -21,10 +22,9 @@ import type {
   Program,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import { getAxisExpressionAndIndex } from '@src/lang/modifyAst/sweeps'
 
 export function addHelix({
   ast,

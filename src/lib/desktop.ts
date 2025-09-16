@@ -1,16 +1,19 @@
-import type { Models } from '@kittycad/lib'
+import type { User } from '@kittycad/lib'
+import { users } from '@kittycad/lib'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
+import type { IElectronAPI } from '@root/interface'
 import { newKclFile } from '@src/lang/project'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   defaultAppSettings,
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
 import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -29,8 +32,6 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import type { IElectronAPI } from '@root/interface'
 
 export async function renameProjectDirectory(
   electron: IElectronAPI,
@@ -661,7 +662,6 @@ export const readProjectSettingsFile = async (
     await electron.stat(settingsPath)
   } catch (e) {
     if (e === 'ENOENT') {
-      // Return the default configuration.
       return {}
     }
   }
@@ -925,18 +925,11 @@ export const setState = async (state: Project | undefined): Promise<void> => {
   appStateStore = state
 }
 
-export const getUser = async (token: string): Promise<Models['User_type']> => {
-  try {
-    const user = await fetch(withAPIBaseURL('/users/me'), {
-      headers: new Headers({
-        Authorization: `Bearer ${token}`,
-      }),
-    })
-    return user.json()
-  } catch (e) {
-    console.error(e)
-  }
-  return Promise.reject(new Error('unreachable'))
+export const getUser = async (token: string): Promise<User> => {
+  const client = createKCClient(token)
+  const res = await kcCall(() => users.get_user_self({ client }))
+  if (res instanceof Error) return Promise.reject(res)
+  return res
 }
 
 export const writeProjectThumbnailFile = async (

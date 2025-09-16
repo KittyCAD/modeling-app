@@ -1,6 +1,6 @@
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
-import { changeDefaultUnits, unitLengthToUnitLen } from '@src/lang/wasm'
+import { changeDefaultUnits } from '@src/lang/wasm'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 
 /**
@@ -22,5 +22,5 @@ export function newKclFile(
     return ''
   }
 
-  return changeDefaultUnits('', unitLengthToUnitLen(defaultLengthUnit))
+  return changeDefaultUnits('', defaultLengthUnit)
 }
