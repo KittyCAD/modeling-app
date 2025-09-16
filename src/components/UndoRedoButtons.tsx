@@ -3,6 +3,7 @@ import Tooltip from '@src/components/Tooltip'
 import type EditorManager from '@src/editor/manager'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import { historyManager } from '@src/lib/singletons'
 import type { HTMLProps, MouseEventHandler } from 'react'
 
 export function UndoRedoButtons({
@@ -15,13 +16,33 @@ export function UndoRedoButtons({
         label="Undo"
         keyboardShortcut="mod+z"
         iconName="arrowRotateLeft"
-        onClick={() => editorManager.undo()}
+        onClick={() => {
+          if (historyManager.canUndo()) {
+            historyManager
+              .undo()
+              .then(() => console.log('yayyyyy', historyManager))
+              .catch((e) => console.error('nooooo', e))
+            return
+          }
+          editorManager.undo()
+        }}
+        disabled={!historyManager.canUndo()}
       />
       <UndoOrRedoButton
         label="Redo"
         keyboardShortcut="mod+shift+z"
         iconName="arrowRotateRight"
-        onClick={() => editorManager.redo()}
+        onClick={() => {
+          if (historyManager.canRedo()) {
+            historyManager
+              .redo()
+              .then(() => console.log('yayyyyy'))
+              .catch((e) => console.error('nooooo', e))
+            return
+          }
+          editorManager.redo()
+        }}
+        disabled={!historyManager.canRedo()}
       />
     </div>
   )
@@ -32,6 +53,7 @@ interface UndoOrRedoButtonProps {
   onClick: MouseEventHandler
   iconName: 'arrowRotateRight' | 'arrowRotateLeft'
   keyboardShortcut: string
+  disabled: boolean
 }
 
 function UndoOrRedoButton(props: UndoOrRedoButtonProps) {
@@ -40,7 +62,8 @@ function UndoOrRedoButton(props: UndoOrRedoButtonProps) {
     <button
       type="button"
       onClick={props.onClick}
-      className="p-0 m-0 border-transparent dark:border-transparent focus-visible:border-chalkboard-100"
+      className="p-0 m-0 border-transparent dark:border-transparent focus-visible:border-chalkboard-100 disabled:text-3 disabled:cursor-not-allowed"
+      disabled={props.disabled}
     >
       <CustomIcon name={props.iconName} className="w-6 h-6" />
       <Tooltip

@@ -20,7 +20,9 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { historyManager } from '@src/lib/singletons'
 import type { AppMachineContext } from '@src/lib/types'
+import { uuidv4 } from '@src/lib/utils'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,
@@ -583,6 +585,20 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
 
         await window.electron.rename(oldPath, newPath)
+        historyManager.addItem({
+          id: uuidv4(),
+          label: `Renamed ${oldPath} to ${newPath}`,
+          undo: () =>
+            window.electron
+              ?.rename(newPath, oldPath)
+              .then(() => true)
+              .catch(() => false) || Promise.resolve(false),
+          redo: () =>
+            window.electron
+              ?.rename(oldPath, newPath)
+              .then(() => true)
+              .catch(() => false) || Promise.resolve(false),
+        })
 
         return {
           message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
