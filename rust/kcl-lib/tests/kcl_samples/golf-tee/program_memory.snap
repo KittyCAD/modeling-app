@@ -8,12 +8,8 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "cupDiameter": {
@@ -21,12 +17,8 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 14.6,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "cupHeight": {
@@ -34,12 +26,8 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 14.6,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "cupRadius": {
@@ -47,12 +35,8 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 7.3,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "golfTee": {
@@ -110,9 +94,7 @@ description: Variables in memory after executing golf-tee.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -129,9 +111,7 @@ description: Variables in memory after executing golf-tee.kcl
               55.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -148,9 +128,7 @@ description: Variables in memory after executing golf-tee.kcl
               70.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -167,9 +145,7 @@ description: Variables in memory after executing golf-tee.kcl
               68.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -186,9 +162,7 @@ description: Variables in memory after executing golf-tee.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -205,9 +179,7 @@ description: Variables in memory after executing golf-tee.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -217,9 +189,7 @@ description: Variables in memory after executing golf-tee.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -227,25 +197,19 @@ description: Variables in memory after executing golf-tee.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -257,9 +221,7 @@ description: Variables in memory after executing golf-tee.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -268,16 +230,11 @@ description: Variables in memory after executing golf-tee.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -286,12 +243,8 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 4.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "shaftHeight": {
@@ -299,12 +252,8 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 45.4,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "shaftRadius": {
@@ -312,12 +261,8 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 2.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "teeHeight": {
@@ -325,12 +270,8 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 70.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "teeProfile": {
@@ -354,9 +295,7 @@ description: Variables in memory after executing golf-tee.kcl
             10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -373,9 +312,7 @@ description: Variables in memory after executing golf-tee.kcl
             55.4
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -392,9 +329,7 @@ description: Variables in memory after executing golf-tee.kcl
             70.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -411,9 +346,7 @@ description: Variables in memory after executing golf-tee.kcl
             68.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -430,9 +363,7 @@ description: Variables in memory after executing golf-tee.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -449,9 +380,7 @@ description: Variables in memory after executing golf-tee.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -461,9 +390,7 @@ description: Variables in memory after executing golf-tee.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -471,25 +398,19 @@ description: Variables in memory after executing golf-tee.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -501,9 +422,7 @@ description: Variables in memory after executing golf-tee.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -512,9 +431,7 @@ description: Variables in memory after executing golf-tee.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "teeSketch": {
@@ -526,34 +443,26 @@ description: Variables in memory after executing golf-tee.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -562,12 +471,8 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

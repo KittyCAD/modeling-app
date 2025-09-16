@@ -58,9 +58,7 @@ description: Variables in memory after executing rectangle-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -77,9 +75,7 @@ description: Variables in memory after executing rectangle-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -96,9 +92,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -115,9 +109,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -134,9 +126,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -146,9 +136,7 @@ description: Variables in memory after executing rectangle-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -156,25 +144,19 @@ description: Variables in memory after executing rectangle-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -186,9 +168,7 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -197,16 +177,11 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 710.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -265,9 +240,7 @@ description: Variables in memory after executing rectangle-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -284,9 +257,7 @@ description: Variables in memory after executing rectangle-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -303,9 +274,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -322,9 +291,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -341,9 +308,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -353,9 +318,7 @@ description: Variables in memory after executing rectangle-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -363,25 +326,19 @@ description: Variables in memory after executing rectangle-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -393,9 +350,7 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -404,16 +359,11 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 710.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -472,9 +422,7 @@ description: Variables in memory after executing rectangle-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -491,9 +439,7 @@ description: Variables in memory after executing rectangle-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -510,9 +456,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -529,9 +473,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -548,9 +490,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -560,9 +500,7 @@ description: Variables in memory after executing rectangle-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -570,25 +508,19 @@ description: Variables in memory after executing rectangle-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -600,9 +532,7 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -611,16 +541,11 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 710.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -679,9 +604,7 @@ description: Variables in memory after executing rectangle-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -698,9 +621,7 @@ description: Variables in memory after executing rectangle-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -717,9 +638,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -736,9 +655,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -755,9 +672,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -767,9 +682,7 @@ description: Variables in memory after executing rectangle-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -777,25 +690,19 @@ description: Variables in memory after executing rectangle-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -807,9 +714,7 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -818,16 +723,11 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 710.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -836,12 +736,8 @@ description: Variables in memory after executing rectangle-table.kcl
     "value": 710.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "legProfile": {
@@ -865,9 +761,7 @@ description: Variables in memory after executing rectangle-table.kcl
             40.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -884,9 +778,7 @@ description: Variables in memory after executing rectangle-table.kcl
             40.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -903,9 +795,7 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -922,9 +812,7 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -941,9 +829,7 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -953,9 +839,7 @@ description: Variables in memory after executing rectangle-table.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -963,25 +847,19 @@ description: Variables in memory after executing rectangle-table.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -993,9 +871,7 @@ description: Variables in memory after executing rectangle-table.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1004,9 +880,7 @@ description: Variables in memory after executing rectangle-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "legSketch": {
@@ -1018,34 +892,26 @@ description: Variables in memory after executing rectangle-table.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1054,12 +920,8 @@ description: Variables in memory after executing rectangle-table.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tableHeight": {
@@ -1067,12 +929,8 @@ description: Variables in memory after executing rectangle-table.kcl
     "value": 750.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tableLength": {
@@ -1080,12 +938,8 @@ description: Variables in memory after executing rectangle-table.kcl
     "value": 1500.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tableTopExtrude": {
@@ -1143,9 +997,7 @@ description: Variables in memory after executing rectangle-table.kcl
               1500.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1162,9 +1014,7 @@ description: Variables in memory after executing rectangle-table.kcl
               1500.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1181,9 +1031,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1200,9 +1048,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1219,9 +1065,7 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1231,9 +1075,7 @@ description: Variables in memory after executing rectangle-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 750.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1241,25 +1083,19 @@ description: Variables in memory after executing rectangle-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1271,9 +1107,7 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1282,16 +1116,11 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -40.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1304,34 +1133,26 @@ description: Variables in memory after executing rectangle-table.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 750.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1356,9 +1177,7 @@ description: Variables in memory after executing rectangle-table.kcl
             1500.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1375,9 +1194,7 @@ description: Variables in memory after executing rectangle-table.kcl
             1500.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1394,9 +1211,7 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1413,9 +1228,7 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1432,9 +1245,7 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1444,9 +1255,7 @@ description: Variables in memory after executing rectangle-table.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 750.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -1454,25 +1263,19 @@ description: Variables in memory after executing rectangle-table.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1484,9 +1287,7 @@ description: Variables in memory after executing rectangle-table.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1495,9 +1296,7 @@ description: Variables in memory after executing rectangle-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "tableTopSketch": {
@@ -1509,34 +1308,26 @@ description: Variables in memory after executing rectangle-table.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 750.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1545,12 +1336,8 @@ description: Variables in memory after executing rectangle-table.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tableWidth": {
@@ -1558,12 +1345,8 @@ description: Variables in memory after executing rectangle-table.kcl
     "value": 600.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

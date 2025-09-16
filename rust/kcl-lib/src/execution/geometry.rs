@@ -3,7 +3,9 @@ use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, websocket::ModelingCmdReq};
+use kittycad_modeling_cmds::{
+    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
+};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 
@@ -11,7 +13,8 @@ use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, UnitLen, types::NumericType,
+        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
+        types::{NumericType, adjust_length},
     },
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{args::TyF64, sketch::PlaneData},
@@ -266,7 +269,7 @@ pub struct Helix {
     pub ccw: bool,
     /// The cylinder the helix was created on.
     pub cylinder_id: Option<uuid::Uuid>,
-    pub units: UnitLen,
+    pub units: UnitLength,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -312,7 +315,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -336,7 +339,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -360,7 +363,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -384,7 +387,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -408,7 +411,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -432,7 +435,7 @@ impl PlaneInfo {
                             x: 0.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: Some(UnitLength::Millimeters),
                         },
                     x_axis:
                         Point3d {
@@ -588,7 +591,7 @@ pub struct Face {
     pub y_axis: Point3d,
     /// The solid the face is on.
     pub solid: Box<Solid>,
-    pub units: UnitLen,
+    pub units: UnitLength,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -643,7 +646,7 @@ pub struct Sketch {
     /// If the sketch includes a mirror.
     #[serde(skip)]
     pub mirror: Option<uuid::Uuid>,
-    pub units: UnitLen,
+    pub units: UnitLength,
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
@@ -831,8 +834,6 @@ pub struct Solid {
     pub value: Vec<ExtrudeSurface>,
     /// The sketch.
     pub sketch: Sketch,
-    /// The height of the solid.
-    pub height: f64,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
@@ -841,7 +842,7 @@ pub struct Solid {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
     /// The units of the solid.
-    pub units: UnitLen,
+    pub units: UnitLength,
     /// Is this a sectional solid?
     pub sectional: bool,
     /// Metadata.
@@ -852,10 +853,6 @@ pub struct Solid {
 impl Solid {
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
-    }
-
-    pub(crate) fn height_in_mm(&self) -> f64 {
-        self.units.adjust_to(self.height, UnitLen::Mm).0
     }
 }
 
@@ -928,17 +925,17 @@ impl EdgeCut {
 pub struct Point2d {
     pub x: f64,
     pub y: f64,
-    pub units: UnitLen,
+    pub units: UnitLength,
 }
 
 impl Point2d {
     pub const ZERO: Self = Self {
         x: 0.0,
         y: 0.0,
-        units: UnitLen::Mm,
+        units: UnitLength::Millimeters,
     };
 
-    pub fn new(x: f64, y: f64, units: UnitLen) -> Self {
+    pub fn new(x: f64, y: f64, units: UnitLength) -> Self {
         Self { x, y, units }
     }
 
@@ -961,7 +958,7 @@ pub struct Point3d {
     pub x: f64,
     pub y: f64,
     pub z: f64,
-    pub units: UnitLen,
+    pub units: Option<UnitLength>,
 }
 
 impl Point3d {
@@ -969,10 +966,10 @@ impl Point3d {
         x: 0.0,
         y: 0.0,
         z: 0.0,
-        units: UnitLen::Mm,
+        units: Some(UnitLength::Millimeters),
     };
 
-    pub fn new(x: f64, y: f64, z: f64, units: UnitLen) -> Self {
+    pub fn new(x: f64, y: f64, z: f64, units: Option<UnitLength>) -> Self {
         Self { x, y, z, units }
     }
 
@@ -989,7 +986,7 @@ impl Point3d {
             x: self.y * other.z - self.z * other.y,
             y: self.z * other.x - self.x * other.z,
             z: self.x * other.y - self.y * other.x,
-            units: UnitLen::Unknown,
+            units: None,
         }
     }
 
@@ -1010,11 +1007,11 @@ impl Point3d {
             x: self.x / len,
             y: self.y / len,
             z: self.z / len,
-            units: UnitLen::Unknown,
+            units: None,
         }
     }
 
-    pub fn as_3_dims(&self) -> ([f64; 3], UnitLen) {
+    pub fn as_3_dims(&self) -> ([f64; 3], Option<UnitLength>) {
         let p = [self.x, self.y, self.z];
         let u = self.units;
         (p, u)
@@ -1036,7 +1033,7 @@ impl From<[TyF64; 3]> for Point3d {
             x: p[0].n,
             y: p[1].n,
             z: p[2].n,
-            units: p[0].ty.expect_length(),
+            units: p[0].ty.as_length(),
         }
     }
 }
@@ -1049,10 +1046,18 @@ impl From<Point3d> for Point3D {
 
 impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
     fn from(p: Point3d) -> Self {
-        Self {
-            x: LengthUnit(p.units.adjust_to(p.x, UnitLen::Mm).0),
-            y: LengthUnit(p.units.adjust_to(p.y, UnitLen::Mm).0),
-            z: LengthUnit(p.units.adjust_to(p.z, UnitLen::Mm).0),
+        if let Some(units) = p.units {
+            Self {
+                x: LengthUnit(adjust_length(units, p.x, UnitLength::Millimeters).0),
+                y: LengthUnit(adjust_length(units, p.y, UnitLength::Millimeters).0),
+                z: LengthUnit(adjust_length(units, p.z, UnitLength::Millimeters).0),
+            }
+        } else {
+            Self {
+                x: LengthUnit(p.x),
+                y: LengthUnit(p.y),
+                z: LengthUnit(p.z),
+            }
         }
     }
 }
@@ -1081,11 +1086,14 @@ impl Sub for Point3d {
     type Output = Point3d;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        let (x, y, z) = if rhs.units != self.units {
+        let (x, y, z) = if rhs.units != self.units
+            && let Some(sunits) = self.units
+            && let Some(runits) = rhs.units
+        {
             (
-                rhs.units.adjust_to(rhs.x, self.units).0,
-                rhs.units.adjust_to(rhs.y, self.units).0,
-                rhs.units.adjust_to(rhs.z, self.units).0,
+                adjust_length(runits, rhs.x, sunits).0,
+                adjust_length(runits, rhs.y, sunits).0,
+                adjust_length(runits, rhs.z, sunits).0,
             )
         } else {
             (rhs.x, rhs.y, rhs.z)
@@ -1129,7 +1137,7 @@ pub struct BasePath {
     /// The to point.
     #[ts(type = "[number, number]")]
     pub to: [f64; 2],
-    pub units: UnitLen,
+    pub units: UnitLength,
     /// The tag of the path.
     pub tag: Option<TagNode>,
     /// Metadata.

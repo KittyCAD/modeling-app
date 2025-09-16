@@ -1,0 +1,66 @@
+// Rack Blanking Panel - 1U
+// A rack blanking panel, also known as a filler panel or spacer blank, is a flat piece of material (usually metal or plastic) designed to fill empty spaces within a server rack. These panels are primarily used to improve airflow and cooling efficiency in server racks
+
+
+
+
+@settings(defaultLengthUnit = in)
+
+width = 19
+height = 1.75
+thickness = .0598 // Gauge 16
+holeOffset = 1 / 3
+wingLength = 1 / 3
+wingOffset = 2 / 3
+wingCutInset = thickness / 2 + 0.00001
+holeDiameter = 3 / 16
+
+baseSketch = startSketchOn(XZ)
+baseProfile = startProfile(baseSketch, at = [0, wingCutInset])
+  |> xLine(length = wingOffset)
+  |> yLine(length = -wingCutInset)
+  |> xLine(length = width - (2 * wingOffset), tag = $seg01)
+  |> yLine(length = wingCutInset)
+  |> xLine(length = wingOffset)
+  |> yLine(length = height - (2 * wingCutInset))
+  |> xLine(length = -wingOffset)
+  |> yLine(length = wingCutInset)
+  |> xLine(length = -(width - (2 * wingOffset)), tag = $seg02)
+  |> yLine(length = -wingCutInset)
+  |> xLine(length = -wingOffset)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> subtract2d(tool = circle(center = [holeOffset, holeOffset], radius = holeDiameter / 2))
+  |> subtract2d(tool = circle(center = [holeOffset, height - holeOffset], radius = holeDiameter / 2))
+  |> subtract2d(tool = circle(center = [width - holeOffset, holeOffset], radius = holeDiameter / 2))
+  |> subtract2d(tool = circle(
+       center = [
+         width - holeOffset,
+         height - holeOffset
+       ],
+       radius = holeDiameter / 2,
+     ))
+base = extrude(baseProfile, length = thickness, tagStart = $capStart001)
+  |> fillet(
+       radius = thickness / 2,
+       tags = [
+         getCommonEdge(faces = [seg01, capStart001]),
+         getCommonEdge(faces = [seg02, capStart001])
+       ],
+     )
+
+wingSketch = startSketchOn(base, face = END)
+bottomWingProfile = startProfile(wingSketch, at = [wingOffset, 0])
+  |> xLine(length = width - (2 * wingOffset))
+  |> yLine(length = thickness)
+  |> xLine(length = -(width - (2 * wingOffset)))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+topWingProfile = startProfile(wingSketch, at = [wingOffset, height - thickness])
+  |> xLine(length = width - (2 * wingOffset))
+  |> yLine(length = thickness)
+  |> xLine(length = -(width - (2 * wingOffset)))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+bottomWing = extrude(bottomWingProfile, length = wingLength)
+topWing = extrude(topWingProfile, length = wingLength)

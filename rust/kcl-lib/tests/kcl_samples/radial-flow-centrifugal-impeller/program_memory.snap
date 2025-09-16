@@ -43,9 +43,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -55,9 +53,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -65,25 +61,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -95,9 +85,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             75.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -106,16 +94,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -124,12 +107,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "bladeChord": {
@@ -137,12 +116,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 35.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "bladeCount": {
@@ -150,12 +125,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "bladeHeight": {
@@ -163,12 +134,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "bladeOffset": {
@@ -226,9 +193,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -245,9 +210,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               35.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -264,9 +227,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               35.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -283,9 +244,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -295,9 +254,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -305,25 +262,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -335,9 +286,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -346,16 +295,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -364,12 +308,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "bladeThickness": {
@@ -377,12 +317,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "blades": {
@@ -443,9 +379,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -462,9 +396,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -481,9 +413,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -500,9 +430,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -512,9 +440,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -522,25 +448,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -552,9 +472,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -563,16 +481,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -631,9 +544,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -650,9 +561,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -669,9 +578,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -688,9 +595,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -700,9 +605,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -710,25 +613,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -740,9 +637,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -751,16 +646,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -819,9 +709,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -838,9 +726,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -857,9 +743,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -876,9 +760,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -888,9 +770,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -898,25 +778,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -928,9 +802,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -939,16 +811,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -1007,9 +874,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1026,9 +891,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1045,9 +908,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1064,9 +925,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1076,9 +935,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -1086,25 +943,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1116,9 +967,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1127,16 +976,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -1195,9 +1039,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1214,9 +1056,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1233,9 +1073,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1252,9 +1090,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1264,9 +1100,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -1274,25 +1108,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1304,9 +1132,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1315,16 +1141,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -1383,9 +1204,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1402,9 +1221,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1421,9 +1238,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1440,9 +1255,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1452,9 +1265,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -1462,25 +1273,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1492,9 +1297,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1503,16 +1306,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -1571,9 +1369,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1590,9 +1386,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1609,9 +1403,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1628,9 +1420,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1640,9 +1430,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -1650,25 +1438,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1680,9 +1462,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1691,16 +1471,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -1759,9 +1534,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1778,9 +1551,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1797,9 +1568,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1816,9 +1585,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1828,9 +1595,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -1838,25 +1603,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1868,9 +1627,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1879,16 +1636,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -1947,9 +1699,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1966,9 +1716,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1985,9 +1733,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2004,9 +1750,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2016,9 +1760,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -2026,25 +1768,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2056,9 +1792,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2067,16 +1801,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -2135,9 +1864,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2154,9 +1881,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2173,9 +1898,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2192,9 +1915,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2204,9 +1925,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -2214,25 +1933,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2244,9 +1957,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2255,16 +1966,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -2323,9 +2029,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2342,9 +2046,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2361,9 +2063,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2380,9 +2080,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2392,9 +2090,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -2402,25 +2098,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2432,9 +2122,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2443,16 +2131,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -2511,9 +2194,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2530,9 +2211,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2549,9 +2228,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   35.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2568,9 +2245,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2580,9 +2255,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -2590,25 +2263,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2620,9 +2287,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2631,16 +2296,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -2686,9 +2346,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -2698,9 +2356,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "x": 0.0,
             "y": 0.0,
             "z": -12.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2708,25 +2364,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2738,9 +2388,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             15.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2749,16 +2397,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 57.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -2789,9 +2432,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2801,9 +2442,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "x": 0.0,
           "y": 0.0,
           "z": -12.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2811,25 +2450,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2841,9 +2474,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           15.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2852,9 +2483,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "boreDia": {
@@ -2862,12 +2491,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "boreSketch": {
@@ -2879,34 +2504,26 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "x": 0.0,
         "y": 0.0,
         "z": -12.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2937,9 +2554,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2949,9 +2564,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -2959,25 +2572,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2989,9 +2596,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           75.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3000,9 +2605,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "diskSketch": {
@@ -3014,34 +2617,26 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3085,9 +2680,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -3099,17 +2692,13 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -3149,9 +2738,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -3161,9 +2748,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XY",
@@ -3171,25 +2756,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -3201,9 +2780,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   75.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -3212,21 +2789,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": -6.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -3237,9 +2807,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             20.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3248,16 +2816,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 40.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -3288,9 +2851,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -3302,17 +2863,13 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -3352,9 +2909,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -3364,9 +2919,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -3374,25 +2927,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -3404,9 +2951,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 75.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3415,21 +2960,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": -6.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -3440,9 +2978,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           20.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3451,9 +2987,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "hubHeight": {
@@ -3461,12 +2995,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "hubOd": {
@@ -3474,12 +3004,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "hubSketch": {
@@ -3492,17 +3018,13 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -3542,9 +3064,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                 0.0
               ],
               "type": "Circle",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             }
           ],
           "on": {
@@ -3554,9 +3074,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "XY",
@@ -3564,25 +3082,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -3594,9 +3106,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               75.0,
               0.0
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -3605,21 +3115,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
-        "height": -6.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "sectional": false
       },
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "impeller": {
@@ -3662,9 +3165,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -3676,17 +3177,13 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -3726,9 +3223,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -3738,9 +3233,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XY",
@@ -3748,25 +3241,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -3778,9 +3265,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   75.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -3789,21 +3274,14 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": -6.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -3814,9 +3292,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             20.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3825,16 +3301,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 40.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -3859,9 +3330,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3878,9 +3347,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             35.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3897,9 +3364,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             35.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3916,9 +3381,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -3928,9 +3391,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -3938,25 +3399,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3968,9 +3423,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3979,9 +3432,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "leadSketch": {
@@ -3993,34 +3444,26 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -4029,12 +3472,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 150.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "oneBlade": {
@@ -4092,9 +3531,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4111,9 +3548,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               35.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4130,9 +3565,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               35.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4149,9 +3582,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -4161,9 +3592,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -4171,25 +3600,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4201,9 +3624,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4212,16 +3633,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -4230,12 +3646,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sweepDeg": {
@@ -4243,12 +3655,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "trailPlane": {
@@ -4260,34 +3668,26 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "x": 0.0,
         "y": 0.0,
         "z": 40.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -4312,9 +3712,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4331,9 +3729,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             35.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4350,9 +3746,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             35.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4369,9 +3763,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -4381,9 +3773,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "x": 0.0,
           "y": 0.0,
           "z": 40.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -4391,25 +3781,19 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -4421,9 +3805,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -4432,9 +3814,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "trailSketch": {
@@ -4446,34 +3826,26 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "x": 0.0,
         "y": 0.0,
         "z": 40.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   }

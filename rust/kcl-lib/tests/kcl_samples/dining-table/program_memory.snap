@@ -8,12 +8,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 120.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "apronThickness": {
@@ -21,12 +17,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "apronTopElevation": {
@@ -34,12 +26,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 750.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "distanceBetweenLegAxisLength": {
@@ -47,12 +35,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 1940.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "distanceBetweenLegAxisWidth": {
@@ -60,12 +44,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 640.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "distanceFromTableTopCornerToApronSide": {
@@ -73,12 +53,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 70.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "distanceFromTableTopCornerToLegAxis": {
@@ -86,12 +62,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "distanceFromTableTopCornerToLegBackSide": {
@@ -99,12 +71,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 100.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "leg2": {
@@ -162,9 +130,7 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -181,9 +147,7 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -200,9 +164,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -219,9 +181,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -238,9 +198,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -250,9 +208,7 @@ description: Variables in memory after executing dining-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -260,25 +216,19 @@ description: Variables in memory after executing dining-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -290,9 +240,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -301,16 +249,11 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 730.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -369,9 +312,7 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -388,9 +329,7 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -407,9 +346,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -426,9 +363,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -445,9 +380,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -457,9 +390,7 @@ description: Variables in memory after executing dining-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -467,25 +398,19 @@ description: Variables in memory after executing dining-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -497,9 +422,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -508,16 +431,11 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 730.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -576,9 +494,7 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -595,9 +511,7 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -614,9 +528,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -633,9 +545,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -652,9 +562,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -664,9 +572,7 @@ description: Variables in memory after executing dining-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -674,25 +580,19 @@ description: Variables in memory after executing dining-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -704,9 +604,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -715,16 +613,11 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 730.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -783,9 +676,7 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -802,9 +693,7 @@ description: Variables in memory after executing dining-table.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -821,9 +710,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -840,9 +727,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -859,9 +744,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -871,9 +754,7 @@ description: Variables in memory after executing dining-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -881,25 +762,19 @@ description: Variables in memory after executing dining-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -911,9 +786,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -922,16 +795,11 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 730.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -940,12 +808,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 730.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "legOffset": {
@@ -953,12 +817,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 60.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "legProfile": {
@@ -982,9 +842,7 @@ description: Variables in memory after executing dining-table.kcl
             40.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1001,9 +859,7 @@ description: Variables in memory after executing dining-table.kcl
             40.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1020,9 +876,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1039,9 +893,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1058,9 +910,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1070,9 +920,7 @@ description: Variables in memory after executing dining-table.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -1080,25 +928,19 @@ description: Variables in memory after executing dining-table.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1110,9 +952,7 @@ description: Variables in memory after executing dining-table.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1121,9 +961,7 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "legSketch": {
@@ -1135,34 +973,26 @@ description: Variables in memory after executing dining-table.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1171,12 +1001,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "longApron1": {
@@ -1234,9 +1060,7 @@ description: Variables in memory after executing dining-table.kcl
               1900.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1253,9 +1077,7 @@ description: Variables in memory after executing dining-table.kcl
               1900.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1272,9 +1094,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1291,9 +1111,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1310,9 +1128,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1322,9 +1138,7 @@ description: Variables in memory after executing dining-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 730.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1332,25 +1146,19 @@ description: Variables in memory after executing dining-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1362,9 +1170,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1373,16 +1179,11 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -120.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1441,9 +1242,7 @@ description: Variables in memory after executing dining-table.kcl
               1900.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1460,9 +1259,7 @@ description: Variables in memory after executing dining-table.kcl
               1900.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1479,9 +1276,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1498,9 +1293,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1517,9 +1310,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1529,9 +1320,7 @@ description: Variables in memory after executing dining-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 730.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1539,25 +1328,19 @@ description: Variables in memory after executing dining-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1569,9 +1352,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1580,16 +1361,11 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -120.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1598,12 +1374,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 1900.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "longApronProfile": {
@@ -1627,9 +1399,7 @@ description: Variables in memory after executing dining-table.kcl
             1900.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1646,9 +1416,7 @@ description: Variables in memory after executing dining-table.kcl
             1900.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1665,9 +1433,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1684,9 +1450,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1703,9 +1467,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1715,9 +1477,7 @@ description: Variables in memory after executing dining-table.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 730.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -1725,25 +1485,19 @@ description: Variables in memory after executing dining-table.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1755,9 +1509,7 @@ description: Variables in memory after executing dining-table.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1766,9 +1518,7 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "longApronProfileMoved": {
@@ -1792,9 +1542,7 @@ description: Variables in memory after executing dining-table.kcl
             1900.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1811,9 +1559,7 @@ description: Variables in memory after executing dining-table.kcl
             1900.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1830,9 +1576,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1849,9 +1593,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1868,9 +1610,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1880,9 +1620,7 @@ description: Variables in memory after executing dining-table.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 730.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -1890,25 +1628,19 @@ description: Variables in memory after executing dining-table.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1920,9 +1652,7 @@ description: Variables in memory after executing dining-table.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1931,9 +1661,7 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "shortApron1": {
@@ -1991,9 +1719,7 @@ description: Variables in memory after executing dining-table.kcl
               20.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2010,9 +1736,7 @@ description: Variables in memory after executing dining-table.kcl
               20.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2029,9 +1753,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2048,9 +1770,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2067,9 +1787,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -2079,9 +1797,7 @@ description: Variables in memory after executing dining-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 730.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2089,25 +1805,19 @@ description: Variables in memory after executing dining-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2119,9 +1829,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2130,16 +1838,11 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -120.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -2198,9 +1901,7 @@ description: Variables in memory after executing dining-table.kcl
               20.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2217,9 +1918,7 @@ description: Variables in memory after executing dining-table.kcl
               20.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2236,9 +1935,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2255,9 +1952,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2274,9 +1969,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -2286,9 +1979,7 @@ description: Variables in memory after executing dining-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 730.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2296,25 +1987,19 @@ description: Variables in memory after executing dining-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2326,9 +2011,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2337,16 +2020,11 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -120.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -2355,12 +2033,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 600.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "shortApronProfile": {
@@ -2384,9 +2058,7 @@ description: Variables in memory after executing dining-table.kcl
             20.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2403,9 +2075,7 @@ description: Variables in memory after executing dining-table.kcl
             20.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2422,9 +2092,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2441,9 +2109,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2460,9 +2126,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2472,9 +2136,7 @@ description: Variables in memory after executing dining-table.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 730.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2482,25 +2144,19 @@ description: Variables in memory after executing dining-table.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2512,9 +2168,7 @@ description: Variables in memory after executing dining-table.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2523,9 +2177,7 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "shortApronProfileMoved": {
@@ -2549,9 +2201,7 @@ description: Variables in memory after executing dining-table.kcl
             20.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2568,9 +2218,7 @@ description: Variables in memory after executing dining-table.kcl
             20.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2587,9 +2235,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2606,9 +2252,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2625,9 +2269,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2637,9 +2279,7 @@ description: Variables in memory after executing dining-table.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 730.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2647,25 +2287,19 @@ description: Variables in memory after executing dining-table.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2677,9 +2311,7 @@ description: Variables in memory after executing dining-table.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2688,9 +2320,7 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "stretcherPlane": {
@@ -2702,34 +2332,26 @@ description: Variables in memory after executing dining-table.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 730.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2742,34 +2364,26 @@ description: Variables in memory after executing dining-table.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 730.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2778,12 +2392,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 750.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tableLength": {
@@ -2791,12 +2401,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 2100.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tableTopExtrude": {
@@ -2854,9 +2460,7 @@ description: Variables in memory after executing dining-table.kcl
               2100.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2873,9 +2477,7 @@ description: Variables in memory after executing dining-table.kcl
               2100.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2892,9 +2494,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2911,9 +2511,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2930,9 +2528,7 @@ description: Variables in memory after executing dining-table.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -2942,9 +2538,7 @@ description: Variables in memory after executing dining-table.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 750.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2952,25 +2546,19 @@ description: Variables in memory after executing dining-table.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2982,9 +2570,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2993,16 +2579,11 @@ description: Variables in memory after executing dining-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -3015,34 +2596,26 @@ description: Variables in memory after executing dining-table.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 750.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3067,9 +2640,7 @@ description: Variables in memory after executing dining-table.kcl
             2100.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3086,9 +2657,7 @@ description: Variables in memory after executing dining-table.kcl
             2100.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3105,9 +2674,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3124,9 +2691,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3143,9 +2708,7 @@ description: Variables in memory after executing dining-table.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -3155,9 +2718,7 @@ description: Variables in memory after executing dining-table.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 750.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -3165,25 +2726,19 @@ description: Variables in memory after executing dining-table.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3195,9 +2750,7 @@ description: Variables in memory after executing dining-table.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3206,9 +2759,7 @@ description: Variables in memory after executing dining-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "tableTopSketch": {
@@ -3220,34 +2771,26 @@ description: Variables in memory after executing dining-table.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 750.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3256,12 +2799,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tableWidth": {
@@ -3269,12 +2808,8 @@ description: Variables in memory after executing dining-table.kcl
     "value": 800.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

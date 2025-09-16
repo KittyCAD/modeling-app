@@ -8,12 +8,8 @@ description: Variables in memory after executing shaft-grommet.kcl
     "value": 0.1875,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeDiameterB": {
@@ -21,12 +17,8 @@ description: Variables in memory after executing shaft-grommet.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeHeight": {
@@ -34,12 +26,8 @@ description: Variables in memory after executing shaft-grommet.kcl
     "value": 0.03125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "forHoleDiameter": {
@@ -47,12 +35,8 @@ description: Variables in memory after executing shaft-grommet.kcl
     "value": 0.171875,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "forMaterialThickness": {
@@ -60,12 +44,8 @@ description: Variables in memory after executing shaft-grommet.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "grommet": {
@@ -151,9 +131,7 @@ description: Variables in memory after executing shaft-grommet.kcl
               0.1625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -170,9 +148,7 @@ description: Variables in memory after executing shaft-grommet.kcl
               0.1625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -189,9 +165,7 @@ description: Variables in memory after executing shaft-grommet.kcl
               0.13125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -208,9 +182,7 @@ description: Variables in memory after executing shaft-grommet.kcl
               0.13125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -227,9 +199,7 @@ description: Variables in memory after executing shaft-grommet.kcl
               0.03125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -246,9 +216,7 @@ description: Variables in memory after executing shaft-grommet.kcl
               0.03125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -265,9 +233,7 @@ description: Variables in memory after executing shaft-grommet.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -284,9 +250,7 @@ description: Variables in memory after executing shaft-grommet.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -296,9 +260,7 @@ description: Variables in memory after executing shaft-grommet.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -306,25 +268,19 @@ description: Variables in memory after executing shaft-grommet.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -336,9 +292,7 @@ description: Variables in memory after executing shaft-grommet.kcl
             0.0625,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -347,16 +301,11 @@ description: Variables in memory after executing shaft-grommet.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -381,9 +330,7 @@ description: Variables in memory after executing shaft-grommet.kcl
             0.1625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -400,9 +347,7 @@ description: Variables in memory after executing shaft-grommet.kcl
             0.1625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -419,9 +364,7 @@ description: Variables in memory after executing shaft-grommet.kcl
             0.13125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -438,9 +381,7 @@ description: Variables in memory after executing shaft-grommet.kcl
             0.13125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -457,9 +398,7 @@ description: Variables in memory after executing shaft-grommet.kcl
             0.03125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -476,9 +415,7 @@ description: Variables in memory after executing shaft-grommet.kcl
             0.03125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -495,9 +432,7 @@ description: Variables in memory after executing shaft-grommet.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -514,9 +449,7 @@ description: Variables in memory after executing shaft-grommet.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -526,9 +459,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -536,25 +467,19 @@ description: Variables in memory after executing shaft-grommet.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -566,9 +491,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           0.0625,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -577,9 +500,7 @@ description: Variables in memory after executing shaft-grommet.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "grommetProfileSketch": {
@@ -591,34 +512,26 @@ description: Variables in memory after executing shaft-grommet.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -627,12 +540,8 @@ description: Variables in memory after executing shaft-grommet.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "overallHeight": {
@@ -640,12 +549,8 @@ description: Variables in memory after executing shaft-grommet.kcl
     "value": 0.1625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

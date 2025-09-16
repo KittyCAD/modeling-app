@@ -23,6 +23,8 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 When you submit a PR to add or modify KCL samples, images will be generated and added to the repository automatically.
 
 ---
+#### [angle-gauge](angle-gauge/main.kcl) ([screenshot](screenshots/angle-gauge.png))
+[![angle-gauge](screenshots/angle-gauge.png)](angle-gauge/main.kcl)
 #### [axial-fan](axial-fan/main.kcl) ([screenshot](screenshots/axial-fan.png))
 [![axial-fan](screenshots/axial-fan.png)](axial-fan/main.kcl)
 #### [ball-bearing](ball-bearing/main.kcl) ([screenshot](screenshots/ball-bearing.png))
@@ -125,6 +127,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![herringbone-planetary-gearset](screenshots/herringbone-planetary-gearset.png)](herringbone-planetary-gearset/main.kcl)
 #### [hex-nut](hex-nut/main.kcl) ([screenshot](screenshots/hex-nut.png))
 [![hex-nut](screenshots/hex-nut.png)](hex-nut/main.kcl)
+#### [holder-rod-angle](holder-rod-angle/main.kcl) ([screenshot](screenshots/holder-rod-angle.png))
+[![holder-rod-angle](screenshots/holder-rod-angle.png)](holder-rod-angle/main.kcl)
 #### [i-beam](i-beam/main.kcl) ([screenshot](screenshots/i-beam.png))
 [![i-beam](screenshots/i-beam.png)](i-beam/main.kcl)
 #### [keyboard](keyboard/main.kcl) ([screenshot](screenshots/keyboard.png))
@@ -171,6 +175,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![propeller](screenshots/propeller.png)](propeller/main.kcl)
 #### [prosthetic-hip](prosthetic-hip/main.kcl) ([screenshot](screenshots/prosthetic-hip.png))
 [![prosthetic-hip](screenshots/prosthetic-hip.png)](prosthetic-hip/main.kcl)
+#### [rack-blanking-panel](rack-blanking-panel/main.kcl) ([screenshot](screenshots/rack-blanking-panel.png))
+[![rack-blanking-panel](screenshots/rack-blanking-panel.png)](rack-blanking-panel/main.kcl)
 #### [radial-flow-centrifugal-impeller](radial-flow-centrifugal-impeller/main.kcl) ([screenshot](screenshots/radial-flow-centrifugal-impeller.png))
 [![radial-flow-centrifugal-impeller](screenshots/radial-flow-centrifugal-impeller.png)](radial-flow-centrifugal-impeller/main.kcl)
 #### [rectangle-table](rectangle-table/main.kcl) ([screenshot](screenshots/rectangle-table.png))
@@ -213,6 +219,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![spur-gear](screenshots/spur-gear.png)](spur-gear/main.kcl)
 #### [spur-reduction-gearset](spur-reduction-gearset/main.kcl) ([screenshot](screenshots/spur-reduction-gearset.png))
 [![spur-reduction-gearset](screenshots/spur-reduction-gearset.png)](spur-reduction-gearset/main.kcl)
+#### [starlink-mini-bracket](starlink-mini-bracket/main.kcl) ([screenshot](screenshots/starlink-mini-bracket.png))
+[![starlink-mini-bracket](screenshots/starlink-mini-bracket.png)](starlink-mini-bracket/main.kcl)
 #### [straight-rung-ladder](straight-rung-ladder/main.kcl) ([screenshot](screenshots/straight-rung-ladder.png))
 [![straight-rung-ladder](screenshots/straight-rung-ladder.png)](straight-rung-ladder/main.kcl)
 #### [stylized-car](stylized-car/main.kcl) ([screenshot](screenshots/stylized-car.png))
@@ -257,4 +265,6 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![wind-turbine-blade-root-inserts](screenshots/wind-turbine-blade-root-inserts.png)](wind-turbine-blade-root-inserts/main.kcl)
 #### [wing-spar](wing-spar/main.kcl) ([screenshot](screenshots/wing-spar.png))
 [![wing-spar](screenshots/wing-spar.png)](wing-spar/main.kcl)
+#### [zoo-logo](zoo-logo/main.kcl) ([screenshot](screenshots/zoo-logo.png))
+[![zoo-logo](screenshots/zoo-logo.png)](zoo-logo/main.kcl)
 

@@ -13,12 +13,8 @@ description: Variables in memory after executing v-block.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "sideHoleHeight": {
@@ -26,12 +22,8 @@ description: Variables in memory after executing v-block.kcl
     "value": 1.1875,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "sideHoleProfile": {
@@ -64,9 +56,7 @@ description: Variables in memory after executing v-block.kcl
                 1.1875
               ],
               "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -78,17 +68,13 @@ description: Variables in memory after executing v-block.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "solid": {
               "type": "Solid",
@@ -227,9 +213,7 @@ description: Variables in memory after executing v-block.kcl
                       1.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -246,9 +230,7 @@ description: Variables in memory after executing v-block.kcl
                       1.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -265,9 +247,7 @@ description: Variables in memory after executing v-block.kcl
                       1.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -284,9 +264,7 @@ description: Variables in memory after executing v-block.kcl
                       1.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -303,9 +281,7 @@ description: Variables in memory after executing v-block.kcl
                       2.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -329,9 +305,7 @@ description: Variables in memory after executing v-block.kcl
                       2.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -348,9 +322,7 @@ description: Variables in memory after executing v-block.kcl
                       1.5625
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -367,9 +339,7 @@ description: Variables in memory after executing v-block.kcl
                       2.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -386,9 +356,7 @@ description: Variables in memory after executing v-block.kcl
                       2.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -405,9 +373,7 @@ description: Variables in memory after executing v-block.kcl
                       1.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -424,9 +390,7 @@ description: Variables in memory after executing v-block.kcl
                       1.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -443,9 +407,7 @@ description: Variables in memory after executing v-block.kcl
                       1.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -462,9 +424,7 @@ description: Variables in memory after executing v-block.kcl
                       1.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -481,9 +441,7 @@ description: Variables in memory after executing v-block.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -500,9 +458,7 @@ description: Variables in memory after executing v-block.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -519,9 +475,7 @@ description: Variables in memory after executing v-block.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   }
                 ],
                 "on": {
@@ -531,9 +485,7 @@ description: Variables in memory after executing v-block.kcl
                     "x": -15.875,
                     "y": 0.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   "type": "plane",
                   "value": "Custom",
@@ -541,25 +493,19 @@ description: Variables in memory after executing v-block.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   },
                   "yAxis": {
                     "x": 0.0,
                     "y": 0.0,
                     "z": 1.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   },
                   "zAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   }
                 },
                 "start": {
@@ -571,9 +517,7 @@ description: Variables in memory after executing v-block.kcl
                     -1.5,
                     0.0
                   ],
-                  "units": {
-                    "type": "Inches"
-                  },
+                  "units": "in",
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -588,21 +532,14 @@ description: Variables in memory after executing v-block.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
-              "height": 1.25,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "sectional": false
             },
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "start": {
             "from": [
@@ -613,9 +550,7 @@ description: Variables in memory after executing v-block.kcl
               -0.25,
               1.1875
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -624,9 +559,7 @@ description: Variables in memory after executing v-block.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       },
       {
@@ -656,9 +589,7 @@ description: Variables in memory after executing v-block.kcl
                 1.1875
               ],
               "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -670,17 +601,13 @@ description: Variables in memory after executing v-block.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "solid": {
               "type": "Solid",
@@ -819,9 +746,7 @@ description: Variables in memory after executing v-block.kcl
                       1.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -838,9 +763,7 @@ description: Variables in memory after executing v-block.kcl
                       1.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -857,9 +780,7 @@ description: Variables in memory after executing v-block.kcl
                       1.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -876,9 +797,7 @@ description: Variables in memory after executing v-block.kcl
                       1.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -895,9 +814,7 @@ description: Variables in memory after executing v-block.kcl
                       2.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -921,9 +838,7 @@ description: Variables in memory after executing v-block.kcl
                       2.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -940,9 +855,7 @@ description: Variables in memory after executing v-block.kcl
                       1.5625
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -959,9 +872,7 @@ description: Variables in memory after executing v-block.kcl
                       2.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -978,9 +889,7 @@ description: Variables in memory after executing v-block.kcl
                       2.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -997,9 +906,7 @@ description: Variables in memory after executing v-block.kcl
                       1.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -1016,9 +923,7 @@ description: Variables in memory after executing v-block.kcl
                       1.375
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -1035,9 +940,7 @@ description: Variables in memory after executing v-block.kcl
                       1.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -1054,9 +957,7 @@ description: Variables in memory after executing v-block.kcl
                       1.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -1073,9 +974,7 @@ description: Variables in memory after executing v-block.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -1092,9 +991,7 @@ description: Variables in memory after executing v-block.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
                   {
                     "__geoMeta": {
@@ -1111,9 +1008,7 @@ description: Variables in memory after executing v-block.kcl
                       0.0
                     ],
                     "type": "ToPoint",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   }
                 ],
                 "on": {
@@ -1123,9 +1018,7 @@ description: Variables in memory after executing v-block.kcl
                     "x": -15.875,
                     "y": 0.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Mm"
-                    }
+                    "units": "mm"
                   },
                   "type": "plane",
                   "value": "Custom",
@@ -1133,25 +1026,19 @@ description: Variables in memory after executing v-block.kcl
                     "x": 0.0,
                     "y": 1.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   },
                   "yAxis": {
                     "x": 0.0,
                     "y": 0.0,
                     "z": 1.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   },
                   "zAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
-                    "units": {
-                      "type": "Unknown"
-                    }
+                    "units": null
                   }
                 },
                 "start": {
@@ -1163,9 +1050,7 @@ description: Variables in memory after executing v-block.kcl
                     -1.5,
                     0.0
                   ],
-                  "units": {
-                    "type": "Inches"
-                  },
+                  "units": "in",
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -1180,21 +1065,14 @@ description: Variables in memory after executing v-block.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
-              "height": 1.25,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "sectional": false
             },
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           "start": {
             "from": [
@@ -1205,9 +1083,7 @@ description: Variables in memory after executing v-block.kcl
               -0.25,
               1.1875
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -1216,9 +1092,7 @@ description: Variables in memory after executing v-block.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       }
     ]
@@ -1228,12 +1102,8 @@ description: Variables in memory after executing v-block.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "sideHoleSketch": {
@@ -1246,17 +1116,13 @@ description: Variables in memory after executing v-block.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -1395,9 +1261,7 @@ description: Variables in memory after executing v-block.kcl
                 1.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1414,9 +1278,7 @@ description: Variables in memory after executing v-block.kcl
                 1.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1433,9 +1295,7 @@ description: Variables in memory after executing v-block.kcl
                 1.375
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1452,9 +1312,7 @@ description: Variables in memory after executing v-block.kcl
                 1.375
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1471,9 +1329,7 @@ description: Variables in memory after executing v-block.kcl
                 2.375
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1497,9 +1353,7 @@ description: Variables in memory after executing v-block.kcl
                 2.375
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1516,9 +1370,7 @@ description: Variables in memory after executing v-block.kcl
                 1.5625
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1535,9 +1387,7 @@ description: Variables in memory after executing v-block.kcl
                 2.375
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1554,9 +1404,7 @@ description: Variables in memory after executing v-block.kcl
                 2.375
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1573,9 +1421,7 @@ description: Variables in memory after executing v-block.kcl
                 1.375
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1592,9 +1438,7 @@ description: Variables in memory after executing v-block.kcl
                 1.375
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1611,9 +1455,7 @@ description: Variables in memory after executing v-block.kcl
                 1.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1630,9 +1472,7 @@ description: Variables in memory after executing v-block.kcl
                 1.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1649,9 +1489,7 @@ description: Variables in memory after executing v-block.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1668,9 +1506,7 @@ description: Variables in memory after executing v-block.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -1687,9 +1523,7 @@ description: Variables in memory after executing v-block.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -1699,9 +1533,7 @@ description: Variables in memory after executing v-block.kcl
               "x": -15.875,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "Custom",
@@ -1709,25 +1541,19 @@ description: Variables in memory after executing v-block.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -1739,9 +1565,7 @@ description: Variables in memory after executing v-block.kcl
               -1.5,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -1756,21 +1580,14 @@ description: Variables in memory after executing v-block.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
-        "height": 1.25,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "sectional": false
       },
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sideHoles": {
@@ -1816,9 +1633,7 @@ description: Variables in memory after executing v-block.kcl
                   1.1875
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1830,17 +1645,13 @@ description: Variables in memory after executing v-block.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -1979,9 +1790,7 @@ description: Variables in memory after executing v-block.kcl
                         1.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1998,9 +1807,7 @@ description: Variables in memory after executing v-block.kcl
                         1.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2017,9 +1824,7 @@ description: Variables in memory after executing v-block.kcl
                         1.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2036,9 +1841,7 @@ description: Variables in memory after executing v-block.kcl
                         1.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2055,9 +1858,7 @@ description: Variables in memory after executing v-block.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2081,9 +1882,7 @@ description: Variables in memory after executing v-block.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2100,9 +1899,7 @@ description: Variables in memory after executing v-block.kcl
                         1.5625
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2119,9 +1916,7 @@ description: Variables in memory after executing v-block.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2138,9 +1933,7 @@ description: Variables in memory after executing v-block.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2157,9 +1950,7 @@ description: Variables in memory after executing v-block.kcl
                         1.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2176,9 +1967,7 @@ description: Variables in memory after executing v-block.kcl
                         1.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2195,9 +1984,7 @@ description: Variables in memory after executing v-block.kcl
                         1.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2214,9 +2001,7 @@ description: Variables in memory after executing v-block.kcl
                         1.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2233,9 +2018,7 @@ description: Variables in memory after executing v-block.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2252,9 +2035,7 @@ description: Variables in memory after executing v-block.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2271,9 +2052,7 @@ description: Variables in memory after executing v-block.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -2283,9 +2062,7 @@ description: Variables in memory after executing v-block.kcl
                       "x": -15.875,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "Custom",
@@ -2293,25 +2070,19 @@ description: Variables in memory after executing v-block.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -2323,9 +2094,7 @@ description: Variables in memory after executing v-block.kcl
                       -1.5,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -2340,21 +2109,14 @@ description: Variables in memory after executing v-block.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 1.25,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -2365,9 +2127,7 @@ description: Variables in memory after executing v-block.kcl
                 -0.25,
                 1.1875
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2376,16 +2136,11 @@ description: Variables in memory after executing v-block.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -2429,9 +2184,7 @@ description: Variables in memory after executing v-block.kcl
                   1.1875
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -2443,17 +2196,13 @@ description: Variables in memory after executing v-block.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -2592,9 +2341,7 @@ description: Variables in memory after executing v-block.kcl
                         1.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2611,9 +2358,7 @@ description: Variables in memory after executing v-block.kcl
                         1.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2630,9 +2375,7 @@ description: Variables in memory after executing v-block.kcl
                         1.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2649,9 +2392,7 @@ description: Variables in memory after executing v-block.kcl
                         1.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2668,9 +2409,7 @@ description: Variables in memory after executing v-block.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2694,9 +2433,7 @@ description: Variables in memory after executing v-block.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2713,9 +2450,7 @@ description: Variables in memory after executing v-block.kcl
                         1.5625
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2732,9 +2467,7 @@ description: Variables in memory after executing v-block.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2751,9 +2484,7 @@ description: Variables in memory after executing v-block.kcl
                         2.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2770,9 +2501,7 @@ description: Variables in memory after executing v-block.kcl
                         1.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2789,9 +2518,7 @@ description: Variables in memory after executing v-block.kcl
                         1.375
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2808,9 +2535,7 @@ description: Variables in memory after executing v-block.kcl
                         1.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2827,9 +2552,7 @@ description: Variables in memory after executing v-block.kcl
                         1.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2846,9 +2569,7 @@ description: Variables in memory after executing v-block.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2865,9 +2586,7 @@ description: Variables in memory after executing v-block.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2884,9 +2603,7 @@ description: Variables in memory after executing v-block.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -2896,9 +2613,7 @@ description: Variables in memory after executing v-block.kcl
                       "x": -15.875,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "Custom",
@@ -2906,25 +2621,19 @@ description: Variables in memory after executing v-block.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -2936,9 +2645,7 @@ description: Variables in memory after executing v-block.kcl
                       -1.5,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -2953,21 +2660,14 @@ description: Variables in memory after executing v-block.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 1.25,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -2978,9 +2678,7 @@ description: Variables in memory after executing v-block.kcl
                 -0.25,
                 1.1875
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2989,16 +2687,11 @@ description: Variables in memory after executing v-block.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -3.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       }
@@ -3009,12 +2702,8 @@ description: Variables in memory after executing v-block.kcl
     "value": 0.375,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "slotHeight": {
@@ -3022,12 +2711,8 @@ description: Variables in memory after executing v-block.kcl
     "value": 0.375,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "vAngle": {
@@ -3035,12 +2720,8 @@ description: Variables in memory after executing v-block.kcl
     "value": 90.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "vBlock": {
@@ -3182,9 +2863,7 @@ description: Variables in memory after executing v-block.kcl
               1.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3201,9 +2880,7 @@ description: Variables in memory after executing v-block.kcl
               1.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3220,9 +2897,7 @@ description: Variables in memory after executing v-block.kcl
               1.375
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3239,9 +2914,7 @@ description: Variables in memory after executing v-block.kcl
               1.375
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3258,9 +2931,7 @@ description: Variables in memory after executing v-block.kcl
               2.375
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3284,9 +2955,7 @@ description: Variables in memory after executing v-block.kcl
               2.375
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3303,9 +2972,7 @@ description: Variables in memory after executing v-block.kcl
               1.5625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3322,9 +2989,7 @@ description: Variables in memory after executing v-block.kcl
               2.375
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3341,9 +3006,7 @@ description: Variables in memory after executing v-block.kcl
               2.375
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3360,9 +3023,7 @@ description: Variables in memory after executing v-block.kcl
               1.375
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3379,9 +3040,7 @@ description: Variables in memory after executing v-block.kcl
               1.375
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3398,9 +3057,7 @@ description: Variables in memory after executing v-block.kcl
               1.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3417,9 +3074,7 @@ description: Variables in memory after executing v-block.kcl
               1.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3436,9 +3091,7 @@ description: Variables in memory after executing v-block.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3455,9 +3108,7 @@ description: Variables in memory after executing v-block.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -3474,9 +3125,7 @@ description: Variables in memory after executing v-block.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -3486,9 +3135,7 @@ description: Variables in memory after executing v-block.kcl
             "x": -15.875,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -3496,25 +3143,19 @@ description: Variables in memory after executing v-block.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3526,9 +3167,7 @@ description: Variables in memory after executing v-block.kcl
             -1.5,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3543,16 +3182,11 @@ description: Variables in memory after executing v-block.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 1.25,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -3561,12 +3195,8 @@ description: Variables in memory after executing v-block.kcl
     "value": 2.375,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "vBlockLength": {
@@ -3574,12 +3204,8 @@ description: Variables in memory after executing v-block.kcl
     "value": 1.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "vBlockProfile": {
@@ -3603,9 +3229,7 @@ description: Variables in memory after executing v-block.kcl
             1.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3622,9 +3246,7 @@ description: Variables in memory after executing v-block.kcl
             1.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3641,9 +3263,7 @@ description: Variables in memory after executing v-block.kcl
             1.375
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3660,9 +3280,7 @@ description: Variables in memory after executing v-block.kcl
             1.375
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3679,9 +3297,7 @@ description: Variables in memory after executing v-block.kcl
             2.375
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3705,9 +3321,7 @@ description: Variables in memory after executing v-block.kcl
             2.375
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3724,9 +3338,7 @@ description: Variables in memory after executing v-block.kcl
             1.5625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3743,9 +3355,7 @@ description: Variables in memory after executing v-block.kcl
             2.375
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3762,9 +3372,7 @@ description: Variables in memory after executing v-block.kcl
             2.375
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3781,9 +3389,7 @@ description: Variables in memory after executing v-block.kcl
             1.375
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3800,9 +3406,7 @@ description: Variables in memory after executing v-block.kcl
             1.375
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3819,9 +3423,7 @@ description: Variables in memory after executing v-block.kcl
             1.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3838,9 +3440,7 @@ description: Variables in memory after executing v-block.kcl
             1.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3857,9 +3457,7 @@ description: Variables in memory after executing v-block.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3876,9 +3474,7 @@ description: Variables in memory after executing v-block.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3895,9 +3491,7 @@ description: Variables in memory after executing v-block.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -3907,9 +3501,7 @@ description: Variables in memory after executing v-block.kcl
           "x": -15.875,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -3917,25 +3509,19 @@ description: Variables in memory after executing v-block.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3947,9 +3533,7 @@ description: Variables in memory after executing v-block.kcl
           -1.5,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3964,9 +3548,7 @@ description: Variables in memory after executing v-block.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "vBlockProfileSketch": {
@@ -3978,34 +3560,26 @@ description: Variables in memory after executing v-block.kcl
         "x": -15.875,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -4014,12 +3588,8 @@ description: Variables in memory after executing v-block.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "vDepth": {
@@ -4027,12 +3597,8 @@ description: Variables in memory after executing v-block.kcl
     "value": 0.8125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "vWidth": {
@@ -4040,12 +3606,8 @@ description: Variables in memory after executing v-block.kcl
     "value": 1.6249999999999998,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

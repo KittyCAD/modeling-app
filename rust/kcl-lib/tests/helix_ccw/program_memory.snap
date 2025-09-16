@@ -12,9 +12,7 @@ description: Variables in memory after executing helix_ccw.kcl
       "angleStart": 0.0,
       "ccw": true,
       "cylinderId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   }
 }

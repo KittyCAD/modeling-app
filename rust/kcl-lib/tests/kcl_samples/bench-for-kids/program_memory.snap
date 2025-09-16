@@ -74,9 +74,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Cm"
-                }
+                "units": "cm"
               }
             ],
             "on": {
@@ -86,9 +84,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -96,25 +92,19 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -126,9 +116,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 4.8,
                 0.0
               ],
-              "units": {
-                "type": "Cm"
-              },
+              "units": "cm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -147,11 +135,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
-          "height": 16.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -162,21 +147,15 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 4.32,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "sectional": false
         }
       },
@@ -248,9 +227,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Cm"
-                }
+                "units": "cm"
               }
             ],
             "on": {
@@ -260,9 +237,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -270,25 +245,19 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -300,9 +269,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 4.8,
                 0.0
               ],
-              "units": {
-                "type": "Cm"
-              },
+              "units": "cm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -321,11 +288,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
-          "height": 16.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -336,21 +300,15 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 4.32,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "sectional": false
         }
       },
@@ -422,9 +380,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Cm"
-                }
+                "units": "cm"
               }
             ],
             "on": {
@@ -434,9 +390,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -444,25 +398,19 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -474,9 +422,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 4.8,
                 0.0
               ],
-              "units": {
-                "type": "Cm"
-              },
+              "units": "cm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -495,11 +441,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
-          "height": 16.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -510,21 +453,15 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 4.32,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "sectional": false
         }
       },
@@ -596,9 +533,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Cm"
-                }
+                "units": "cm"
               }
             ],
             "on": {
@@ -608,9 +543,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -618,25 +551,19 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -648,9 +575,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 4.8,
                 0.0
               ],
-              "units": {
-                "type": "Cm"
-              },
+              "units": "cm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -669,11 +594,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
-          "height": 16.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -684,21 +606,15 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 4.32,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "sectional": false
         }
       }
@@ -709,12 +625,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "benchSeatElevation": {
@@ -722,12 +634,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 15.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "benchSeatRadius": {
@@ -735,12 +643,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "benchWidth": {
@@ -748,12 +652,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "earBody": {
@@ -824,9 +724,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           }
         ],
         "on": {
@@ -836,9 +734,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -846,25 +742,19 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -876,9 +766,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             4.32,
             0.0
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -897,11 +785,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Cm"
-        }
+        "units": "cm"
       },
-      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -912,21 +797,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             "n": 3.8880000000000003,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Cm"
-      },
+      "units": "cm",
       "sectional": false
     }
   },
@@ -945,12 +824,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 16.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "earElevation": {
@@ -958,12 +833,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 31.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "earFilletRadius": {
@@ -971,12 +842,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 3.8880000000000003,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "earHeight": {
@@ -984,12 +851,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "earOffsetForward": {
@@ -997,12 +860,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 32.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "earProfile": {
@@ -1039,9 +898,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Cm"
-          }
+          "units": "cm"
         }
       ],
       "on": {
@@ -1051,9 +908,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -1061,25 +916,19 @@ description: Variables in memory after executing bench-for-kids.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1091,9 +940,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           4.32,
           0.0
         ],
-        "units": {
-          "type": "Cm"
-        },
+        "units": "cm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1112,9 +959,7 @@ description: Variables in memory after executing bench-for-kids.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Cm"
-      }
+      "units": "cm"
     }
   },
   "earRadius": {
@@ -1122,12 +967,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 4.32,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "earSketch": {
@@ -1139,34 +980,26 @@ description: Variables in memory after executing bench-for-kids.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1175,12 +1008,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 13.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "ears": {
@@ -1254,9 +1083,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Cm"
-                }
+                "units": "cm"
               }
             ],
             "on": {
@@ -1266,9 +1093,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -1276,25 +1101,19 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1306,9 +1125,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 4.32,
                 0.0
               ],
-              "units": {
-                "type": "Cm"
-              },
+              "units": "cm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1327,11 +1144,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
-          "height": 20.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1342,21 +1156,15 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 3.8880000000000003,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "sectional": false
         }
       },
@@ -1428,9 +1236,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Cm"
-                }
+                "units": "cm"
               }
             ],
             "on": {
@@ -1440,9 +1246,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -1450,25 +1254,19 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1480,9 +1278,7 @@ description: Variables in memory after executing bench-for-kids.kcl
                 4.32,
                 0.0
               ],
-              "units": {
-                "type": "Cm"
-              },
+              "units": "cm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1501,11 +1297,8 @@ description: Variables in memory after executing bench-for-kids.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
-          "height": 20.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1516,21 +1309,15 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 3.8880000000000003,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Cm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "cm",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "sectional": false
         }
       }
@@ -1604,9 +1391,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           }
         ],
         "on": {
@@ -1616,9 +1401,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -1626,25 +1409,19 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1656,9 +1433,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             4.8,
             0.0
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1677,11 +1452,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Cm"
-        }
+        "units": "cm"
       },
-      "height": 16.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1692,21 +1464,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             "n": 4.32,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Cm"
-      },
+      "units": "cm",
       "sectional": false
     }
   },
@@ -1778,9 +1544,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           }
         ],
         "on": {
@@ -1790,9 +1554,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -1800,25 +1562,19 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1830,9 +1586,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             4.8,
             0.0
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1851,11 +1605,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Cm"
-        }
+        "units": "cm"
       },
-      "height": 16.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1866,21 +1617,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             "n": 4.32,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Cm"
-      },
+      "units": "cm",
       "sectional": false
     }
   },
@@ -1894,12 +1639,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 64.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "legChassisWidth": {
@@ -1907,12 +1648,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 24.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "legCircle": {
@@ -1988,9 +1725,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           }
         ],
         "on": {
@@ -2000,9 +1735,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -2010,25 +1743,19 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2040,9 +1767,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             4.8,
             0.0
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2061,16 +1786,11 @@ description: Variables in memory after executing bench-for-kids.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Cm"
-        }
+        "units": "cm"
       },
-      "height": 16.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Cm"
-      },
+      "units": "cm",
       "sectional": false
     }
   },
@@ -2079,12 +1799,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 4.32,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "legHeight": {
@@ -2092,12 +1808,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 16.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "legProfile": {
@@ -2134,9 +1846,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Cm"
-          }
+          "units": "cm"
         }
       ],
       "on": {
@@ -2146,9 +1856,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -2156,25 +1864,19 @@ description: Variables in memory after executing bench-for-kids.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2186,9 +1888,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           4.8,
           0.0
         ],
-        "units": {
-          "type": "Cm"
-        },
+        "units": "cm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2207,9 +1907,7 @@ description: Variables in memory after executing bench-for-kids.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Cm"
-      }
+      "units": "cm"
     }
   },
   "legRadius": {
@@ -2217,12 +1915,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 4.8,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "legSketch": {
@@ -2234,34 +1928,26 @@ description: Variables in memory after executing bench-for-kids.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2318,9 +2004,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               15.0
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
           {
             "__geoMeta": {
@@ -2337,9 +2021,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               15.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           },
           {
             "__geoMeta": {
@@ -2356,9 +2038,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               15.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           }
         ],
         "on": {
@@ -2368,9 +2048,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 0.0,
             "y": 400.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2378,25 +2056,19 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2408,9 +2080,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             -20.0,
             15.0
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2419,16 +2089,11 @@ description: Variables in memory after executing bench-for-kids.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Cm"
-        }
+        "units": "cm"
       },
-      "height": 80.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Cm"
-      },
+      "units": "cm",
       "sectional": false
     }
   },
@@ -2437,12 +2102,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 35.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "seatProfile": {
@@ -2478,9 +2139,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             15.0
           ],
           "type": "ArcThreePoint",
-          "units": {
-            "type": "Cm"
-          }
+          "units": "cm"
         },
         {
           "__geoMeta": {
@@ -2497,9 +2156,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             15.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Cm"
-          }
+          "units": "cm"
         },
         {
           "__geoMeta": {
@@ -2516,9 +2173,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             15.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Cm"
-          }
+          "units": "cm"
         }
       ],
       "on": {
@@ -2528,9 +2183,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "x": 0.0,
           "y": 400.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2538,25 +2191,19 @@ description: Variables in memory after executing bench-for-kids.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2568,9 +2215,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           -20.0,
           15.0
         ],
-        "units": {
-          "type": "Cm"
-        },
+        "units": "cm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2579,9 +2224,7 @@ description: Variables in memory after executing bench-for-kids.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Cm"
-      }
+      "units": "cm"
     }
   },
   "seatSketch": {
@@ -2593,34 +2236,26 @@ description: Variables in memory after executing bench-for-kids.kcl
         "x": 0.0,
         "y": 400.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2633,34 +2268,26 @@ description: Variables in memory after executing bench-for-kids.kcl
         "x": 0.0,
         "y": 400.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2732,9 +2359,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Cm"
-            }
+            "units": "cm"
           }
         ],
         "on": {
@@ -2744,9 +2369,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 0.0,
             "y": 360.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2754,25 +2377,19 @@ description: Variables in memory after executing bench-for-kids.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2784,9 +2401,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             3.8880000000000003,
             0.0
           ],
-          "units": {
-            "type": "Cm"
-          },
+          "units": "cm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2805,11 +2420,8 @@ description: Variables in memory after executing bench-for-kids.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Cm"
-        }
+        "units": "cm"
       },
-      "height": -24.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -2820,21 +2432,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             "n": 3.4992000000000005,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Cm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "cm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Cm"
-      },
+      "units": "cm",
       "sectional": false
     }
   },
@@ -2853,12 +2459,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 33.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "tailFilletRadius": {
@@ -2866,12 +2468,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 3.4992000000000005,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "tailLength": {
@@ -2879,12 +2477,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 24.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "tailPlane": {
@@ -2896,34 +2490,26 @@ description: Variables in memory after executing bench-for-kids.kcl
         "x": 0.0,
         "y": 360.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2961,9 +2547,7 @@ description: Variables in memory after executing bench-for-kids.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Cm"
-          }
+          "units": "cm"
         }
       ],
       "on": {
@@ -2973,9 +2557,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "x": 0.0,
           "y": 360.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2983,25 +2565,19 @@ description: Variables in memory after executing bench-for-kids.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3013,9 +2589,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           3.8880000000000003,
           0.0
         ],
-        "units": {
-          "type": "Cm"
-        },
+        "units": "cm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3034,9 +2608,7 @@ description: Variables in memory after executing bench-for-kids.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Cm"
-      }
+      "units": "cm"
     }
   },
   "tailRadius": {
@@ -3044,12 +2616,8 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 3.8880000000000003,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Cm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "cm",
+      "angle": "degrees"
     }
   },
   "tailSketch": {
@@ -3061,34 +2629,26 @@ description: Variables in memory after executing bench-for-kids.kcl
         "x": 0.0,
         "y": 360.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   }

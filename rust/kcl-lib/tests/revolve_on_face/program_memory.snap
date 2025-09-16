@@ -51,9 +51,7 @@ description: Variables in memory after executing revolve_on_face.kcl
               0.00001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -76,9 +74,7 @@ description: Variables in memory after executing revolve_on_face.kcl
               0.000009999999999344814
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -95,9 +91,7 @@ description: Variables in memory after executing revolve_on_face.kcl
               0.00001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -109,17 +103,13 @@ description: Variables in memory after executing revolve_on_face.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -173,9 +163,7 @@ description: Variables in memory after executing revolve_on_face.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -185,9 +173,7 @@ description: Variables in memory after executing revolve_on_face.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XY",
@@ -195,25 +181,19 @@ description: Variables in memory after executing revolve_on_face.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -225,9 +205,7 @@ description: Variables in memory after executing revolve_on_face.kcl
                   2.5,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -242,21 +220,14 @@ description: Variables in memory after executing revolve_on_face.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 7.1,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -267,9 +238,7 @@ description: Variables in memory after executing revolve_on_face.kcl
             0.0,
             0.00001
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -278,16 +247,11 @@ description: Variables in memory after executing revolve_on_face.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -312,9 +276,7 @@ description: Variables in memory after executing revolve_on_face.kcl
             0.00001
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -337,9 +299,7 @@ description: Variables in memory after executing revolve_on_face.kcl
             0.000009999999999344814
           ],
           "type": "Arc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -356,9 +316,7 @@ description: Variables in memory after executing revolve_on_face.kcl
             0.00001
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -370,17 +328,13 @@ description: Variables in memory after executing revolve_on_face.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -434,9 +388,7 @@ description: Variables in memory after executing revolve_on_face.kcl
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -446,9 +398,7 @@ description: Variables in memory after executing revolve_on_face.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -456,25 +406,19 @@ description: Variables in memory after executing revolve_on_face.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -486,9 +430,7 @@ description: Variables in memory after executing revolve_on_face.kcl
                 2.5,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -503,21 +445,14 @@ description: Variables in memory after executing revolve_on_face.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 7.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -528,9 +463,7 @@ description: Variables in memory after executing revolve_on_face.kcl
           0.0,
           0.00001
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -539,9 +472,7 @@ description: Variables in memory after executing revolve_on_face.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "end002": {
@@ -603,9 +534,7 @@ description: Variables in memory after executing revolve_on_face.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -615,9 +544,7 @@ description: Variables in memory after executing revolve_on_face.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -625,25 +552,19 @@ description: Variables in memory after executing revolve_on_face.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -655,9 +576,7 @@ description: Variables in memory after executing revolve_on_face.kcl
             2.5,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -672,16 +591,11 @@ description: Variables in memory after executing revolve_on_face.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 7.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -712,9 +626,7 @@ description: Variables in memory after executing revolve_on_face.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -724,9 +636,7 @@ description: Variables in memory after executing revolve_on_face.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -734,25 +644,19 @@ description: Variables in memory after executing revolve_on_face.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -764,9 +668,7 @@ description: Variables in memory after executing revolve_on_face.kcl
           2.5,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -781,9 +683,7 @@ description: Variables in memory after executing revolve_on_face.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   }
 }

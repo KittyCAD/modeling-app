@@ -8,12 +8,8 @@ description: Variables in memory after executing flange.kcl
     "value": 4.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "baseThickness": {
@@ -21,12 +17,8 @@ description: Variables in memory after executing flange.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "bottomExtrusion": {
@@ -69,9 +61,7 @@ description: Variables in memory after executing flange.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -83,17 +73,13 @@ description: Variables in memory after executing flange.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -161,9 +147,7 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "innerPaths": [
@@ -188,9 +172,7 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -213,9 +195,7 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -238,9 +218,7 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -263,9 +241,7 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -275,9 +251,7 @@ description: Variables in memory after executing flange.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XY",
@@ -285,25 +259,19 @@ description: Variables in memory after executing flange.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -315,9 +283,7 @@ description: Variables in memory after executing flange.kcl
                   2.3125,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -326,21 +292,14 @@ description: Variables in memory after executing flange.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
-            "height": 0.625,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -351,9 +310,7 @@ description: Variables in memory after executing flange.kcl
             1.25,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -362,16 +319,11 @@ description: Variables in memory after executing flange.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.06,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -380,12 +332,8 @@ description: Variables in memory after executing flange.kcl
     "value": 0.06,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "bottomTotalDiameter": {
@@ -393,12 +341,8 @@ description: Variables in memory after executing flange.kcl
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "circles": {
@@ -431,9 +375,7 @@ description: Variables in memory after executing flange.kcl
                 0.0
               ],
               "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -443,9 +385,7 @@ description: Variables in memory after executing flange.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "XY",
@@ -453,25 +393,19 @@ description: Variables in memory after executing flange.kcl
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -483,9 +417,7 @@ description: Variables in memory after executing flange.kcl
               2.0625,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -494,9 +426,7 @@ description: Variables in memory after executing flange.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       },
       {
@@ -526,9 +456,7 @@ description: Variables in memory after executing flange.kcl
                 0.0
               ],
               "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -538,9 +466,7 @@ description: Variables in memory after executing flange.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "XY",
@@ -548,25 +474,19 @@ description: Variables in memory after executing flange.kcl
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -578,9 +498,7 @@ description: Variables in memory after executing flange.kcl
               2.0625,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -589,9 +507,7 @@ description: Variables in memory after executing flange.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       },
       {
@@ -621,9 +537,7 @@ description: Variables in memory after executing flange.kcl
                 0.0
               ],
               "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -633,9 +547,7 @@ description: Variables in memory after executing flange.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "XY",
@@ -643,25 +555,19 @@ description: Variables in memory after executing flange.kcl
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -673,9 +579,7 @@ description: Variables in memory after executing flange.kcl
               2.0625,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -684,9 +588,7 @@ description: Variables in memory after executing flange.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       },
       {
@@ -716,9 +618,7 @@ description: Variables in memory after executing flange.kcl
                 0.0
               ],
               "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -728,9 +628,7 @@ description: Variables in memory after executing flange.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "XY",
@@ -738,25 +636,19 @@ description: Variables in memory after executing flange.kcl
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -768,9 +660,7 @@ description: Variables in memory after executing flange.kcl
               2.0625,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -779,9 +669,7 @@ description: Variables in memory after executing flange.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       }
     ]
@@ -854,9 +742,7 @@ description: Variables in memory after executing flange.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "innerPaths": [
@@ -881,9 +767,7 @@ description: Variables in memory after executing flange.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -906,9 +790,7 @@ description: Variables in memory after executing flange.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -931,9 +813,7 @@ description: Variables in memory after executing flange.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -956,9 +836,7 @@ description: Variables in memory after executing flange.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -968,9 +846,7 @@ description: Variables in memory after executing flange.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -978,25 +854,19 @@ description: Variables in memory after executing flange.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1008,9 +878,7 @@ description: Variables in memory after executing flange.kcl
             2.3125,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1019,16 +887,11 @@ description: Variables in memory after executing flange.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.625,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1037,12 +900,8 @@ description: Variables in memory after executing flange.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "mountingHolePlacementDiameter": {
@@ -1050,12 +909,8 @@ description: Variables in memory after executing flange.kcl
     "value": 3.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "nHoles": {
@@ -1063,12 +918,8 @@ description: Variables in memory after executing flange.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "pipeDia": {
@@ -1076,12 +927,8 @@ description: Variables in memory after executing flange.kcl
     "value": 1.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "pipeHole": {
@@ -1124,9 +971,7 @@ description: Variables in memory after executing flange.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1138,17 +983,13 @@ description: Variables in memory after executing flange.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -1188,9 +1029,7 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -1202,17 +1041,13 @@ description: Variables in memory after executing flange.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "solid": {
                   "type": "Solid",
@@ -1280,9 +1115,7 @@ description: Variables in memory after executing flange.kcl
                           0.0
                         ],
                         "type": "Circle",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       }
                     ],
                     "innerPaths": [
@@ -1307,9 +1140,7 @@ description: Variables in memory after executing flange.kcl
                           0.0
                         ],
                         "type": "Circle",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -1332,9 +1163,7 @@ description: Variables in memory after executing flange.kcl
                           0.0
                         ],
                         "type": "Circle",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -1357,9 +1186,7 @@ description: Variables in memory after executing flange.kcl
                           0.0
                         ],
                         "type": "Circle",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       },
                       {
                         "__geoMeta": {
@@ -1382,9 +1209,7 @@ description: Variables in memory after executing flange.kcl
                           0.0
                         ],
                         "type": "Circle",
-                        "units": {
-                          "type": "Inches"
-                        }
+                        "units": "in"
                       }
                     ],
                     "on": {
@@ -1394,9 +1219,7 @@ description: Variables in memory after executing flange.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
+                        "units": "mm"
                       },
                       "type": "plane",
                       "value": "XY",
@@ -1404,25 +1227,19 @@ description: Variables in memory after executing flange.kcl
                         "x": 1.0,
                         "y": 0.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 1.0,
                         "z": 0.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       },
                       "zAxis": {
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Unknown"
-                        }
+                        "units": null
                       }
                     },
                     "start": {
@@ -1434,9 +1251,7 @@ description: Variables in memory after executing flange.kcl
                         2.3125,
                         0.0
                       ],
-                      "units": {
-                        "type": "Inches"
-                      },
+                      "units": "in",
                       "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
@@ -1445,21 +1260,14 @@ description: Variables in memory after executing flange.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
-                    "units": {
-                      "type": "Inches"
-                    }
+                    "units": "in"
                   },
-                  "height": 0.625,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  },
+                  "units": "in",
                   "sectional": false
                 },
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               "start": {
                 "from": [
@@ -1470,9 +1278,7 @@ description: Variables in memory after executing flange.kcl
                   1.1565,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1481,21 +1287,14 @@ description: Variables in memory after executing flange.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
-            "height": 0.1279999999999999,
             "startCapId": null,
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -1506,9 +1305,7 @@ description: Variables in memory after executing flange.kcl
             0.625,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1517,16 +1314,11 @@ description: Variables in memory after executing flange.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": -0.813,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1570,9 +1362,7 @@ description: Variables in memory after executing flange.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1584,17 +1374,13 @@ description: Variables in memory after executing flange.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -1662,9 +1448,7 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "innerPaths": [
@@ -1689,9 +1473,7 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1714,9 +1496,7 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1739,9 +1519,7 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -1764,9 +1542,7 @@ description: Variables in memory after executing flange.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -1776,9 +1552,7 @@ description: Variables in memory after executing flange.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XY",
@@ -1786,25 +1560,19 @@ description: Variables in memory after executing flange.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -1816,9 +1584,7 @@ description: Variables in memory after executing flange.kcl
                   2.3125,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1827,21 +1593,14 @@ description: Variables in memory after executing flange.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
-            "height": 0.625,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -1852,9 +1611,7 @@ description: Variables in memory after executing flange.kcl
             1.1565,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1863,16 +1620,11 @@ description: Variables in memory after executing flange.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.1279999999999999,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1881,12 +1633,8 @@ description: Variables in memory after executing flange.kcl
     "value": 2.313,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "topTotalThickness": {
@@ -1894,12 +1642,8 @@ description: Variables in memory after executing flange.kcl
     "value": 0.1279999999999999,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "totalThickness": {
@@ -1907,12 +1651,8 @@ description: Variables in memory after executing flange.kcl
     "value": 0.813,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

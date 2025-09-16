@@ -274,6 +274,36 @@ export const Text = (props: { content: string }) => {
   )
 }
 
+export const NothingInParticular = (props: { content: string }) => {
+  const options = {
+    gfm: true,
+    breaks: true,
+    sanitize: true,
+    escape,
+    unescape,
+  }
+  return (
+    <ThoughtContainer
+      heading={
+        <ThoughtHeader icon={<CustomIcon name="brain" className="w-6 h-6" />}>
+          <span className="animate-shimmer">Thinking</span>
+        </ThoughtHeader>
+      }
+    >
+      <ThoughtContent>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: Marked.parse(props.content, {
+              renderer: new SafeRenderer(options),
+              ...options,
+            }),
+          }}
+        ></div>
+      </ThoughtContent>
+    </ThoughtContainer>
+  )
+}
+
 export const End = () => {
   return (
     <ThoughtContainer>
@@ -317,6 +347,18 @@ const fromDataToComponent = (
           <>
             <Text key={options.key} content={thought.reasoning.content} />
             <Spacer />
+          </>
+        )
+      }
+      // Prepare to have this type come down the pipeline.
+      // We have to shut-up tsc.
+      case 'markdown': {
+        return (
+          <>
+            <NothingInParticular
+              key={options.key}
+              content={(thought.reasoning as { content: string }).content}
+            />
           </>
         )
       }

@@ -43,9 +43,7 @@ description: Variables in memory after executing multi_target_csg.kcl
               -0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -55,9 +53,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             "x": 0.0,
             "y": 2.54,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -65,25 +61,19 @@ description: Variables in memory after executing multi_target_csg.kcl
             "x": -1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -95,9 +85,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             0.039062,
             -0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -106,16 +94,11 @@ description: Variables in memory after executing multi_target_csg.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": -1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -216,9 +199,7 @@ description: Variables in memory after executing multi_target_csg.kcl
               0.1875
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -241,9 +222,7 @@ description: Variables in memory after executing multi_target_csg.kcl
               0.1625
             ],
             "type": "Arc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -260,9 +239,7 @@ description: Variables in memory after executing multi_target_csg.kcl
               -0.1625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -285,9 +262,7 @@ description: Variables in memory after executing multi_target_csg.kcl
               -0.1875
             ],
             "type": "Arc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -304,9 +279,7 @@ description: Variables in memory after executing multi_target_csg.kcl
               -0.1875
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -329,9 +302,7 @@ description: Variables in memory after executing multi_target_csg.kcl
               -0.1625
             ],
             "type": "Arc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -348,9 +319,7 @@ description: Variables in memory after executing multi_target_csg.kcl
               0.1625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -373,9 +342,7 @@ description: Variables in memory after executing multi_target_csg.kcl
               0.1875
             ],
             "type": "Arc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -392,9 +359,7 @@ description: Variables in memory after executing multi_target_csg.kcl
               0.1875
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "innerPaths": [
@@ -426,9 +391,7 @@ description: Variables in memory after executing multi_target_csg.kcl
               -0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -438,9 +401,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -448,25 +409,19 @@ description: Variables in memory after executing multi_target_csg.kcl
             "x": -1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -478,9 +433,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.1625,
             0.1875
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -495,16 +448,11 @@ description: Variables in memory after executing multi_target_csg.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.0625,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -580,9 +528,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -599,9 +545,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -618,9 +562,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   -0.120313
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -637,9 +579,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   -0.218751
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -656,9 +596,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   -0.218751
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -675,9 +613,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   -0.21875
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -687,9 +623,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -697,25 +631,19 @@ description: Variables in memory after executing multi_target_csg.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -727,9 +655,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                 -0.05582,
                 -0.21875
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -738,16 +664,11 @@ description: Variables in memory after executing multi_target_csg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -820,9 +741,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -839,9 +758,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   -0.120313
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -858,9 +775,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   -0.218751
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -877,9 +792,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   -0.218751
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -896,9 +809,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   -0.000001000000000001
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -915,9 +826,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -927,9 +836,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -937,25 +844,19 @@ description: Variables in memory after executing multi_target_csg.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -967,9 +868,7 @@ description: Variables in memory after executing multi_target_csg.kcl
                 0.007324,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -978,16 +877,11 @@ description: Variables in memory after executing multi_target_csg.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       }
@@ -1007,34 +901,26 @@ description: Variables in memory after executing multi_target_csg.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": -1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1059,9 +945,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             0.1875
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1084,9 +968,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             0.1625
           ],
           "type": "Arc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1103,9 +985,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.1625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1128,9 +1008,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.1875
           ],
           "type": "Arc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1147,9 +1025,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.1875
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1172,9 +1048,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.1625
           ],
           "type": "Arc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1191,9 +1065,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             0.1625
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1216,9 +1088,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             0.1875
           ],
           "type": "Arc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1235,9 +1105,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             0.1875
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "innerPaths": [
@@ -1269,9 +1137,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1281,9 +1147,7 @@ description: Variables in memory after executing multi_target_csg.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -1291,25 +1155,19 @@ description: Variables in memory after executing multi_target_csg.kcl
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1321,9 +1179,7 @@ description: Variables in memory after executing multi_target_csg.kcl
           -0.1625,
           0.1875
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1338,9 +1194,7 @@ description: Variables in memory after executing multi_target_csg.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch003": {
@@ -1352,34 +1206,26 @@ description: Variables in memory after executing multi_target_csg.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1404,9 +1250,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1423,9 +1267,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1442,9 +1284,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.120313
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1461,9 +1301,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.218751
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1480,9 +1318,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.218751
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1499,9 +1335,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.21875
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1511,9 +1345,7 @@ description: Variables in memory after executing multi_target_csg.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -1521,25 +1353,19 @@ description: Variables in memory after executing multi_target_csg.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1551,9 +1377,7 @@ description: Variables in memory after executing multi_target_csg.kcl
           -0.05582,
           -0.21875
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1562,9 +1386,7 @@ description: Variables in memory after executing multi_target_csg.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch003Profile001": {
@@ -1588,9 +1410,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1607,9 +1427,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.120313
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1626,9 +1444,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.218751
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1645,9 +1461,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.218751
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1664,9 +1478,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.000001000000000001
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1683,9 +1495,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1695,9 +1505,7 @@ description: Variables in memory after executing multi_target_csg.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -1705,25 +1513,19 @@ description: Variables in memory after executing multi_target_csg.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1735,9 +1537,7 @@ description: Variables in memory after executing multi_target_csg.kcl
           0.007324,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1746,9 +1546,7 @@ description: Variables in memory after executing multi_target_csg.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch004": {
@@ -1760,34 +1558,26 @@ description: Variables in memory after executing multi_target_csg.kcl
         "x": 0.0,
         "y": 2.54,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": -1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1818,9 +1608,7 @@ description: Variables in memory after executing multi_target_csg.kcl
             -0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1830,9 +1618,7 @@ description: Variables in memory after executing multi_target_csg.kcl
           "x": 0.0,
           "y": 2.54,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -1840,25 +1626,19 @@ description: Variables in memory after executing multi_target_csg.kcl
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1870,9 +1650,7 @@ description: Variables in memory after executing multi_target_csg.kcl
           0.039062,
           -0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1881,9 +1659,7 @@ description: Variables in memory after executing multi_target_csg.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   }
 }

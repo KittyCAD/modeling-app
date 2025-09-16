@@ -120,6 +120,8 @@ function CommandBarKclInput({
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const editorRef = useRef<HTMLDivElement>(null)
 
+  const allowArrays = arg.allowArrays ?? false
+
   const {
     calcResult,
     newVariableInsertIndex,
@@ -134,6 +136,7 @@ function CommandBarKclInput({
     initialVariableName,
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
+    allowArrays,
   })
 
   const varMentionData: Completion[] = prevVariables.map((v) => {

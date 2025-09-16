@@ -8,12 +8,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "bottomHole": {
@@ -56,9 +52,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.5
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -70,17 +64,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "x": -1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -226,9 +216,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -250,9 +238,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.43750000000000006
                   ],
                   "type": "TangentialArc",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -276,9 +262,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.43750000000000006
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -302,9 +286,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.31250000000000006
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -321,9 +303,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.31250000000000006
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -352,9 +332,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.125
                   ],
                   "type": "ArcThreePoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -371,9 +349,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -397,9 +373,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -416,9 +390,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -428,9 +400,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -438,25 +408,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "x": -1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -468,9 +432,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -505,11 +467,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
-            "height": 1.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -520,12 +479,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "n": 0.125,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -538,12 +493,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "n": 0.125,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -556,12 +507,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "n": 0.125,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -574,26 +521,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "n": 0.125,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
                 "tag": null
               }
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -604,9 +543,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             -0.25,
             0.5
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -615,16 +552,11 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": -0.125,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -671,9 +603,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   3.5
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -685,17 +615,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -841,9 +767,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -867,9 +791,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.25
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -893,9 +815,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.25
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -919,9 +839,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         1.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -945,9 +863,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         1.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -971,9 +887,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -990,9 +904,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -1002,9 +914,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "YZ",
@@ -1012,25 +922,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -1042,9 +946,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -1087,11 +989,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -1102,12 +1001,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -1120,12 +1015,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.25,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -1138,12 +1029,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -1156,12 +1043,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -1174,12 +1057,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -1192,26 +1071,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -1222,9 +1093,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 -0.75,
                 3.5
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1233,16 +1102,11 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -0.25,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -1286,9 +1150,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   2.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1300,17 +1162,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -1456,9 +1314,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1482,9 +1338,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.25
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1508,9 +1362,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.25
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1534,9 +1386,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         1.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1560,9 +1410,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         1.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1586,9 +1434,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1605,9 +1451,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -1617,9 +1461,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "YZ",
@@ -1627,25 +1469,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -1657,9 +1493,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -1702,11 +1536,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -1717,12 +1548,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -1735,12 +1562,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.25,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -1753,12 +1576,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -1771,12 +1590,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -1789,12 +1604,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -1807,26 +1618,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -1837,9 +1640,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 -1.25,
                 2.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1848,16 +1649,11 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -0.25,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -1901,9 +1697,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.5
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1915,17 +1709,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -2071,9 +1861,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2097,9 +1885,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.25
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2123,9 +1909,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.25
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2149,9 +1933,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         1.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2175,9 +1957,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         1.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2201,9 +1981,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2220,9 +1998,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -2232,9 +2008,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "YZ",
@@ -2242,25 +2016,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -2272,9 +2040,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -2317,11 +2083,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -2332,12 +2095,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -2350,12 +2109,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.25,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -2368,12 +2123,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -2386,12 +2137,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -2404,12 +2151,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -2422,26 +2165,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -2452,9 +2187,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 -0.75,
                 0.5
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2463,16 +2196,11 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -0.25,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       }
@@ -2624,9 +2352,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2650,9 +2376,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2676,9 +2400,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2702,9 +2424,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               1.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2728,9 +2448,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               1.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2754,9 +2472,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2773,9 +2489,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -2785,9 +2499,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -2795,25 +2507,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2825,9 +2531,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2870,11 +2574,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -2885,12 +2586,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "n": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -2903,12 +2600,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "n": 0.25,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -2921,12 +2614,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "n": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -2939,12 +2628,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "n": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -2957,12 +2642,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "n": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -2975,21 +2656,15 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "n": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -2998,12 +2673,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": 1.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "bracketLength": {
@@ -3011,12 +2682,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "bracketSketch": {
@@ -3028,34 +2695,26 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3064,12 +2723,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "bracketWidth": {
@@ -3077,12 +2732,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "capEnd001": {
@@ -3148,9 +2799,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -3162,17 +2811,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -3318,9 +2963,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3344,9 +2987,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.25
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3370,9 +3011,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.25
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3396,9 +3035,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         1.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3422,9 +3059,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         1.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3448,9 +3083,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3467,9 +3100,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -3479,9 +3110,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "YZ",
@@ -3489,25 +3118,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -3519,9 +3142,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -3564,11 +3185,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -3579,12 +3197,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -3597,12 +3211,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.25,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -3615,12 +3225,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -3633,12 +3239,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -3651,12 +3253,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -3669,26 +3267,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -3699,9 +3289,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 -3.25,
                 1.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3710,16 +3298,11 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -0.25,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -3763,9 +3346,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -3777,17 +3358,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -3933,9 +3510,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3959,9 +3534,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.25
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3985,9 +3558,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.25
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4011,9 +3582,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         1.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4037,9 +3606,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         1.5
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4063,9 +3630,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -4082,9 +3647,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -4094,9 +3657,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "YZ",
@@ -4104,25 +3665,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -4134,9 +3689,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -4179,11 +3732,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -4194,12 +3744,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -4212,12 +3758,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.25,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -4230,12 +3772,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -4248,12 +3786,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -4266,12 +3800,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
@@ -4284,26 +3814,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       "n": 0.125,
                       "ty": {
                         "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
+                        "len": "in",
+                        "angle": "degrees"
                       }
                     },
                     "edgeId": "[uuid]",
                     "tag": null
                   }
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -4314,9 +3836,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 -0.25,
                 1.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4325,16 +3845,11 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -0.25,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       }
@@ -4345,12 +3860,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "holeXy": {
@@ -4364,12 +3875,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -4377,12 +3884,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "value": 3.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -4395,12 +3898,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -4408,12 +3907,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -4426,12 +3921,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -4439,12 +3930,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -4597,9 +4084,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -4621,9 +4106,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.43750000000000006
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -4647,9 +4130,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.43750000000000006
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -4673,9 +4154,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.31250000000000006
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -4692,9 +4171,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.31250000000000006
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -4723,9 +4200,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.125
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -4742,9 +4217,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.125
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -4768,9 +4241,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -4787,9 +4258,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -4799,9 +4268,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -4809,25 +4276,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "x": -1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -4839,9 +4300,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4876,11 +4335,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -4891,12 +4347,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "n": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -4909,12 +4361,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "n": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -4927,12 +4375,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "n": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -4945,21 +4389,15 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "n": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -4972,34 +4410,26 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": -1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -5031,9 +4461,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -5057,9 +4485,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.25
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -5083,9 +4509,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.25
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -5109,9 +4533,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             1.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -5135,9 +4557,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             1.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -5161,9 +4581,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -5180,9 +4598,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -5192,9 +4608,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "YZ",
@@ -5202,25 +4616,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -5232,9 +4640,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -5277,9 +4683,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile002": {
@@ -5309,9 +4713,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             3.5
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -5323,17 +4725,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -5479,9 +4877,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -5505,9 +4901,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -5531,9 +4925,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -5557,9 +4949,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -5583,9 +4973,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -5609,9 +4997,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -5628,9 +5014,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -5640,9 +5024,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -5650,25 +5032,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -5680,9 +5056,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5725,11 +5099,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -5740,12 +5111,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -5758,12 +5125,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.25,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -5776,12 +5139,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -5794,12 +5153,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -5812,12 +5167,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -5830,26 +5181,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -5860,9 +5203,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           -0.75,
           3.5
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -5871,9 +5212,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile003": {
@@ -5903,9 +5242,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             2.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -5917,17 +5254,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -6073,9 +5406,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6099,9 +5430,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6125,9 +5454,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6151,9 +5478,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6177,9 +5502,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6203,9 +5526,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6222,9 +5543,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -6234,9 +5553,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -6244,25 +5561,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -6274,9 +5585,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6319,11 +5628,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6334,12 +5640,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -6352,12 +5654,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.25,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -6370,12 +5668,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -6388,12 +5682,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -6406,12 +5696,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -6424,26 +5710,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -6454,9 +5732,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           -1.25,
           2.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -6465,9 +5741,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile004": {
@@ -6497,9 +5771,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.5
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -6511,17 +5783,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -6667,9 +5935,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6693,9 +5959,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6719,9 +5983,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6745,9 +6007,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6771,9 +6031,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6797,9 +6055,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -6816,9 +6072,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -6828,9 +6082,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -6838,25 +6090,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -6868,9 +6114,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6913,11 +6157,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6928,12 +6169,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -6946,12 +6183,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.25,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -6964,12 +6197,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -6982,12 +6211,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -7000,12 +6225,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -7018,26 +6239,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -7048,9 +6261,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           -0.75,
           0.5
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -7059,9 +6270,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile005": {
@@ -7091,9 +6300,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             1.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -7105,17 +6312,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -7261,9 +6464,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -7287,9 +6488,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -7313,9 +6512,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -7339,9 +6536,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -7365,9 +6560,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -7391,9 +6584,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -7410,9 +6601,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -7422,9 +6611,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -7432,25 +6619,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -7462,9 +6643,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -7507,11 +6686,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7522,12 +6698,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -7540,12 +6712,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.25,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -7558,12 +6726,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -7576,12 +6740,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -7594,12 +6754,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -7612,26 +6768,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -7642,9 +6790,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           -0.25,
           1.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -7653,9 +6799,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile006": {
@@ -7685,9 +6829,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             1.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -7699,17 +6841,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -7855,9 +6993,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -7881,9 +7017,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -7907,9 +7041,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -7933,9 +7065,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -7959,9 +7089,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   1.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -7985,9 +7113,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -8004,9 +7130,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -8016,9 +7140,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -8026,25 +7148,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -8056,9 +7172,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -8101,11 +7215,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8116,12 +7227,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -8134,12 +7241,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.25,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -8152,12 +7255,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -8170,12 +7269,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -8188,12 +7283,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -8206,26 +7297,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -8236,9 +7319,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           -3.25,
           1.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -8247,9 +7328,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile007": {
@@ -8280,9 +7359,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -8304,9 +7381,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.43750000000000006
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -8330,9 +7405,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.43750000000000006
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -8356,9 +7429,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.31250000000000006
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -8375,9 +7446,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.31250000000000006
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -8406,9 +7475,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.125
           ],
           "type": "ArcThreePoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -8425,9 +7492,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.125
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -8451,9 +7516,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -8470,9 +7533,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -8482,9 +7543,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -8492,25 +7551,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -8522,9 +7575,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -8559,9 +7610,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile008": {
@@ -8591,9 +7640,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.5
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -8605,17 +7652,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -8761,9 +7804,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -8785,9 +7826,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.43750000000000006
                 ],
                 "type": "TangentialArc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -8811,9 +7850,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.43750000000000006
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -8837,9 +7874,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.31250000000000006
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -8856,9 +7891,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.31250000000000006
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -8887,9 +7920,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.125
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -8906,9 +7937,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -8932,9 +7961,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -8951,9 +7978,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -8963,9 +7988,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -8973,25 +7996,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": -1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -9003,9 +8020,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -9040,11 +8055,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -9055,12 +8067,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -9073,12 +8081,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -9091,12 +8095,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -9109,26 +8109,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -9139,9 +8131,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           0.75,
           0.5
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -9150,9 +8140,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile009": {
@@ -9182,9 +8170,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.5
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -9196,17 +8182,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -9352,9 +8334,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -9376,9 +8356,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.43750000000000006
                 ],
                 "type": "TangentialArc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -9402,9 +8380,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.43750000000000006
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -9428,9 +8404,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.31250000000000006
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -9447,9 +8421,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.31250000000000006
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -9478,9 +8450,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.125
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -9497,9 +8467,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.125
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -9523,9 +8491,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -9542,9 +8508,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -9554,9 +8518,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -9564,25 +8526,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "x": -1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -9594,9 +8550,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -9631,11 +8585,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -9646,12 +8597,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -9664,12 +8611,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -9682,12 +8625,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -9700,26 +8639,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "n": 0.125,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -9730,9 +8661,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           -0.25,
           0.5
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -9741,9 +8670,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "seg003": {
@@ -9806,17 +8733,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -9962,9 +8885,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -9988,9 +8909,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.25
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -10014,9 +8933,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.25
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -10040,9 +8957,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 1.5
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -10066,9 +8981,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 1.5
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -10092,9 +9005,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -10111,9 +9022,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -10123,9 +9032,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "YZ",
@@ -10133,25 +9040,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -10163,9 +9064,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.0,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -10208,11 +9107,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
-        "height": 4.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -10223,12 +9119,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -10241,12 +9133,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.25,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -10259,12 +9147,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -10277,12 +9161,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -10295,12 +9175,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -10313,26 +9189,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
             "tag": null
           }
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "sectional": false
       },
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch003": {
@@ -10345,17 +9213,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -10501,9 +9365,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -10527,9 +9389,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.25
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -10553,9 +9413,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.25
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -10579,9 +9437,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 1.5
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -10605,9 +9461,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 1.5
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -10631,9 +9485,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -10650,9 +9502,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -10662,9 +9512,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "YZ",
@@ -10672,25 +9520,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -10702,9 +9544,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.0,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -10747,11 +9587,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
-        "height": 4.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -10762,12 +9599,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -10780,12 +9613,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.25,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -10798,12 +9627,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -10816,12 +9641,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -10834,12 +9655,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -10852,26 +9669,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
             "tag": null
           }
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "sectional": false
       },
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch004": {
@@ -10884,17 +9693,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "x": -1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -11040,9 +9845,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11064,9 +9867,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.43750000000000006
               ],
               "type": "TangentialArc",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11090,9 +9891,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.43750000000000006
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11116,9 +9915,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.31250000000000006
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11135,9 +9932,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.31250000000000006
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11166,9 +9961,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.125
               ],
               "type": "ArcThreePoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11185,9 +9978,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.125
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11211,9 +10002,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11230,9 +10019,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -11242,9 +10029,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "XZ",
@@ -11252,25 +10037,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "x": -1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -11282,9 +10061,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.0,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -11319,11 +10096,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
-        "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -11334,12 +10108,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -11352,12 +10122,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -11370,12 +10136,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -11388,26 +10150,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
             "tag": null
           }
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "sectional": false
       },
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch005": {
@@ -11420,17 +10174,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "x": -1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -11576,9 +10326,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11600,9 +10348,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.43750000000000006
               ],
               "type": "TangentialArc",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11626,9 +10372,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.43750000000000006
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11652,9 +10396,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.31250000000000006
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11671,9 +10413,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.31250000000000006
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11702,9 +10442,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.125
               ],
               "type": "ArcThreePoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11721,9 +10459,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.125
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11747,9 +10483,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -11766,9 +10500,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -11778,9 +10510,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "XZ",
@@ -11788,25 +10518,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "x": -1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -11818,9 +10542,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.0,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -11855,11 +10577,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
-        "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -11870,12 +10589,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -11888,12 +10603,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -11906,12 +10617,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -11924,26 +10631,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "n": 0.125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
             "tag": null
           }
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "sectional": false
       },
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "thickness": {
@@ -11951,12 +10650,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "topHole": {
@@ -11999,9 +10694,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               0.5
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -12013,17 +10706,13 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "x": -1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -12169,9 +10858,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -12193,9 +10880,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.43750000000000006
                   ],
                   "type": "TangentialArc",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -12219,9 +10904,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.43750000000000006
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -12245,9 +10928,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.31250000000000006
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -12264,9 +10945,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.31250000000000006
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -12295,9 +10974,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.125
                   ],
                   "type": "ArcThreePoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -12314,9 +10991,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.125
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -12340,9 +11015,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
                 {
                   "__geoMeta": {
@@ -12359,9 +11032,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -12371,9 +11042,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -12381,25 +11050,19 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "x": -1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -12411,9 +11074,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   0.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -12448,11 +11109,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
-            "height": 1.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -12463,12 +11121,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "n": 0.125,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -12481,12 +11135,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "n": 0.125,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -12499,12 +11149,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "n": 0.125,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
@@ -12517,26 +11163,18 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "n": 0.125,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 "edgeId": "[uuid]",
                 "tag": null
               }
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -12547,9 +11185,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             0.75,
             0.5
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -12558,16 +11194,11 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": -0.125,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -12576,12 +11207,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": 1.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "width": {
@@ -12589,12 +11216,8 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }
