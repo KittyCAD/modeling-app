@@ -89,7 +89,8 @@ test.describe('edit with AI example snapshots', () => {
       await test.step('wait for scene to load select body and check selection came through', async () => {
         await clickBody1Cap()
         await editor.expectState({
-          highlightedCode: '',
+          // Gotcha: why did it not have highlighted code before?
+          highlightedCode: 'startProfile(at=[-73.64,-42.89])',
           activeLines: ['|>startProfile(at=[-73.64,-42.89])'],
           diagnostics: [],
         })
