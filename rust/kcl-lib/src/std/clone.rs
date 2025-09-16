@@ -14,7 +14,7 @@ use super::extrude::do_post_extrude;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
+        ExecState, ExtrudeSurface, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
         types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -253,9 +253,7 @@ async fn fix_sketch_tags_and_references(
             let mut surface = None;
             if let Some(found_surface) = surface_id_map.get(&tag.name) {
                 let mut new_surface = found_surface.clone();
-                let new_face_id = entity_id_map.get(&new_surface.face_id())
-                  .copied()
-                  .unwrap_or_default();
+                let new_face_id = entity_id_map.get(&new_surface.face_id()).copied().unwrap_or_default();
                 new_surface.set_face_id(new_face_id);
                 surface = Some(new_surface);
             }
