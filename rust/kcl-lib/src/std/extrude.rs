@@ -309,6 +309,7 @@ async fn inner_extrude(
                 exec_state,
                 &args,
                 None,
+                true
             )
             .await?,
         );
@@ -333,6 +334,7 @@ pub(crate) async fn do_post_extrude<'a>(
     exec_state: &mut ExecState,
     args: &Args,
     edge_id: Option<Uuid>,
+    generate_predictive_ids: bool,
 ) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
@@ -343,77 +345,96 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-    let any_edge_id = if let Some(edge_id) = sketch.mirror {
-        edge_id
-    } else if let Some(id) = edge_id {
-        id
-    } else {
-        // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
-        // So, let's just use the first one.
-
-        EngineIdGenerator::new(sketch.id).get_curve_id().into()
-        // let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
-        //     return Err(KclError::new_type(KclErrorDetails::new(
-        //         "Expected a non-empty sketch".to_owned(),
-        //         vec![args.source_range],
-        //     )));
-        // };
-        // any_edge_id
-    };
+    let mut face_id_map: HashMap<Uuid, Option<Uuid>> = Default::default();
+    let start_cap_id: Option<Uuid>;
+    let end_cap_id: Option<Uuid>;
 
     let mut sketch = sketch.clone();
     sketch.is_closed = true;
 
-    // If we were sketching on a face, we need the original face id.
-    if let SketchSurface::Face(ref face) = sketch.on {
-        // If we are creating a new body we need to preserve its new id.
-        if extrude_method != ExtrudeMethod::New {
-            sketch.id = face.solid.sketch.id;
+    if generate_predictive_ids {
+        let mut id_generator = EngineIdGenerator::new(sketch.id);
+        start_cap_id = Some(id_generator.get_start_cap_id().into());
+        end_cap_id = Some(id_generator.get_end_cap_id().into());
+
+        // TODO Note we're skipping the last one, because 3 segments have 4 paths in sketch.
+        for _ in 0..sketch.paths.len() - 1 {
+            face_id_map.insert(id_generator.get_curve_id().into(), Some(id_generator.get_face_id().into()));
+            id_generator.next_edge();
         }
-    }
-
-    let solid3d_info = exec_state
-        .send_modeling_cmd(
-            args.into(),
-            ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
-                edge_id: any_edge_id,
-                object_id: sketch.id,
-            }),
-        )
-        .await?;
-
-    let face_infos = if let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(data),
-    } = solid3d_info
-    {
-        data.faces
     } else {
-        vec![]
-    };
+        let any_edge_id = if let Some(edge_id) = sketch.mirror {
+            edge_id
+        } else if let Some(id) = edge_id {
+            id
+        } else {
+            // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
+            // So, let's just use the first one.
 
-    // Only do this if we need the artifact graph.
-    #[cfg(feature = "artifact-graph")]
-    {
-        // Getting the ids of a sectional sweep does not work well and we cannot guarantee that
-        // any of these call will not just fail.
-        if !sectional {
-            exec_state
-                .batch_modeling_cmd(
-                    args.into(),
-                    ModelingCmd::from(mcmd::Solid3dGetAdjacencyInfo {
-                        object_id: sketch.id,
-                        edge_id: any_edge_id,
-                    }),
-                )
-                .await?;
+            EngineIdGenerator::new(sketch.id).get_curve_id().into()
+            // let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
+            //     return Err(KclError::new_type(KclErrorDetails::new(
+            //         "Expected a non-empty sketch".to_owned(),
+            //         vec![args.source_range],
+            //     )));
+            // };
+            // any_edge_id
+        };
+
+        // If we were sketching on a face, we need the original face id.
+        if let SketchSurface::Face(ref face) = sketch.on {
+            // If we are creating a new body we need to preserve its new id.
+            if extrude_method != ExtrudeMethod::New {
+                sketch.id = face.solid.sketch.id;
+            }
         }
+
+        let solid3d_info = exec_state
+            .send_modeling_cmd(
+                args.into(),
+                ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
+                    edge_id: any_edge_id,
+                    object_id: sketch.id,
+                }),
+            )
+            .await?;
+
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::warn_1(&format!("*** solid3d_info: {solid3d_info:#?}").into());
+
+        let face_infos = if let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(data),
+        } = solid3d_info
+        {
+            data.faces
+        } else {
+            vec![]
+        };
+
+        // Only do this if we need the artifact graph.
+        #[cfg(feature = "artifact-graph")]
+        {
+            // Getting the ids of a sectional sweep does not work well and we cannot guarantee that
+            // any of these call will not just fail.
+            if !sectional {
+                exec_state
+                    .batch_modeling_cmd(
+                        args.into(),
+                        ModelingCmd::from(mcmd::Solid3dGetAdjacencyInfo {
+                            object_id: sketch.id,
+                            edge_id: any_edge_id,
+                        }),
+                    )
+                    .await?;
+            }
+        }
+
+        let faces = analyze_faces(exec_state, args, face_infos).await;
+        face_id_map = faces.sides;
+        start_cap_id = faces.start_cap_id;
+        end_cap_id = faces.end_cap_id;
     }
 
-    let Faces {
-        sides: face_id_map,
-        start_cap_id,
-        end_cap_id,
-    } = analyze_faces(exec_state, args, face_infos).await;
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
     let mut new_value: Vec<ExtrudeSurface> = Vec::with_capacity(sketch.paths.len() + sketch.inner_paths.len() + 2);

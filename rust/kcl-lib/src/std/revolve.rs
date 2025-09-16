@@ -208,6 +208,7 @@ async fn inner_revolve(
                 exec_state,
                 &args,
                 edge_id,
+                false,
             )
             .await?,
         );
