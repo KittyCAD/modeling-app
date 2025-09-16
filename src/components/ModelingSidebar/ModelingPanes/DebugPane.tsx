@@ -2,6 +2,7 @@ import { CamDebugSettings } from '@src/clientSideScene/ClientSideSceneComp'
 import { AstExplorer } from '@src/components/AstExplorer'
 import { DebugArtifactGraph } from '@src/components/DebugArtifactGraph'
 import { EngineCommands } from '@src/components/EngineCommands'
+import { DebugHistory } from '@src/lib/history/DebugHistory'
 
 export const DebugPane = () => {
   return (
@@ -15,6 +16,7 @@ export const DebugPane = () => {
           <CamDebugSettings />
           <AstExplorer />
           <DebugArtifactGraph />
+          <DebugHistory />
         </div>
       </section>
     </div>
