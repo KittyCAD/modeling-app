@@ -99,6 +99,9 @@ export function RouteProvider({ children }: { children: ReactNode }) {
           code = normalizeLineEndings(code)
 
           // Don't fire a re-execution if the codeManager already knows about this change
+          // GOTCHA: string comparison is hard! If the code as read by the OS doesn't
+          // match our in-memory representation of it, this will not guard, and user actions livePathsToWatch
+          // point-and-click sketching will be followed by late-firing re-executions.
           if (code !== normalizeLineEndings(codeManager.code)) {
             codeManager.updateCodeStateEditor(code)
             await kclManager.executeCode()
