@@ -151,8 +151,6 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![mounting-plate](screenshots/mounting-plate.png)](mounting-plate/main.kcl)
 #### [mug](mug/main.kcl) ([screenshot](screenshots/mug.png))
 [![mug](screenshots/mug.png)](mug/main.kcl)
-#### [multi-axis-robot](multi-axis-robot/main.kcl) ([screenshot](screenshots/multi-axis-robot.png))
-[![multi-axis-robot](screenshots/multi-axis-robot.png)](multi-axis-robot/main.kcl)
 #### [parametric-shelf-unit](parametric-shelf-unit/main.kcl) ([screenshot](screenshots/parametric-shelf-unit.png))
 [![parametric-shelf-unit](screenshots/parametric-shelf-unit.png)](parametric-shelf-unit/main.kcl)
 #### [pdu-faceplate](pdu-faceplate/main.kcl) ([screenshot](screenshots/pdu-faceplate.png))
