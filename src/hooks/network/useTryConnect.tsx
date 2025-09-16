@@ -1,5 +1,6 @@
 import type { useAppState } from '@src/AppState'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import {
   codeManager,
@@ -23,12 +24,14 @@ const attemptToConnectToEngine = async ({
   setAppState,
   videoRef,
   setIsSceneReady,
+  settingsEngine,
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement>
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
   videoRef: React.RefObject<HTMLVideoElement>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
+  settingsEngine: SettingsViaQueryString
 }) => {
   const connection = new Promise<boolean>((resolve, reject) => {
     void (async () => {
@@ -57,6 +60,7 @@ const attemptToConnectToEngine = async ({
           setStreamIsReady: () => {
             setAppState({ isStreamReady: true })
           },
+          settings: settingsEngine,
         })
 
         if (!videoRef.current) {
@@ -143,6 +147,7 @@ async function tryConnecting({
   videoRef,
   setIsSceneReady,
   timeToConnect,
+  settings,
 }: {
   isConnecting: React.MutableRefObject<boolean>
   successfullyConnected: React.MutableRefObject<boolean>
@@ -153,6 +158,7 @@ async function tryConnecting({
   videoRef: React.RefObject<HTMLVideoElement>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
+  settings: SettingsViaQueryString
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
@@ -181,6 +187,7 @@ async function tryConnecting({
             setAppState,
             videoRef,
             setIsSceneReady,
+            settingsEngine: settings,
           })
           // Only clear on success. Future attempts will have less time.
           clearInterval(cancelTimeout)
