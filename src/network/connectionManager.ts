@@ -134,10 +134,10 @@ export class ConnectionManager extends EventTarget {
       // completely overwrite the settings
       this.settings = settings
     } else {
-      // TODO: Huh? is this only for snapshot tests?
       this.settings = {
         pool: null,
-        theme: Themes.Dark,
+        // Should this be light for E2E tests?
+        theme: Themes.Light,
         highlightEdges: true,
         enableSSAO: true,
         showScaleGrid: false,
