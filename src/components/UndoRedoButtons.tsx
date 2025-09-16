@@ -17,32 +17,30 @@ export function UndoRedoButtons({
         keyboardShortcut="mod+z"
         iconName="arrowRotateLeft"
         onClick={() => {
-          if (historyManager.canUndo()) {
-            historyManager
-              .undo()
-              .then(() => console.log('yayyyyy', historyManager))
-              .catch((e) => console.error('nooooo', e))
-            return
-          }
+          // if (historyManager.canUndo()) {
+          //   historyManager
+          //     .undo()
+          //     .then(() => console.log('yayyyyy', historyManager))
+          //     .catch((e) => console.error('nooooo', e))
+          //   return
+          // }
           editorManager.undo()
         }}
-        disabled={!historyManager.canUndo()}
       />
       <UndoOrRedoButton
         label="Redo"
         keyboardShortcut="mod+shift+z"
         iconName="arrowRotateRight"
         onClick={() => {
-          if (historyManager.canRedo()) {
-            historyManager
-              .redo()
-              .then(() => console.log('yayyyyy'))
-              .catch((e) => console.error('nooooo', e))
-            return
-          }
+          // if (historyManager.canRedo()) {
+          //   historyManager
+          //     .redo()
+          //     .then(() => console.log('yayyyyy'))
+          //     .catch((e) => console.error('nooooo', e))
+          //   return
+          // }
           editorManager.redo()
         }}
-        disabled={!historyManager.canRedo()}
       />
     </div>
   )
