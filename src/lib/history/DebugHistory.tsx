@@ -1,24 +1,8 @@
 import { historyManager } from '@src/lib/singletons'
-import { useMemo, useState } from 'react'
-
-const createReactiveHistory = (
-  onChange: (key: unknown, value: unknown) => void
-) =>
-  new Proxy(historyManager, {
-    set(_, key, value) {
-      if (key === 'queue') {
-        onChange(key, value) // Tell React what *actually* changed
-      }
-      return true
-    },
-  })
+import { useStack } from '@src/lib/history'
 
 export function DebugHistory() {
-  const historyProxy = useMemo(
-    () => createReactiveHistory((key, value) => setHistory(historyManager)),
-    []
-  )
-  const [history, setHistory] = useState(historyProxy)
+  const history = useStack(historyManager)
   return (
     <details>
       <summary>History Debugger</summary>
@@ -30,7 +14,7 @@ export function DebugHistory() {
             items
           </p>
           <p>
-            {history.point}
+            {history.cursor}
             <br />
             indexed
           </p>

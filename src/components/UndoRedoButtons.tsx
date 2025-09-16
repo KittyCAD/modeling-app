@@ -2,6 +2,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import type EditorManager from '@src/editor/manager'
 import usePlatform from '@src/hooks/usePlatform'
+import { useStack } from '@src/lib/history'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { historyManager } from '@src/lib/singletons'
 import type { HTMLProps, MouseEventHandler } from 'react'
@@ -10,6 +11,7 @@ export function UndoRedoButtons({
   editorManager,
   ...props
 }: HTMLProps<HTMLDivElement> & { editorManager: EditorManager }) {
+  const s = useStack(historyManager)
   return (
     <div {...props}>
       <UndoOrRedoButton
@@ -17,30 +19,32 @@ export function UndoRedoButtons({
         keyboardShortcut="mod+z"
         iconName="arrowRotateLeft"
         onClick={() => {
-          // if (historyManager.canUndo()) {
-          //   historyManager
-          //     .undo()
-          //     .then(() => console.log('yayyyyy', historyManager))
-          //     .catch((e) => console.error('nooooo', e))
-          //   return
-          // }
+          if (s.canUndo) {
+            historyManager
+              .undo()
+              .then(() => console.log('yayyyyy', historyManager))
+              .catch((e) => console.error('nooooo', e))
+            return
+          }
           editorManager.undo()
         }}
+        disabled={!s.canUndo}
       />
       <UndoOrRedoButton
         label="Redo"
         keyboardShortcut="mod+shift+z"
         iconName="arrowRotateRight"
         onClick={() => {
-          // if (historyManager.canRedo()) {
-          //   historyManager
-          //     .redo()
-          //     .then(() => console.log('yayyyyy'))
-          //     .catch((e) => console.error('nooooo', e))
-          //   return
-          // }
+          if (s.canRedo) {
+            historyManager
+              .redo()
+              .then(() => console.log('yayyyyy'))
+              .catch((e) => console.error('nooooo', e))
+            return
+          }
           editorManager.redo()
         }}
+        disabled={!s.canRedo}
       />
     </div>
   )

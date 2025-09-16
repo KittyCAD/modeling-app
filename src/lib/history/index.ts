@@ -1,3 +1,5 @@
+import { useMemo, useSyncExternalStore } from 'react'
+
 interface HistoryItem {
   id: string
   label?: string
@@ -14,15 +16,31 @@ interface HistoryStack {
   canUndo: () => boolean
 }
 
-export class Stack implements HistoryStack {
+type Listener = () => void
+interface Subscribable {
+  subscribers: Set<Listener>
+  subscribe: (l: Listener) => () => void
+  getSnapshot: () => object
+  emit: () => void
+}
+
+export class Stack implements HistoryStack, Subscribable {
   queue: HistoryItem[] = []
   _cursor = 0
+  _snapshot = {
+    queue: this.queue,
+    cursor: this._cursor,
+    canUndo: this.canUndo(),
+    canRedo: this.canRedo(),
+  }
+  subscribers = new Set<Listener>()
 
   async undo() {
     console.log('undoing', this.queue, this.cursor, this.canUndo())
     if (this.canUndo()) {
       const result = await this.queue[this.cursor].undo()
       this.cursor--
+      this._snapshot = this.takeSnapshot()
       return result
     }
     return false
@@ -35,6 +53,7 @@ export class Stack implements HistoryStack {
   set cursor(newPoint: number) {
     console.log('setting point to ', newPoint)
     this._cursor = newPoint
+    this._snapshot = this.takeSnapshot()
   }
 
   async redo() {
@@ -42,6 +61,7 @@ export class Stack implements HistoryStack {
     if (this.canRedo()) {
       const result = await this.queue[this.cursor + 1].redo()
       this.cursor++
+      this._snapshot = this.takeSnapshot()
       return result
     }
     return false
@@ -63,5 +83,28 @@ export class Stack implements HistoryStack {
     this.queue.push(item)
     this.cursor = this.queue.length - 1
     console.log('adding item', this.queue, this.cursor)
+    this._snapshot = this.takeSnapshot()
   }
+
+  subscribe = (fn: Listener) => {
+    this.subscribers.add(fn)
+    return () => this.subscribers.delete(fn)
+  }
+  takeSnapshot = () => ({
+    queue: this.queue,
+    cursor: this._cursor,
+    canUndo: this.canUndo(),
+    canRedo: this.canRedo(),
+  })
+  getSnapshot = () => this._snapshot
+  emit() {
+    for (const fn of this.subscribers) {
+      fn()
+    }
+  }
+}
+
+export function useStack(instance?: Stack) {
+  const stack = useMemo(() => instance ?? new Stack(), [instance])
+  return useSyncExternalStore(stack.subscribe, stack.getSnapshot)
 }
