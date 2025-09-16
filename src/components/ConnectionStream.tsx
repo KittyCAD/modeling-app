@@ -145,6 +145,7 @@ export const ConnectionStream = (props: {
         numberOfConnectionAtttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
+        setShowManualConnect,
       }).catch((e) => {
         console.error(e)
         setShowManualConnect(true)
@@ -179,6 +180,7 @@ export const ConnectionStream = (props: {
         numberOfConnectionAtttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
+        setShowManualConnect,
       }).catch((e) => {
         console.error(e)
         setShowManualConnect(true)
@@ -202,6 +204,7 @@ export const ConnectionStream = (props: {
         numberOfConnectionAtttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
+        setShowManualConnect,
       }).catch((e) => {
         console.error(e)
         setShowManualConnect(true)
@@ -222,6 +225,7 @@ export const ConnectionStream = (props: {
         numberOfConnectionAtttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
+        setShowManualConnect,
       }).catch((e) => {
         console.error(e)
         setShowManualConnect(true)
@@ -246,6 +250,7 @@ export const ConnectionStream = (props: {
         numberOfConnectionAtttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
+        setShowManualConnect,
       }).catch((e) => {
         console.error(e)
         setShowManualConnect(true)
@@ -324,6 +329,7 @@ export const ConnectionStream = (props: {
               numberOfConnectionAtttempts,
               timeToConnect: 30_000,
               settings: settingsEngine,
+              setShowManualConnect,
             }).catch((e) => {
               console.error(e)
               setShowManualConnect(true)

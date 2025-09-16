@@ -104,6 +104,21 @@ const attemptToConnectToEngine = async ({
           label: 'onEngineConnectionReadyForRequests',
           message: 'kclManager.executeCode()',
         })
+
+        /**
+         * Gotcha: In the kclManager.executeCode workflow there is a set plane workflow
+         * that runs after the code is executed which takes a longer time to see and manage this state.
+         * You know that the planes should show if there is no code in the system now do that.
+         */
+        const defaultPlanes = kclManager.defaultPlanes
+        // Show the default planes if there is no code in the editor
+        if (defaultPlanes && codeManager.code === '') {
+          await Promise.all([
+            engineCommandManager.setPlaneHidden(defaultPlanes.xy, false),
+            engineCommandManager.setPlaneHidden(defaultPlanes.yz, false),
+            engineCommandManager.setPlaneHidden(defaultPlanes.xz, false),
+          ])
+        }
         await kclManager.executeCode()
         await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -148,6 +163,7 @@ async function tryConnecting({
   setIsSceneReady,
   timeToConnect,
   settings,
+  setShowManualConnect,
 }: {
   isConnecting: React.MutableRefObject<boolean>
   successfullyConnected: React.MutableRefObject<boolean>
@@ -159,6 +175,7 @@ async function tryConnecting({
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   settings: SettingsViaQueryString
+  setShowManualConnect: React.Dispatch<React.SetStateAction<boolean>>
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
@@ -194,6 +211,7 @@ async function tryConnecting({
           isConnecting.current = false
           successfullyConnected.current = true
           numberOfConnectionAtttempts.current = 0
+          setShowManualConnect(false)
           resolve('connected')
         } catch (e) {
           isConnecting.current = false
