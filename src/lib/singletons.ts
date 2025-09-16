@@ -38,7 +38,8 @@ import {
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
-import { HistoryService } from '@src/lib/history'
+import { Stack } from '@src/lib/history'
+import { LogAccess } from '@src/lib/LogAccess'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -67,7 +68,7 @@ export const kclManager = new KclManager(engineCommandManager, {
   editorManager,
   sceneInfra,
 })
-export const historyManager = new HistoryService()
+export const historyManager = new (LogAccess()(Stack))()
 
 import { initPromise } from '@src/lang/wasmUtils'
 // Initialize KCL version
