@@ -1,4 +1,4 @@
-import { normalizeLineEndings } from '@src/lib/codeEditor'
+import { isCodeTheSame } from '@src/lib/codeEditor'
 import type { ReactNode } from 'react'
 import { createContext, useEffect, useState } from 'react'
 import {
@@ -95,14 +95,13 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       if (isCurrentFile && eventType === 'change') {
         if (window.electron) {
           // Your current file is changed, read it from disk and write it into the code manager and execute the AST
-          let code = await window.electron.readFile(path, { encoding: 'utf-8' })
-          code = normalizeLineEndings(code)
+          const code = await window.electron.readFile(path, {
+            encoding: 'utf-8',
+          })
 
-          // Don't fire a re-execution if the codeManager already knows about this change
-          // GOTCHA: string comparison is hard! If the code as read by the OS doesn't
-          // match our in-memory representation of it, this will not guard, and user actions livePathsToWatch
-          // point-and-click sketching will be followed by late-firing re-executions.
-          if (code !== normalizeLineEndings(codeManager.code)) {
+          // Don't fire a re-execution if the codeManager already knows about this change,
+          // which would be evident if we already have matching code there.
+          if (isCodeTheSame(code, codeManager.code)) {
             codeManager.updateCodeStateEditor(code)
             await kclManager.executeCode()
           }
