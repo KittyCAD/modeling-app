@@ -24,6 +24,7 @@ import {
   KCL_DEFAULT_INSTANCES,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
+  KCL_DEFAULT_ORIGIN,
   KCL_AXIS_X,
   KCL_AXIS_Y,
   KCL_AXIS_Z,
@@ -1239,6 +1240,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       center: {
         inputType: 'vector3d',
         required: true,
+        defaultValue: KCL_DEFAULT_ORIGIN,
       },
       arcDegrees: {
         inputType: 'kcl',

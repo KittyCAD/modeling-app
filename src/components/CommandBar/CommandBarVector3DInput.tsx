@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { createArrayExpression, createLiteral } from '@src/lang/create'
 
@@ -16,9 +16,45 @@ function CommandBarVector3DInput({
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
 }) {
-  const [x, setX] = useState('')
-  const [y, setY] = useState('')
-  const [z, setZ] = useState('')
+  const commandBarState = useCommandBarState()
+  const previouslySetValue = commandBarState.context.argumentsToSubmit[
+    arg.name
+  ] as KclCommandValue | undefined
+
+  // Parse vector string format "[x, y, z]" into separate components
+  const parseVectorString = (vectorStr: string) => {
+    const match = vectorStr.match(/^\[([^,]+),\s*([^,]+),\s*([^\]]+)\]$/)
+    return match ? {
+      x: match[1].trim(),
+      y: match[2].trim(),
+      z: match[3].trim()
+    } : { x: '', y: '', z: '' }
+  }
+
+  // Resolve current vector value, prioritizing previously set values over defaults
+  const currentVectorString = useMemo(() => {
+    if (previouslySetValue?.valueText) {
+      return previouslySetValue.valueText
+    }
+    
+    if (arg.defaultValue) {
+      return typeof arg.defaultValue === 'function'
+        ? arg.defaultValue(commandBarState.context, undefined)
+        : arg.defaultValue
+    }
+    
+    return ''
+  }, [arg.defaultValue, previouslySetValue, commandBarState.context])
+
+  // Extract individual x, y, z values from the vector string
+  const defaultValues = useMemo(() => 
+    parseVectorString(currentVectorString), 
+    [currentVectorString]
+  )
+
+  const [x, setX] = useState(defaultValues.x)
+  const [y, setY] = useState(defaultValues.y)
+  const [z, setZ] = useState(defaultValues.z)
 
   const xInputRef = useRef<HTMLInputElement>(null)
   const yInputRef = useRef<HTMLInputElement>(null)
@@ -37,9 +73,9 @@ function CommandBarVector3DInput({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    const xNum = parseFloat(x)
-    const yNum = parseFloat(y)
-    const zNum = parseFloat(z)
+    const xNum = parseFloat(x) || 0
+    const yNum = parseFloat(y) || 0
+    const zNum = parseFloat(z) || 0
 
     // Basic validation - ensure all values are valid numbers
     if (window.isNaN(xNum) || window.isNaN(yNum) || window.isNaN(zNum)) {

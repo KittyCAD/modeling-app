@@ -389,7 +389,7 @@ export const commandBarMachine = setup({
                 isRequired &&
                 resolvedDefaultValue !== undefined &&
                 typeof argValue !== typeof resolvedDefaultValue &&
-                !(argConfig.inputType === 'kcl' || argConfig.skip)
+                !(argConfig.inputType === 'kcl' || argConfig.inputType === 'vector3d' || argConfig.skip)
               const hasInvalidKclValue =
                 argConfig.inputType === 'kcl' &&
                 isRequired &&
