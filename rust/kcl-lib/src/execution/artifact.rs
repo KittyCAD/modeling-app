@@ -1030,7 +1030,47 @@ fn artifacts_to_update(
                     inner_path_artifact.sweep_id = Some(id);
                     return_arr.push(Artifact::Path(inner_path_artifact))
                 }
+
+                if let ModelingCmd::Extrude(kcmc::Extrude { target, distance, faces, opposite, extrude_method }) = cmd {
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::warn_1(&format!("*** cmd: {cmd:#?}").into());
+
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::warn_1(&format!("*** path: {path:#?}").into());
+    
+                    // TODO build up the artifact graph here.
+
+                    // Note: target.0 === path.id
+                    let mut id_generator = EngineIdGenerator::new(target.0);
+                    for _ in 0..path.seg_ids.len() {
+                        // create wall artifacts
+                        let wall_id = id_generator.get_face_id();
+                        let curve_id = id_generator.get_curve_id();
+                        
+                        let wall_artifact = Artifact::Wall(Wall {
+                            id: wall_id,
+                            seg_id: curve_id,
+                            edge_cut_edge_ids: Vec::new(),
+                            sweep_id: path.sweep_id,
+                            path_ids: Vec::new(),
+                            face_code_ref: path.code_ref.clone(),
+                            cmd_id: artifact_command.cmd_id,
+                        });
+                        return_arr.push(wall_artifact);
+
+                        id_generator.next_edge();
+                    }
+                    // for _ in 0..sketch.paths.len() {
+                    //     face_id_map.insert(id_generator.get_curve_id().into(), Some(id_generator.get_face_id().into()));
+                    //     let curve_id = id_generator.get_curve_id();
+                    //     id_generator.next_edge();
+    
+                    //     #[cfg(target_arch = "wasm32")]
+                    //     web_sys::console::warn_1(&format!("*** curve_id: {curve_id:#?}").into());
+                    // }
+                }
             }
+            
             return Ok(return_arr);
         }
         ModelingCmd::Loft(loft_cmd) => {
