@@ -99,7 +99,7 @@ const test = playwrightTestFnWithFixtures_.extend<Fixtures>(
   fixturesBasedOnProcessEnvPlatform
 )
 
-interface IFormmatedLog {
+interface IFormattedLog {
   time: number
   message: string
   stack?: string
@@ -118,8 +118,8 @@ test.afterEach(async ({ page }, testInfo) => {
     // @ts-ignore This value is accessible. If it isn't that is not the end of the world
     () => window?.engineDebugger?.logs || []
   )
-  const formattedLogs: IFormmatedLog[] = engineLogs.map((log: ILog) => {
-    const newLog: IFormmatedLog = {
+  const formattedLogs: IFormattedLog[] = engineLogs.map((log: ILog) => {
+    const newLog: IFormattedLog = {
       ...log,
     }
     delete newLog['stack']
