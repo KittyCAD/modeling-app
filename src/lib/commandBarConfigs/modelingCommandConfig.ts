@@ -21,6 +21,7 @@ import type {
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_INSTANCES,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
 } from '@src/lib/constants'
@@ -1220,7 +1221,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       instances: {
         inputType: 'kcl',
         required: true,
-        defaultValue: '5',
+        defaultValue: KCL_DEFAULT_INSTANCES,
       },
       axis: {
         inputType: 'options',
