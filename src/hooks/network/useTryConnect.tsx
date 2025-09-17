@@ -1,5 +1,6 @@
 import type { useAppState } from '@src/AppState'
 import { EngineDebugger } from '@src/lib/debugger'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import {
@@ -105,16 +106,7 @@ const attemptToConnectToEngine = async ({
           message: 'kclManager.executeCode()',
         })
         await kclManager.executeCode()
-        await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
+        await resetCameraPosition()
         return resolve(true)
       } catch (err) {
         return reject(err)
