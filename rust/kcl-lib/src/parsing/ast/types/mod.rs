@@ -10,6 +10,7 @@ use std::{
 };
 
 use anyhow::Result;
+use kcl_api::NumericSuffix;
 use parse_display::{Display, FromStr};
 pub use path::{NodePath, Step};
 use serde::{Deserialize, Serialize};
@@ -28,7 +29,7 @@ use crate::{
     errors::KclError,
     execution::{KclValue, Metadata, TagIdentifier, annotations, types::ArrayLen},
     lsp::ToLspRange,
-    parsing::{PIPE_OPERATOR, ast::digest::Digest, token::NumericSuffix},
+    parsing::{PIPE_OPERATOR, ast::digest::Digest},
 };
 
 mod condition;
