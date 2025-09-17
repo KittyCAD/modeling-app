@@ -170,7 +170,8 @@ export function ModelingSidebarRight() {
   // Because sidebars are constructed at import time, it's not possible to do
   // this before, so we do it now.
   const sidebarPanesRightFiltered = sidebarPanesRight.filter((x) => {
-    if (settings.enable_copilot.current === false) {
+    return true
+    if (settings.modeling.enableCopilot.current === false) {
       return !(x.id === 'text-to-cad-2')
     }
     return true

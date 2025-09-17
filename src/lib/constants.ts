@@ -273,4 +273,5 @@ export const VALID_PANE_IDS = [
   'lspMessages',
   'variables',
   'text-to-cad',
+  'text-to-cad-2',
 ] as const

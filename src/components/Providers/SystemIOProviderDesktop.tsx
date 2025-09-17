@@ -25,6 +25,7 @@ import {
   useToken,
 } from '@src/lib/singletons'
 import { type PromptMeta } from '@src/machines/mlEphantManagerMachine'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,
@@ -237,8 +238,11 @@ export function SystemIOMachineLogicListenerDesktop() {
     )
   }
 
+  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
+
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
+    mlEphantManagerActor2,
     billingActor,
     token,
     (prompt: Prompt, promptMeta: PromptMeta) => {
@@ -322,7 +326,12 @@ export function SystemIOMachineLogicListenerDesktop() {
   )
 
   // Save the conversation id for the project id if necessary.
-  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
+  useProjectIdToConversationId(
+    mlEphantManagerActor,
+    mlEphantManagerActor2,
+    systemIOActor,
+    settings
+  )
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()

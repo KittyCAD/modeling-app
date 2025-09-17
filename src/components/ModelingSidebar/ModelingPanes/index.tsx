@@ -52,7 +52,7 @@ import {
   useSettings,
   useUser,
 } from '@src/lib/singletons'
-import { MlEphantMachineContext } from '@src/machines/mlEphantManagerMachine2'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import { useFolders } from '@src/machines/systemIO/hooks'
@@ -167,11 +167,10 @@ const textToCadPane2: SidebarPane = {
     const user = useUser()
     const { context: contextModeling, theProject } = useModelingContext()
     const { file: loaderFile } = useLoaderData() as IndexLoaderData
-    const mlEphantManagerActor2 = MlEphantManagerContext.useActorRef()
+    const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
     return (
       <>
-        {/*
         <ModelingPaneHeader
           id={props.id}
           icon="sparkles"
@@ -181,7 +180,7 @@ const textToCadPane2: SidebarPane = {
         />
         <MlEphantConversationPane2
           {...{
-            mlEphantManagerActor2,
+            mlEphantManagerActor: mlEphantManagerActor2,
             systemIOActor,
             kclManager,
             codeManager,
@@ -192,8 +191,6 @@ const textToCadPane2: SidebarPane = {
             user,
           }}
         />
-      */}{' '}
-        hi
       </>
     )
   },

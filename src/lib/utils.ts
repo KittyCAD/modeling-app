@@ -1,3 +1,4 @@
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
 import type { AsyncFn } from '@src/lib/types'
 import type { Binary as BSONBinary } from 'bson'
@@ -686,7 +687,7 @@ export function returnSelfOrGetHostNameFromURL(requestedEnvironment: string) {
   return environment
 }
 
-export function promiseFactory<T>() {
+export function promiseFactory<T = void>() {
   let resolve: (value: T | PromiseLike<T>) => void = () => {}
   let reject: (value: T | PromiseLike<T>) => void = () => {}
   const promise = new Promise<T>((_resolve, _reject) => {
@@ -696,21 +697,29 @@ export function promiseFactory<T>() {
   return { promise, resolve, reject }
 }
 
-export function ZooSocket(path: string, token: string): Promise<WebSocket> {
-  const ws = new WebSocket(withAPIBaseURL(path))
-  const { promise, resolve } = promiseFactory<WebSocket>()
+export function Socket<T extends WebSocket>(WsClass: new (url: string) => T, path: string, token: string): Promise<T> {
+  const ws = new WsClass(withAPIBaseURL(path))
+  const { promise, resolve } = promiseFactory<T>()
 
   ws.addEventListener('open', () => {
     ws.send(
       JSON.stringify({
+        type: 'headers',
         headers: {
           Authorization: 'Bearer ' + token,
         },
       })
     )
+    resolve(ws)
+  })
 
-    resolve()
+  ws.addEventListener('close', () => {
+    console.log('CLOSED')
   })
 
   return promise
+}
+
+export function ZooSocket(path: string, token: string): Promise<WebSocket> {
+  return Socket(WebSocket, path, token)
 }
