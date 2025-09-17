@@ -22,13 +22,13 @@ description: Result of parsing propeller.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "raw": "5",
+            "raw": "5deg",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 5.0,
-              "suffix": "None"
+              "suffix": "Deg"
             }
           },
           "moduleId": 0,
@@ -347,13 +347,13 @@ description: Result of parsing propeller.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "30",
+                "raw": "30deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 30.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -508,13 +508,13 @@ description: Result of parsing propeller.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "30",
+                "raw": "30deg",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 30.0,
-                  "suffix": "None"
+                  "suffix": "Deg"
                 }
               }
             },
@@ -601,13 +601,13 @@ description: Result of parsing propeller.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "30",
+                  "raw": "30deg",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 30.0,
-                    "suffix": "None"
+                    "suffix": "Deg"
                   }
                 }
               },
@@ -1230,13 +1230,13 @@ description: Result of parsing propeller.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "30",
+                      "raw": "30deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 30.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1311,13 +1311,13 @@ description: Result of parsing propeller.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "120",
+                      "raw": "120deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 120.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1661,13 +1661,13 @@ description: Result of parsing propeller.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "240",
+                      "raw": "240deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 240.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },

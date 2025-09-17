@@ -154,7 +154,7 @@
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "coilover-assembly/main.kcl",
     "multipleFiles": true,
-    "title": "Complete Assembly:",
+    "title": "Coilover Assembly",
     "description": "Consist of a lower and upper body combination with eye-end mounts at the top and bottom. 200 mm-long helical spring (44 mm OD, and wire diameter of 6 mm) captured between upper and lower seats; Internal piston rod running through the spring. Integrated bump-stop beneath the upper seat to limit compression stroke. The assembly provides adjustable ride height and damping when installed between chassis and wheel hub.",
     "files": [
       "coilover-bottom.kcl",
