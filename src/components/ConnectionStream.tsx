@@ -32,7 +32,7 @@ import { useRouteLoaderData, useSearchParams } from 'react-router-dom'
 import env from '@src/env'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { PATHS } from '@src/lib/paths'
-import { IndexLoaderData } from '@src/lib/types'
+import type { IndexLoaderData } from '@src/lib/types'
 
 export const ConnectionStream = (props: {
   pool: string | null

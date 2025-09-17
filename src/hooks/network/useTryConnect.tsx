@@ -10,7 +10,6 @@ import {
   rustContext,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
 import { getDimensions } from '@src/network/utils'
 import { useRef } from 'react'
 
@@ -106,6 +105,9 @@ const attemptToConnectToEngine = async ({
           message: 'kclManager.executeCode()',
         })
         await kclManager.executeCode()
+        // TODO: resolve the ~12 remaining dependent playwright tests on this functions isPlaywright() check
+        // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
+        // business logic
         await resetCameraPosition()
         return resolve(true)
       } catch (err) {
