@@ -1,21 +1,17 @@
-import type { MlEphantManagerContext } from '@src/machines/mlEphantManagerMachine'
-import type { ReactNode } from 'react'
-import { useRef, useEffect, useState, Fragment } from 'react'
-import type { Prompt } from '@src/lib/prompt'
-import { PromptCard } from '@src/components/PromptCard'
-import { CustomIcon } from '@src/components/CustomIcon'
 import { Popover, Transition } from '@headlessui/react'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { ExchangeCard } from '@src/components/ExchangeCard'
+import type { Prompt } from '@src/lib/prompt'
+import type { MlEphantManagerContext2, Conversation, Exchange } from '@src/machines/mlEphantManagerMachine2'
+import type { ReactNode } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
-  prompts: Prompt[]
-  promptsThoughts: MlEphantManagerContext['promptsThoughts']
-  onProcess: (requestedPrompt: string) => void
-  onFeedback: (id: Prompt['id'], feedback: Prompt['feedback']) => void
-  onSeeReasoning: (id: Prompt['id']) => void
+  conversation?: Conversation
+  onProcess: (request: string) => void
   onSeeMoreHistory: (nextPage?: string) => void
   disabled?: boolean
-  nextPage?: string
   hasPromptCompleted: boolean
   userAvatarSrc?: string
 }
@@ -146,18 +142,18 @@ const MLEphantConversationStarter = () => {
   )
 }
 
-export const MlEphantConversation = (props: MlEphantConversationProps) => {
+export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
   const onSeeMoreHistory = () => {
     setAutoScroll(false)
-    props.onSeeMoreHistory(props.nextPage)
+    props.onSeeMoreHistory(props.conversation?.pageToken)
   }
 
-  const onProcess = (requestedPrompt: string) => {
+  const onProcess = (request: string) => {
     setAutoScroll(true)
-    props.onProcess(requestedPrompt)
+    props.onProcess(request)
   }
 
   useEffect(() => {
@@ -167,7 +163,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     if (refScroll.current === null) {
       return
     }
-    if (props.prompts.length === 0) {
+    if (props.conversation?.exchanges.length === 0) {
       return
     }
 
@@ -181,7 +177,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
       })
     }, ANIMATION_TIME / 4) // This is a heuristic. I'm sorry. We'd need to
     // hook up "animation is done" otherwise to all children.
-  }, [props.prompts.length, autoScroll])
+  }, [props.conversation?.exchanges.length, autoScroll])
 
   useEffect(() => {
     if (autoScroll === false) {
@@ -199,15 +195,11 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     })
   }, [props.hasPromptCompleted, autoScroll])
 
-  const promptCards = props.prompts.map((prompt) => (
-    <PromptCard
-      key={prompt.id}
-      {...prompt}
+  const exchangeCards = props.conversation?.exchanges.flatMap((exchange: Exchange, exchangeIndex: number) => (
+    <ExchangeCard
+      key={`exchange-${exchangeIndex}`}
+      {...exchange}
       userAvatar={props.userAvatarSrc}
-      thoughts={props.promptsThoughts.get(prompt.id)}
-      disabled={prompt.status !== 'completed'}
-      onSeeReasoning={props.onSeeReasoning}
-      onFeedback={props.onFeedback}
     />
   ))
   return (
@@ -217,7 +209,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
               {props.isLoading === false ? (
-                props.nextPage ? (
+                props.conversation?.pageToken ? (
                   /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */
                   <div
                     onClick={() => onSeeMoreHistory()}
@@ -233,7 +225,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                   Loading history
                 </div>
               )}
-              {promptCards}
+              {exchangeCards}
             </div>
           </div>
           <div className="border-t b-4">
@@ -248,7 +240,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
   )
 }
 
-export const MLEphantConversationPaneMenu = () => (
+export const MLEphantConversationPaneMenu2 = () => (
   <Popover className="relative">
     <Popover.Button className="p-0 !bg-transparent border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 ui-open:!border-primary dark:ui-open:!border-chalkboard-70 !outline-none">
       <CustomIcon name="questionMark" className="w-5 h-5" />
@@ -282,3 +274,4 @@ export const MLEphantConversationPaneMenu = () => (
     </Transition>
   </Popover>
 )
+

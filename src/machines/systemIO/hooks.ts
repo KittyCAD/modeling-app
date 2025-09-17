@@ -13,6 +13,10 @@ import {
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
 import {
+  type MlEphantManagerActor2,
+  MlEphantManagerTransitions2,
+} from '@src/machines/mlEphantManagerMachine2'
+import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
@@ -49,6 +53,7 @@ export const useRequestedTextToCadGeneration = () =>
 
 export const useProjectIdToConversationId = (
   mlEphantManagerActor: MlEphantManagerActor,
+  mlEphantManagerActor2: MlEphantManagerActor2,
   systemIOActor: SystemIOActor,
   settings2: typeof settings
 ) => {
@@ -124,6 +129,7 @@ export const useProjectIdToConversationId = (
 // Watch MlEphant for any responses that require files to be created.
 export const useWatchForNewFileRequestsFromMlEphant = (
   mlEphantManagerActor: MlEphantManagerActor,
+  mlEphantManagerActor2: MlEphantManagerActor2,
   billingActor: BillingActor,
   token: string,
   fn: (prompt: Prompt, promptMeta: PromptMeta) => void
@@ -166,39 +172,8 @@ export const useWatchForNewFileRequestsFromMlEphant = (
     })
 
     const subscription2 = mlEphantManagerActor2.subscribe((next) => {
-      if (next.context.promptsInProgressToCompleted.size === 0) {
-        return
-      }
-      if (
-        !next.matches({
-          [MlEphantManagerStates.Ready]: {
-            [MlEphantManagerStates.Background]: S.Await,
-          },
-        })
-      ) {
-        return
-      }
-
-      next.context.promptsInProgressToCompleted.forEach(
-        (promptId: Prompt['id']) => {
-          const prompt = next.context.promptsPool.get(promptId)
-          if (prompt === undefined) return
-          if (prompt.status === 'failed') return
-          const promptMeta = next.context.promptsMeta.get(prompt.id)
-          if (promptMeta === undefined) {
-            console.warn('No metadata for this prompt - ignoring.')
-            return
-          }
-
-          fn(prompt, promptMeta)
-        }
-      )
-
-      // TODO: Move elsewhere eventually, decouple from SystemIOActor
-      billingActor.send({
-        type: BillingTransition.Update,
-        apiToken: token,
-      })
+      console.log('systemIO/hooks.ts: ', next.value)
+      console.log('systemIO/hooks.ts: ', next.context)
     })
     return () => {
       subscription.unsubscribe()

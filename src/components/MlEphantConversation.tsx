@@ -1,10 +1,10 @@
-import { Popover, Transition } from '@headlessui/react'
-import { CustomIcon } from '@src/components/CustomIcon'
-import { PromptCard } from '@src/components/PromptCard'
-import type { Prompt } from '@src/lib/prompt'
 import type { MlEphantManagerContext } from '@src/machines/mlEphantManagerMachine'
 import type { ReactNode } from 'react'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { useRef, useEffect, useState, Fragment } from 'react'
+import type { Prompt } from '@src/lib/prompt'
+import { PromptCard } from '@src/components/PromptCard'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { Popover, Transition } from '@headlessui/react'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
@@ -282,3 +282,4 @@ export const MLEphantConversationPaneMenu = () => (
     </Transition>
   </Popover>
 )
+

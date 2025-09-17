@@ -7,29 +7,21 @@ import type { SystemIOActor } from '@src/lib/singletons'
 import { useEffect } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useSelector } from '@xstate/react'
-import { MlEphantConversation } from '@src/components/MlEphantConversation'
-import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
+import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
+import type { MlEphantManagerActor2 } from '@src/machines/mlEphantManagerMachine2'
 import {
-  MlEphantManagerStates,
-  MlEphantManagerTransitions,
-} from '@src/machines/mlEphantManagerMachine'
+  MlEphantManagerStates2,
+  MlEphantManagerTransitions2,
+} from '@src/machines/mlEphantManagerMachine2'
 import type { Prompt } from '@src/lib/prompt'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingMachine'
 import type { FileEntry, Project } from '@src/lib/project'
-import type { Models } from '@kittycad/lib'
+import type { User } from '@kittycad/lib/dist/types/src/models'
 
-const hasPromptsPending = (promptsPool: Prompt[]) => {
-  return (
-    promptsPool.filter((prompt) =>
-      ['queued', 'uploaded', 'in_progress'].includes(prompt.status)
-    ).length > 0
-  )
-}
-
-export const MlEphantConversationPane = (props: {
-  mlEphantManagerActor: MlEphantManagerActor
+export const MlEphantConversationPane2 = (props: {
+  mlEphantManagerActor: MlEphantManagerActor2
   systemIOActor: SystemIOActor
   kclManager: KclManager
   codeManager: CodeManager
@@ -37,28 +29,21 @@ export const MlEphantConversationPane = (props: {
   contextModeling: ModelingMachineContext
   loaderFile: FileEntry | undefined
   settings: typeof settings
-  user?: Models['User_type']
+  user?: User
 }) => {
   const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
-  const promptsBelongingToConversation = useSelector(
+  const conversation = useSelector(
     props.mlEphantManagerActor,
-    () => {
-      return mlEphantManagerActorSnapshot.context.promptsBelongingToConversation
+    (actor) => {
+      return actor.context.conversation
     }
   )
-  const prompts = Array.from(
-    promptsBelongingToConversation
-      ?.map((promptId) =>
-        mlEphantManagerActorSnapshot.context.promptsPool.get(promptId)
-      )
-      .filter((x) => x !== undefined) ?? []
-  )
 
-  const promptsThoughts = useSelector(props.mlEphantManagerActor, () => {
-    return mlEphantManagerActorSnapshot.context.promptsThoughts
-  })
+  const onSeeMoreHistory = (nextPage?: string) => {
+    console.log('next page' , nextPage)
+  }
 
-  const onProcess = async (requestedPrompt: string) => {
+  const onProcess = async (request: string) => {
     if (props.theProject === undefined) {
       console.warn('theProject is `undefined` - should not be possible')
       return
@@ -78,8 +63,8 @@ export const MlEphantConversationPane = (props: {
     // has more data for initial creations. Improvements to the TTC service
     // will close this gap in performance.
     props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.PromptEditModel,
-      prompt: requestedPrompt,
+      type: MlEphantManagerTransitions2.MessageSend,
+      prompt: request,
       projectForPromptOutput: props.theProject,
       applicationProjectDirectory: props.settings.app.projectDirectory.current,
       fileSelectedDuringPrompting: {
@@ -92,61 +77,14 @@ export const MlEphantConversationPane = (props: {
     })
   }
 
-  const onSeeMoreHistory = (nextPage?: string) => {
-    if (!nextPage) return
-
-    const conversationId = props.systemIOActor
-      .getSnapshot()
-      .context.mlEphantConversations?.get(props.settings.meta.id.current)
-
-    if (conversationId === undefined || conversationId === uuidNIL) {
-      console.warn('Unexpected conversationId is undefined!')
-    }
-
-    if (props.theProject === undefined) {
-      return
-    }
-
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
-      project: props.theProject,
-      conversationId,
-      nextPage:
-        mlEphantManagerActorSnapshot.context
-          .pageTokenPromptsBelongingToConversation,
-    })
-  }
-
-  const onFeedback = (id: Prompt['id'], feedback: Prompt['feedback']) => {
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.PromptFeedback,
-      promptId: id,
-      feedback,
-    })
-  }
-
-  const onSeeReasoning = (id: Prompt['id']) => {
-    // Already have the thoughts!
-    if (promptsThoughts.get(id)) {
-      return
-    }
-
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.GetReasoningForPrompt,
-      // So the machine can send messages to itself.
-      refParent: props.mlEphantManagerActor,
-      promptId: id,
-    })
-  }
-
   const isProcessing =
     mlEphantManagerActorSnapshot.matches({
-      [MlEphantManagerStates.Ready]: {
-        [MlEphantManagerStates.Foreground]: S.Await,
+      [MlEphantManagerStates2.Ready]: {
+        [MlEphantManagerStates2.Request]: S.Await,
       },
     }) === false
 
-  const tryToGetPrompts = () => {
+  const tryToGetExchanges = () => {
     const mlEphantConversations =
       props.systemIOActor.getSnapshot().context.mlEphantConversations
 
@@ -169,13 +107,14 @@ export const MlEphantConversationPane = (props: {
     // We can now reliably use the mlConversations data.
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
     if (
-      props.mlEphantManagerActor.getSnapshot().context
-        .promptsBelongingToConversation === undefined &&
-      props.theProject !== undefined
+      props.theProject !== undefined &&
+      conversationId !== undefined
     ) {
+      // TODO:
+      // request to get exchanges in a particular conversation
+      // hopefully with { command: 'switch', conversation_id, limit }
       props.mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
-        project: props.theProject,
+        type: MlEphantManagerTransitions2.ConversationFetch,
         conversationId,
       })
     }
@@ -197,7 +136,7 @@ export const MlEphantConversationPane = (props: {
           return
         }
 
-        tryToGetPrompts()
+        tryToGetExchanges()
       }
     )
 
@@ -205,8 +144,8 @@ export const MlEphantConversationPane = (props: {
       props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot2) => {
         const isProcessing =
           mlEphantManagerActorSnapshot2.matches({
-            [MlEphantManagerStates.Ready]: {
-              [MlEphantManagerStates.Foreground]: S.Await,
+            [MlEphantManagerStates2.Ready]: {
+              [MlEphantManagerStates2.Request]: S.Await,
             },
           }) === false
 
@@ -214,14 +153,18 @@ export const MlEphantConversationPane = (props: {
           return
         }
 
-        tryToGetPrompts()
+        if (mlEphantManagerActorSnapshot2.context.conversation !== undefined) {
+          return
+        }
+
+        tryToGetExchanges()
       })
 
     props.systemIOActor.send({
       type: SystemIOMachineEvents.getMlEphantConversations,
     })
 
-    tryToGetPrompts()
+    tryToGetExchanges()
 
     return () => {
       subscriptionSystemIOActor.unsubscribe()
@@ -231,24 +174,14 @@ export const MlEphantConversationPane = (props: {
   }, [props.settings.meta.id.current])
 
   return (
-    <MlEphantConversation
-      isLoading={promptsBelongingToConversation === undefined || isProcessing}
-      prompts={prompts}
-      promptsThoughts={promptsThoughts}
-      onProcess={(requestedPrompt: string) => {
-        onProcess(requestedPrompt).catch(reportRejection)
+    <MlEphantConversation2
+      isLoading={conversation === undefined}
+      conversation={conversation}
+      onProcess={(request: string) => {
+        onProcess(request).catch(reportRejection)
       }}
-      onFeedback={onFeedback}
-      onSeeReasoning={onSeeReasoning}
-      disabled={hasPromptsPending(prompts) || isProcessing}
-      hasPromptCompleted={
-        mlEphantManagerActorSnapshot.context.promptsInProgressToCompleted.size >
-        0
-      }
-      nextPage={
-        mlEphantManagerActorSnapshot.context
-          .pageTokenPromptsBelongingToConversation
-      }
+      disabled={isProcessing}
+      hasPromptCompleted={isProcessing}
       onSeeMoreHistory={onSeeMoreHistory}
       userAvatarSrc={props.user?.image}
     />
