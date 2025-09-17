@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { commandBarActor } from '@src/lib/singletons'
-import type { CommandArgument } from '@src/lib/commandTypes'
+import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
+import { createArrayExpression, createLiteral } from '@src/lang/create'
 
 function CommandBarVector3DInput({
   arg,
@@ -13,7 +14,7 @@ function CommandBarVector3DInput({
     name: string
   }
   stepBack: () => void
-  onSubmit: (data: [number, number, number]) => void
+  onSubmit: (data: KclCommandValue) => void
 }) {
   const [x, setX] = useState('')
   const [y, setY] = useState('')
@@ -45,7 +46,22 @@ function CommandBarVector3DInput({
       return // Don't submit if any value is invalid
     }
 
-    onSubmit([xNum, yNum, zNum])
+    // Create AST array expression from the numbers
+    const arrayElements = [
+      createLiteral(xNum),
+      createLiteral(yNum),
+      createLiteral(zNum),
+    ]
+    const arrayExpression = createArrayExpression(arrayElements)
+
+    // Create KclCommandValue with the array expression AST
+    const kclValue: KclCommandValue = {
+      valueAst: arrayExpression,
+      valueText: `[${xNum}, ${yNum}, ${zNum}]`,
+      valueCalculated: `[${xNum}, ${yNum}, ${zNum}]`,
+    }
+
+    onSubmit(kclValue)
   }
 
   function handleKeyDown(
