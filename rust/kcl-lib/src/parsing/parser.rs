@@ -4,6 +4,7 @@
 use std::{cell::RefCell, collections::BTreeMap};
 
 use indexmap::IndexMap;
+use kcl_api::NumericSuffix;
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, repeat_till, separated, separated_pair, terminated},
     dispatch,
@@ -16,7 +17,7 @@ use winnow::{
 use super::{
     DeprecationKind,
     ast::types::{AscribedExpression, ImportPath, LabelledExpression},
-    token::{NumericSuffix, RESERVED_WORDS},
+    token::RESERVED_WORDS,
 };
 use crate::{
     IMPORT_FILE_EXTENSIONS, MetaSettings, SourceRange, TypedPath,
