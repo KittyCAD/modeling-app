@@ -27,7 +27,7 @@ export async function exportSketchToDxf(
       toastId: string
     ) => Promise<void>
   }
-): Promise<{ success: boolean; error?: string }> {
+): Promise<boolean | Error> {
   const {
     engineCommandManager,
     kclManager,
