@@ -1,5 +1,6 @@
-import { useMemo, useSyncExternalStore } from 'react'
 import { uuidv4 } from '@src/lib/utils'
+import type EditorManager from '@src/editor/manager'
+import { redoDepth, undoDepth } from '@codemirror/commands'
 
 interface HistoryItem {
   id: string
@@ -22,7 +23,7 @@ interface Subscribable {
   subscribers: Set<Listener>
   subscribe: (l: Listener) => () => void
   getSnapshot: () => object
-  emit: () => void
+  emitChange: () => void
 }
 
 export class Stack implements HistoryStack, Subscribable {
@@ -102,14 +103,110 @@ export class Stack implements HistoryStack, Subscribable {
     canRedo: this.canRedo(),
   })
   getSnapshot = () => this._snapshot
-  emit() {
+  emitChange() {
     for (const fn of this.subscribers) {
       fn()
     }
   }
 }
 
-export function useStack(instance?: Stack) {
-  const stack = useMemo(() => instance ?? new Stack(), [instance])
-  return useSyncExternalStore(stack.subscribe, stack.getSnapshot)
+export enum HistoryStackNames {
+  Editor = 'editor',
+  FileExplorer = 'file-explorer',
+  TextToCAD = 'text-to-cad',
+}
+
+export class HistoryService implements Subscribable {
+  stacks: Map<HistoryStackNames, Stack> = new Map()
+  _currentStackId: HistoryStackNames = HistoryStackNames.Editor
+  #editorManager: EditorManager
+  _snapshot = {
+    canUndo: this.canUndo(),
+    canRedo: this.canRedo(),
+    currentStack: this.stacks.get(this.currentStackId),
+    currentStackId: this.currentStackId,
+  }
+  subscribers = new Set<Listener>()
+  id: string
+
+  constructor({ editorManager }: { editorManager: EditorManager }) {
+    this.id = uuidv4()
+    console.warn('FRANK WHEN DOES THIS RUN?', this.id)
+    this.#editorManager = editorManager
+    for (const s of Object.values(HistoryStackNames)) {
+      this.stacks.set(s as HistoryStackNames, new Stack())
+    }
+  }
+
+  get currentStackId() {
+    return this._currentStackId
+  }
+  set currentStackId(newStack: HistoryStackNames) {
+    this._currentStackId = newStack
+    this.takeSnapshot()
+    this.emitChange()
+  }
+
+  canUndo() {
+    if (
+      this.#editorManager &&
+      this.currentStackId === HistoryStackNames.Editor
+    ) {
+      return undoDepth(this.#editorManager.state) > 0
+    }
+
+    return this.stacks.get(this.currentStackId)?.canUndo() || false
+  }
+  canRedo() {
+    if (
+      this.#editorManager &&
+      this.currentStackId === HistoryStackNames.Editor
+    ) {
+      return redoDepth(this.#editorManager.state) > 0
+    }
+
+    return this.stacks.get(this.currentStackId)?.canRedo() || false
+  }
+
+  async undo() {
+    if (this.canUndo()) {
+      if (this.currentStackId === HistoryStackNames.Editor) {
+        this.#editorManager.undo()
+      } else {
+        await this.stacks.get(this.currentStackId)?.undo()
+      }
+      this.emitChange()
+    }
+  }
+  async redo() {
+    if (this.canRedo()) {
+      if (this.currentStackId === HistoryStackNames.Editor) {
+        this.#editorManager.redo()
+      } else {
+        await this.stacks.get(this.currentStackId)?.redo()
+      }
+      this.emitChange()
+    }
+  }
+  addItem(newItem: Omit<HistoryItem, 'id'>, stackId = this.currentStackId) {
+    this.stacks.get(stackId)?.addItem(newItem)
+    this.emitChange()
+  }
+
+  subscribe = (fn: Listener) => {
+    this.subscribers.add(fn)
+    return () => this.subscribers.delete(fn)
+  }
+  takeSnapshot = () => {
+    this._snapshot.canUndo = this.canUndo()
+    this._snapshot.canRedo = this.canRedo()
+    this._snapshot.currentStackId = this.currentStackId
+    this._snapshot.currentStack = this.stacks.get(this.currentStackId)
+  }
+  getSnapshot = () => this._snapshot
+  emitChange() {
+    for (const fn of this.subscribers) {
+      fn()
+    }
+  }
 }

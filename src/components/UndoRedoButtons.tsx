@@ -1,50 +1,39 @@
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import type EditorManager from '@src/editor/manager'
 import usePlatform from '@src/hooks/usePlatform'
-import { useStack } from '@src/lib/history'
+import type { HistoryService } from '@src/lib/history'
+import { useHistory } from '@src/lib/history/lib'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
-import { historyManager } from '@src/lib/singletons'
-import type { HTMLProps, MouseEventHandler } from 'react'
+import { useEffect, type HTMLProps, type MouseEventHandler } from 'react'
 
 export function UndoRedoButtons({
-  editorManager,
+  historyManager,
   ...props
-}: HTMLProps<HTMLDivElement> & { editorManager: EditorManager }) {
-  const s = useStack(historyManager)
+}: HTMLProps<HTMLDivElement> & { historyManager: HistoryService }) {
+  const historySnapshot = useHistory(historyManager)
+  useEffect(
+    () => console.log('FRANK new snapshot', historySnapshot),
+    [historySnapshot]
+  )
   return (
     <div {...props}>
       <UndoOrRedoButton
-        label="Undo"
+        label={`Undo ${historySnapshot.currentStackId}`}
         keyboardShortcut="mod+z"
         iconName="arrowRotateLeft"
         onClick={() => {
-          if (s.canUndo) {
-            historyManager
-              .undo()
-              .then(() => console.log('yayyyyy', historyManager))
-              .catch((e) => console.error('nooooo', e))
-            return
-          }
-          editorManager.undo()
+          historyManager.undo().catch((e) => console.error('failed to undo', e))
         }}
-        disabled={!s.canUndo}
+        disabled={!historySnapshot.canUndo}
       />
       <UndoOrRedoButton
-        label="Redo"
+        label={`Redo ${historySnapshot.currentStackId}`}
         keyboardShortcut="mod+shift+z"
         iconName="arrowRotateRight"
         onClick={() => {
-          if (s.canRedo) {
-            historyManager
-              .redo()
-              .then(() => console.log('yayyyyy'))
-              .catch((e) => console.error('nooooo', e))
-            return
-          }
-          editorManager.redo()
+          historyManager.undo().catch((e) => console.error('failed to undo', e))
         }}
-        disabled={!s.canRedo}
+        disabled={!historySnapshot.canRedo}
       />
     </div>
   )

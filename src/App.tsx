@@ -54,6 +54,7 @@ import {
   codeManager,
   editorManager,
   getSettings,
+  historyManager,
   kclManager,
   sceneInfra,
   settingsActor,
@@ -266,7 +267,7 @@ export function App() {
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={
               <UndoRedoButtons
-                editorManager={editorManager}
+                historyManager={historyManager}
                 className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
               />
             }

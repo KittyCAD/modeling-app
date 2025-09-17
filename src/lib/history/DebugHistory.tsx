@@ -1,26 +1,32 @@
 import { historyManager } from '@src/lib/singletons'
-import { useStack } from '@src/lib/history'
+import { useHistory, useStack } from '@src/lib/history/lib'
 
 export function DebugHistory() {
-  const history = useStack(historyManager)
+  const historySnapshot = useHistory(historyManager)
+  const stackSnapshot = useStack(historySnapshot.currentStack)
   return (
     <details>
       <summary>History Debugger</summary>
       <div>
         <div className="flex gap-2 items-center">
           <p>
-            {history.queue.length}
+            {historySnapshot.currentStackId}
+            <br />
+            current stack
+          </p>
+          <p>
+            {stackSnapshot.queue.length}
             <br />
             items
           </p>
           <p>
-            {history.cursor}
+            {stackSnapshot.cursor}
             <br />
             indexed
           </p>
         </div>
         <div className="flex flex-col">
-          {history.queue.map((item, i) => (
+          {stackSnapshot.queue.map((item, i) => (
             <div key={item.id} className="p-1">
               <p>{item.label || 'unlabeled item'}</p>
               <small>

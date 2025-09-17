@@ -14,6 +14,7 @@ import {
   getUniqueProjectName,
   interpolateProjectNameWithIndex,
 } from '@src/lib/desktopFS'
+import { HistoryStackNames } from '@src/lib/history'
 import {
   getProjectDirectoryFromKCLFilePath,
   getStringAfterLastSeparator,
@@ -584,11 +585,18 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
 
         await window.electron.rename(oldPath, newPath)
-        historyManager.addItem({
-          label: `rename-file: ${oldPath} to ${newPath}`,
-          undo: async () => window.electron?.rename(newPath, oldPath),
-          redo: async () => window.electron?.rename(oldPath, newPath),
-        })
+        console.log(
+          'FRANK history according to file explorer system',
+          historyManager.id
+        )
+        historyManager.addItem(
+          {
+            label: `rename-file: ${oldPath} to ${newPath}`,
+            undo: async () => window.electron?.rename(newPath, oldPath),
+            redo: async () => window.electron?.rename(oldPath, newPath),
+          },
+          HistoryStackNames.FileExplorer
+        )
 
         return {
           message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,

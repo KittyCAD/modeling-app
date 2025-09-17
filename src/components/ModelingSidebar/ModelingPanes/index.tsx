@@ -44,6 +44,7 @@ import {
   codeManager,
   commandBarActor,
   editorManager,
+  historyManager,
   kclManager,
   mlEphantManagerActor,
   systemIOActor,
@@ -56,6 +57,8 @@ import { useFolders } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import { useRouteLoaderData } from 'react-router-dom'
+import { useHistoryStackWhileFocused } from '@src/lib/history/lib'
+import { HistoryStackNames } from '@src/lib/history'
 
 export type SidebarId = (typeof VALID_PANE_IDS)[number]
 
@@ -205,6 +208,12 @@ export const sidebarPanesLeft: SidebarPane[] = [
     icon: 'folder',
     sidebarName: 'Project Files',
     Content: (props: { id: SidebarId; onClose: () => void }) => {
+      const paneRef = useRef<HTMLDivElement>()
+      useHistoryStackWhileFocused(
+        paneRef.current,
+        historyManager,
+        HistoryStackNames.FileExplorer
+      )
       const projects = useFolders()
       const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
       const projectRef = useRef(loaderData.project)
@@ -322,7 +331,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
             onClose={props.onClose}
           />
           {theProject && file ? (
-            <div className={'w-full h-full flex flex-col'}>
+            <div ref={paneRef} className={'w-full h-full flex flex-col'}>
               <ProjectExplorer
                 project={theProject}
                 file={file}

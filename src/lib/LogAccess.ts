@@ -1,3 +1,5 @@
+import { isArray } from '@src/lib/utils'
+
 type LogOptions = {
   includeGets?: boolean // default true
   includeSets?: boolean // default true
@@ -88,7 +90,7 @@ function safePreview(v: unknown): string {
     if (typeof v === 'number' || typeof v === 'boolean' || v == null)
       return String(v)
     if (typeof v === 'function') return '[Function]'
-    if (Array.isArray(v)) return `[Array(${v.length})]`
+    if (isArray(v)) return `[Array(${v.length})]`
     if (v instanceof Date) return `Date(${v.toISOString()})`
     return '[Object]'
   } catch {
