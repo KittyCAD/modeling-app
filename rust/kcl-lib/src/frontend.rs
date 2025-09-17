@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use kcl_api::{
     Error, Expr, FileId, Number, NumericSuffix, Object, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta,
     Settings, SourceDelta, SourceRef, Version,
@@ -5,7 +7,7 @@ use kcl_api::{
 };
 use kcl_error::SourceRange;
 
-use crate::{Program, id::IncIdGenerator};
+use crate::{Program, fmt::format_number_literal, id::IncIdGenerator};
 
 #[derive(Debug, Clone)]
 pub(crate) struct FrontendState {
@@ -32,11 +34,34 @@ impl FrontendState {
 
     fn new_sketch(
         &mut self,
-        project: ProjectId,
-        file: FileId,
-        version: Version,
+        _project: ProjectId,
+        _file: FileId,
+        _version: Version,
         args: SketchArgs,
     ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
+        // Create updated KCL source from args.
+        let args_source = match &args.on {
+            // TODO: sketch-api: implement ObjectId to source.
+            kcl_api::Plane::Object(_) => todo!(),
+            kcl_api::Plane::Default(plane) => Cow::Borrowed(""),
+        };
+        let sketch_source = format!("sketch({args_source}) {{}}");
+        let new_source = format!("{}\n\n{sketch_source}", self.program.original_file_contents);
+        // Parse the new KCL source.
+        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
+        if !errors.is_empty() {
+            return Err(Error {
+                msg: format!("Error parsing KCL source after adding sketch: {errors:?}"),
+            });
+        }
+        let Some(new_program) = new_program else {
+            return Err(Error {
+                msg: "No AST produced after adding sketch".to_string(),
+            });
+        };
+        // TODO: sketch-api: make sure to only set this if there are no errors.
+        self.program = new_program;
+
         // Create a new sketch.
         let sketch_id = ObjectId(self.id_generator.next_id());
         let sketch = Sketch {
@@ -75,6 +100,34 @@ impl FrontendState {
         start: Point2d<Expr>,
         end: Point2d<Expr>,
     ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
+        // Create updated KCL source from args.
+        let start_source = to_source_point2d(&start);
+        let end_source = to_source_point2d(&end);
+        // Look up existing sketch.
+        let sketch_object = self.scene_graph.objects.get(sketch.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(sketch) = &mut sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        let new_source = format!("{}\n\n{sketch_source}", self.program.original_file_contents);
+        // Parse the new KCL source.
+        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
+        if !errors.is_empty() {
+            return Err(Error {
+                msg: format!("Error parsing KCL source after adding sketch: {errors:?}"),
+            });
+        }
+        let Some(new_program) = new_program else {
+            return Err(Error {
+                msg: "No AST produced after adding sketch".to_string(),
+            });
+        };
+        // TODO: sketch-api: make sure to only set this if there are no errors.
+        self.program = new_program;
+
         // Evaluate.
         let new_start_position = self.position_from_expr(&start)?;
         let new_end_position = self.position_from_expr(&end)?;
@@ -267,4 +320,24 @@ impl FrontendState {
         // TODO: sketch-api: implement
         Ok(Freedom::Free)
     }
+}
+
+fn to_source_point2d(start: &Point2d<Expr>) -> anyhow::Result<String> {
+    Ok(format!(
+        "[{}, {}]",
+        to_source_expr(&start.x)?,
+        to_source_expr(&start.y)?
+    ))
+}
+
+fn to_source_expr(expr: &Expr) -> anyhow::Result<String> {
+    match expr {
+        Expr::Number(number) => to_source_number(*number),
+        Expr::Var(number) => Ok(format!("var {}", to_source_number(*number)?)),
+        Expr::Variable(variable) => Ok(variable.clone()),
+    }
+}
+
+fn to_source_number(number: Number) -> anyhow::Result<String> {
+    Ok(format_number_literal(number.value, number.units)?)
 }
