@@ -555,11 +555,7 @@ export const ModelingMachineProvider = ({
             }
 
             const id =
-              result.type === 'extrudeFace'
-                ? result.faceId
-                : result.type === 'defaultPlane'
-                  ? result.plane
-                  : result.planeId
+              result.type === 'extrudeFace' ? result.faceId : result.planeId
             await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
             sceneInfra.camControls.syncDirection = 'clientToEngine'
             console.log('result', result)
