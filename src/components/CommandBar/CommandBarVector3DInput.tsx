@@ -24,11 +24,13 @@ function CommandBarVector3DInput({
   // Parse vector string format "[x, y, z]" into separate components
   const parseVectorString = (vectorStr: string) => {
     const match = vectorStr.match(/^\[([^,]+),\s*([^,]+),\s*([^\]]+)\]$/)
-    return match ? {
-      x: match[1].trim(),
-      y: match[2].trim(),
-      z: match[3].trim()
-    } : { x: '', y: '', z: '' }
+    return match
+      ? {
+          x: match[1].trim(),
+          y: match[2].trim(),
+          z: match[3].trim(),
+        }
+      : { x: '', y: '', z: '' }
   }
 
   // Resolve current vector value, prioritizing previously set values over defaults
@@ -36,19 +38,19 @@ function CommandBarVector3DInput({
     if (previouslySetValue?.valueText) {
       return previouslySetValue.valueText
     }
-    
+
     if (arg.defaultValue) {
       return typeof arg.defaultValue === 'function'
         ? arg.defaultValue(commandBarState.context, undefined)
         : arg.defaultValue
     }
-    
+
     return ''
   }, [arg.defaultValue, previouslySetValue, commandBarState.context])
 
   // Extract individual x, y, z values from the vector string
-  const defaultValues = useMemo(() => 
-    parseVectorString(currentVectorString), 
+  const defaultValues = useMemo(
+    () => parseVectorString(currentVectorString),
     [currentVectorString]
   )
 
