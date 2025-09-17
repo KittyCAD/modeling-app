@@ -109,6 +109,7 @@ import {
 } from '@src/network/utils'
 
 import type { WebContentSendPayload } from '@src/menu/channels'
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -140,6 +141,7 @@ export const ModelingMachineProvider = ({
       snapToGrid,
     },
   } = useSettings()
+  const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
   const loaderData = useLoaderData() as IndexLoaderData
   const projects = useFolders()
   const { project, file } = loaderData
@@ -1374,6 +1376,18 @@ export const ModelingMachineProvider = ({
   useEffect(() => {
     engineCommandManager.connection?.deferredPeerConnection?.promise
       .then(() => {
+        console.log(cameraOrbit.current, 'CAMERA ORBIT')
+        if (
+          previousCameraOrbit.current === null ||
+          cameraOrbit.current === previousCameraOrbit.current
+        ) {
+          // Do not reset, nothing has changed.
+          // Do not trigger on first initialization either.
+          previousCameraOrbit.current = cameraOrbit.current
+          return
+        }
+        previousCameraOrbit.current = cameraOrbit.current
+        // Gotcha: This will absolutely brick E2E tests if called incorrectly.
         sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
       })
       .catch(reportRejection)
