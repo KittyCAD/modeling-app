@@ -1243,7 +1243,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       arcDegrees: {
         inputType: 'kcl',
         required: false,
-        defaultValue: '360',
+        defaultValue: KCL_DEFAULT_DEGREE,
       },
       rotateDuplicates: {
         inputType: 'options',
