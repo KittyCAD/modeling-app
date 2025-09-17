@@ -9,7 +9,7 @@ interface HistoryItem {
 }
 
 interface HistoryStack {
-  queue: HistoryItem[]
+  stack: HistoryItem[]
   cursor: number | null
   undo: () => Promise<void>
   redo: () => Promise<void>
@@ -26,10 +26,10 @@ interface Subscribable {
 }
 
 export class Stack implements HistoryStack, Subscribable {
-  queue: HistoryItem[] = []
+  stack: HistoryItem[] = []
   _cursor = 0
   _snapshot = {
-    queue: this.queue,
+    queue: this.stack,
     cursor: this._cursor,
     canUndo: this.canUndo(),
     canRedo: this.canRedo(),
@@ -37,9 +37,9 @@ export class Stack implements HistoryStack, Subscribable {
   subscribers = new Set<Listener>()
 
   async undo() {
-    console.log('undoing', this.queue, this.cursor, this.canUndo())
+    console.log('undoing', this.stack, this.cursor, this.canUndo())
     if (this.canUndo()) {
-      await this.queue[this.cursor]
+      await this.stack[this.cursor]
         .undo()
         .then(() => {
           this.cursor--
@@ -60,9 +60,9 @@ export class Stack implements HistoryStack, Subscribable {
   }
 
   async redo() {
-    console.log('redoing', this.queue, this.cursor, this.canRedo())
+    console.log('redoing', this.stack, this.cursor, this.canRedo())
     if (this.canRedo()) {
-      await this.queue[this.cursor + 1]
+      await this.stack[this.cursor + 1]
         .redo()
         .then(() => {
           this.cursor++
@@ -73,21 +73,21 @@ export class Stack implements HistoryStack, Subscribable {
   }
 
   canUndo() {
-    return this.queue.length > 0 && this.cursor > -1
+    return this.stack.length > 0 && this.cursor > -1
   }
   canRedo() {
-    return this.queue.length > 0 && this.cursor < this.queue.length - 1
+    return this.stack.length > 0 && this.cursor < this.stack.length - 1
   }
 
   addItem(item: Omit<HistoryItem, 'id'>) {
     console.log('adding item', this.canRedo())
     if (this.canRedo()) {
       // Clear the redo portion of the history stack
-      this.queue = this.cursor < 0 ? [] : this.queue.slice(0, this.cursor + 1)
+      this.stack = this.cursor < 0 ? [] : this.stack.slice(0, this.cursor + 1)
     }
-    this.queue.push(Object.assign(item, { id: uuidv4() }))
-    this.cursor = this.queue.length - 1
-    console.log('adding item', this.queue, this.cursor)
+    this.stack.push(Object.assign(item, { id: uuidv4() }))
+    this.cursor = this.stack.length - 1
+    console.log('adding item', this.stack, this.cursor)
     this._snapshot = this.takeSnapshot()
   }
 
@@ -96,7 +96,7 @@ export class Stack implements HistoryStack, Subscribable {
     return () => this.subscribers.delete(fn)
   }
   takeSnapshot = () => ({
-    queue: this.queue,
+    queue: this.stack,
     cursor: this._cursor,
     canUndo: this.canUndo(),
     canRedo: this.canRedo(),
