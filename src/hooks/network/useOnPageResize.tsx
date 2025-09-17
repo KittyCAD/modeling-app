@@ -47,7 +47,7 @@ export const useOnPageResize = ({
             wrapper.clientHeight
           )
           engineCommandManager.handleResize({ width, height }).catch((e) => {
-            console.error('handleResize', e)
+            console.warn('handleResize', e)
           })
         }
       })

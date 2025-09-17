@@ -43,7 +43,7 @@ export const useOnFileRoute = () => {
         await kclManager.executeCode()
         await resetCameraPosition()
       } catch (e) {
-        console.error(e)
+        console.warn(e)
       }
     })()
     /**
