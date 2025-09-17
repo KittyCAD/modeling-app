@@ -4,6 +4,7 @@ import { useRouteLoaderData } from 'react-router-dom'
 import { useEffect } from 'react'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { uuidv4 } from '@src/lib/utils'
+import { useAppState } from '@src/AppState'
 
 /**
  * When the router switches from one /file route to another /file route
@@ -11,22 +12,22 @@ import { uuidv4 } from '@src/lib/utils'
  *
  * If a connection is established with the engine and a /file route happens we need to execute the code
  */
-export const useOnFileRoute = ({
-  successfullyConnected,
-}: { successfullyConnected: React.MutableRefObject<boolean> }) => {
+export const useOnFileRoute = () => {
   const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { isStreamAcceptingInput } = useAppState()
   useEffect(() => {
     // This will trigger on page load no matter what. The engine won't be available which will reject the first attempt to execute the file.
     // Execution will happen after the engine connection process.
     if (
       !engineCommandManager.started ||
       !engineCommandManager.connection ||
-      !successfullyConnected.current
+      !isStreamAcceptingInput
     ) {
       console.log('file changed, cannot execute code, engine is not ready')
       return
     }
 
+    // TODO: Maybe circular logic once it goes back online. Don't re execute.
     void (async () => {
       try {
         console.log('file changed, executing code')
@@ -55,5 +56,5 @@ export const useOnFileRoute = ({
      * e.g. We can call `navigate(/file/<>)` or `navigate(/file/<>/settings)` as much as we want and it will
      * trigger this workflow.
      */
-  }, [file, successfullyConnected])
+  }, [file, isStreamAcceptingInput])
 }

@@ -64,7 +64,7 @@ export function Toolbar({
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState, immediateState } = useNetworkContext()
   const { isExecuting } = useKclContext()
-  const { isStreamReady } = useAppState()
+  const { isStreamReady, isStreamAcceptingInput } = useAppState()
   const [showRichContent, setShowRichContent] = useState(false)
 
   const disableAllButtons =
@@ -72,7 +72,8 @@ export function Toolbar({
       overallState !== NetworkHealthState.Weak) ||
     isExecuting ||
     immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
-    !isStreamReady
+    !isStreamReady ||
+    !isStreamAcceptingInput
 
   const currentMode =
     (Object.entries(toolbarConfig).find(([_, mode]) =>

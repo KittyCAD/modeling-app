@@ -51,12 +51,8 @@ export const ConnectionStream = (props: {
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
-  const {
-    tryConnecting,
-    isConnecting,
-    successfullyConnected,
-    numberOfConnectionAtttempts,
-  } = useTryConnect()
+  const { tryConnecting, isConnecting, numberOfConnectionAtttempts } =
+    useTryConnect()
   // Stream related refs and data
   const [searchParams] = useSearchParams()
   const pool = searchParams.get('pool') || env().POOL || null
@@ -141,7 +137,6 @@ export const ConnectionStream = (props: {
         videoRef,
         setIsSceneReady,
         isConnecting,
-        successfullyConnected,
         numberOfConnectionAtttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
@@ -176,7 +171,6 @@ export const ConnectionStream = (props: {
         videoRef,
         setIsSceneReady,
         isConnecting,
-        successfullyConnected,
         numberOfConnectionAtttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
@@ -200,7 +194,6 @@ export const ConnectionStream = (props: {
         videoRef,
         setIsSceneReady,
         isConnecting,
-        successfullyConnected,
         numberOfConnectionAtttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
@@ -221,7 +214,6 @@ export const ConnectionStream = (props: {
         videoRef,
         setIsSceneReady,
         isConnecting,
-        successfullyConnected,
         numberOfConnectionAtttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
@@ -246,7 +238,6 @@ export const ConnectionStream = (props: {
         videoRef,
         setIsSceneReady,
         isConnecting,
-        successfullyConnected,
         numberOfConnectionAtttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
@@ -257,9 +248,7 @@ export const ConnectionStream = (props: {
       })
     },
   })
-  useOnFileRoute({
-    successfullyConnected,
-  })
+  useOnFileRoute()
 
   return (
     <div
@@ -325,7 +314,6 @@ export const ConnectionStream = (props: {
               videoRef,
               setIsSceneReady,
               isConnecting,
-              successfullyConnected,
               numberOfConnectionAtttempts,
               timeToConnect: 30_000,
               settings: settingsEngine,

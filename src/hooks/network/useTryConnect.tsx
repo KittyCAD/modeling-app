@@ -104,21 +104,6 @@ const attemptToConnectToEngine = async ({
           label: 'onEngineConnectionReadyForRequests',
           message: 'kclManager.executeCode()',
         })
-
-        /**
-         * Gotcha: In the kclManager.executeCode workflow there is a set plane workflow
-         * that runs after the code is executed which takes a longer time to see and manage this state.
-         * You know that the planes should show if there is no code in the system now do that.
-         */
-        const defaultPlanes = kclManager.defaultPlanes
-        // Show the default planes if there is no code in the editor
-        if (defaultPlanes && codeManager.code === '') {
-          await Promise.all([
-            engineCommandManager.setPlaneHidden(defaultPlanes.xy, false),
-            engineCommandManager.setPlaneHidden(defaultPlanes.yz, false),
-            engineCommandManager.setPlaneHidden(defaultPlanes.xz, false),
-          ])
-        }
         await kclManager.executeCode()
         await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -154,7 +139,6 @@ const attemptToConnectToEngine = async ({
  */
 async function tryConnecting({
   isConnecting,
-  successfullyConnected,
   numberOfConnectionAtttempts,
   authToken,
   videoWrapperRef,
@@ -166,7 +150,6 @@ async function tryConnecting({
   setShowManualConnect,
 }: {
   isConnecting: React.MutableRefObject<boolean>
-  successfullyConnected: React.MutableRefObject<boolean>
   numberOfConnectionAtttempts: React.MutableRefObject<number>
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement>
@@ -187,7 +170,7 @@ async function tryConnecting({
 
       const cancelTimeout = setTimeout(() => {
         isConnecting.current = false
-        successfullyConnected.current = false
+        setAppState({ isStreamAcceptingInput: false })
         engineCommandManager.tearDown()
         clearInterval(cancelTimeout)
         reject('took too long to connect')
@@ -209,13 +192,13 @@ async function tryConnecting({
           // Only clear on success. Future attempts will have less time.
           clearInterval(cancelTimeout)
           isConnecting.current = false
-          successfullyConnected.current = true
+          setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAtttempts.current = 0
           setShowManualConnect(false)
           resolve('connected')
         } catch (e) {
           isConnecting.current = false
-          successfullyConnected.current = false
+          setAppState({ isStreamAcceptingInput: false })
           engineCommandManager.tearDown()
           // Fail after NumberOfEngineRetries
           if (numberOfConnectionAtttempts.current >= NumberOfEngineRetries) {
@@ -235,13 +218,11 @@ async function tryConnecting({
 export const useTryConnect = () => {
   // What about offline? the dispatch event.
   const isConnecting = useRef(false)
-  const successfullyConnected = useRef(false)
   const numberOfConnectionAtttempts = useRef(0)
 
   return {
     tryConnecting,
     isConnecting,
-    successfullyConnected,
     numberOfConnectionAtttempts,
   }
 }
