@@ -1376,7 +1376,6 @@ export const ModelingMachineProvider = ({
   useEffect(() => {
     engineCommandManager.connection?.deferredPeerConnection?.promise
       .then(() => {
-        console.log(cameraOrbit.current, 'CAMERA ORBIT')
         if (
           previousCameraOrbit.current === null ||
           cameraOrbit.current === previousCameraOrbit.current

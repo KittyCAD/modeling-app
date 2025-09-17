@@ -853,15 +853,17 @@ export class ConnectionManager extends EventTarget {
 
     if (this.connection) {
       this.connection.deferredConnection?.reject(
-        'tearingDown connectionManager'
+        'tearingDown connectionManager deferred connection'
       )
       this.connection.deferredMediaStreamAndWebrtcStatsCollector?.reject(
-        'tearingDown connectionManager'
+        'tearingDown connectionManager media stream and web rtc'
       )
       this.connection.deferredPeerConnection?.reject(
-        'tearingDown connectionManager'
+        'tearingDown connectionManager peer connection'
       )
-      this.connection.deferredSdpAnswer?.reject('tearingDown connectionManager')
+      this.connection.deferredSdpAnswer?.reject(
+        'tearingDown connectionManager sdp answer'
+      )
     }
     this.rejectAllPendingCommands()
     // Make sure to get all the deeply nested ones as well.
