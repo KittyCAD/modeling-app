@@ -2514,6 +2514,19 @@ impl Literal {
     }
 }
 
+impl From<NumericLiteral> for Literal {
+    fn from(n: NumericLiteral) -> Self {
+        Literal {
+            value: LiteralValue::Number {
+                value: n.value,
+                suffix: n.suffix,
+            },
+            raw: n.raw,
+            digest: n.digest,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
