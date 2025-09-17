@@ -1,11 +1,10 @@
 // Clippy does not agree with rustc here for some reason.
 #![allow(clippy::needless_lifetimes)]
 
-use std::{fmt, iter::Enumerate, num::NonZeroUsize, str::FromStr};
+use std::{fmt, iter::Enumerate, num::NonZeroUsize};
 
 use anyhow::Result;
 use parse_display::Display;
-use serde::{Deserialize, Serialize};
 use tokeniser::Input;
 use tower_lsp::lsp_types::SemanticTokenType;
 use winnow::{
@@ -15,47 +14,36 @@ use winnow::{
 };
 
 use crate::{
-    CompilationError, ModuleId, SourceRange,
+    ModuleId, SourceRange,
     errors::KclError,
     parsing::ast::types::{ItemVisibility, VariableKind},
 };
 
 mod tokeniser;
 
+use kcl_api::NumericSuffix;
 pub(crate) use tokeniser::RESERVED_WORDS;
 
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
 pub const NUM_SUFFIXES: [&str; 10] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad", "?"];
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
-#[repr(u32)]
-pub enum NumericSuffix {
-    None,
-    Count,
-    Length,
-    Angle,
-    Mm,
-    Cm,
-    M,
-    Inch,
-    Ft,
-    Yd,
-    Deg,
-    Rad,
-    Unknown,
+pub(crate) trait NumericSuffixExt {
+    fn is_none(self) -> bool;
+    fn is_some(self) -> bool;
+    fn digestable_id(&self) -> &[u8];
 }
 
-impl NumericSuffix {
+impl NumericSuffixExt for NumericSuffix {
     #[allow(dead_code)]
-    pub fn is_none(self) -> bool {
+    fn is_none(self) -> bool {
         self == Self::None
     }
 
-    pub fn is_some(self) -> bool {
+    fn is_some(self) -> bool {
         self != Self::None
     }
 
-    pub fn digestable_id(&self) -> &[u8] {
+    fn digestable_id(&self) -> &[u8] {
         match self {
             NumericSuffix::None => &[],
             NumericSuffix::Count => b"_",
@@ -70,48 +58,6 @@ impl NumericSuffix {
             NumericSuffix::Yd => b"yd",
             NumericSuffix::Deg => b"deg",
             NumericSuffix::Rad => b"rad",
-        }
-    }
-}
-
-impl FromStr for NumericSuffix {
-    type Err = CompilationError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "_" | "Count" => Ok(NumericSuffix::Count),
-            "Length" => Ok(NumericSuffix::Length),
-            "Angle" => Ok(NumericSuffix::Angle),
-            "mm" | "millimeters" => Ok(NumericSuffix::Mm),
-            "cm" | "centimeters" => Ok(NumericSuffix::Cm),
-            "m" | "meters" => Ok(NumericSuffix::M),
-            "inch" | "in" => Ok(NumericSuffix::Inch),
-            "ft" | "feet" => Ok(NumericSuffix::Ft),
-            "yd" | "yards" => Ok(NumericSuffix::Yd),
-            "deg" | "degrees" => Ok(NumericSuffix::Deg),
-            "rad" | "radians" => Ok(NumericSuffix::Rad),
-            "?" => Ok(NumericSuffix::Unknown),
-            _ => Err(CompilationError::err(SourceRange::default(), "invalid unit of measure")),
-        }
-    }
-}
-
-impl fmt::Display for NumericSuffix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            NumericSuffix::None => Ok(()),
-            NumericSuffix::Count => write!(f, "_"),
-            NumericSuffix::Unknown => write!(f, "_?"),
-            NumericSuffix::Length => write!(f, "Length"),
-            NumericSuffix::Angle => write!(f, "Angle"),
-            NumericSuffix::Mm => write!(f, "mm"),
-            NumericSuffix::Cm => write!(f, "cm"),
-            NumericSuffix::M => write!(f, "m"),
-            NumericSuffix::Inch => write!(f, "in"),
-            NumericSuffix::Ft => write!(f, "ft"),
-            NumericSuffix::Yd => write!(f, "yd"),
-            NumericSuffix::Deg => write!(f, "deg"),
-            NumericSuffix::Rad => write!(f, "rad"),
         }
     }
 }

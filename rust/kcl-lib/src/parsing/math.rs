@@ -122,13 +122,12 @@ impl From<BinaryOperator> for BinaryExpressionToken {
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::NumericSuffix;
+
     use super::*;
     use crate::{
         ModuleId,
-        parsing::{
-            ast::types::{Literal, LiteralValue},
-            token::NumericSuffix,
-        },
+        parsing::ast::types::{Literal, LiteralValue},
     };
 
     #[test]
