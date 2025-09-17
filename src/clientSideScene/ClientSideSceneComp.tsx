@@ -106,14 +106,12 @@ export const ClientSideScene = ({
     sceneInfra.animate()
     canvas.addEventListener(
       'mousemove',
-      toSync(sceneInfra.onMouseMove, reportRejection),
-      false
+      toSync(sceneInfra.onMouseMove, reportRejection)
     )
-    canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
+    canvas.addEventListener('mousedown', sceneInfra.onMouseDown)
     canvas.addEventListener(
       'mouseup',
-      toSync(sceneInfra.onMouseUp, reportRejection),
-      false
+      toSync(sceneInfra.onMouseUp, reportRejection)
     )
     sceneInfra.setSend(send)
     engineCommandManager.modelingSend = send
