@@ -4,15 +4,15 @@ import { uuidv4 } from '@src/lib/utils'
 interface HistoryItem {
   id: string
   label?: string
-  undo: () => Promise<boolean>
-  redo: () => Promise<boolean>
+  undo: () => Promise<void>
+  redo: () => Promise<void>
 }
 
 interface HistoryStack {
   queue: HistoryItem[]
   cursor: number | null
-  undo: () => Promise<boolean>
-  redo: () => Promise<boolean>
+  undo: () => Promise<void>
+  redo: () => Promise<void>
   addItem: (item: HistoryItem) => void
   canUndo: () => boolean
 }
@@ -39,12 +39,14 @@ export class Stack implements HistoryStack, Subscribable {
   async undo() {
     console.log('undoing', this.queue, this.cursor, this.canUndo())
     if (this.canUndo()) {
-      const result = await this.queue[this.cursor].undo()
-      this.cursor--
-      this._snapshot = this.takeSnapshot()
-      return result
+      await this.queue[this.cursor]
+        .undo()
+        .then(() => {
+          this.cursor--
+          this._snapshot = this.takeSnapshot()
+        })
+        .catch((e) => console.warn('failed to undo:', e))
     }
-    return false
   }
 
   get cursor() {
@@ -60,12 +62,14 @@ export class Stack implements HistoryStack, Subscribable {
   async redo() {
     console.log('redoing', this.queue, this.cursor, this.canRedo())
     if (this.canRedo()) {
-      const result = await this.queue[this.cursor + 1].redo()
-      this.cursor++
-      this._snapshot = this.takeSnapshot()
-      return result
+      await this.queue[this.cursor + 1]
+        .redo()
+        .then(() => {
+          this.cursor++
+          this._snapshot = this.takeSnapshot()
+        })
+        .catch((e) => console.warn('failed to redo', e))
     }
-    return false
   }
 
   canUndo() {

@@ -586,16 +586,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         await window.electron.rename(oldPath, newPath)
         historyManager.addItem({
           label: `rename-file: ${oldPath} to ${newPath}`,
-          undo: () =>
-            window.electron
-              ?.rename(newPath, oldPath)
-              .then(() => true)
-              .catch(() => false) || Promise.resolve(false),
-          redo: () =>
-            window.electron
-              ?.rename(oldPath, newPath)
-              .then(() => true)
-              .catch(() => false) || Promise.resolve(false),
+          undo: async () => window.electron?.rename(newPath, oldPath),
+          redo: async () => window.electron?.rename(oldPath, newPath),
         })
 
         return {
