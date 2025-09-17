@@ -1,10 +1,10 @@
 import { PATHS } from '@src/lib/paths'
 import type { IndexLoaderData } from '@src/lib/types'
 import { useRouteLoaderData } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import { uuidv4 } from '@src/lib/utils'
 import { useAppState } from '@src/AppState'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 /**
  * When the router switches from one /file route to another /file route
@@ -13,6 +13,7 @@ import { useAppState } from '@src/AppState'
  * If a connection is established with the engine and a /file route happens we need to execute the code
  */
 export const useOnFileRoute = () => {
+  const seenFilePath = useRef('')
   const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { isStreamAcceptingInput } = useAppState()
   useEffect(() => {
@@ -27,24 +28,20 @@ export const useOnFileRoute = () => {
       return
     }
 
-    // TODO: Maybe circular logic once it goes back online. Don't re execute.
+    if (seenFilePath.current === file?.path || seenFilePath.current === '') {
+      // Return early because you would double execute
+      seenFilePath.current = file?.path || ''
+      return
+    }
+
+    // Keep track of the file you just saw
+    seenFilePath.current = file?.path || ''
+
     void (async () => {
       try {
         console.log('file changed, executing code')
         await kclManager.executeCode()
-        // It makes sense to also call zoom to fit here, when a new file is
-        // loaded for the first time, but not overtaking the work kevin did
-        // so the camera isn't moving all the time.
-        await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
+        await resetCameraPosition()
       } catch (e) {
         console.error(e)
       }

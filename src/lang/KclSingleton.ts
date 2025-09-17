@@ -49,6 +49,7 @@ import type { PlaneVisibilityMap } from '@src/machines/modelingMachine'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import { EngineDebugger } from '@src/lib/debugger'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -528,6 +529,10 @@ export class KclManager extends EventTarget {
         type: 'code edit during sketch',
       })
     }
+    EngineDebugger.addLog({
+      label: 'executeAst',
+      message: 'execution done',
+    })
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,
