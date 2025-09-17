@@ -28,8 +28,11 @@ import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnection
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import { useOnFileRoute } from '@src/hooks/network/useOnFileRoute'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { useSearchParams } from 'react-router-dom'
+import { useRouteLoaderData, useSearchParams } from 'react-router-dom'
 import env from '@src/env'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { PATHS } from '@src/lib/paths'
+import { IndexLoaderData } from '@src/lib/types'
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -42,6 +45,7 @@ export const ConnectionStream = (props: {
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState } = useModelingContext()
+  const { project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -141,6 +145,15 @@ export const ConnectionStream = (props: {
         timeToConnect: 30_000,
         settings: settingsEngine,
         setShowManualConnect,
+      }).then(() => {
+
+        // Take a screen shot after the page mounts and zoom to fit runs
+        if (project && project.path) {
+          createThumbnailPNGOnDesktop({
+            projectDirectoryWithoutEndingSlash: project.path
+          })
+        }
+
       }).catch((e) => {
         console.error(e)
         setShowManualConnect(true)
