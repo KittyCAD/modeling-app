@@ -127,10 +127,8 @@ export const ConnectionStream = (props: {
       .catch(reportRejection)
   }
 
-  // TODO: Handle 15 second connection window
-  // TODO: Handle global 3 retry connection on any connection attempts
-  // TODO: Handle global disconnections. 1. Websocket closed, 2. Run time initializations
   // TODO: Handle PingPong checks
+
   const { resetGlobalEngineCommandManager } = useOnPageMounted({
     callback: () => {
       setShowManualConnect(false)
