@@ -6,7 +6,7 @@ use super::args::TyF64;
 use crate::execution::types::NumericType;
 
 pub(crate) fn untype_point(p: [TyF64; 2]) -> ([f64; 2], NumericType) {
-    let (x, y, ty) = NumericType::combine_eq_coerce(p[0].clone(), p[1].clone());
+    let (x, y, ty) = NumericType::combine_eq_coerce(p[0].clone(), p[1].clone(), None);
     ([x, y], ty)
 }
 

@@ -4385,13 +4385,13 @@ description: Result of parsing propellant-line-brackets.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "300",
+                        "raw": "300deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 300.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -4722,13 +4722,13 @@ description: Result of parsing propellant-line-brackets.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "90",
+                                "raw": "90deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 90.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
@@ -4795,13 +4795,13 @@ description: Result of parsing propellant-line-brackets.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
-                                "raw": "90",
+                                "raw": "90deg",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 90.0,
-                                  "suffix": "None"
+                                  "suffix": "Deg"
                                 }
                               }
                             },
