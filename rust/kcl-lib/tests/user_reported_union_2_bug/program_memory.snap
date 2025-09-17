@@ -166,7 +166,6 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -415,7 +414,6 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -613,7 +611,6 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

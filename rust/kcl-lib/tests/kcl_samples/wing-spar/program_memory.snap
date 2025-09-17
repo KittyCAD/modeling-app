@@ -904,7 +904,6 @@ description: Variables in memory after executing wing-spar.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": -700.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -942,7 +941,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -10.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -1820,7 +1818,6 @@ description: Variables in memory after executing wing-spar.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": -700.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -1858,7 +1855,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -10.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -2736,7 +2732,6 @@ description: Variables in memory after executing wing-spar.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": -700.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -2774,7 +2769,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -10.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -3652,7 +3646,6 @@ description: Variables in memory after executing wing-spar.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": -700.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -3690,7 +3683,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -10.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -4285,7 +4277,6 @@ description: Variables in memory after executing wing-spar.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -700.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -5179,7 +5170,6 @@ description: Variables in memory after executing wing-spar.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": -700.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -5213,7 +5203,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -10.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -6077,7 +6066,6 @@ description: Variables in memory after executing wing-spar.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": -700.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -6111,7 +6099,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -10.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -6975,7 +6962,6 @@ description: Variables in memory after executing wing-spar.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": -700.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -7009,7 +6995,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -10.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -7873,7 +7858,6 @@ description: Variables in memory after executing wing-spar.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": -700.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -7907,7 +7891,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -10.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -8502,7 +8485,6 @@ description: Variables in memory after executing wing-spar.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -700.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -8913,7 +8895,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -8.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9321,7 +9302,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -8.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -9729,7 +9709,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -8.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10137,7 +10116,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -8.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -10545,7 +10523,6 @@ description: Variables in memory after executing wing-spar.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -8.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",

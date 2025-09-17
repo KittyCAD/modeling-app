@@ -179,7 +179,6 @@ description: Variables in memory after executing sash-window.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 23.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -362,7 +361,6 @@ description: Variables in memory after executing sash-window.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -575,7 +573,6 @@ description: Variables in memory after executing sash-window.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -986,7 +983,6 @@ description: Variables in memory after executing sash-window.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1312,7 +1308,6 @@ description: Variables in memory after executing sash-window.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1755,7 +1750,6 @@ description: Variables in memory after executing sash-window.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 23.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

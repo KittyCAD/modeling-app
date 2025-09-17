@@ -236,7 +236,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -419,7 +418,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -573,7 +571,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -727,7 +724,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -950,7 +946,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -1050,7 +1045,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": null,
           "units": "mm",
@@ -1600,7 +1594,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 834.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1754,7 +1747,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 834.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1908,7 +1900,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 834.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2062,7 +2053,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 834.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2268,7 +2258,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2422,7 +2411,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2610,7 +2598,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -2764,7 +2751,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3020,7 +3006,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3174,7 +3159,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3389,7 +3373,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 671.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3543,7 +3526,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 671.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -3928,7 +3910,6 @@ description: Variables in memory after executing utility-sink.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -3956,7 +3937,6 @@ description: Variables in memory after executing utility-sink.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -200.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -4280,7 +4260,6 @@ description: Variables in memory after executing utility-sink.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": "mm",
@@ -4308,7 +4287,6 @@ description: Variables in memory after executing utility-sink.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 200.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -4552,7 +4530,6 @@ description: Variables in memory after executing utility-sink.kcl
           "originalId": "[uuid]",
           "units": "mm"
         },
-        "height": -2.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": "mm",
@@ -4753,7 +4730,6 @@ description: Variables in memory after executing utility-sink.kcl
           "originalId": "[uuid]",
           "units": "mm"
         },
-        "height": -2.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": "mm",
@@ -4974,7 +4950,6 @@ description: Variables in memory after executing utility-sink.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -5115,7 +5090,6 @@ description: Variables in memory after executing utility-sink.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 70.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -5215,7 +5189,6 @@ description: Variables in memory after executing utility-sink.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 237.4,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -5315,7 +5288,6 @@ description: Variables in memory after executing utility-sink.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 170.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -5415,7 +5387,6 @@ description: Variables in memory after executing utility-sink.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -5601,7 +5572,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5755,7 +5725,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -5943,7 +5912,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -6097,7 +6065,6 @@ description: Variables in memory after executing utility-sink.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",

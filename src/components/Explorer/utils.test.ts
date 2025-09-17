@@ -1,7 +1,9 @@
 import {
   addPlaceHoldersForNewFileAndFolder,
+  copyPasteSourceAndTarget,
   getUniqueCopyPath,
   isRowFake,
+  shouldDroppedEntryBeMoved,
 } from '@src/components/Explorer/utils'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import type { FileEntry } from '@src/lib/project'
@@ -399,6 +401,91 @@ describe('Explorer utils.ts', () => {
         )
         expect(actual).toBe(expected)
       })
+      it('should copy file into folder', () => {
+        const expected = {
+          src: '/somefile.kcl',
+          target: '/folder/somefile.kcl',
+        }
+
+        // Folder structure:
+        // |-/folder
+        // |   |-a.kcl
+        // |  |-b.wtf      <-- target
+        // |-somefile.kcl  <-- src
+        const actual = copyPasteSourceAndTarget(
+          ['/folder/a.kcl', '/folder/b.wtf'],
+          ['/somefile.kcl'],
+          { path: '/somefile.kcl', name: 'somefile.kcl', children: null },
+          { path: '/folder/b.wtf', name: '/folder/b.wtf', children: null },
+          '-copy-'
+        )
+
+        expect(actual).toStrictEqual(expected)
+      })
+      it('should copy folder onto itself and make sibling in parent', () => {
+        const expected = {
+          src: '/root/folder',
+          target: '/root/folder-copy-1',
+        }
+
+        // Folder structure:
+        // |-/root
+        // |  |-folder          <-- src & target (same folder)
+        // |  |-folder-copy-1   (expected new sibling)
+        const actual = copyPasteSourceAndTarget(
+          ['/root/folder/a.kcl', '/root/folder/b.kcl'],
+          ['/root/folder', '/root/another'],
+          { path: '/root/folder', name: 'folder', children: [] },
+          { path: '/root/folder', name: 'folder', children: [] },
+          '-copy-'
+        )
+
+        expect(actual).toStrictEqual(expected)
+      })
+      it('should copy folder onto file and make sibling in target parent', () => {
+        const expected = {
+          src: '/a/srcFolder',
+          target: '/b/srcFolder-copy-1',
+        }
+
+        // Folder structure:
+        // |-/a
+        // |  |-srcFolder       <-- src
+        // |-/b
+        // |  |-file.txt        <-- target
+        // |  |-srcFolder       (collision to trigger -copy-1)
+        const actual = copyPasteSourceAndTarget(
+          ['/b/file.txt'],
+          ['/b/srcFolder', '/b/file.txt'],
+          { path: '/a/srcFolder', name: 'srcFolder', children: [] },
+          { path: '/b/file.txt', name: 'file.txt', children: null },
+          '-copy-'
+        )
+
+        expect(actual).toStrictEqual(expected)
+      })
+      it('should copy file onto file and make sibling in target parent', () => {
+        const expected = {
+          src: '/a/srcfile.kcl',
+          target: '/b/srcfile-copy-1.kcl',
+        }
+
+        // Folder structure:
+        // |-/a
+        // |  |-srcfile.kcl     <-- src
+        // |-/b
+        // |  |-target.wtf      <-- target
+        // |  |-srcfile.kcl     (collision to trigger -copy-1)
+        const actual = copyPasteSourceAndTarget(
+          ['/b/target.wtf'],
+          ['/b/srcfile.kcl', '/b/target.wtf'],
+          { path: '/a/srcfile.kcl', name: 'srcfile.kcl', children: null },
+          { path: '/b/target.wtf', name: 'target.wtf', children: null },
+          '-copy-'
+        )
+
+        expect(actual).toStrictEqual(expected)
+      })
     })
     describe('Files with different extensions', () => {
       it('should copy file with .kcl without collision', () => {
@@ -484,6 +571,100 @@ describe('Explorer utils.ts', () => {
           true
         )
         expect(actual).toBe(expected)
+      })
+    })
+    describe('shouldDroppedEntryBeMoved', () => {
+      it('should not move file into the same parent directory', () => {
+        const result = shouldDroppedEntryBeMoved(
+          {
+            name: 'main.kcl',
+            path: '/root/main.kcl',
+            children: null,
+            parentPath: '/root',
+          },
+          {
+            path: '/root/another.kcl',
+            name: 'another.kcl',
+            children: null,
+            parentPath: '/root',
+            level: 0,
+            index: 0,
+            key: '/root/another.kcl',
+            setSize: 1,
+            positionInSet: 1,
+          }
+        )
+
+        expect(result).toEqual(false)
+      })
+      it('should not move a directory into any of its own descendents', () => {
+        const result = shouldDroppedEntryBeMoved(
+          {
+            name: 'src',
+            path: '/root/src',
+            children: [],
+            parentPath: '/root',
+          },
+          {
+            path: '/root/src/child',
+            name: 'child',
+            children: [],
+            parentPath: '/root/src',
+            level: 1,
+            index: 0,
+            key: '/root/src/child',
+            setSize: 1,
+            positionInSet: 1,
+          }
+        )
+
+        expect(result).toEqual(false)
+      })
+      it('should move a file into a nested directory', () => {
+        const result = shouldDroppedEntryBeMoved(
+          {
+            name: 'main.kcl',
+            path: '/root/main.kcl',
+            children: null,
+            parentPath: '/root',
+          },
+          {
+            path: '/root/folder/nested',
+            name: 'nested',
+            children: [],
+            parentPath: '/root/folder',
+            level: 1,
+            index: 0,
+            key: '/root/folder/nested',
+            setSize: 1,
+            positionInSet: 1,
+          }
+        )
+
+        expect(result).toEqual(true)
+      })
+      it('should move a directory into a sibling directory', () => {
+        const result = shouldDroppedEntryBeMoved(
+          {
+            name: 'src',
+            path: '/root/src',
+            children: [],
+            parentPath: '/root',
+          },
+          {
+            path: '/root/another',
+            name: 'another',
+            children: [],
+            parentPath: '/root',
+            level: 0,
+            index: 0,
+            key: '/root/another',
+            setSize: 1,
+            positionInSet: 1,
+          }
+        )
+
+        expect(result).toEqual(true)
       })
     })
   })

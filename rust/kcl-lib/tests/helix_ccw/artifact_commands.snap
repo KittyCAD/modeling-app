@@ -178,7 +178,7 @@ description: Artifact commands helix_ccw.kcl
           "value": 0.0
         },
         "is_clockwise": false,
-        "length": 10.0
+        "length": null
       }
     }
   ],

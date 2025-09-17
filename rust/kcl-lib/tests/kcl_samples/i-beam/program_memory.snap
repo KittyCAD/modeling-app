@@ -227,7 +227,6 @@ description: Variables in memory after executing i-beam.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 72.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
