@@ -57,6 +57,13 @@ impl EngineIdGenerator {
         self.generate_path_id("face") // "path_0_face"
     }
 
+    pub fn get_next_face_id(&self, num_segments: u32) -> ArtifactId {
+        let index = (self.path_index + 1) % num_segments;
+        let path_modifier = format!("path_{}", index);
+        let modifier = format!("{}_{}", path_modifier, "face");
+        self.generate_id(&modifier)
+    }
+
     pub fn get_opposite_edge_id(&self) -> ArtifactId {
         self.generate_path_id("opp") // "path_0_opp"
     }

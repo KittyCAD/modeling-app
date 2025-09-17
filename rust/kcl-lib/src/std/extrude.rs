@@ -314,7 +314,7 @@ async fn inner_extrude(
                 exec_state,
                 &args,
                 None,
-                true
+                true,
             )
             .await?,
         );
@@ -364,7 +364,10 @@ pub(crate) async fn do_post_extrude<'a>(
 
         // TODO Note we're skipping the last one, because 3 segments have 4 paths in sketch.
         for _ in 0..sketch.paths.len() - 1 {
-            face_id_map.insert(id_generator.get_curve_id().into(), Some(id_generator.get_face_id().into()));
+            face_id_map.insert(
+                id_generator.get_curve_id().into(),
+                Some(id_generator.get_face_id().into()),
+            );
             id_generator.next_edge();
         }
     } else {
