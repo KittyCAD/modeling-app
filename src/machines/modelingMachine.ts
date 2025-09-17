@@ -1,4 +1,4 @@
-import { sketchSolveMachine } from '@src/machines/sketchSolveMachine'
+import { sketchSolveMachine } from '@src/machines/sketchSolveMode'
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
 import { assign, fromPromise, setup } from 'xstate'
