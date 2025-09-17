@@ -517,6 +517,11 @@ export const ModelingMachineProvider = ({
           async ({
             input: artifactOrPlaneId,
           }): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane> => {
+            if (!artifactOrPlaneId) {
+              const errorMessage = 'No artifact or plane ID provided'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
             let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null =
               null
 
