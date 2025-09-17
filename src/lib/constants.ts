@@ -138,6 +138,7 @@ export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 /** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
 export const KCL_AXIS_X = 'X'
 export const KCL_AXIS_Y = 'Y'
+export const KCL_AXIS_Z = 'Z'
 export const KCL_AXIS_NEG_X = '-X'
 export const KCL_AXIS_NEG_Y = '-Y'
 export const KCL_DEFAULT_AXIS = 'X'

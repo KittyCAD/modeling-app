@@ -24,6 +24,9 @@ import {
   KCL_DEFAULT_INSTANCES,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
+  KCL_AXIS_X,
+  KCL_AXIS_Y,
+  KCL_AXIS_Z,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
@@ -1226,11 +1229,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       axis: {
         inputType: 'options',
         required: true,
-        defaultValue: 'Z',
+        defaultValue: KCL_AXIS_Z,
         options: [
-          { name: 'X-axis', value: 'X' },
-          { name: 'Y-axis', value: 'Y' },
-          { name: 'Z-axis', value: 'Z' },
+          { name: 'X-axis', value: KCL_AXIS_X },
+          { name: 'Y-axis', value: KCL_AXIS_Y },
+          { name: 'Z-axis', isCurrent: true, value: KCL_AXIS_Z },
         ],
       },
       center: {
