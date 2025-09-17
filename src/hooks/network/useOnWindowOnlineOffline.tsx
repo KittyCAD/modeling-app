@@ -18,7 +18,7 @@ export const useOnWindowOnlineOffline = ({
       if (event.type === 'offline') {
         close()
       } else {
-        console.error('event is not offline', event)
+        console.warn('event is not offline', event)
       }
     },
     [close]
@@ -34,7 +34,7 @@ export const useOnWindowOnlineOffline = ({
       if (event.type === 'online') {
         connect()
       } else {
-        console.error('event is not online', event)
+        console.warn('event is not online', event)
       }
     },
     [connect]
