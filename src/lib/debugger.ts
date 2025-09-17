@@ -1,6 +1,6 @@
 import { reportRejection } from '@src/lib/trap'
 
-interface ILog {
+export interface ILog {
   time: number
   message: string
   stack: string

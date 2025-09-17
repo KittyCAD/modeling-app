@@ -6,6 +6,7 @@ import {
   ElectronZoo,
   fixturesBasedOnProcessEnvPlatform,
 } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { ILog } from '@src/lib/debugger'
 
 export { expect } from '@playwright/test'
 
@@ -97,5 +98,35 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
 const test = playwrightTestFnWithFixtures_.extend<Fixtures>(
   fixturesBasedOnProcessEnvPlatform
 )
+
+interface IFormmatedLog {
+  time: number
+  message: string
+  stack?: string
+  label: string
+  metadata: any
+}
+
+// Globally enable printing the entire engine connection trace from the page's global variable.
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status === 'skipped' || testInfo.status === 'passed') {
+    // NO OP
+    return
+  }
+
+  const engineLogs: ILog[] = await page.evaluate(
+    // @ts-ignore This value is accessible. If it isn't that is not the end of the world
+    () => window?.engineDebugger?.logs || []
+  )
+  const formattedLogs: IFormmatedLog[] = engineLogs.map((log: ILog) => {
+    const newLog: IFormmatedLog = {
+      ...log,
+    }
+    delete newLog['stack']
+    newLog.metadata = JSON.stringify(newLog.metadata, null, 1)
+    return newLog
+  })
+  console.log(formattedLogs)
+})
 
 export { test }
