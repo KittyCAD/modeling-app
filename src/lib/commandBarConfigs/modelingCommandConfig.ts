@@ -1233,9 +1233,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       center: {
-        inputType: 'kcl',
+        inputType: 'vector3d',
         required: true,
-        defaultValue: '[0, 0, 0]',
       },
       arcDegrees: {
         inputType: 'kcl',
