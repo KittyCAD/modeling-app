@@ -145,19 +145,19 @@ export const ConnectionStream = (props: {
         timeToConnect: 30_000,
         settings: settingsEngine,
         setShowManualConnect,
-      }).then(() => {
-
-        // Take a screen shot after the page mounts and zoom to fit runs
-        if (project && project.path) {
-          createThumbnailPNGOnDesktop({
-            projectDirectoryWithoutEndingSlash: project.path
-          })
-        }
-
-      }).catch((e) => {
-        console.error(e)
-        setShowManualConnect(true)
       })
+        .then(() => {
+          // Take a screen shot after the page mounts and zoom to fit runs
+          if (project && project.path) {
+            createThumbnailPNGOnDesktop({
+              projectDirectoryWithoutEndingSlash: project.path,
+            })
+          }
+        })
+        .catch((e) => {
+          console.error(e)
+          setShowManualConnect(true)
+        })
     },
   })
   // TODO: When exiting the page via the router teardown the engineCommandManager

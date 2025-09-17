@@ -12,8 +12,10 @@ import {
   NUMBER_REGEXP,
   PERSIST_MODELING_CONTEXT,
   TEST_COLORS,
+  doAndWaitForImageDiff,
   getMovementUtils,
   getUtils,
+  sendCustomCmd,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -2221,7 +2223,7 @@ extrude001 = extrude(profile003, length = 5)
 
       await editor.closePane()
       await scene.settled(cmdBar)
-
+      await page.pause()
       await scene.expectPixelColor([255, 255, 255], { x: 633, y: 211 }, 15)
     })
   })
