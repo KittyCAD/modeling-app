@@ -91,7 +91,7 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import {
   getDefaultSketchPlaneData,
   selectionBodyFace,
-  getOffsetPlaneData,
+  getOffsetSketchPlaneData,
   updateSelections,
 } from '@src/lib/selections'
 import {
@@ -531,10 +531,10 @@ export const ModelingMachineProvider = ({
             }
             console.log('result', result)
 
-            // Look up the artifact from the artifact graph for getOffsetPlaneData
+            // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
             if (!result) {
               const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
-              const offsetResult = await getOffsetPlaneData(artifact)
+              const offsetResult = await getOffsetSketchPlaneData(artifact)
               if (!err(offsetResult) && offsetResult) {
                 result = offsetResult
               }
