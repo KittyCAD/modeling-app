@@ -79,7 +79,7 @@ export const sketchSolveMachine = setup({
         'sketch mode consumes the current selection from its source of truth (currently modelingMachine). Whenever it receives',
     },
     'unequip tool': {
-      actions: 'request unequip',
+      actions: 'send unequip to tool',
     },
   },
   states: {
