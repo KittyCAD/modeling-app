@@ -133,8 +133,11 @@ export const useOnPageIdle = ({
       // Fire-and-forget because we don't know when a camera movement is
       // completed on the engine side (there are no responses to data channel
       // mouse movements.)
-
-      sceneInfra.camControls.saveRemoteCameraState().catch(trap)
+      engineCommandManager.connection?.deferredConnection?.promise
+        .then(() => {
+          sceneInfra.camControls.saveRemoteCameraState().catch(trap)
+        })
+        .catch(trap)
     }
 
     // These usually signal a user is done some sort of operation.

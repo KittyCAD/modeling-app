@@ -33,6 +33,7 @@ import env from '@src/env'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { PATHS } from '@src/lib/paths'
 import type { IndexLoaderData } from '@src/lib/types'
+import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -196,6 +197,26 @@ export const ConnectionStream = (props: {
     },
   })
   useOnWebsocketClose({
+    callback: () => {
+      setShowManualConnect(false)
+      tryConnecting({
+        authToken: props.authToken || '',
+        videoWrapperRef,
+        setAppState,
+        videoRef,
+        setIsSceneReady,
+        isConnecting,
+        numberOfConnectionAtttempts,
+        timeToConnect: 30_000,
+        settings: settingsEngine,
+        setShowManualConnect,
+      }).catch((e) => {
+        console.warn(e)
+        setShowManualConnect(true)
+      })
+    },
+  })
+  useOnVitestEngineOnline({
     callback: () => {
       setShowManualConnect(false)
       tryConnecting({

@@ -928,8 +928,8 @@ export class ConnectionManager extends EventTarget {
     }
   }
 
+  // VITEST ONLY
   offline() {
-    // TODO: keepForcefulOffline
     this.tearDown()
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -937,10 +937,10 @@ export class ConnectionManager extends EventTarget {
     })
   }
 
+  // VITEST ONLY
   online() {
-    // TODO: keepForcefulOffline
     this.dispatchEvent(
-      new CustomEvent(EngineCommandManagerEvents.EngineRestartRequest, {})
+      new CustomEvent(EngineCommandManagerEvents.OnlineRequest, {})
     )
     EngineDebugger.addLog({
       label: 'connectionManager',

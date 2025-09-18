@@ -270,6 +270,8 @@ export enum EngineCommandManagerEvents {
 
   // RTCPeerConnection processed a closed state in onConnectionStateChange
   peerConnectionClosed = 'peer-connection-closed',
+
+  OnlineRequest = 'online-request',
 }
 
 export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
