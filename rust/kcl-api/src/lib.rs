@@ -46,13 +46,15 @@ impl SceneGraph {
 #[ts(export)]
 pub struct SceneGraphDelta {
     pub new_graph: SceneGraph,
+    pub new_objects: Vec<ObjectId>,
     pub invalidates_ids: bool,
 }
 
 impl SceneGraphDelta {
-    pub fn new(new_graph: SceneGraph, invalidates_ids: bool) -> Self {
+    pub fn new(new_graph: SceneGraph, new_objects: Vec<ObjectId>, invalidates_ids: bool) -> Self {
         SceneGraphDelta {
             new_graph,
+            new_objects,
             invalidates_ids,
         }
     }
@@ -92,7 +94,10 @@ pub struct Settings {}
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub struct Object {
+    pub id: ObjectId,
     pub kind: ObjectKind,
+    pub label: String,
+    pub comments: String,
     pub artifact_id: usize,
     pub source: SourceRef,
 }
@@ -102,7 +107,9 @@ pub struct Object {
 pub enum ObjectKind {
     Sketch(crate::sketch::Sketch),
     Segment(crate::sketch::Segment),
-    Constraint,
+    Constraint(crate::sketch::Constraint),
+    // TODO
+    Region,
     Sweep,
 }
 
@@ -118,16 +125,12 @@ pub enum SourceRef {
     BackTrace(Vec<SourceRange>),
 }
 
-pub trait Kind: std::fmt::Debug + Clone + ts_rs::TS {}
-
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct Number {
     value: f64,
     units: NumericSuffix,
 }
-
-impl Kind for Number {}
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
@@ -136,8 +139,6 @@ pub enum Expr {
     Var(Number),
     Variable(String),
 }
-
-impl Kind for Expr {}
 
 // TODO share with kcl-lib
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
