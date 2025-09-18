@@ -28,77 +28,100 @@ pub trait SketchApi {
         &self,
         version: Version,
         sketch: ObjectId,
-        segment: SegmentArgs<Expr>,
-    ) -> Result<SceneGraphDelta>;
+        segment: SegmentCtor,
+        label: Option<String>,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn edit_segment(
         &self,
         version: Version,
         sketch: ObjectId,
         segment_id: ObjectId,
-        segment: SegmentArgs<Expr>,
-    ) -> Result<SceneGraphDelta>;
+        segment: SegmentCtor,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
-    async fn delete_segment(&self, version: Version, sketch: ObjectId, segment_id: ObjectId)
-    -> Result<SceneGraphDelta>;
+    async fn delete_segment(
+        &self,
+        version: Version,
+        sketch: ObjectId,
+        segment_id: ObjectId,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn add_constraint(
         &self,
         version: Version,
         sketch: ObjectId,
-        constraint: ConstraintArgs,
-    ) -> Result<SceneGraphDelta>;
+        constraint: Constraint,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn edit_constraint(
         &self,
         version: Version,
         sketch: ObjectId,
         constraint_id: ObjectId,
-        constraint: ConstraintArgs,
-    ) -> Result<SceneGraphDelta>;
+        constraint: Constraint,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn delete_constraint(
         &self,
         version: Version,
         sketch: ObjectId,
         constraint_id: ObjectId,
-    ) -> Result<SceneGraphDelta>;
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiSketch")]
+pub struct Sketch {
+    pub args: SketchArgs,
+    pub segments: Vec<ObjectId>,
+    pub constraints: Vec<ObjectId>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
+pub struct SketchArgs {
+    pub on: Plane,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiPoint")]
+pub struct Point {
+    pub position: Point2d<Number>,
+    pub ctor: Option<Point2d<Expr>>,
+    pub owner: Option<ObjectId>,
+    pub freedom: Freedom,
+    pub constraints: Vec<ObjectId>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub enum Freedom {
+    Free,
+    Partial,
+    Fixed,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiSegment")]
 pub enum Segment {
+    Point(Point),
     Line(Line),
     Arc(Arc),
+    Circle(Circle),
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
-pub enum SegmentArgs<U: std::fmt::Debug + Clone + ts_rs::TS> {
-    Line(LineArgs<U>),
-    Arc(ArcArgs<U>),
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiLine")]
-pub struct Line {
-    pub args: LineArgs<SolvedExpr>,
-    pub start: Point2d<Number>,
-    pub end: Point2d<Number>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiArc")]
-pub struct Arc {
-    pub args: ArcArgs<SolvedExpr>,
-    // TODO
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
-pub enum ConstraintArgs {
-    Coincident(CoincidentArgs),
-    Parallel(ParallelArgs),
+pub enum SegmentCtor {
+    Point(Point2d<Expr>),
+    Line(LineCtor),
+    MidPointLine(MidPointLineCtor),
+    Arc(ArcCtor),
+    ThreePointArc(ThreePointArcCtor),
+    TangentArc(TangentArcCtor),
+    Circle(CircleCtor),
+    ThreePointCircle(ThreePointCircleCtor),
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
@@ -109,56 +132,117 @@ pub struct Point2d<U: std::fmt::Debug + Clone + ts_rs::TS> {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-pub struct Sketch {
-    pub args: SketchArgs,
-    pub items: Vec<ObjectId>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-pub struct SketchArgs {
-    pub on: Plane,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, optional_fields)]
-pub struct LineArgs<U: std::fmt::Debug + Clone + ts_rs::TS> {
-    pub start: Option<Point2d<U>>,
-    pub end: Option<Point2d<U>>,
-    pub angle: Option<U>,
-    pub length: Option<U>,
-    pub x_length: Option<U>,
-    pub y_length: Option<U>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, optional_fields)]
-pub struct ArcArgs<U: std::fmt::Debug + Clone + ts_rs::TS> {
-    pub start: Option<Point2d<U>>,
-    pub end: Option<Point2d<U>>,
-    pub center: Option<Point2d<U>>,
-    pub radius: Option<U>,
-    pub start_angle: Option<U>,
-    pub end_angle: Option<U>,
+#[ts(export, rename = "ApiLine")]
+pub struct Line {
+    pub start: ObjectId,
+    pub end: ObjectId,
+    // Invariant: Line or MidPointLine
+    pub ctor: SegmentCtor,
+    // The constructor is applicable if changing the values of the constructor will change the rendering
+    // of the segment (modulo multiple valid solutions). I.e., whether the object is constrained with
+    // respect to the constructor inputs.
+    // The frontend should only display handles for the constructor inputs if the ctor is applicable.
+    // (Or because they are the (locked) start/end of the segment).
+    pub ctor_applicable: bool,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
-pub struct CoincidentArgs {
-    points: Vec<String>,
+pub struct LineCtor {
+    pub start: Point2d<Expr>,
+    pub end: Point2d<Expr>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct MidPointLineCtor {
+    pub midpoint: Point2d<Expr>,
+    pub start_or_end: StartOrEnd<Point2d<Expr>>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiStartOrEnd")]
+pub enum StartOrEnd<T> {
+    Start(T),
+    End(T),
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiArc")]
+pub struct Arc {
+    pub start: ObjectId,
+    pub end: ObjectId,
+    pub center: ObjectId,
+    // Invariant: Arc or ThreePointArc or TangentArc
+    pub ctor: SegmentCtor,
+    pub ctor_applicable: bool,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct ArcCtor {
+    pub start: Point2d<Expr>,
+    pub end: Point2d<Expr>,
+    pub center: Point2d<Expr>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct ThreePointArcCtor {
+    pub start: Point2d<Expr>,
+    pub end: Point2d<Expr>,
+    pub interior: Point2d<Expr>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct TangentArcCtor {
+    pub start: Point2d<Expr>,
+    pub end: Point2d<Expr>,
+    pub tangent: StartOrEnd<ObjectId>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiCircle")]
+pub struct Circle {
+    pub start: ObjectId,
+    pub radius: Number,
+    // Invariant: Circle or ThreePointCircle
+    pub ctor: SegmentCtor,
+    pub ctor_applicable: bool,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct CircleCtor {
+    pub center: Point2d<Expr>,
+    pub radius: Expr,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct ThreePointCircleCtor {
+    pub p1: Point2d<Expr>,
+    pub p2: Point2d<Expr>,
+    pub p3: Point2d<Expr>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, rename = "ApiConstraint")]
+pub enum Constraint {
+    Coincident(Coincident),
+    Parallel(Parallel),
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct Coincident {
+    points: Vec<ObjectId>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, optional_fields)]
-pub struct ParallelArgs {
-    lines: Vec<String>,
+pub struct Parallel {
+    lines: Vec<ObjectId>,
     distance: Option<Number>,
 }
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
-pub struct SolvedExpr {
-    expr: Expr,
-    value: Number,
-}
-
-impl Kind for SolvedExpr {}

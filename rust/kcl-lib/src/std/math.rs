@@ -33,21 +33,21 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// Compute the cosine of a number (in radians).
 pub async fn cos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
-    let num = num.to_radians();
+    let num = num.to_radians(exec_state, args.source_range);
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(libm::cos(num), exec_state.current_default_units())))
 }
 
 /// Compute the sine of a number (in radians).
 pub async fn sin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
-    let num = num.to_radians();
+    let num = num.to_radians(exec_state, args.source_range);
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(libm::sin(num), exec_state.current_default_units())))
 }
 
 /// Compute the tangent of a number (in radians).
 pub async fn tan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg("input", &RuntimeType::angle(), exec_state)?;
-    let num = num.to_radians();
+    let num = num.to_radians(exec_state, args.source_range);
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(libm::tan(num), exec_state.current_default_units())))
 }
 
@@ -189,7 +189,7 @@ pub async fn atan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 pub async fn atan2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let y = args.get_kw_arg("y", &RuntimeType::length(), exec_state)?;
     let x = args.get_kw_arg("x", &RuntimeType::length(), exec_state)?;
-    let (y, x, _) = NumericType::combine_eq_coerce(y, x);
+    let (y, x, _) = NumericType::combine_eq_coerce(y, x, Some((exec_state, args.source_range)));
     let result = libm::atan2(y, x);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::radians())))
@@ -236,7 +236,7 @@ pub async fn ln(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 pub async fn leg_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let hypotenuse: TyF64 = args.get_kw_arg("hypotenuse", &RuntimeType::length(), exec_state)?;
     let leg: TyF64 = args.get_kw_arg("leg", &RuntimeType::length(), exec_state)?;
-    let (hypotenuse, leg, ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
+    let (hypotenuse, leg, ty) = NumericType::combine_eq_coerce(hypotenuse, leg, Some((exec_state, args.source_range)));
     let result = (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt();
     Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
 }
@@ -245,7 +245,7 @@ pub async fn leg_length(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let hypotenuse: TyF64 = args.get_kw_arg("hypotenuse", &RuntimeType::length(), exec_state)?;
     let leg: TyF64 = args.get_kw_arg("leg", &RuntimeType::length(), exec_state)?;
-    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
+    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg, Some((exec_state, args.source_range)));
     let result = libm::acos(leg.min(hypotenuse) / hypotenuse).to_degrees();
     Ok(KclValue::from_number_with_type(
         result,
@@ -258,7 +258,7 @@ pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let hypotenuse: TyF64 = args.get_kw_arg("hypotenuse", &RuntimeType::length(), exec_state)?;
     let leg: TyF64 = args.get_kw_arg("leg", &RuntimeType::length(), exec_state)?;
-    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
+    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg, Some((exec_state, args.source_range)));
     let result = libm::asin(leg.min(hypotenuse) / hypotenuse).to_degrees();
     Ok(KclValue::from_number_with_type(
         result,

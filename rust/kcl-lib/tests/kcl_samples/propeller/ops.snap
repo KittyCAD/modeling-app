@@ -11,9 +11,9 @@ description: Operations executed propeller.kcl
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -749,9 +749,9 @@ description: Operations executed propeller.kcl
             "type": "Number",
             "value": 5.0,
             "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "degrees": null,
+              "type": "Known",
+              "type": "Angle"
             }
           },
           "sourceRange": []

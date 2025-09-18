@@ -15,10 +15,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2391,
-            "end": 2397,
+            "commentStart": 2421,
+            "end": 2427,
             "moduleId": 0,
-            "start": 2391,
+            "start": 2421,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -36,10 +36,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2526,
-            "end": 2532,
+            "commentStart": 2562,
+            "end": 2568,
             "moduleId": 0,
-            "start": 2526,
+            "start": 2562,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -50,10 +50,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2601,
-            "end": 2607,
+            "commentStart": 2643,
+            "end": 2649,
             "moduleId": 0,
-            "start": 2601,
+            "start": 2643,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -64,10 +64,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2684,
-            "end": 2690,
+            "commentStart": 2729,
+            "end": 2735,
             "moduleId": 0,
-            "start": 2684,
+            "start": 2729,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -85,10 +85,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2792,
-            "end": 2798,
+            "commentStart": 2840,
+            "end": 2846,
             "moduleId": 0,
-            "start": 2792,
+            "start": 2840,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -99,10 +99,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2868,
-            "end": 2874,
+            "commentStart": 2916,
+            "end": 2922,
             "moduleId": 0,
-            "start": 2868,
+            "start": 2916,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -113,10 +113,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2924,
-            "end": 2934,
+            "commentStart": 2972,
+            "end": 2982,
             "moduleId": 0,
-            "start": 2924,
+            "start": 2972,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -137,10 +137,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               5.0
             ],
             "tag": {
-              "commentStart": 2391,
-              "end": 2397,
+              "commentStart": 2421,
+              "end": 2427,
               "moduleId": 0,
-              "start": 2391,
+              "start": 2421,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -183,10 +183,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               8.375
             ],
             "tag": {
-              "commentStart": 2526,
-              "end": 2532,
+              "commentStart": 2562,
+              "end": 2568,
               "moduleId": 0,
-              "start": 2526,
+              "start": 2562,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -207,10 +207,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               86.31728634059948
             ],
             "tag": {
-              "commentStart": 2601,
-              "end": 2607,
+              "commentStart": 2643,
+              "end": 2649,
               "moduleId": 0,
-              "start": 2601,
+              "start": 2643,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -231,10 +231,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               87.81728634059948
             ],
             "tag": {
-              "commentStart": 2684,
-              "end": 2690,
+              "commentStart": 2729,
+              "end": 2735,
               "moduleId": 0,
-              "start": 2684,
+              "start": 2729,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -277,10 +277,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               8.000000000000014
             ],
             "tag": {
-              "commentStart": 2792,
-              "end": 2798,
+              "commentStart": 2840,
+              "end": 2846,
               "moduleId": 0,
-              "start": 2792,
+              "start": 2840,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -301,10 +301,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               8.000000000000014
             ],
             "tag": {
-              "commentStart": 2868,
-              "end": 2874,
+              "commentStart": 2916,
+              "end": 2922,
               "moduleId": 0,
-              "start": 2868,
+              "start": 2916,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -1083,10 +1083,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2391,
-                      "end": 2397,
+                      "commentStart": 2421,
+                      "end": 2427,
                       "moduleId": 0,
-                      "start": 2391,
+                      "start": 2421,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1104,10 +1104,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2526,
-                      "end": 2532,
+                      "commentStart": 2562,
+                      "end": 2568,
                       "moduleId": 0,
-                      "start": 2526,
+                      "start": 2562,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -1118,10 +1118,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2601,
-                      "end": 2607,
+                      "commentStart": 2643,
+                      "end": 2649,
                       "moduleId": 0,
-                      "start": 2601,
+                      "start": 2643,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -1132,10 +1132,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2684,
-                      "end": 2690,
+                      "commentStart": 2729,
+                      "end": 2735,
                       "moduleId": 0,
-                      "start": 2684,
+                      "start": 2729,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -1153,10 +1153,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2792,
-                      "end": 2798,
+                      "commentStart": 2840,
+                      "end": 2846,
                       "moduleId": 0,
-                      "start": 2792,
+                      "start": 2840,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -1167,10 +1167,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2868,
-                      "end": 2874,
+                      "commentStart": 2916,
+                      "end": 2922,
                       "moduleId": 0,
-                      "start": 2868,
+                      "start": 2916,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -1181,10 +1181,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2924,
-                      "end": 2934,
+                      "commentStart": 2972,
+                      "end": 2982,
                       "moduleId": 0,
-                      "start": 2924,
+                      "start": 2972,
                       "type": "TagDeclarator",
                       "value": "capEnd001"
                     },
@@ -1205,10 +1205,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         5.0
                       ],
                       "tag": {
-                        "commentStart": 2391,
-                        "end": 2397,
+                        "commentStart": 2421,
+                        "end": 2427,
                         "moduleId": 0,
-                        "start": 2391,
+                        "start": 2421,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1251,10 +1251,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.375
                       ],
                       "tag": {
-                        "commentStart": 2526,
-                        "end": 2532,
+                        "commentStart": 2562,
+                        "end": 2568,
                         "moduleId": 0,
-                        "start": 2526,
+                        "start": 2562,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1275,10 +1275,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         86.31728634059948
                       ],
                       "tag": {
-                        "commentStart": 2601,
-                        "end": 2607,
+                        "commentStart": 2643,
+                        "end": 2649,
                         "moduleId": 0,
-                        "start": 2601,
+                        "start": 2643,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -1299,10 +1299,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         87.81728634059948
                       ],
                       "tag": {
-                        "commentStart": 2684,
-                        "end": 2690,
+                        "commentStart": 2729,
+                        "end": 2735,
                         "moduleId": 0,
-                        "start": 2684,
+                        "start": 2729,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -1345,10 +1345,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.000000000000014
                       ],
                       "tag": {
-                        "commentStart": 2792,
-                        "end": 2798,
+                        "commentStart": 2840,
+                        "end": 2846,
                         "moduleId": 0,
-                        "start": 2792,
+                        "start": 2840,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -1369,10 +1369,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.000000000000014
                       ],
                       "tag": {
-                        "commentStart": 2868,
-                        "end": 2874,
+                        "commentStart": 2916,
+                        "end": 2922,
                         "moduleId": 0,
-                        "start": 2868,
+                        "start": 2916,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -1614,10 +1614,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2391,
-                      "end": 2397,
+                      "commentStart": 2421,
+                      "end": 2427,
                       "moduleId": 0,
-                      "start": 2391,
+                      "start": 2421,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1635,10 +1635,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2526,
-                      "end": 2532,
+                      "commentStart": 2562,
+                      "end": 2568,
                       "moduleId": 0,
-                      "start": 2526,
+                      "start": 2562,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -1649,10 +1649,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2601,
-                      "end": 2607,
+                      "commentStart": 2643,
+                      "end": 2649,
                       "moduleId": 0,
-                      "start": 2601,
+                      "start": 2643,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -1663,10 +1663,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2684,
-                      "end": 2690,
+                      "commentStart": 2729,
+                      "end": 2735,
                       "moduleId": 0,
-                      "start": 2684,
+                      "start": 2729,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -1684,10 +1684,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2792,
-                      "end": 2798,
+                      "commentStart": 2840,
+                      "end": 2846,
                       "moduleId": 0,
-                      "start": 2792,
+                      "start": 2840,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -1698,10 +1698,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2868,
-                      "end": 2874,
+                      "commentStart": 2916,
+                      "end": 2922,
                       "moduleId": 0,
-                      "start": 2868,
+                      "start": 2916,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -1712,10 +1712,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2924,
-                      "end": 2934,
+                      "commentStart": 2972,
+                      "end": 2982,
                       "moduleId": 0,
-                      "start": 2924,
+                      "start": 2972,
                       "type": "TagDeclarator",
                       "value": "capEnd001"
                     },
@@ -1736,10 +1736,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         5.0
                       ],
                       "tag": {
-                        "commentStart": 2391,
-                        "end": 2397,
+                        "commentStart": 2421,
+                        "end": 2427,
                         "moduleId": 0,
-                        "start": 2391,
+                        "start": 2421,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1782,10 +1782,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.375
                       ],
                       "tag": {
-                        "commentStart": 2526,
-                        "end": 2532,
+                        "commentStart": 2562,
+                        "end": 2568,
                         "moduleId": 0,
-                        "start": 2526,
+                        "start": 2562,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1806,10 +1806,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         86.31728634059948
                       ],
                       "tag": {
-                        "commentStart": 2601,
-                        "end": 2607,
+                        "commentStart": 2643,
+                        "end": 2649,
                         "moduleId": 0,
-                        "start": 2601,
+                        "start": 2643,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -1830,10 +1830,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         87.81728634059948
                       ],
                       "tag": {
-                        "commentStart": 2684,
-                        "end": 2690,
+                        "commentStart": 2729,
+                        "end": 2735,
                         "moduleId": 0,
-                        "start": 2684,
+                        "start": 2729,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -1876,10 +1876,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.000000000000014
                       ],
                       "tag": {
-                        "commentStart": 2792,
-                        "end": 2798,
+                        "commentStart": 2840,
+                        "end": 2846,
                         "moduleId": 0,
-                        "start": 2792,
+                        "start": 2840,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -1900,10 +1900,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.000000000000014
                       ],
                       "tag": {
-                        "commentStart": 2868,
-                        "end": 2874,
+                        "commentStart": 2916,
+                        "end": 2922,
                         "moduleId": 0,
-                        "start": 2868,
+                        "start": 2916,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -2145,10 +2145,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2391,
-                      "end": 2397,
+                      "commentStart": 2421,
+                      "end": 2427,
                       "moduleId": 0,
-                      "start": 2391,
+                      "start": 2421,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2166,10 +2166,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2526,
-                      "end": 2532,
+                      "commentStart": 2562,
+                      "end": 2568,
                       "moduleId": 0,
-                      "start": 2526,
+                      "start": 2562,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2180,10 +2180,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2601,
-                      "end": 2607,
+                      "commentStart": 2643,
+                      "end": 2649,
                       "moduleId": 0,
-                      "start": 2601,
+                      "start": 2643,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2194,10 +2194,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2684,
-                      "end": 2690,
+                      "commentStart": 2729,
+                      "end": 2735,
                       "moduleId": 0,
-                      "start": 2684,
+                      "start": 2729,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -2215,10 +2215,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2792,
-                      "end": 2798,
+                      "commentStart": 2840,
+                      "end": 2846,
                       "moduleId": 0,
-                      "start": 2792,
+                      "start": 2840,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -2229,10 +2229,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2868,
-                      "end": 2874,
+                      "commentStart": 2916,
+                      "end": 2922,
                       "moduleId": 0,
-                      "start": 2868,
+                      "start": 2916,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2243,10 +2243,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2924,
-                      "end": 2934,
+                      "commentStart": 2972,
+                      "end": 2982,
                       "moduleId": 0,
-                      "start": 2924,
+                      "start": 2972,
                       "type": "TagDeclarator",
                       "value": "capEnd001"
                     },
@@ -2267,10 +2267,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         5.0
                       ],
                       "tag": {
-                        "commentStart": 2391,
-                        "end": 2397,
+                        "commentStart": 2421,
+                        "end": 2427,
                         "moduleId": 0,
-                        "start": 2391,
+                        "start": 2421,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2313,10 +2313,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.375
                       ],
                       "tag": {
-                        "commentStart": 2526,
-                        "end": 2532,
+                        "commentStart": 2562,
+                        "end": 2568,
                         "moduleId": 0,
-                        "start": 2526,
+                        "start": 2562,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -2337,10 +2337,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         86.31728634059948
                       ],
                       "tag": {
-                        "commentStart": 2601,
-                        "end": 2607,
+                        "commentStart": 2643,
+                        "end": 2649,
                         "moduleId": 0,
-                        "start": 2601,
+                        "start": 2643,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -2361,10 +2361,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         87.81728634059948
                       ],
                       "tag": {
-                        "commentStart": 2684,
-                        "end": 2690,
+                        "commentStart": 2729,
+                        "end": 2735,
                         "moduleId": 0,
-                        "start": 2684,
+                        "start": 2729,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -2407,10 +2407,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.000000000000014
                       ],
                       "tag": {
-                        "commentStart": 2792,
-                        "end": 2798,
+                        "commentStart": 2840,
+                        "end": 2846,
                         "moduleId": 0,
-                        "start": 2792,
+                        "start": 2840,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -2431,10 +2431,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.000000000000014
                       ],
                       "tag": {
-                        "commentStart": 2868,
-                        "end": 2874,
+                        "commentStart": 2916,
+                        "end": 2922,
                         "moduleId": 0,
-                        "start": 2868,
+                        "start": 2916,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -2676,10 +2676,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2391,
-                      "end": 2397,
+                      "commentStart": 2421,
+                      "end": 2427,
                       "moduleId": 0,
-                      "start": 2391,
+                      "start": 2421,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2697,10 +2697,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2526,
-                      "end": 2532,
+                      "commentStart": 2562,
+                      "end": 2568,
                       "moduleId": 0,
-                      "start": 2526,
+                      "start": 2562,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2711,10 +2711,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2601,
-                      "end": 2607,
+                      "commentStart": 2643,
+                      "end": 2649,
                       "moduleId": 0,
-                      "start": 2601,
+                      "start": 2643,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2725,10 +2725,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2684,
-                      "end": 2690,
+                      "commentStart": 2729,
+                      "end": 2735,
                       "moduleId": 0,
-                      "start": 2684,
+                      "start": 2729,
                       "type": "TagDeclarator",
                       "value": "seg06"
                     },
@@ -2746,10 +2746,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2792,
-                      "end": 2798,
+                      "commentStart": 2840,
+                      "end": 2846,
                       "moduleId": 0,
-                      "start": 2792,
+                      "start": 2840,
                       "type": "TagDeclarator",
                       "value": "seg05"
                     },
@@ -2760,10 +2760,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2868,
-                      "end": 2874,
+                      "commentStart": 2916,
+                      "end": 2922,
                       "moduleId": 0,
-                      "start": 2868,
+                      "start": 2916,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2774,10 +2774,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2924,
-                      "end": 2934,
+                      "commentStart": 2972,
+                      "end": 2982,
                       "moduleId": 0,
-                      "start": 2924,
+                      "start": 2972,
                       "type": "TagDeclarator",
                       "value": "capEnd001"
                     },
@@ -2798,10 +2798,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         5.0
                       ],
                       "tag": {
-                        "commentStart": 2391,
-                        "end": 2397,
+                        "commentStart": 2421,
+                        "end": 2427,
                         "moduleId": 0,
-                        "start": 2391,
+                        "start": 2421,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2844,10 +2844,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.375
                       ],
                       "tag": {
-                        "commentStart": 2526,
-                        "end": 2532,
+                        "commentStart": 2562,
+                        "end": 2568,
                         "moduleId": 0,
-                        "start": 2526,
+                        "start": 2562,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -2868,10 +2868,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         86.31728634059948
                       ],
                       "tag": {
-                        "commentStart": 2601,
-                        "end": 2607,
+                        "commentStart": 2643,
+                        "end": 2649,
                         "moduleId": 0,
-                        "start": 2601,
+                        "start": 2643,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -2892,10 +2892,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         87.81728634059948
                       ],
                       "tag": {
-                        "commentStart": 2684,
-                        "end": 2690,
+                        "commentStart": 2729,
+                        "end": 2735,
                         "moduleId": 0,
-                        "start": 2684,
+                        "start": 2729,
                         "type": "TagDeclarator",
                         "value": "seg06"
                       },
@@ -2938,10 +2938,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.000000000000014
                       ],
                       "tag": {
-                        "commentStart": 2792,
-                        "end": 2798,
+                        "commentStart": 2840,
+                        "end": 2846,
                         "moduleId": 0,
-                        "start": 2792,
+                        "start": 2840,
                         "type": "TagDeclarator",
                         "value": "seg05"
                       },
@@ -2962,10 +2962,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         8.000000000000014
                       ],
                       "tag": {
-                        "commentStart": 2868,
-                        "end": 2874,
+                        "commentStart": 2916,
+                        "end": 2922,
                         "moduleId": 0,
-                        "start": 2868,
+                        "start": 2916,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -3176,10 +3176,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2391,
-              "end": 2397,
+              "commentStart": 2421,
+              "end": 2427,
               "moduleId": 0,
-              "start": 2391,
+              "start": 2421,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -3197,10 +3197,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2526,
-              "end": 2532,
+              "commentStart": 2562,
+              "end": 2568,
               "moduleId": 0,
-              "start": 2526,
+              "start": 2562,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -3211,10 +3211,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2601,
-              "end": 2607,
+              "commentStart": 2643,
+              "end": 2649,
               "moduleId": 0,
-              "start": 2601,
+              "start": 2643,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -3225,10 +3225,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2684,
-              "end": 2690,
+              "commentStart": 2729,
+              "end": 2735,
               "moduleId": 0,
-              "start": 2684,
+              "start": 2729,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -3246,10 +3246,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2792,
-              "end": 2798,
+              "commentStart": 2840,
+              "end": 2846,
               "moduleId": 0,
-              "start": 2792,
+              "start": 2840,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -3260,10 +3260,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2868,
-              "end": 2874,
+              "commentStart": 2916,
+              "end": 2922,
               "moduleId": 0,
-              "start": 2868,
+              "start": 2916,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -3274,10 +3274,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2924,
-              "end": 2934,
+              "commentStart": 2972,
+              "end": 2982,
               "moduleId": 0,
-              "start": 2924,
+              "start": 2972,
               "type": "TagDeclarator",
               "value": "capEnd001"
             },
@@ -3298,10 +3298,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 5.0
               ],
               "tag": {
-                "commentStart": 2391,
-                "end": 2397,
+                "commentStart": 2421,
+                "end": 2427,
                 "moduleId": 0,
-                "start": 2391,
+                "start": 2421,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -3344,10 +3344,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 8.375
               ],
               "tag": {
-                "commentStart": 2526,
-                "end": 2532,
+                "commentStart": 2562,
+                "end": 2568,
                 "moduleId": 0,
-                "start": 2526,
+                "start": 2562,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -3368,10 +3368,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 86.31728634059948
               ],
               "tag": {
-                "commentStart": 2601,
-                "end": 2607,
+                "commentStart": 2643,
+                "end": 2649,
                 "moduleId": 0,
-                "start": 2601,
+                "start": 2643,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -3392,10 +3392,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 87.81728634059948
               ],
               "tag": {
-                "commentStart": 2684,
-                "end": 2690,
+                "commentStart": 2729,
+                "end": 2735,
                 "moduleId": 0,
-                "start": 2684,
+                "start": 2729,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -3438,10 +3438,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 8.000000000000014
               ],
               "tag": {
-                "commentStart": 2792,
-                "end": 2798,
+                "commentStart": 2840,
+                "end": 2846,
                 "moduleId": 0,
-                "start": 2792,
+                "start": 2840,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -3462,10 +3462,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 8.000000000000014
               ],
               "tag": {
-                "commentStart": 2868,
-                "end": 2874,
+                "commentStart": 2916,
+                "end": 2922,
                 "moduleId": 0,
-                "start": 2868,
+                "start": 2916,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -3640,10 +3640,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2391,
-              "end": 2397,
+              "commentStart": 2421,
+              "end": 2427,
               "moduleId": 0,
-              "start": 2391,
+              "start": 2421,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -3661,10 +3661,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2526,
-              "end": 2532,
+              "commentStart": 2562,
+              "end": 2568,
               "moduleId": 0,
-              "start": 2526,
+              "start": 2562,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -3675,10 +3675,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2601,
-              "end": 2607,
+              "commentStart": 2643,
+              "end": 2649,
               "moduleId": 0,
-              "start": 2601,
+              "start": 2643,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -3689,10 +3689,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2684,
-              "end": 2690,
+              "commentStart": 2729,
+              "end": 2735,
               "moduleId": 0,
-              "start": 2684,
+              "start": 2729,
               "type": "TagDeclarator",
               "value": "seg06"
             },
@@ -3710,10 +3710,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2792,
-              "end": 2798,
+              "commentStart": 2840,
+              "end": 2846,
               "moduleId": 0,
-              "start": 2792,
+              "start": 2840,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -3724,10 +3724,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2868,
-              "end": 2874,
+              "commentStart": 2916,
+              "end": 2922,
               "moduleId": 0,
-              "start": 2868,
+              "start": 2916,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -3738,10 +3738,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 2924,
-              "end": 2934,
+              "commentStart": 2972,
+              "end": 2982,
               "moduleId": 0,
-              "start": 2924,
+              "start": 2972,
               "type": "TagDeclarator",
               "value": "capEnd001"
             },
@@ -3762,10 +3762,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 5.0
               ],
               "tag": {
-                "commentStart": 2391,
-                "end": 2397,
+                "commentStart": 2421,
+                "end": 2427,
                 "moduleId": 0,
-                "start": 2391,
+                "start": 2421,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -3808,10 +3808,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 8.375
               ],
               "tag": {
-                "commentStart": 2526,
-                "end": 2532,
+                "commentStart": 2562,
+                "end": 2568,
                 "moduleId": 0,
-                "start": 2526,
+                "start": 2562,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -3832,10 +3832,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 86.31728634059948
               ],
               "tag": {
-                "commentStart": 2601,
-                "end": 2607,
+                "commentStart": 2643,
+                "end": 2649,
                 "moduleId": 0,
-                "start": 2601,
+                "start": 2643,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -3856,10 +3856,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 87.81728634059948
               ],
               "tag": {
-                "commentStart": 2684,
-                "end": 2690,
+                "commentStart": 2729,
+                "end": 2735,
                 "moduleId": 0,
-                "start": 2684,
+                "start": 2729,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -3902,10 +3902,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 8.000000000000014
               ],
               "tag": {
-                "commentStart": 2792,
-                "end": 2798,
+                "commentStart": 2840,
+                "end": 2846,
                 "moduleId": 0,
-                "start": 2792,
+                "start": 2840,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -3926,10 +3926,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 8.000000000000014
               ],
               "tag": {
-                "commentStart": 2868,
-                "end": 2874,
+                "commentStart": 2916,
+                "end": 2922,
                 "moduleId": 0,
-                "start": 2868,
+                "start": 2916,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -4300,10 +4300,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4813,
-            "end": 4820,
+            "commentStart": 4864,
+            "end": 4871,
             "moduleId": 0,
-            "start": 4813,
+            "start": 4864,
             "type": "TagDeclarator",
             "value": "seg01e"
           },
@@ -4321,10 +4321,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4948,
-            "end": 4955,
+            "commentStart": 5005,
+            "end": 5012,
             "moduleId": 0,
-            "start": 4948,
+            "start": 5005,
             "type": "TagDeclarator",
             "value": "seg02e"
           },
@@ -4342,10 +4342,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5082,
-            "end": 5089,
+            "commentStart": 5145,
+            "end": 5152,
             "moduleId": 0,
-            "start": 5082,
+            "start": 5145,
             "type": "TagDeclarator",
             "value": "seg03e"
           },
@@ -4443,10 +4443,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               12.0
             ],
             "tag": {
-              "commentStart": 4813,
-              "end": 4820,
+              "commentStart": 4864,
+              "end": 4871,
               "moduleId": 0,
-              "start": 4813,
+              "start": 4864,
               "type": "TagDeclarator",
               "value": "seg01e"
             },
@@ -4489,10 +4489,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               8.625
             ],
             "tag": {
-              "commentStart": 4948,
-              "end": 4955,
+              "commentStart": 5005,
+              "end": 5012,
               "moduleId": 0,
-              "start": 4948,
+              "start": 5005,
               "type": "TagDeclarator",
               "value": "seg02e"
             },
@@ -4535,10 +4535,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               -3.3211524227066325
             ],
             "tag": {
-              "commentStart": 5082,
-              "end": 5089,
+              "commentStart": 5145,
+              "end": 5152,
               "moduleId": 0,
-              "start": 5082,
+              "start": 5145,
               "type": "TagDeclarator",
               "value": "seg03e"
             },
@@ -4856,10 +4856,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4813,
-            "end": 4820,
+            "commentStart": 4864,
+            "end": 4871,
             "moduleId": 0,
-            "start": 4813,
+            "start": 4864,
             "type": "TagDeclarator",
             "value": "seg01e"
           },
@@ -4877,10 +4877,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4948,
-            "end": 4955,
+            "commentStart": 5005,
+            "end": 5012,
             "moduleId": 0,
-            "start": 4948,
+            "start": 5005,
             "type": "TagDeclarator",
             "value": "seg02e"
           },
@@ -4898,10 +4898,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5082,
-            "end": 5089,
+            "commentStart": 5145,
+            "end": 5152,
             "moduleId": 0,
-            "start": 5082,
+            "start": 5145,
             "type": "TagDeclarator",
             "value": "seg03e"
           },
@@ -4999,10 +4999,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               12.0
             ],
             "tag": {
-              "commentStart": 4813,
-              "end": 4820,
+              "commentStart": 4864,
+              "end": 4871,
               "moduleId": 0,
-              "start": 4813,
+              "start": 4864,
               "type": "TagDeclarator",
               "value": "seg01e"
             },
@@ -5045,10 +5045,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               8.625
             ],
             "tag": {
-              "commentStart": 4948,
-              "end": 4955,
+              "commentStart": 5005,
+              "end": 5012,
               "moduleId": 0,
-              "start": 4948,
+              "start": 5005,
               "type": "TagDeclarator",
               "value": "seg02e"
             },
@@ -5091,10 +5091,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               -3.3211524227066325
             ],
             "tag": {
-              "commentStart": 5082,
-              "end": 5089,
+              "commentStart": 5145,
+              "end": 5152,
               "moduleId": 0,
-              "start": 5082,
+              "start": 5145,
               "type": "TagDeclarator",
               "value": "seg03e"
             },
@@ -6098,10 +6098,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2391,
-                "end": 2397,
+                "commentStart": 2421,
+                "end": 2427,
                 "moduleId": 0,
-                "start": 2391,
+                "start": 2421,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -6119,10 +6119,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2526,
-                "end": 2532,
+                "commentStart": 2562,
+                "end": 2568,
                 "moduleId": 0,
-                "start": 2526,
+                "start": 2562,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -6133,10 +6133,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2601,
-                "end": 2607,
+                "commentStart": 2643,
+                "end": 2649,
                 "moduleId": 0,
-                "start": 2601,
+                "start": 2643,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -6147,10 +6147,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2684,
-                "end": 2690,
+                "commentStart": 2729,
+                "end": 2735,
                 "moduleId": 0,
-                "start": 2684,
+                "start": 2729,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -6168,10 +6168,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2792,
-                "end": 2798,
+                "commentStart": 2840,
+                "end": 2846,
                 "moduleId": 0,
-                "start": 2792,
+                "start": 2840,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -6182,10 +6182,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2868,
-                "end": 2874,
+                "commentStart": 2916,
+                "end": 2922,
                 "moduleId": 0,
-                "start": 2868,
+                "start": 2916,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -6196,10 +6196,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2924,
-                "end": 2934,
+                "commentStart": 2972,
+                "end": 2982,
                 "moduleId": 0,
-                "start": 2924,
+                "start": 2972,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -6220,10 +6220,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   5.0
                 ],
                 "tag": {
-                  "commentStart": 2391,
-                  "end": 2397,
+                  "commentStart": 2421,
+                  "end": 2427,
                   "moduleId": 0,
-                  "start": 2391,
+                  "start": 2421,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -6266,10 +6266,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.375
                 ],
                 "tag": {
-                  "commentStart": 2526,
-                  "end": 2532,
+                  "commentStart": 2562,
+                  "end": 2568,
                   "moduleId": 0,
-                  "start": 2526,
+                  "start": 2562,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -6290,10 +6290,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   86.31728634059948
                 ],
                 "tag": {
-                  "commentStart": 2601,
-                  "end": 2607,
+                  "commentStart": 2643,
+                  "end": 2649,
                   "moduleId": 0,
-                  "start": 2601,
+                  "start": 2643,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -6314,10 +6314,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   87.81728634059948
                 ],
                 "tag": {
-                  "commentStart": 2684,
-                  "end": 2690,
+                  "commentStart": 2729,
+                  "end": 2735,
                   "moduleId": 0,
-                  "start": 2684,
+                  "start": 2729,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -6360,10 +6360,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.000000000000014
                 ],
                 "tag": {
-                  "commentStart": 2792,
-                  "end": 2798,
+                  "commentStart": 2840,
+                  "end": 2846,
                   "moduleId": 0,
-                  "start": 2792,
+                  "start": 2840,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -6384,10 +6384,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.000000000000014
                 ],
                 "tag": {
-                  "commentStart": 2868,
-                  "end": 2874,
+                  "commentStart": 2916,
+                  "end": 2922,
                   "moduleId": 0,
-                  "start": 2868,
+                  "start": 2916,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -6611,10 +6611,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2391,
-                "end": 2397,
+                "commentStart": 2421,
+                "end": 2427,
                 "moduleId": 0,
-                "start": 2391,
+                "start": 2421,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -6632,10 +6632,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2526,
-                "end": 2532,
+                "commentStart": 2562,
+                "end": 2568,
                 "moduleId": 0,
-                "start": 2526,
+                "start": 2562,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -6646,10 +6646,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2601,
-                "end": 2607,
+                "commentStart": 2643,
+                "end": 2649,
                 "moduleId": 0,
-                "start": 2601,
+                "start": 2643,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -6660,10 +6660,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2684,
-                "end": 2690,
+                "commentStart": 2729,
+                "end": 2735,
                 "moduleId": 0,
-                "start": 2684,
+                "start": 2729,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -6681,10 +6681,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2792,
-                "end": 2798,
+                "commentStart": 2840,
+                "end": 2846,
                 "moduleId": 0,
-                "start": 2792,
+                "start": 2840,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -6695,10 +6695,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2868,
-                "end": 2874,
+                "commentStart": 2916,
+                "end": 2922,
                 "moduleId": 0,
-                "start": 2868,
+                "start": 2916,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -6709,10 +6709,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2924,
-                "end": 2934,
+                "commentStart": 2972,
+                "end": 2982,
                 "moduleId": 0,
-                "start": 2924,
+                "start": 2972,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -6733,10 +6733,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   5.0
                 ],
                 "tag": {
-                  "commentStart": 2391,
-                  "end": 2397,
+                  "commentStart": 2421,
+                  "end": 2427,
                   "moduleId": 0,
-                  "start": 2391,
+                  "start": 2421,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -6779,10 +6779,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.375
                 ],
                 "tag": {
-                  "commentStart": 2526,
-                  "end": 2532,
+                  "commentStart": 2562,
+                  "end": 2568,
                   "moduleId": 0,
-                  "start": 2526,
+                  "start": 2562,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -6803,10 +6803,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   86.31728634059948
                 ],
                 "tag": {
-                  "commentStart": 2601,
-                  "end": 2607,
+                  "commentStart": 2643,
+                  "end": 2649,
                   "moduleId": 0,
-                  "start": 2601,
+                  "start": 2643,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -6827,10 +6827,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   87.81728634059948
                 ],
                 "tag": {
-                  "commentStart": 2684,
-                  "end": 2690,
+                  "commentStart": 2729,
+                  "end": 2735,
                   "moduleId": 0,
-                  "start": 2684,
+                  "start": 2729,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -6873,10 +6873,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.000000000000014
                 ],
                 "tag": {
-                  "commentStart": 2792,
-                  "end": 2798,
+                  "commentStart": 2840,
+                  "end": 2846,
                   "moduleId": 0,
-                  "start": 2792,
+                  "start": 2840,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -6897,10 +6897,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.000000000000014
                 ],
                 "tag": {
-                  "commentStart": 2868,
-                  "end": 2874,
+                  "commentStart": 2916,
+                  "end": 2922,
                   "moduleId": 0,
-                  "start": 2868,
+                  "start": 2916,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -7124,10 +7124,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2391,
-                "end": 2397,
+                "commentStart": 2421,
+                "end": 2427,
                 "moduleId": 0,
-                "start": 2391,
+                "start": 2421,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -7145,10 +7145,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2526,
-                "end": 2532,
+                "commentStart": 2562,
+                "end": 2568,
                 "moduleId": 0,
-                "start": 2526,
+                "start": 2562,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -7159,10 +7159,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2601,
-                "end": 2607,
+                "commentStart": 2643,
+                "end": 2649,
                 "moduleId": 0,
-                "start": 2601,
+                "start": 2643,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -7173,10 +7173,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2684,
-                "end": 2690,
+                "commentStart": 2729,
+                "end": 2735,
                 "moduleId": 0,
-                "start": 2684,
+                "start": 2729,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -7194,10 +7194,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2792,
-                "end": 2798,
+                "commentStart": 2840,
+                "end": 2846,
                 "moduleId": 0,
-                "start": 2792,
+                "start": 2840,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -7208,10 +7208,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2868,
-                "end": 2874,
+                "commentStart": 2916,
+                "end": 2922,
                 "moduleId": 0,
-                "start": 2868,
+                "start": 2916,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -7222,10 +7222,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2924,
-                "end": 2934,
+                "commentStart": 2972,
+                "end": 2982,
                 "moduleId": 0,
-                "start": 2924,
+                "start": 2972,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -7246,10 +7246,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   5.0
                 ],
                 "tag": {
-                  "commentStart": 2391,
-                  "end": 2397,
+                  "commentStart": 2421,
+                  "end": 2427,
                   "moduleId": 0,
-                  "start": 2391,
+                  "start": 2421,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -7292,10 +7292,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.375
                 ],
                 "tag": {
-                  "commentStart": 2526,
-                  "end": 2532,
+                  "commentStart": 2562,
+                  "end": 2568,
                   "moduleId": 0,
-                  "start": 2526,
+                  "start": 2562,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -7316,10 +7316,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   86.31728634059948
                 ],
                 "tag": {
-                  "commentStart": 2601,
-                  "end": 2607,
+                  "commentStart": 2643,
+                  "end": 2649,
                   "moduleId": 0,
-                  "start": 2601,
+                  "start": 2643,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -7340,10 +7340,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   87.81728634059948
                 ],
                 "tag": {
-                  "commentStart": 2684,
-                  "end": 2690,
+                  "commentStart": 2729,
+                  "end": 2735,
                   "moduleId": 0,
-                  "start": 2684,
+                  "start": 2729,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -7386,10 +7386,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.000000000000014
                 ],
                 "tag": {
-                  "commentStart": 2792,
-                  "end": 2798,
+                  "commentStart": 2840,
+                  "end": 2846,
                   "moduleId": 0,
-                  "start": 2792,
+                  "start": 2840,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -7410,10 +7410,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.000000000000014
                 ],
                 "tag": {
-                  "commentStart": 2868,
-                  "end": 2874,
+                  "commentStart": 2916,
+                  "end": 2922,
                   "moduleId": 0,
-                  "start": 2868,
+                  "start": 2916,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -7637,10 +7637,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2391,
-                "end": 2397,
+                "commentStart": 2421,
+                "end": 2427,
                 "moduleId": 0,
-                "start": 2391,
+                "start": 2421,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -7658,10 +7658,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2526,
-                "end": 2532,
+                "commentStart": 2562,
+                "end": 2568,
                 "moduleId": 0,
-                "start": 2526,
+                "start": 2562,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -7672,10 +7672,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2601,
-                "end": 2607,
+                "commentStart": 2643,
+                "end": 2649,
                 "moduleId": 0,
-                "start": 2601,
+                "start": 2643,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -7686,10 +7686,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2684,
-                "end": 2690,
+                "commentStart": 2729,
+                "end": 2735,
                 "moduleId": 0,
-                "start": 2684,
+                "start": 2729,
                 "type": "TagDeclarator",
                 "value": "seg06"
               },
@@ -7707,10 +7707,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2792,
-                "end": 2798,
+                "commentStart": 2840,
+                "end": 2846,
                 "moduleId": 0,
-                "start": 2792,
+                "start": 2840,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -7721,10 +7721,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2868,
-                "end": 2874,
+                "commentStart": 2916,
+                "end": 2922,
                 "moduleId": 0,
-                "start": 2868,
+                "start": 2916,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -7735,10 +7735,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2924,
-                "end": 2934,
+                "commentStart": 2972,
+                "end": 2982,
                 "moduleId": 0,
-                "start": 2924,
+                "start": 2972,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -7759,10 +7759,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   5.0
                 ],
                 "tag": {
-                  "commentStart": 2391,
-                  "end": 2397,
+                  "commentStart": 2421,
+                  "end": 2427,
                   "moduleId": 0,
-                  "start": 2391,
+                  "start": 2421,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -7805,10 +7805,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.375
                 ],
                 "tag": {
-                  "commentStart": 2526,
-                  "end": 2532,
+                  "commentStart": 2562,
+                  "end": 2568,
                   "moduleId": 0,
-                  "start": 2526,
+                  "start": 2562,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -7829,10 +7829,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   86.31728634059948
                 ],
                 "tag": {
-                  "commentStart": 2601,
-                  "end": 2607,
+                  "commentStart": 2643,
+                  "end": 2649,
                   "moduleId": 0,
-                  "start": 2601,
+                  "start": 2643,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -7853,10 +7853,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   87.81728634059948
                 ],
                 "tag": {
-                  "commentStart": 2684,
-                  "end": 2690,
+                  "commentStart": 2729,
+                  "end": 2735,
                   "moduleId": 0,
-                  "start": 2684,
+                  "start": 2729,
                   "type": "TagDeclarator",
                   "value": "seg06"
                 },
@@ -7899,10 +7899,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.000000000000014
                 ],
                 "tag": {
-                  "commentStart": 2792,
-                  "end": 2798,
+                  "commentStart": 2840,
+                  "end": 2846,
                   "moduleId": 0,
-                  "start": 2792,
+                  "start": 2840,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -7923,10 +7923,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   8.000000000000014
                 ],
                 "tag": {
-                  "commentStart": 2868,
-                  "end": 2874,
+                  "commentStart": 2916,
+                  "end": 2922,
                   "moduleId": 0,
-                  "start": 2868,
+                  "start": 2916,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -8114,10 +8114,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               -5.0
             ],
             "tag": {
-              "commentStart": 869,
-              "end": 875,
+              "commentStart": 872,
+              "end": 878,
               "moduleId": 0,
-              "start": 869,
+              "start": 872,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -8160,10 +8160,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               11.928203230275509
             ],
             "tag": {
-              "commentStart": 982,
-              "end": 988,
+              "commentStart": 991,
+              "end": 997,
               "moduleId": 0,
-              "start": 982,
+              "start": 991,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -8440,9 +8440,9 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
     "type": "Number",
     "value": 65.0,
     "ty": {
-      "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "degrees": null,
+      "type": "Known",
+      "type": "Angle"
     }
   },
   "linkLength": {
@@ -8478,10 +8478,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3945,
-                "end": 3951,
+                "commentStart": 3993,
+                "end": 3999,
                 "moduleId": 0,
-                "start": 3945,
+                "start": 3993,
                 "type": "TagDeclarator",
                 "value": "seg10"
               },
@@ -8492,10 +8492,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4012,
-                "end": 4018,
+                "commentStart": 4063,
+                "end": 4069,
                 "moduleId": 0,
-                "start": 4012,
+                "start": 4063,
                 "type": "TagDeclarator",
                 "value": "seg09"
               },
@@ -8544,10 +8544,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   136.6190539060744
                 ],
                 "tag": {
-                  "commentStart": 3945,
-                  "end": 3951,
+                  "commentStart": 3993,
+                  "end": 3999,
                   "moduleId": 0,
-                  "start": 3945,
+                  "start": 3993,
                   "type": "TagDeclarator",
                   "value": "seg10"
                 },
@@ -8573,10 +8573,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   200.0605989986399
                 ],
                 "tag": {
-                  "commentStart": 4012,
-                  "end": 4018,
+                  "commentStart": 4063,
+                  "end": 4069,
                   "moduleId": 0,
-                  "start": 4012,
+                  "start": 4063,
                   "type": "TagDeclarator",
                   "value": "seg09"
                 },
@@ -8770,10 +8770,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3945,
-                "end": 3951,
+                "commentStart": 3993,
+                "end": 3999,
                 "moduleId": 0,
-                "start": 3945,
+                "start": 3993,
                 "type": "TagDeclarator",
                 "value": "seg10"
               },
@@ -8784,10 +8784,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4012,
-                "end": 4018,
+                "commentStart": 4063,
+                "end": 4069,
                 "moduleId": 0,
-                "start": 4012,
+                "start": 4063,
                 "type": "TagDeclarator",
                 "value": "seg09"
               },
@@ -8836,10 +8836,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   136.6190539060744
                 ],
                 "tag": {
-                  "commentStart": 3945,
-                  "end": 3951,
+                  "commentStart": 3993,
+                  "end": 3999,
                   "moduleId": 0,
-                  "start": 3945,
+                  "start": 3993,
                   "type": "TagDeclarator",
                   "value": "seg10"
                 },
@@ -8865,10 +8865,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   200.0605989986399
                 ],
                 "tag": {
-                  "commentStart": 4012,
-                  "end": 4018,
+                  "commentStart": 4063,
+                  "end": 4069,
                   "moduleId": 0,
-                  "start": 4012,
+                  "start": 4063,
                   "type": "TagDeclarator",
                   "value": "seg09"
                 },
@@ -9064,10 +9064,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 869,
-            "end": 875,
+            "commentStart": 872,
+            "end": 878,
             "moduleId": 0,
-            "start": 869,
+            "start": 872,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -9085,10 +9085,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 982,
-            "end": 988,
+            "commentStart": 991,
+            "end": 997,
             "moduleId": 0,
-            "start": 982,
+            "start": 991,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -9172,10 +9172,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               -4.0
             ],
             "tag": {
-              "commentStart": 869,
-              "end": 875,
+              "commentStart": 872,
+              "end": 878,
               "moduleId": 0,
-              "start": 869,
+              "start": 872,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -9218,10 +9218,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               10.928203230275509
             ],
             "tag": {
-              "commentStart": 982,
-              "end": 988,
+              "commentStart": 991,
+              "end": 997,
               "moduleId": 0,
-              "start": 982,
+              "start": 991,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -9777,10 +9777,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             -4.0
           ],
           "tag": {
-            "commentStart": 869,
-            "end": 875,
+            "commentStart": 872,
+            "end": 878,
             "moduleId": 0,
-            "start": 869,
+            "start": 872,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -9823,10 +9823,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             10.928203230275509
           ],
           "tag": {
-            "commentStart": 982,
-            "end": 988,
+            "commentStart": 991,
+            "end": 997,
             "moduleId": 0,
-            "start": 982,
+            "start": 991,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -10110,10 +10110,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             -5.0
           ],
           "tag": {
-            "commentStart": 869,
-            "end": 875,
+            "commentStart": 872,
+            "end": 878,
             "moduleId": 0,
-            "start": 869,
+            "start": 872,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -10156,10 +10156,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             11.928203230275509
           ],
           "tag": {
-            "commentStart": 982,
-            "end": 988,
+            "commentStart": 991,
+            "end": 997,
             "moduleId": 0,
-            "start": 982,
+            "start": 991,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -10443,10 +10443,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             -9.0
           ],
           "tag": {
-            "commentStart": 869,
-            "end": 875,
+            "commentStart": 872,
+            "end": 878,
             "moduleId": 0,
-            "start": 869,
+            "start": 872,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -10489,10 +10489,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             15.928203230275509
           ],
           "tag": {
-            "commentStart": 982,
-            "end": 988,
+            "commentStart": 991,
+            "end": 997,
             "moduleId": 0,
-            "start": 982,
+            "start": 991,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -10776,10 +10776,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             -10.5
           ],
           "tag": {
-            "commentStart": 869,
-            "end": 875,
+            "commentStart": 872,
+            "end": 878,
             "moduleId": 0,
-            "start": 869,
+            "start": 872,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -10822,10 +10822,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             17.428203230275507
           ],
           "tag": {
-            "commentStart": 982,
-            "end": 988,
+            "commentStart": 991,
+            "end": 997,
             "moduleId": 0,
-            "start": 982,
+            "start": 991,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -11109,10 +11109,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             -10.0
           ],
           "tag": {
-            "commentStart": 869,
-            "end": 875,
+            "commentStart": 872,
+            "end": 878,
             "moduleId": 0,
-            "start": 869,
+            "start": 872,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -11155,10 +11155,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             16.928203230275507
           ],
           "tag": {
-            "commentStart": 982,
-            "end": 988,
+            "commentStart": 991,
+            "end": 997,
             "moduleId": 0,
-            "start": 982,
+            "start": 991,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -11447,10 +11447,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               -10.5
             ],
             "tag": {
-              "commentStart": 869,
-              "end": 875,
+              "commentStart": 872,
+              "end": 878,
               "moduleId": 0,
-              "start": 869,
+              "start": 872,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -11493,10 +11493,10 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               17.428203230275507
             ],
             "tag": {
-              "commentStart": 982,
-              "end": 988,
+              "commentStart": 991,
+              "end": 997,
               "moduleId": 0,
-              "start": 982,
+              "start": 991,
               "type": "TagDeclarator",
               "value": "seg08"
             },

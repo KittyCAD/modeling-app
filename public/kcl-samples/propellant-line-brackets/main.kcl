@@ -73,14 +73,14 @@ thickness = .125
 pClampSketch = startSketchOn(-XZ)
 profile007 = startProfile(pClampSketch, at = [0, 0])
   |> xLine(length = -2, tag = $seg003)
-  |> tangentialArc(radius = tubeDiameter / 2 + thickness, angle = -300)
+  |> tangentialArc(radius = tubeDiameter / 2 + thickness, angle = -300deg)
   |> xLine(endAbsolute = 0, tag = $seg004)
   |> yLine(length = -thickness, tag = $seg005)
   |> xLine(endAbsolute = -1.5)
   |> arc(
        interiorAbsolute = [
-         -2 - (cos(90) * tubeDiameter),
-         sin(90) * tubeDiameter + thickness
+         -2 - (cos(90deg) * tubeDiameter),
+         sin(90deg) * tubeDiameter + thickness
        ],
        endAbsolute = [-2, thickness],
      )
