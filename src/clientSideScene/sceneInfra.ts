@@ -450,8 +450,9 @@ export class SceneInfra {
   private _processingMouseMove = false
   private _lastUnprocessedMouseEvent: MouseEvent | undefined
 
-  private updateCurrentMouseVector(event: MouseEvent) {
-    const rect = event.currentTarget.getBoundingClientRect()
+  private updateCurrentMouseVector(event: MouseEvent, target: HTMLElement) {
+
+    const rect = target.getBoundingClientRect()
     if (rect.width === 0 || rect.height === 0) {
       return
     }
@@ -479,7 +480,7 @@ export class SceneInfra {
       this._processingMouseMove = true
     }
 
-    this.updateCurrentMouseVector(mouseEvent)
+    this.updateCurrentMouseVector(mouseEvent, mouseEvent.currentTarget)
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
@@ -653,7 +654,7 @@ export class SceneInfra {
       console.error('unexpected targetless event')
       return
     }
-    this.updateCurrentMouseVector(event)
+    this.updateCurrentMouseVector(event, event.currentTarget)
 
     const mouseDownVector = this.currentMouseVector.clone()
     const intersect = this.raycastRing()[0]
