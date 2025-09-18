@@ -176,6 +176,8 @@ export const useWatchForNewFileRequestsFromMlEphant = (
     let lastId: number | undefined = undefined
     const subscription2 = mlEphantManagerActor2.subscribe((next) => {
       if (next.context.lastMessageId === lastId) return
+      lastId = next.context.lastMessageId
+
       const exchanges = next.context.conversation?.exchanges ?? []
       const lastExchange = exchanges[exchanges.length - 1]
       if (lastExchange === undefined) return

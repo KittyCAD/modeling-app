@@ -6,7 +6,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Thinking } from '@src/components/Thinking'
 import { type Exchange } from '@src/machines/mlEphantManagerMachine2'
 import ms from 'ms'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { forwardRef, useEffect, useRef, useState, type ReactNode } from 'react'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -54,7 +54,7 @@ export const ExchangeCardStatus = (props: {
     <div>
       {thinker}
       {props.updatedAt && (
-        <div className="text-chalkboard-70 p-2">
+        <div className="text-chalkboard-70 p-2 pb-0">
           Reasoned for{' '}
           {ms(props.updatedAt.getTime() - props.startedAt.getTime(), {
             long: true,
@@ -146,18 +146,27 @@ export const RequestCard = (props: RequestCardProps) => {
   )
 }
 
-export const Delta = (props: { children: ReactNode }) => (
-  <span className="animate-delta-in" style={{ opacity: 0 }}>
-    {props.children}
-  </span>
-)
+export const Delta = (props: { children: ReactNode }) => {
+  const ref = useRef<HTMLSpanElement>(null)
+  useEffect(() => {
+    if (ref.current === null) return
+    ref.current.scrollIntoView()
+  }, [])
+
+  return (
+    <span className="animate-delta-in" style={{ opacity: 0 }}>
+      {props.children}
+      <span ref={ref}></span>
+    </span>
+  )
+}
 
 type ResponsesCardProp = {
   items: Exchange['responses']
 }
 
 // This can be used to show `delta` or `tool_output`
-export const ResponsesCard = (props: ResponsesCardProp) => {
+export const ResponsesCard = forwardRef((props: ResponsesCardProp) => {
   const items = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
       if ('delta' in response) {
@@ -178,18 +187,13 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       {itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null}
     </ChatBubble>
   )
-}
+})
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
-  const refExchange = useRef<HTMLDivElement>(null)
   const [startedAt] = useState<Date>(new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
 
-  const hasReasoningToShow =
-    props.responses !== undefined &&
-    props.responses.some((response) => 'reasoning' in response)
-
-  const [showFullReasoning, setShowFullReasoning] = useState<boolean>(false)
+  const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
 
   const cssCard = `flex flex-col p-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden
@@ -203,16 +207,18 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     setUpdatedAt(new Date())
   }, [props.responses.length])
 
+  const isEndOfStream = 'end_of_stream' in (props.responses?.slice(-1)[0] ?? {})
+
   useEffect(() => {
-    if (refExchange.current !== null && showFullReasoning === false) {
-      refExchange.current.scrollIntoView({ behavior: 'smooth' })
+    if (isEndOfStream) {
+      setShowFullReasoning(false)
     }
-  }, [props.responses.length, showFullReasoning])
+  }, [isEndOfStream])
 
   const maybeError = props.responses.filter((r) => 'error' in r)[0]
 
   return (
-    <div className={cssCard} ref={refExchange}>
+    <div className={cssCard}>
       <div className="p-7 text-chalkboard-70 text-center">
         {ms(Date.now() - startedAt.getTime(), { long: true })} ago
       </div>
@@ -222,7 +228,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           userAvatar={<AvatarUser src={props.userAvatar} />}
         />
       )}
-      {showFullReasoning && (
+      {showFullReasoning && props.responses.length > 0 && (
         <div>
           <ExchangeCardStatus
             responses={props.responses}
@@ -232,10 +238,24 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           />
         </div>
       )}
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
       <div
-        className="flex flex-row items-center cursor-pointer justify-end gap-2"
+        className="pl-8 flex flex-row items-center cursor-pointer justify-start gap-2"
         onClick={() => onSeeReasoning()}
       >
+        {props.responses.length > 0 && (
+          <div>
+            <button className="flex justify-center items-center">
+              {showFullReasoning ? (
+                <>
+                  Collapse <CustomIcon name="collapse" className="w-5 h-5" />
+                </>
+              ) : (
+                <>See reasoning</>
+              )}
+            </button>
+          </div>
+        )}
         <ExchangeCardStatus
           maybeError={maybeError}
           responses={props.responses}
@@ -243,19 +263,6 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           startedAt={startedAt}
           updatedAt={updatedAt}
         />
-        <div>
-          <button className="flex justify-center items-center">
-            {showFullReasoning ? (
-              <>
-                Collapse <CustomIcon name="collapse" className="w-5 h-5" />
-              </>
-            ) : (
-              <>
-                See reasoning <CustomIcon name="plus" className="w-5 h-5" />
-              </>
-            )}
-          </button>
-        </div>
       </div>
       <ResponsesCard items={props.responses} />
     </div>

@@ -451,6 +451,11 @@ export const Thinking = (props: {
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)
 
+  const reasoningThoughts =
+    props.thoughts?.filter((x: MlCopilotServerMessage) => {
+      return 'reasoning' in x
+    }) ?? []
+
   useEffect(() => {
     if (props.onlyShowImmediateThought === true) {
       return
@@ -462,8 +467,15 @@ export const Thinking = (props: {
     if (c.length === 0) {
       return
     }
-    c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
-  }, [props.thoughts?.length, props.onlyShowImmediateThought])
+
+    setTimeout(() => {
+      c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
+      setTimeout(() => {
+        if (refViewFull.current === null) return
+        refViewFull.current.scrollIntoView({ behavior: 'smooth' })
+      })
+    })
+  }, [reasoningThoughts.length, props.onlyShowImmediateThought])
 
   if (props.thoughts === undefined) {
     return (
@@ -493,12 +505,13 @@ export const Thinking = (props: {
   const ViewFull = (
     <div
       ref={refViewFull}
-      className="text-2 text-sm bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
+      style={{ maxHeight: '20lh' }}
+      className="overflow-auto text-2 text-sm bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
     >
       {componentThoughts.length > 0 ? (
         componentThoughts
       ) : (
-        <Generic content={'Thinking...'} />
+        <div className="animate-pulse animate-shimmer h-4 w-full p-1 bg-chalkboard-80 rounded"></div>
       )}
     </div>
   )
