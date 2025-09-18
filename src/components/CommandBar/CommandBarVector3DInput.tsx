@@ -109,12 +109,20 @@ function CommandBarVector3DInput({
     }
 
     // Check if all coordinates are valid
-    if (xCalculation.calcResult === 'NAN' || yCalculation.calcResult === 'NAN' || zCalculation.calcResult === 'NAN') {
+    if (
+      xCalculation.calcResult === 'NAN' ||
+      yCalculation.calcResult === 'NAN' ||
+      zCalculation.calcResult === 'NAN'
+    ) {
       return // Don't submit if any coordinate is invalid
     }
 
     // Check if all coordinates have valid AST nodes
-    if (!xCalculation.valueNode || !yCalculation.valueNode || !zCalculation.valueNode) {
+    if (
+      !xCalculation.valueNode ||
+      !yCalculation.valueNode ||
+      !zCalculation.valueNode
+    ) {
       return // Don't submit if any coordinate doesn't have a valid AST node
     }
 
