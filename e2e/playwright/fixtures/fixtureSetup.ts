@@ -24,6 +24,7 @@ import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
 import { getUtils, settingsToToml, setup } from '@e2e/playwright/test-utils'
+import type { ILog } from '@src/lib/debugger'
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -382,6 +383,14 @@ const fixturesForWeb = {
   },
 }
 
+interface IFormattedLog {
+  time: number
+  message: string
+  stack?: string
+  label: string
+  metadata: any
+}
+
 const fixturesBasedOnProcessEnvPlatform = {
   cmdBar: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new CmdBarFixture(page))
@@ -401,6 +410,38 @@ const fixturesBasedOnProcessEnvPlatform = {
   signInPage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new SignInPageFixture(page))
   },
+  _globalAfterEach: [
+    async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
+      await use() // <-- runs the actual test
+      // <-- this runs *after every test* in the entire suite
+      // console.log(`[GLOBAL afterEach] ${testInfo.title} => ${testInfo.status}`)
+
+      // if (testInfo.status === 'skipped' || testInfo.status === 'passed') {
+      //   // NO OP
+      //   return
+      // }
+
+      const engineLogs: ILog[] = await page.evaluate(
+        // @ts-ignore This value is accessible. If it isn't that is not the end of the world
+        () => window?.engineDebugger?.logs || []
+      )
+      const formattedLogs: IFormattedLog[] = engineLogs.map((log: ILog) => {
+        const newLog: IFormattedLog = {
+          ...log,
+        }
+        delete newLog['stack']
+        newLog.metadata = JSON.stringify(newLog.metadata, null, 1)
+        return newLog
+      })
+
+      const engineLogKey = testInfo.title + '-engine-logs'
+      await testInfo.attach(engineLogKey, {
+        body: JSON.stringify(formattedLogs, null, 2),
+        contentType: 'application/json',
+      })
+    },
+    { auto: true }, // ensures it always runs, no need to opt-in
+  ],
 }
 
 if (process.env.TARGET === 'web') {
