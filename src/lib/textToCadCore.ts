@@ -4,7 +4,7 @@ import type { TextToCadResponse } from '@kittycad/lib'
 type ConversationsPager = ReturnType<
   typeof ml.list_conversations_for_user_pager
 >
-type PromptsPager = ReturnType<typeof ml.list_text_to_cad_models_for_user_pager>
+type PromptsPager = ReturnType<typeof ml.list_text_to_cad_parts_for_user_pager>
 import type {
   ConversationResultsPage,
   TextToCadResponseResultsPage,
@@ -46,7 +46,7 @@ export async function getTextToCadCreateResult(
 ): Promise<TextToCadResponse | Error> {
   const client = createKCClient(token)
   const data = await kcCall(() =>
-    ml.get_text_to_cad_model_for_user({ client, id })
+    ml.get_text_to_cad_part_for_user({ client, id })
   )
 
   return data
@@ -92,7 +92,7 @@ export async function textToCadMlPromptsBelongingToConversation(
   const client = createKCClient(token)
   const key = `${token || 'cookie'}:${args.conversationId}`
   if (!promptsPagers.has(key)) {
-    const pager = ml.list_text_to_cad_models_for_user_pager({
+    const pager = ml.list_text_to_cad_parts_for_user_pager({
       client,
       conversation_id: args.conversationId,
       no_models: true,
