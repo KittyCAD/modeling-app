@@ -224,7 +224,7 @@ function CommandBarVector3DInput({
 
   return (
     <form
-      id="vector3d-form"
+      id="arg-form"
       className="mb-2"
       onSubmit={handleSubmit}
       data-can-submit={
