@@ -324,8 +324,7 @@ export function SystemIOMachineLogicListenerDesktop() {
       }
     },
 
-    (toolOutput) => {
-    }
+    (toolOutput) => {}
   )
 
   // Save the conversation id for the project id if necessary.

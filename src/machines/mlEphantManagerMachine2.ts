@@ -196,10 +196,16 @@ export const mlEphantManagerMachine2 = setup({
         assertsMlCopilotServerMessage(response)
 
         // Ignore the authorization bug
-        if ('error' in response && response.error.detail === 'Please send `{ headers: { Authorization: "Bearer <token>" } }` over this websocket.') return
+        if (
+          'error' in response &&
+          response.error.detail ===
+            'Please send `{ headers: { Authorization: "Bearer <token>" } }` over this websocket.'
+        )
+          return
 
         // Ignore the dang 'ML-Ephant Copilot' banner
-        if ('info' in response && response.info.text === '🤖 ML-ephant Copilot') return
+        if ('info' in response && response.info.text === '🤖 ML-ephant Copilot')
+          return
 
         args.input.event.refParentSend({
           type: MlEphantManagerTransitions2.ResponseReceive,

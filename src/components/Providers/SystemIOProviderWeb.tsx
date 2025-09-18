@@ -64,7 +64,10 @@ export function SystemIOMachineLogicListenerWeb() {
       })
     },
     (toolOutput) => {
-      if (toolOutput.type !== 'text_to_cad' && toolOutput.type !== 'edit_kcl_code') {
+      if (
+        toolOutput.type !== 'text_to_cad' &&
+        toolOutput.type !== 'edit_kcl_code'
+      ) {
         return
       }
       systemIOActor.send({
@@ -72,8 +75,7 @@ export function SystemIOMachineLogicListenerWeb() {
         data: {
           requestedProjectName: toolOutput.project_name ?? '',
           requestedCode: toolOutput.outputs?.[DEFAULT_PROJECT_KCL_FILE] ?? '',
-          requestedFileNameWithExtension:
-            DEFAULT_PROJECT_KCL_FILE,
+          requestedFileNameWithExtension: DEFAULT_PROJECT_KCL_FILE,
         },
       })
     }

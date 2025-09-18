@@ -5,9 +5,7 @@ import type {
 } from '@kittycad/lib'
 
 const ALPHA = 'abcdefghijklmnopqrstuvwyz     '.split('')
-const EMOJI = [
- '😀','😃','😄','😁','😆','😅','😂','🤣','🥲','🥹','☺'
-]
+const EMOJI = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '🥲', '🥹', '☺']
 
 const stringRand = (set: string[], len: number): string => {
   return new Array(len)
@@ -17,7 +15,9 @@ const stringRand = (set: string[], len: number): string => {
 }
 
 const delta = (): MlCopilotServerMessage & { delta: any } => {
-  return { delta: { delta: stringRand(ALPHA, Math.trunc(Math.random() * 50) + 10) } }
+  return {
+    delta: { delta: stringRand(ALPHA, Math.trunc(Math.random() * 50) + 10) },
+  }
 }
 
 const toolOutput = (): Extract<
@@ -70,28 +70,55 @@ const info = (): MlCopilotServerMessage & { info: any } => {
 
 const reasoning = (): Extract<MlCopilotServerMessage, { reasoning: any }> => {
   const outputs: ReasoningMessage[] = [
-    ...new Array(18)
-      .fill(undefined)
-      .map(() => ({
-        content: stringRand(EMOJI, 1) + ' ' + stringRand(ALPHA, 40),
-        type: 'text' as const,
-      })),
+    ...new Array(18).fill(undefined).map(() => ({
+      content: stringRand(EMOJI, 1) + ' ' + stringRand(ALPHA, 40),
+      type: 'text' as const,
+    })),
     { content: stringRand(ALPHA.concat('\n'), 200), type: 'kcl_docs' as const },
-    { content: stringRand(ALPHA.concat('\n'), 200), type: 'kcl_code_examples' as const },
-    { content: stringRand(ALPHA.concat('\n'), 100), type: 'feature_tree_outline' as const },
+    {
+      content: stringRand(ALPHA.concat('\n'), 200),
+      type: 'kcl_code_examples' as const,
+    },
+    {
+      content: stringRand(ALPHA.concat('\n'), 100),
+      type: 'feature_tree_outline' as const,
+    },
     {
       steps: [
-        { edit_instructions: stringRand(ALPHA, 50), filepath_to_edit: stringRand(ALPHA, 30) + '.kcl' },
-        { edit_instructions: stringRand(ALPHA, 50), filepath_to_edit: stringRand(ALPHA, 30) + '.kcl' },
-        { edit_instructions: stringRand(ALPHA, 50), filepath_to_edit: stringRand(ALPHA, 30) + '.kcl' },
+        {
+          edit_instructions: stringRand(ALPHA, 50),
+          filepath_to_edit: stringRand(ALPHA, 30) + '.kcl',
+        },
+        {
+          edit_instructions: stringRand(ALPHA, 50),
+          filepath_to_edit: stringRand(ALPHA, 30) + '.kcl',
+        },
+        {
+          edit_instructions: stringRand(ALPHA, 50),
+          filepath_to_edit: stringRand(ALPHA, 30) + '.kcl',
+        },
       ],
       type: 'design_plan',
     },
-    { code: stringRand(ALPHA.concat('\n'), 200), type: 'generated_kcl_code' as const },
+    {
+      code: stringRand(ALPHA.concat('\n'), 200),
+      type: 'generated_kcl_code' as const,
+    },
     { error: stringRand(ALPHA, 60), type: 'kcl_code_error' as const },
-    { content: stringRand(ALPHA.concat('\n'), 200), file_name: stringRand(ALPHA, 30) + '.kcl', type: 'created_kcl_file' as const },
-    { content: stringRand(ALPHA.concat('\n'), 200), file_name: stringRand(ALPHA, 30) + '.kcl', type: 'updated_kcl_file' as const },
-    { file_name: stringRand(ALPHA, 30) + '.kcl', type: 'deleted_kcl_file' as const },
+    {
+      content: stringRand(ALPHA.concat('\n'), 200),
+      file_name: stringRand(ALPHA, 30) + '.kcl',
+      type: 'created_kcl_file' as const,
+    },
+    {
+      content: stringRand(ALPHA.concat('\n'), 200),
+      file_name: stringRand(ALPHA, 30) + '.kcl',
+      type: 'updated_kcl_file' as const,
+    },
+    {
+      file_name: stringRand(ALPHA, 30) + '.kcl',
+      type: 'deleted_kcl_file' as const,
+    },
   ]
 
   return {
@@ -121,7 +148,7 @@ const generators = {
     reasoning,
     reasoning,
   ],
-  conversation: [delta]
+  conversation: [delta],
 }
 
 function generateCopilotReasoning(): MlCopilotServerMessage {
@@ -190,26 +217,26 @@ export class MockSocket extends WebSocket {
       const iterations = Math.trunc(Math.random() * 18) + 7
       let i = 0
       const loop = (fn: () => MlCopilotServerMessage) => {
-        setTimeout(
-          () => {
-            if (i >= iterations) { return }
+        setTimeout(() => {
+          if (i >= iterations) {
+            return
+          }
 
-            response =
-              i === iterations - 1
-                ? endOfStream()
-                : fn()
+          response = i === iterations - 1 ? endOfStream() : fn()
 
-            for (let cb of this.cbs.message) {
-              cb.bind(this)(
-                new MessageEvent('message', { data: JSON.stringify(response) })
-              )
-            }
+          for (let cb of this.cbs.message) {
+            cb.bind(this)(
+              new MessageEvent('message', { data: JSON.stringify(response) })
+            )
+          }
 
-            i += 1
-            loop(i < Math.floor(iterations / 1.25) ? generateCopilotReasoning : generateCopilotConversation)
-          },
-          500
-        )
+          i += 1
+          loop(
+            i < Math.floor(iterations / 1.25)
+              ? generateCopilotReasoning
+              : generateCopilotConversation
+          )
+        }, 500)
       }
 
       loop(generateCopilotReasoning)
