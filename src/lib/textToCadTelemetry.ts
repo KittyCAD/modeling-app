@@ -10,7 +10,7 @@ export async function sendTelemetry(
 ): Promise<void | Error> {
   const client = createKCClient(token)
   const res = await kcCall(() =>
-    ml.create_text_to_cad_model_feedback({ client, id, feedback })
+    ml.create_text_to_cad_part_feedback({ client, id, feedback })
   )
   if (res instanceof Error) return res
 }
