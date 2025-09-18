@@ -1,22 +1,25 @@
-import { NIL as uuidNIL } from 'uuid'
-import { type settings } from '@src/lib/settings/initialSettings'
 import type { Prompt } from '@src/lib/prompt'
-import type {
-  PromptMeta,
-  MlEphantManagerActor,
-} from '@src/machines/mlEphantManagerMachine'
-import { MlEphantManagerStates } from '@src/machines/mlEphantManagerMachine'
+import { type settings } from '@src/lib/settings/initialSettings'
 import type { SystemIOActor } from '@src/lib/singletons'
+import { systemIOActor } from '@src/lib/singletons'
+import type { BillingActor } from '@src/machines/billingMachine'
+import { BillingTransition } from '@src/machines/billingMachine'
+import type {
+  MlEphantManagerActor,
+  PromptMeta,
+} from '@src/machines/mlEphantManagerMachine'
+import {
+  MlEphantManagerStates,
+  MlEphantManagerTransitions,
+} from '@src/machines/mlEphantManagerMachine'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import type { BillingActor } from '@src/machines/billingMachine'
 import { S } from '@src/machines/utils'
-import { BillingTransition } from '@src/machines/billingMachine'
-import { systemIOActor } from '@src/lib/singletons'
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
+import { NIL as uuidNIL } from 'uuid'
 
 export const useRequestedProjectName = () =>
   useSelector(systemIOActor, (state) => state.context.requestedProjectName)
@@ -50,6 +53,11 @@ export const useProjectIdToConversationId = (
   settings2: typeof settings
 ) => {
   useEffect(() => {
+    // If the project id changes at all, we need to clear the mlephant machine state.
+    mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.ClearProjectSpecificState,
+    })
+
     const subscription = mlEphantManagerActor.subscribe((next) => {
       if (settings2.meta.id.current === undefined) {
         return

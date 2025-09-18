@@ -19,8 +19,8 @@ import {
   type CallExpressionKw,
   type PipeExpression,
   type Program,
-  pathToNodeFromRustNodePath,
   type VariableDeclaration,
+  pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
@@ -1163,6 +1163,11 @@ export function getOperationVariableName(
   ) {
     return undefined
   }
+  if (program.body.length === 0) {
+    // No program body, no variable name
+    return undefined
+  }
+
   // Find the AST node.
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
   if (pathToNode.length === 0) {

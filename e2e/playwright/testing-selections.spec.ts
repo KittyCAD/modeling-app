@@ -1,6 +1,7 @@
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 
 test.describe('Testing selections', () => {
   test('parent Solid should be select and deletable and uses custom planes to position children', async ({
@@ -399,5 +400,57 @@ profile001 = startProfile(sketch001, at = [7.49, 9.96])
       previousCodeContent
     )
     previousCodeContent = await page.locator('.cm-content').innerText()
+  })
+
+  test('"View KCL source code" right click menu in scene', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    const [clickCenter] = scene.makeMouseHelpers(0.45, 0.45, {
+      format: 'ratio',
+    })
+    const [clickTowardsBottom] = scene.makeMouseHelpers(0.5, 0.9, {
+      format: 'ratio',
+    })
+    await page.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, bracket)
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    const line = page.getByText(
+      'xLine(length = -shelfMountLength, tag = $seg03)'
+    )
+    const menuItems = page.locator('[data-testid="view-controls-menu"] button')
+    const viewKclSourceCodeOption = menuItems.filter({
+      hasText: 'View KCL source code',
+    })
+
+    await test.step('Empty scene should have disabled "View KCL source code"', async () => {
+      await clickTowardsBottom({ shouldRightClick: true })
+
+      // Verify context menu appears
+      await expect(page.getByTestId('view-controls-menu')).toBeVisible()
+
+      // "View KCL source code" should be disabled in empty scene
+      await expect(viewKclSourceCodeOption).toBeVisible()
+      await expect(viewKclSourceCodeOption).toBeDisabled()
+      await page.keyboard.press('Escape')
+    })
+
+    await test.step('Right click on bracket sample leads to the right place in code', async () => {
+      await expect(line).not.toBeVisible()
+      await clickCenter()
+      await expect(page.getByText('1 face')).toBeVisible()
+      await clickCenter({ shouldRightClick: true })
+      await expect(viewKclSourceCodeOption).toBeVisible()
+      await expect(viewKclSourceCodeOption).toBeEnabled()
+      await viewKclSourceCodeOption.click()
+      await expect(line).toBeVisible()
+    })
   })
 })

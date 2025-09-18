@@ -3,9 +3,10 @@ import ms from 'ms'
 import { SafeRenderer } from '@src/lib/markdown'
 import { Marked, escape, unescape } from '@ts-stack/markdown'
 
+import type { MlCopilotServerMessage } from '@kittycad/lib'
+import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { useEffect, useState, useRef, type ReactNode } from 'react'
-import type { Thought } from '@src/machines/mlEphantManagerMachine'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 export const Generic = (props: {
   content: string
@@ -23,28 +24,36 @@ export const KclCodeExamples = (props: { content: string }) => {
       }
     >
       <ThoughtContent>
-        <div>
-          <pre>{props.content}</pre>
-        </div>
+        <pre className="overflow-x-auto">{props.content}</pre>
       </ThoughtContent>
     </ThoughtContainer>
   )
 }
 
-export const GeneratedKclCode = (props: { code: string }) => {
+export enum EGeneratedKclCode {
+  Created = 'Created',
+  Updated = 'Updated',
+  Deleted = 'Deleted',
+}
+
+export const GeneratedKclCode = (props: {
+  operation: EGeneratedKclCode
+  code: string | undefined
+  filename: string | undefined
+}) => {
   return (
     <ThoughtContainer
       heading={
         <ThoughtHeader icon={<CustomIcon name="code" className="w-6 h-6" />}>
-          'Generated KCL Code'
+          {`${props.operation} KCL Code${props.filename ? ` (${props.filename})` : ''}`}
         </ThoughtHeader>
       }
     >
-      <ThoughtContent>
-        <div>
-          <pre>{props.code}</pre>
-        </div>
-      </ThoughtContent>
+      {props.code && (
+        <ThoughtContent>
+          <pre className="overflow-x-auto">{props.code}</pre>
+        </ThoughtContent>
+      )}
     </ThoughtContainer>
   )
 }
@@ -61,7 +70,7 @@ export const ErroneousThing = (props: { content: string }) => {
       }
     >
       <ThoughtContent>
-        return <div>{props.content}</div>
+        <pre className="overflow-x-auto">{props.content}</pre>
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -113,7 +122,7 @@ export const FeatureTreeOutline = (props: { content: string }) => {
         <ThoughtHeader
           icon={<CustomIcon name="fileExplorer" className="w-6 h-6" />}
         >
-          Design Plan
+          Feature tree outline
         </ThoughtHeader>
       }
     >
@@ -131,6 +140,30 @@ export const FeatureTreeOutline = (props: { content: string }) => {
   )
 }
 
+export const DesignPlan = (props: { steps: PlanStep[] }) => {
+  return (
+    <ThoughtContainer
+      heading={
+        <ThoughtHeader
+          icon={<CustomIcon name="fileExplorer" className="w-6 h-6" />}
+        >
+          Design Plan
+        </ThoughtHeader>
+      }
+    >
+      <ThoughtContent>
+        <ul>
+          {props.steps.map((step: PlanStep) => (
+            <li>
+              {step.filepath_to_edit}: {step.edit_instructions}
+            </li>
+          ))}
+        </ul>
+      </ThoughtContent>
+    </ThoughtContainer>
+  )
+}
+
 export const ThoughtFor = (props: {
   start: number
 }) => {
@@ -142,7 +175,7 @@ export const ThoughtHeader = (props: {
   children?: ReactNode
 }) => {
   return (
-    <div className="flex flex-row gap-2 text-chalkboard-70 font-bold items-center">
+    <div className="flex flex-row gap-2 text-2 font-bold items-center">
       <div className="flex justify-center items-center">{props.icon}</div>
       <div className="w-full">{props.children}</div>
     </div>
@@ -169,7 +202,7 @@ export const ThoughtContent = (props: { children?: ReactNode }) => {
 
   return (
     props.children && (
-      <div className="pt-4 pb-4 border-l pl-5 ml-3 border-chalkboard-50 ">
+      <div className="pt-4 pb-4 border-l pl-5 ml-3 b-3">
         <div
           className="overflow-hidden"
           style={{
@@ -196,9 +229,9 @@ export const ThoughtExpand = (props: {
   return (
     <div className="flex flex-row items-center">
       <div className="flex flex-row items-center w-full pt-4">
-        <div className="mr-2 w-full border-b border-chalkboard-40 border-dashed"></div>
+        <div className="mr-2 w-full border-b b-3 border-dashed"></div>
         <div
-          className="mr-1 flex flex-row items-center cursor-pointer text-chalkboard-90"
+          className="mr-1 flex flex-row items-center cursor-pointer text-2"
           role="feed"
           onClick={() => props.onClick()}
         >
@@ -241,6 +274,36 @@ export const Text = (props: { content: string }) => {
   )
 }
 
+export const NothingInParticular = (props: { content: string }) => {
+  const options = {
+    gfm: true,
+    breaks: true,
+    sanitize: true,
+    escape,
+    unescape,
+  }
+  return (
+    <ThoughtContainer
+      heading={
+        <ThoughtHeader icon={<CustomIcon name="brain" className="w-6 h-6" />}>
+          <span className="animate-shimmer">Thinking</span>
+        </ThoughtHeader>
+      }
+    >
+      <ThoughtContent>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: Marked.parse(props.content, {
+              renderer: new SafeRenderer(options),
+              ...options,
+            }),
+          }}
+        ></div>
+      </ThoughtContent>
+    </ThoughtContainer>
+  )
+}
+
 export const End = () => {
   return (
     <ThoughtContainer>
@@ -269,61 +332,121 @@ interface Range {
 }
 
 const fromDataToComponent = (
-  thought: Thought,
+  thought: MlCopilotServerMessage,
   options: { key?: string | number }
 ) => {
-  if (thought.end_of_stream) {
+  if ('end_of_stream' in thought) {
     return <End />
   }
 
-  switch (thought.reasoning?.type) {
-    case 'text': {
-      return (
-        <>
-          <Text key={options.key} content={thought.reasoning?.content} />
-          <Spacer />
-        </>
-      )
+  if ('reasoning' in thought) {
+    const type = thought.reasoning.type
+    switch (type) {
+      case 'text': {
+        return (
+          <>
+            <Text key={options.key} content={thought.reasoning.content} />
+            <Spacer />
+          </>
+        )
+      }
+      // Prepare to have this type come down the pipeline.
+      // We have to shut-up tsc.
+      case 'markdown': {
+        return (
+          <>
+            <NothingInParticular
+              key={options.key}
+              content={(thought.reasoning as { content: string }).content}
+            />
+          </>
+        )
+      }
+      case 'kcl_code_examples': {
+        return (
+          <KclCodeExamples
+            key={options.key}
+            content={thought.reasoning.content}
+          />
+        )
+      }
+      case 'feature_tree_outline': {
+        return (
+          <FeatureTreeOutline
+            key={options.key}
+            content={thought.reasoning.content}
+          />
+        )
+      }
+      case 'design_plan': {
+        return <DesignPlan key={options.key} steps={thought.reasoning.steps} />
+      }
+      case 'kcl_docs': {
+        return <KclDocs key={options.key} content={thought.reasoning.content} />
+      }
+      case 'kcl_code_error': {
+        return (
+          <ErroneousThing key={options.key} content={thought.reasoning.error} />
+        )
+      }
+
+      case 'generated_kcl_code': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Updated}
+            filename={undefined}
+            code={thought.reasoning.code}
+          />
+        )
+      }
+      case 'created_kcl_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Created}
+            filename={thought.reasoning.file_name}
+            code={thought.reasoning.content}
+          />
+        )
+      }
+
+      case 'updated_kcl_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Updated}
+            filename={thought.reasoning.file_name}
+            code={thought.reasoning.content}
+          />
+        )
+      }
+
+      case 'deleted_kcl_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Deleted}
+            filename={thought.reasoning.file_name}
+            code={undefined}
+          />
+        )
+      }
+
+      default:
+        const _ex: never = type
     }
-    case 'kcl_code_examples': {
-      return (
-        <KclCodeExamples
-          key={options.key}
-          content={thought.reasoning?.content}
-        />
-      )
-    }
-    case 'feature_tree_outline': {
-      return (
-        <FeatureTreeOutline
-          key={options.key}
-          content={thought.reasoning?.content}
-        />
-      )
-    }
-    case 'kcl_docs': {
-      return <KclDocs key={options.key} content={thought.reasoning?.content} />
-    }
-    case 'generated_kcl_code': {
-      return (
-        <GeneratedKclCode key={options.key} code={thought.reasoning?.code} />
-      )
-    }
-    case 'error': {
-      return (
-        <ErroneousThing
-          key={options.key}
-          content={thought.reasoning?.content}
-        />
-      )
-    }
-    default:
-      return null
   }
+
+  if ('error' in thought) {
+    return <ErroneousThing key={options.key} content={thought.error.detail} />
+  }
+
+  return null
 }
 
 export const Thinking = (props: {
-  thoughts?: Thought[]
+  thoughts?: MlCopilotServerMessage[]
   onlyShowImmediateThought: boolean
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)
@@ -358,7 +481,8 @@ export const Thinking = (props: {
     <Generic
       content={
         props.thoughts.findLast(
-          (thought) => thought.reasoning?.type === 'text'
+          (thought) =>
+            'reasoning' in thought && thought.reasoning?.type === 'text'
           // Typescript can't figure out only a `text` type or undefined is found
           // @ts-expect-error
         )?.reasoning?.content ?? 'Processing...'
@@ -369,7 +493,7 @@ export const Thinking = (props: {
   const ViewFull = (
     <div
       ref={refViewFull}
-      className="text-chalkboard-100 rounded-md bg-chalkboard-20 pl-2 pr-2 pt-4 pb-6 border border-chalkboard-30 shadow-md"
+      className="text-2 bg-2 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
     >
       {componentThoughts.length > 0 ? (
         componentThoughts

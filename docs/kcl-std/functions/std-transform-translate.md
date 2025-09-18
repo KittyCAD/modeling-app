@@ -69,7 +69,7 @@ sweepSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -99,7 +99,7 @@ cube
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -129,7 +129,7 @@ cube
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -175,7 +175,7 @@ translate(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -214,7 +214,7 @@ square(10)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -251,7 +251,7 @@ loft([profile001, profile002])
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

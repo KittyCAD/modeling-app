@@ -1,4 +1,4 @@
-import type { EntityType_type } from '@kittycad/lib/dist/types/src/models'
+import type { EntityType } from '@kittycad/lib'
 import type { ReactNode } from 'react'
 import type { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
 
@@ -24,6 +24,7 @@ const _INPUT_TYPES = [
   'selection',
   'selectionMixed',
   'boolean',
+  'vector3d',
 ] as const
 type INPUT_TYPE = typeof _INPUT_TYPES
 export interface KclExpression {
@@ -174,7 +175,7 @@ export type CommandArgumentConfig<
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
       clearSelectionFirst?: boolean
-      selectionFilter?: EntityType_type[]
+      selectionFilter?: EntityType[]
       multiple: boolean
       validation?: ({
         data,
@@ -187,7 +188,7 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selectionMixed'
       selectionTypes: Artifact['type'][]
-      selectionFilter?: EntityType_type[]
+      selectionFilter?: EntityType[]
       multiple: boolean
       allowNoSelection?: boolean
       validation?: ({
@@ -204,6 +205,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'kcl'
+      allowArrays?: boolean
       createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string
@@ -254,6 +256,42 @@ export type CommandArgumentConfig<
             machineContext?: C
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
+    }
+  | {
+      inputType: 'number'
+      min?: number
+      integer?: boolean
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => OutputType)
+      defaultValueFromContext?: (context: C) => OutputType
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+    }
+  | {
+      inputType: 'vector3d'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => OutputType)
+      defaultValueFromContext?: (context: C) => OutputType
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
 )
 
@@ -311,7 +349,7 @@ export type CommandArgument<
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
       clearSelectionFirst?: boolean
-      selectionFilter?: EntityType_type[]
+      selectionFilter?: EntityType[]
       multiple: boolean
       validation?: ({
         data,
@@ -324,7 +362,7 @@ export type CommandArgument<
   | {
       inputType: 'selectionMixed'
       selectionTypes: Artifact['type'][]
-      selectionFilter?: EntityType_type[]
+      selectionFilter?: EntityType[]
       multiple: boolean
       allowNoSelection?: boolean
       validation?: ({
@@ -341,6 +379,7 @@ export type CommandArgument<
     }
   | {
       inputType: 'kcl'
+      allowArrays?: boolean
       createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string
@@ -398,6 +437,38 @@ export type CommandArgument<
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>
           ) => OutputType)
+    }
+  | {
+      inputType: 'number'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+    }
+  | {
+      inputType: 'vector3d'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
 )
 

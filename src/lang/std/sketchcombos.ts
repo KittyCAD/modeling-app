@@ -6,10 +6,10 @@ import {
   ARG_END,
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
-  ARG_LEG,
-  ARG_HYPOTENUSE,
   ARG_END_ABSOLUTE_Y,
+  ARG_HYPOTENUSE,
   ARG_INTERSECT_TAG,
+  ARG_LEG,
   ARG_LENGTH,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
@@ -32,11 +32,12 @@ import {
 import type { createObjectExpression } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { toolTips } from '@src/lang/langHelpers'
+import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
-  fnNameToTooltip,
   fnNameToToolTipFromSegment,
+  fnNameToTooltip,
   getAngledLine,
   getAngledLineThatIntersects,
   getArc,
@@ -75,7 +76,7 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
-import { err, isErr as _isErr, isNotErr as _isNotErr } from '@src/lib/trap'
+import { isErr as _isErr, isNotErr as _isNotErr, err } from '@src/lib/trap'
 import {
   allLabels,
   getAngle,
@@ -83,7 +84,6 @@ import {
   normaliseAngle,
   roundOff,
 } from '@src/lib/utils'
-import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -2274,6 +2274,7 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     case 'UnaryExpression':
     case 'MemberExpression':
     case 'IfExpression':
+    case 'SketchVar':
       return true
     case 'TagDeclarator':
     case 'PipeSubstitution':
@@ -2284,6 +2285,7 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     case 'ArrayRangeExpression':
     case 'LabelledExpression':
     case 'AscribedExpression':
+    case 'SketchBlock':
       return false
     default:
       const _exhaustiveCheck: never = expr

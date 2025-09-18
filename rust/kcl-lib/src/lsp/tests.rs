@@ -11,8 +11,11 @@ use tower_lsp::{
 
 use crate::{
     SourceRange,
-    errors::{LspSuggestion, Suggestion},
-    lsp::test_util::{copilot_lsp_server, kcl_lsp_server},
+    errors::Suggestion,
+    lsp::{
+        LspSuggestion,
+        test_util::{copilot_lsp_server, kcl_lsp_server},
+    },
     parsing::ast::types::{Node, Program},
 };
 
@@ -3873,9 +3876,12 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("startSketchOn"));
-            assert!(value.contains(": Plane | Face"));
-            assert!(value.contains("Start a new 2-dimensional sketch on a specific"));
+            assert!(value.contains("startSketchOn"), "found `{value}`");
+            assert!(value.contains(": Plane | Face"), "found `{value}`");
+            assert!(
+                value.contains("Start a new 2-dimensional sketch on a specific"),
+                "found `{value}`"
+            );
         }
         _ => unreachable!(),
     }

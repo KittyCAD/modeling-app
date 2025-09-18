@@ -3,22 +3,18 @@
 use anyhow::Result;
 use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds::{self as kcmc, shared::RelativeTo};
-use schemars::JsonSchema;
 use serde::Serialize;
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::KclError,
-    execution::{
-        ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{NumericType, RuntimeType},
-    },
+    execution::{ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid, types::RuntimeType},
     parsing::ast::types::TagNode,
     std::{Args, extrude::do_post_extrude},
 };
 
 /// A path to sweep along.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(untagged)]
 #[allow(clippy::large_enum_variant)]
@@ -103,7 +99,6 @@ async fn inner_sweep(
             do_post_extrude(
                 sketch,
                 id.into(),
-                TyF64::new(0.0, NumericType::mm()),
                 sectional.unwrap_or(false),
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),

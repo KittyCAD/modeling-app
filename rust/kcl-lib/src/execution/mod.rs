@@ -23,26 +23,23 @@ use kcmc::{
 use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
 use crate::{
-    CompilationError, ExecError, KclErrorWithOutputs,
+    CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
     engine::{EngineManager, GridScaleBehavior},
     errors::{KclError, KclErrorDetails},
     execution::{
         cache::{CacheInformation, CacheResult},
         import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
-        types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
-    source_range::SourceRange,
 };
 
 pub(crate) mod annotations;
@@ -90,7 +87,7 @@ pub struct ExecOutcome {
     pub default_planes: Option<DefaultPlanes>,
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct DefaultPlanes {
@@ -102,7 +99,7 @@ pub struct DefaultPlanes {
     pub neg_yz: uuid::Uuid,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagIdentifier {
@@ -191,7 +188,7 @@ impl std::hash::Hash for TagIdentifier {
 }
 
 /// Engine information for a tag.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagEngineInfo {
@@ -212,7 +209,7 @@ pub enum BodyType {
 }
 
 /// Metadata.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq, Copy)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq, Copy)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Metadata {
@@ -276,7 +273,7 @@ pub struct ExecutorContext {
 }
 
 /// The executor settings.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 pub struct ExecutorSettings {
     /// Highlight edges of 3D objects?
@@ -327,7 +324,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: settings.app.fixed_size_grid,
+            fixed_size_grid: settings.modeling.fixed_size_grid,
         }
     }
 }
@@ -602,14 +599,7 @@ impl ExecutorContext {
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
         let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(
-                program
-                    .meta_settings()
-                    .ok()
-                    .flatten()
-                    .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
-            )
+            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
             GridScaleBehavior::ScaleWithZoom
         };
@@ -1102,14 +1092,7 @@ impl ExecutorContext {
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(
-                program
-                    .meta_settings()
-                    .ok()
-                    .flatten()
-                    .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
-            )
+            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
             GridScaleBehavior::ScaleWithZoom
         };
@@ -1358,7 +1341,7 @@ impl ExecutorContext {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
 pub struct ArtifactId(Uuid);
 
 impl ArtifactId {

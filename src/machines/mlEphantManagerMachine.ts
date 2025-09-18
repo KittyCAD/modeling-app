@@ -1,33 +1,36 @@
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { connectReasoningStream } from '@src/lib/reasoningWs'
-import { assertEvent, assign, setup, fromPromise } from 'xstate'
+import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 
-import { S, transitions } from '@src/machines/utils'
-import { err } from '@src/lib/trap'
 import { getKclVersion } from '@src/lib/kclVersion'
+import { err } from '@src/lib/trap'
+import { S, transitions } from '@src/machines/utils'
+import { isArray } from '@src/lib/utils'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
 import type { FileEntry, Project } from '@src/lib/project'
+import type { Selections } from '@src/lib/selections'
 import type { FileMeta } from '@src/lib/types'
 
 import type { Prompt } from '@src/lib/prompt'
 import { PromptType } from '@src/lib/prompt'
 
+import { textToCadPromptFeedback } from '@src/lib/textToCad'
 import {
-  textToCadMlConversations,
-  textToCadMlPromptsBelongingToConversation,
   getTextToCadCreateResult,
   submitTextToCadCreateRequest,
+  textToCadMlConversations,
+  textToCadMlPromptsBelongingToConversation,
 } from '@src/lib/textToCadCore'
-import { textToCadPromptFeedback } from '@src/lib/textToCad'
-import type { IResponseMlConversations } from '@src/lib/textToCadTypes'
+import type { ConversationResultsPage } from '@kittycad/lib'
 
 import {
+  constructMultiFileIterationRequestWithPromptHelpers,
   getPromptToEditResult,
   submitTextToCadMultiFileIterationRequest,
-  constructMultiFileIterationRequestWithPromptHelpers,
 } from '@src/lib/promptToEdit'
+import toast from 'react-hot-toast'
 
 const MLEPHANT_POLL_STATUSES_MS = 5000
 
@@ -62,6 +65,7 @@ export type MlEphantManagerEvents =
     }
   | {
       type: MlEphantManagerTransitions.GetPromptsBelongingToConversation
+      project: Project
       conversationId?: string
       nextPage?: string
     }
@@ -98,29 +102,11 @@ export type MlEphantManagerEvents =
   | {
       type: MlEphantManagerTransitions.AppendThoughtForPrompt
       promptId: string
-      thought: Thought
+      thought: MlCopilotServerMessage
     }
 
 // Used to specify a specific event in input properties
 type XSEvent<T> = Extract<MlEphantManagerEvents, { type: T }>
-
-export interface Thought {
-  end_of_stream?: object
-  reasoning?:
-    | { type: 'text'; content: string }
-    | { type: 'kcl_code_examples'; content: string }
-    | { type: 'kcl_docs'; content: string }
-    | { type: 'generated_kcl_code'; code: string }
-    | { type: 'feature_tree_outline'; content: string }
-    | { type: 'error'; content: string }
-  tool_output?: {
-    result: {
-      type: 'text_to_cad'
-      outputs: Record<string, string>
-      status_code: number
-    }
-  }
-}
 
 export interface PromptMeta {
   // If it's a creation prompt, it'll run some SystemIO code that
@@ -137,7 +123,7 @@ export interface PromptMeta {
 export interface MlEphantManagerContext {
   apiTokenMlephant?: string
 
-  conversations: IResponseMlConversations
+  conversations: ConversationResultsPage
 
   // The full prompt information that ids map to.
   promptsPool: Map<Prompt['id'], Prompt>
@@ -160,7 +146,7 @@ export interface MlEphantManagerContext {
   promptsMeta: Map<Prompt['id'], PromptMeta>
 
   // Thoughts for each prompt
-  promptsThoughts: Map<Prompt['id'], Thought[]>
+  promptsThoughts: Map<Prompt['id'], MlCopilotServerMessage[]>
 }
 
 export const mlEphantDefaultContext = () => ({
@@ -182,6 +168,18 @@ export const mlEphantManagerMachine = setup({
     context: {} as MlEphantManagerContext,
     events: {} as MlEphantManagerEvents,
   },
+  actions: {
+    toastError: ({ event }) => {
+      console.error(event)
+      if ('output' in event && event.output instanceof Error) {
+        toast.error(event.output.message)
+      } else if ('data' in event && event.data instanceof Error) {
+        toast.error(event.data.message)
+      } else if ('error' in event && event.error instanceof Error) {
+        toast.error(event.error.message)
+      }
+    },
+  },
   actors: {
     [MlEphantManagerTransitions.GetConversationsThatCreatedProjects]:
       fromPromise(async function (args: {
@@ -193,7 +191,7 @@ export const mlEphantManagerMachine = setup({
         if (context.apiTokenMlephant === undefined)
           return Promise.reject('missing api token')
 
-        const conversations: IResponseMlConversations | Error =
+        const conversations: ConversationResultsPage | Error =
           await textToCadMlConversations(context.apiTokenMlephant, {
             pageToken: context.conversations.next_page,
             limit: 20,
@@ -247,14 +245,29 @@ export const mlEphantManagerMachine = setup({
           return Promise.reject(result)
         }
 
-        // Clear the prompts pool and what prompts we were tracking.
         const promptsPoolNext = new Map(context.promptsPool)
+
+        // Clear what prompts we were tracking.
         let promptsBelongingToConversationNext: MlEphantManagerContext['promptsBelongingToConversation'] =
           []
+        const promptsMetaNext = new Map<Prompt['id'], PromptMeta>()
 
         result.items.reverse().forEach((prompt) => {
-          promptsPoolNext.set(prompt.id, { ...prompt, source_ranges: [] })
+          promptsPoolNext.set(prompt.id, {
+            ...prompt,
+            source_ranges:
+              'source_ranges' in prompt &&
+              isArray((prompt as any).source_ranges)
+                ? (prompt as any).source_ranges
+                : [],
+          })
           promptsBelongingToConversationNext?.push(prompt.id)
+          promptsMetaNext.set(prompt.id, {
+            // Fake Edit type, because there's no way to tell from the API
+            // what type of prompt this was.
+            type: PromptType.Edit,
+            project: args.input.event.project,
+          })
         })
 
         promptsBelongingToConversationNext =
@@ -266,6 +279,7 @@ export const mlEphantManagerMachine = setup({
           conversationId: args.input.event.conversationId,
           promptsPool: promptsPoolNext,
           promptsBelongingToConversation: promptsBelongingToConversationNext,
+          promptsMeta: promptsMetaNext,
           pageTokenPromptsBelongingToConversation: result.next_page,
         }
       }
@@ -338,7 +352,13 @@ export const mlEphantManagerMachine = setup({
         const promptsBelongingToConversation = []
         const promptsMeta = new Map()
 
-        promptsPool.set(result.id, { ...result, source_ranges: [] })
+        promptsPool.set(result.id, {
+          ...result,
+          source_ranges:
+            'source_ranges' in result && isArray((result as any).source_ranges)
+              ? (result as any).source_ranges
+              : [],
+        })
         promptsBelongingToConversation.push(result.id)
         promptsMeta.set(result.id, {
           type: PromptType.Create,
@@ -351,8 +371,6 @@ export const mlEphantManagerMachine = setup({
 
         return {
           promptsPool,
-          // When we release new types this'll be fixed and error
-          // @ts-expect-error
           conversationId: result.conversation_id,
           promptsBelongingToConversation,
           promptsMeta,
@@ -511,7 +529,6 @@ export const mlEphantManagerMachine = setup({
           // TextToCad create and iterate both return a conversation id always
           // I believe in some circumstances (legacy prompts), conversation_id
           // will be undefined or the NIL uuid.
-          // @ts-expect-error
           promptsPool.set(prompt.id, {
             ...result,
             prompt: result.prompt ?? '',
@@ -553,7 +570,7 @@ export const mlEphantManagerMachine = setup({
         // On failure we need correct dependencies still.
         onError: {
           target: MlEphantManagerStates.NeedDependencies,
-          actions: console.error,
+          actions: 'toastError',
         },
       },
     },
@@ -582,7 +599,7 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
           },
@@ -625,7 +642,7 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.GetPromptsBelongingToConversation]: {
@@ -640,23 +657,34 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.GetReasoningForPrompt]: {
               invoke: {
                 input: (args) => {
+                  type ReasoningInput = {
+                    event: Extract<
+                      MlEphantManagerEvents,
+                      { type: MlEphantManagerTransitions.GetReasoningForPrompt }
+                    >
+                    context: MlEphantManagerContext
+                  }
                   if ('output' in args.event) {
-                    return {
+                    const lastId = (
+                      args.event.output as {
+                        promptsBelongingToConversation?: string[]
+                      }
+                    ).promptsBelongingToConversation?.slice(-1)[0]
+                    const inputPayload: ReasoningInput = {
                       event: {
                         type: MlEphantManagerTransitions.GetReasoningForPrompt,
                         refParent: args.self,
-                        promptId: (
-                          args.event.output as any
-                        ).promptsBelongingToConversation.slice(-1)[0],
+                        promptId: lastId!,
                       },
                       context: args.context,
                     }
+                    return inputPayload
                   }
 
                   return {
@@ -670,7 +698,7 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.PromptCreateModel]: {
@@ -685,7 +713,7 @@ export const mlEphantManagerMachine = setup({
                   target: MlEphantManagerTransitions.GetReasoningForPrompt,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.PromptEditModel]: {
@@ -700,7 +728,7 @@ export const mlEphantManagerMachine = setup({
                   target: MlEphantManagerTransitions.GetReasoningForPrompt,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.PromptFeedback]: {
@@ -715,7 +743,7 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: assign(({ event }) => event.output),
                 },
-                onError: { target: S.Await, actions: console.error },
+                onError: { target: S.Await, actions: 'toastError' },
               },
             },
             [MlEphantManagerTransitions.AppendThoughtForPrompt]: {

@@ -1,8 +1,8 @@
 import fs from 'fs'
-import { NIL as uuidNIL } from 'uuid'
 import path from 'path'
 import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import fsp from 'fs/promises'
+import { NIL as uuidNIL } from 'uuid'
 
 import {
   createProject,
@@ -654,7 +654,7 @@ test.describe(`Project management commands`, () => {
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
       const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No results found')
+      const noProjectsMessage = page.getByText('No projects found')
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -758,7 +758,7 @@ test.describe(`Project management commands`, () => {
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
       const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No results found')
+      const noProjectsMessage = page.getByText('No projects found')
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1042,7 +1042,7 @@ test(
     })
 
     await test.step('Check that the home page is empty', async () => {
-      await expect(page.getByText('No results found')).toBeVisible()
+      await expect(page.getByText('No projects found')).toBeVisible()
     })
 
     await test.step('Check we can still create a project', async () => {
@@ -1120,7 +1120,7 @@ test(
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
-        name: 'Age',
+        name: 'Last Modified',
       })
       await expect(lastModifiedButton).toBeVisible()
       await expect(lastModifiedButton.getByLabel('arrow down')).toBeVisible()
@@ -1141,7 +1141,7 @@ test(
 
     await test.step('Reverse modified order', async () => {
       const lastModifiedButton = page.getByRole('button', {
-        name: 'Age',
+        name: 'Last Modified',
       })
       await lastModifiedButton.click()
       await expect(lastModifiedButton).toBeVisible()
@@ -1217,8 +1217,8 @@ test(
     // Constants and locators
     const projectLinks = page.getByTestId('project-link')
 
-    // expect to see text "No results found"
-    await expect(page.getByText('No results found')).toBeVisible()
+    // expect to see text "No projects found"
+    await expect(page.getByText('No projects found')).toBeVisible()
 
     await createProject({ name: 'project-000', page, returnHome: true })
     await expect(projectLinks.getByText('project-000')).toBeVisible()
@@ -1365,7 +1365,7 @@ test(
 
       await homePage.projectsLoaded()
 
-      await expect(page.getByText('No results found')).toBeVisible()
+      await expect(page.getByText('No projects found')).toBeVisible()
       await createProject({ name: 'project-000', page, returnHome: true })
       await expect(
         page.getByTestId('project-link').filter({ hasText: 'project-000' })
@@ -1432,7 +1432,7 @@ test(
     page.on('console', console.log)
 
     // Our locator constants
-    const searchInput = page.getByPlaceholder('Search')
+    const searchInput = page.getByPlaceholder('Search projects')
     const projectLinks = page.getByTestId('project-link')
 
     await test.step('Search for "basi"', async () => {

@@ -215,17 +215,6 @@ impl ts_rs::TS for TypedPath {
     }
 }
 
-impl schemars::JsonSchema for TypedPath {
-    fn schema_name() -> String {
-        "TypedPath".to_owned()
-    }
-
-    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-        // TODO: Actually generate a reasonable schema.
-        r#gen.subschema_for::<std::path::PathBuf>()
-    }
-}
-
 /// Turn `nested\foo\bar\main.kcl` or `nested/foo/bar/main.kcl`
 /// into a PathBuf that works on the host OS.
 ///

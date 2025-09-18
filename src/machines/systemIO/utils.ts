@@ -1,15 +1,15 @@
-import toast from 'react-hot-toast'
 import type { ExecState } from '@src/lang/wasm'
+import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
+import { isDesktop } from '@src/lib/isDesktop'
+import { joinOSPaths } from '@src/lib/paths'
+import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
-import { REGEXP_UUIDV4, FILE_EXT } from '@src/lib/constants'
-import { joinOSPaths } from '@src/lib/paths'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { FileEntry, Project } from '@src/lib/project'
-import type { ActorRefFrom } from 'xstate'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import toast from 'react-hot-toast'
+import type { ActorRefFrom } from 'xstate'
 
 export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
@@ -33,6 +33,7 @@ export enum SystemIOMachineActors {
   renameFileAndNavigateToFile = 'rename file and navigate to file',
   renameFolderAndNavigateToFile = 'rename folder and navigate to file',
   deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
+  copyRecursive = 'copy recursive',
   getMlEphantConversations = 'get ml-ephant conversations',
   saveMlEphantConversations = 'save ml-ephant conversations',
 }
@@ -60,6 +61,7 @@ export enum SystemIOMachineStates {
   renamingFileAndNavigateToFile = 'renamingFileAndNavigateToFile',
   renamingFolderAndNavigateToFile = 'renamingFolderAndNavigateToFile',
   deletingFileOrFolderAndNavigate = 'delete file or folder and navigate',
+  copyingRecursive = 'copying recursive',
   gettingMlEphantConversations = 'getting ml-ephant conversations',
   savingMlEphantConversations = 'saving ml-ephant conversations',
 }
@@ -104,6 +106,7 @@ export enum SystemIOMachineEvents {
   deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
   done_deleteFileOrFolderAndNavigate = donePrefix +
     'delete file or folder and navigate',
+  copyRecursive = 'copy recursive',
   getMlEphantConversations = 'get ml-ephant conversations',
   done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
   saveMlEphantConversations = 'save ml-ephant conversations',

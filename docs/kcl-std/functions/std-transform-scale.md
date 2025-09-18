@@ -74,7 +74,7 @@ sweepSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the scale function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -99,7 +99,7 @@ cube
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the scale function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -140,7 +140,7 @@ scale(parts, z = 0.5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the scale function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

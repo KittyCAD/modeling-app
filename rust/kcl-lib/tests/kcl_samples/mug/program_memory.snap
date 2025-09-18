@@ -70,9 +70,7 @@ description: Variables in memory after executing mug.kcl
               26.25
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -94,9 +92,7 @@ description: Variables in memory after executing mug.kcl
               21.25
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -118,9 +114,7 @@ description: Variables in memory after executing mug.kcl
               21.25
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -142,9 +136,7 @@ description: Variables in memory after executing mug.kcl
               26.25
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -161,9 +153,7 @@ description: Variables in memory after executing mug.kcl
               26.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -173,9 +163,7 @@ description: Variables in memory after executing mug.kcl
             "x": 26.666666666666668,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -183,25 +171,19 @@ description: Variables in memory after executing mug.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -213,9 +195,7 @@ description: Variables in memory after executing mug.kcl
             -9.0,
             26.25
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -224,16 +204,11 @@ description: Variables in memory after executing mug.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -258,9 +233,7 @@ description: Variables in memory after executing mug.kcl
             21.42584686006245
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -282,9 +255,7 @@ description: Variables in memory after executing mug.kcl
             34.379651973715696
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -306,9 +277,7 @@ description: Variables in memory after executing mug.kcl
             74.7546519737157
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -325,10 +294,10 @@ description: Variables in memory after executing mug.kcl
             74.7546519737157
           ],
           "tag": {
-            "commentStart": 1438,
-            "end": 1444,
+            "commentStart": 1465,
+            "end": 1471,
             "moduleId": 0,
-            "start": 1438,
+            "start": 1465,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -337,9 +306,7 @@ description: Variables in memory after executing mug.kcl
             87.70845708736893
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -356,9 +323,7 @@ description: Variables in memory after executing mug.kcl
             85.38430394743135
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -368,9 +333,7 @@ description: Variables in memory after executing mug.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -378,25 +341,19 @@ description: Variables in memory after executing mug.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -408,9 +365,7 @@ description: Variables in memory after executing mug.kcl
           26.666666666666668,
           23.75
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -425,9 +380,7 @@ description: Variables in memory after executing mug.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "isClosed": false
     }
   },
@@ -436,12 +389,8 @@ description: Variables in memory after executing mug.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "handleWidth": {
@@ -449,12 +398,8 @@ description: Variables in memory after executing mug.kcl
     "value": 18.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "mug": {
@@ -568,9 +513,7 @@ description: Variables in memory after executing mug.kcl
               3.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -592,9 +535,7 @@ description: Variables in memory after executing mug.kcl
               0.8
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -617,9 +558,7 @@ description: Variables in memory after executing mug.kcl
               0.00000000000000011102230246251565
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -636,9 +575,7 @@ description: Variables in memory after executing mug.kcl
               0.00000000000000011102230246251565
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -661,9 +598,7 @@ description: Variables in memory after executing mug.kcl
               0.8000000000000002
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -680,9 +615,7 @@ description: Variables in memory after executing mug.kcl
               0.8000000000000002
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -704,9 +637,7 @@ description: Variables in memory after executing mug.kcl
               12.8
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -723,9 +654,7 @@ description: Variables in memory after executing mug.kcl
               92.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -747,9 +676,7 @@ description: Variables in memory after executing mug.kcl
               92.0
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -766,9 +693,7 @@ description: Variables in memory after executing mug.kcl
               12.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -790,9 +715,7 @@ description: Variables in memory after executing mug.kcl
               5.199999999999999
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -809,9 +732,7 @@ description: Variables in memory after executing mug.kcl
               5.199999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -828,9 +749,7 @@ description: Variables in memory after executing mug.kcl
               3.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -847,9 +766,7 @@ description: Variables in memory after executing mug.kcl
               3.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -859,9 +776,7 @@ description: Variables in memory after executing mug.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -869,25 +784,19 @@ description: Variables in memory after executing mug.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -899,9 +808,7 @@ description: Variables in memory after executing mug.kcl
             0.0,
             3.2
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -910,16 +817,11 @@ description: Variables in memory after executing mug.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -928,12 +830,8 @@ description: Variables in memory after executing mug.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "mugHeight": {
@@ -941,12 +839,8 @@ description: Variables in memory after executing mug.kcl
     "value": 95.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "seg02": {
@@ -1051,9 +945,7 @@ description: Variables in memory after executing mug.kcl
               3.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1075,9 +967,7 @@ description: Variables in memory after executing mug.kcl
               0.8
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1100,9 +990,7 @@ description: Variables in memory after executing mug.kcl
               0.00000000000000011102230246251565
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1119,9 +1007,7 @@ description: Variables in memory after executing mug.kcl
               0.00000000000000011102230246251565
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1144,9 +1030,7 @@ description: Variables in memory after executing mug.kcl
               0.8000000000000002
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1163,9 +1047,7 @@ description: Variables in memory after executing mug.kcl
               0.8000000000000002
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1187,9 +1069,7 @@ description: Variables in memory after executing mug.kcl
               12.8
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1206,9 +1086,7 @@ description: Variables in memory after executing mug.kcl
               92.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1230,9 +1108,7 @@ description: Variables in memory after executing mug.kcl
               95.0
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1249,9 +1125,7 @@ description: Variables in memory after executing mug.kcl
               95.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1268,9 +1142,7 @@ description: Variables in memory after executing mug.kcl
               3.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1287,9 +1159,7 @@ description: Variables in memory after executing mug.kcl
               3.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1299,9 +1169,7 @@ description: Variables in memory after executing mug.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -1309,25 +1177,19 @@ description: Variables in memory after executing mug.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1339,9 +1201,7 @@ description: Variables in memory after executing mug.kcl
             0.0,
             3.2
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1350,16 +1210,11 @@ description: Variables in memory after executing mug.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1368,12 +1223,8 @@ description: Variables in memory after executing mug.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

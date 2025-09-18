@@ -14,14 +14,14 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExecutorContext, ImportedGeometry, ModelingCmdMeta, annotations, typed_path::TypedPath,
-        types::UnitLen,
+        types::length_from_str,
     },
     fs::FileSystem,
     parsing::ast::types::{Annotation, Node},
-    source_range::SourceRange,
 };
 
 // Zoo co-ordinate system.
@@ -234,12 +234,12 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
 }
 
 fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: SourceRange) -> Result<(), KclError> {
-    let units = UnitLen::from_str(units_str, source_range)?;
+    let units = length_from_str(units_str, source_range)?;
 
     match fmt {
-        InputFormat3d::Obj(opts) => opts.units = units.into(),
-        InputFormat3d::Ply(opts) => opts.units = units.into(),
-        InputFormat3d::Stl(opts) => opts.units = units.into(),
+        InputFormat3d::Obj(opts) => opts.units = units,
+        InputFormat3d::Ply(opts) => opts.units = units,
+        InputFormat3d::Stl(opts) => opts.units = units,
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(

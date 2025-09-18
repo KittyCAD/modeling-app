@@ -1,46 +1,17 @@
 use std::fmt;
 
 use anyhow::Result;
-use schemars::JsonSchema;
+pub use kcl_error::ModuleId;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
     execution::{EnvironmentRef, ModuleArtifactState, PreImportedGeometry, typed_path::TypedPath},
     fs::{FileManager, FileSystem},
     parsing::ast::types::{ImportPath, Node, Program},
-    source_range::SourceRange,
 };
-
-/// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(
-    Debug, Default, Ord, PartialOrd, Eq, PartialEq, Clone, Copy, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema,
-)]
-#[ts(export)]
-pub struct ModuleId(u32);
-
-impl ModuleId {
-    pub fn from_usize(id: usize) -> Self {
-        Self(u32::try_from(id).expect("module ID should fit in a u32"))
-    }
-
-    pub fn as_usize(&self) -> usize {
-        usize::try_from(self.0).expect("module ID should fit in a usize")
-    }
-
-    /// Top-level file is the one being executed.
-    /// Represented by module ID of 0, i.e. the default value.
-    pub fn is_top_level(&self) -> bool {
-        *self == Self::default()
-    }
-}
-
-impl std::fmt::Display for ModuleId {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct ModuleLoader {
@@ -91,6 +62,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "prelude" => Some(include_str!("../std/prelude.kcl")),
         "math" => Some(include_str!("../std/math.kcl")),
         "sketch" => Some(include_str!("../std/sketch.kcl")),
+        "sketch2" => Some(include_str!("../std/sketch2.kcl")),
         "turns" => Some(include_str!("../std/turns.kcl")),
         "types" => Some(include_str!("../std/types.kcl")),
         "solid" => Some(include_str!("../std/solid.kcl")),

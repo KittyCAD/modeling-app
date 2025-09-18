@@ -14,8 +14,8 @@ use super::extrude::do_post_extrude;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{NumericType, PrimitiveType, RuntimeType},
+        ExecState, ExtrudeSurface, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
+        types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{Args, extrude::NamedCapTags},
@@ -111,7 +111,7 @@ async fn fix_tags_and_references(
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
-            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state).await?;
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             // Make the sketch id the new geometry id.
@@ -119,7 +119,8 @@ async fn fix_tags_and_references(
             solid.sketch.original_id = new_geometry_id;
             solid.sketch.artifact_id = new_geometry_id.into();
 
-            fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state).await?;
+            fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state, Some(solid.value.clone()))
+                .await?;
 
             let (start_tag, end_tag) = get_named_cap_tags(solid);
 
@@ -145,10 +146,6 @@ async fn fix_tags_and_references(
             let new_solid = do_post_extrude(
                 &solid.sketch,
                 new_geometry_id.into(),
-                crate::std::args::TyF64::new(
-                    solid.height,
-                    NumericType::Known(crate::execution::types::UnitType::Length(solid.units)),
-                ),
                 solid.sectional,
                 &NamedCapTags {
                     start: start_tag.as_ref(),
@@ -226,6 +223,7 @@ async fn fix_sketch_tags_and_references(
     new_sketch: &mut Sketch,
     entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>,
     exec_state: &mut ExecState,
+    surfaces: Option<Vec<ExtrudeSurface>>,
 ) -> Result<()> {
     // Fix the path references in the sketch.
     for path in new_sketch.paths.as_mut_slice() {
@@ -238,13 +236,35 @@ async fn fix_sketch_tags_and_references(
         }
     }
 
+    // Map the surface tags to the new surface ids.
+    let mut surface_id_map: HashMap<String, &ExtrudeSurface> = HashMap::new();
+    let surfaces = surfaces.unwrap_or_default();
+    for surface in surfaces.iter() {
+        if let Some(tag) = surface.get_tag() {
+            surface_id_map.insert(tag.name.clone(), surface);
+        }
+    }
+
     // Fix the tags
     // This is annoying, in order to fix the tags we need to iterate over the paths again, but not
     // mutable borrow the paths.
     for path in new_sketch.paths.clone() {
         // Check if this path has a tag.
         if let Some(tag) = path.get_tag() {
-            new_sketch.add_tag(&tag, &path, exec_state);
+            let mut surface = None;
+            if let Some(found_surface) = surface_id_map.get(&tag.name) {
+                let mut new_surface = (*found_surface).clone();
+                let Some(new_face_id) = entity_id_map.get(&new_surface.face_id()).copied() else {
+                    anyhow::bail!(
+                        "Failed to find new face id for old face id: {:?}",
+                        new_surface.face_id()
+                    )
+                };
+                new_surface.set_face_id(new_face_id);
+                surface = Some(new_surface);
+            }
+
+            new_sketch.add_tag(&tag, &path, exec_state, surface.as_ref());
         }
     }
 

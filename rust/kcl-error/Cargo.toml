@@ -1,0 +1,22 @@
+[package]
+name = "kcl-error"
+version = "0.1.3"
+edition = "2024"
+description = "KCL error definitions"
+license = "MIT"
+
+[dependencies]
+miette = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+ts-rs = { version = "11.0.1", features = [
+  "uuid-impl",
+  "url-impl",
+  "chrono-impl",
+  "indexmap-impl",
+  "no-serde-warnings",
+  "serde-json-impl",
+] }
+
+[lints]
+workspace = true

@@ -1,8 +1,8 @@
 import { addSubtract } from '@src/lang/modifyAst/boolean'
 import { assertParse, recast } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import { enginelessExecutor } from '@src/lib/testHelpers'
 import type { Selections } from '@src/lib/selections'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 // addInterset and addUnion are not tested here, as they would be 1:1 with existing e2e tests
 // so just adding extra addSubtract cases here

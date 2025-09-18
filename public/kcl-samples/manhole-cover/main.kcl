@@ -1,0 +1,80 @@
+// Vented Manhole Cover
+// Made of cast iron, these covers are strong enough to handle high-volume foot and vehicle traffic. Use them to cover manholes on roads, parking lots, or walkways. ADA Compliant—Covers that are ADA Compliant prevent narrow wheels from getting stuck since they have 1/2" wide slots.
+
+
+
+
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+origin2D = [0, 0]
+diameter = 22 + 3 / 4
+edgeThickness = 1 + 3 / 4
+slotWidth = 0.5
+pickHoleLength = 1
+pickHoleWidth = 2
+pickHoleDepth = 1 + 1 / 8
+
+// create a sketch for the manhole cover
+manholeSketch = startSketchOn(XY)
+
+// create the circular profile for the manhole cover
+manholeProfile = startProfile(manholeSketch, at = origin2D)
+  |> circle(center = origin2D, radius = diameter / 2)
+
+// define a function for making slots, these are at a constant 125 degrees
+fn slot(start, length, width) {
+  return startProfile(manholeSketch, at = start)
+    |> angledLine(angle = 125, length = length - (width / 2))
+    |> arc(angleStart = 215, angleEnd = 35, radius = width / 2)
+    |> angledLine(angle = -55, length = length - (width / 2))
+    |> arc(angleStart = 35, angleEnd = -145, radius = width / 2)
+    |> close()
+}
+
+// create the slots
+slot1 = slot(start = [5.67437, -8.539703], length = 20.5, width = slotWidth)
+slot2 = slot(start = [3.568886, -9.673446], length = 19.954, width = slotWidth)
+slot3 = slot(start = [1.114006, -10.3082], length = 18.166, width = slotWidth)
+slot4 = slot(start = [-1.814767, -10.266164], length = 14.737, width = slotWidth)
+slot5 = slot(start = [7.46, -6.949], length = 19.954, width = slotWidth)
+slot6 = slot(start = [8.8960, -4.8592], length = 18.166, width = slotWidth)
+slot7 = slot(start = [9.8581, -2.0927], length = 14.737, width = slotWidth)
+slot8 = slot(start = [-5.779208, -8.745042], length = 7.6974, width = slotWidth)
+slot9 = slot(start = [9.7847, 2.1529], length = 7.6974, width = slotWidth)
+
+// create the manhole cover by subtracting the slots from the circular profile, extrude to the desired thickness
+manhole = manholeProfile
+  |> subtract2d(tool = [
+       slot1,
+       slot2,
+       slot3,
+       slot4,
+       slot5,
+       slot6,
+       slot7,
+       slot8,
+       slot9
+     ])
+  |> extrude(length = edgeThickness / 2, bidirectionalLength = edgeThickness / 2)
+
+// create the pick hole sketch, the pickhole is used for lifting the manhole cover
+pickHoleSketch = startSketchOn(offsetPlane(YZ, offset = diameter / 2))
+
+// create the rectangular profile for the pick hole
+pickHoleProfile = startProfile(
+       pickHoleSketch,
+       at = [
+         -pickHoleWidth / 2,
+         edgeThickness / 2 + 0.1
+       ],
+     )
+  |> xLine(length = pickHoleWidth)
+  |> yLine(length = -pickHoleDepth)
+  |> xLine(length = -pickHoleWidth)
+  |> close()
+
+// create the pick hole by extruding the rectangular profile and subtracting it from the manhole cover
+pickHole = pickHoleProfile
+  |> extrude(length = -pickHoleLength)
+  |> subtract(manhole, tools = %)

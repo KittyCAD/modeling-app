@@ -1,7 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import type { PathToNode, Program } from '@src/lang/wasm'
 import { locateVariableWithCallOrPipe } from '@src/lang/queryAst'
+import type { PathToNode, Program } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 
 export function deleteNodeInExtrudePipe(

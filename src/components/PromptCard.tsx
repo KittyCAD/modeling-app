@@ -1,19 +1,19 @@
-import ms from 'ms'
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
-import type { Prompt } from '@src/lib/prompt'
-import type { IResponseMlConversation } from '@src/lib/textToCad'
-import { useState } from 'react'
-import type { Thought } from '@src/machines/mlEphantManagerMachine'
 import { Thinking } from '@src/components/Thinking'
+import type { Prompt } from '@src/lib/prompt'
+import type { Conversation } from '@kittycad/lib'
+import ms from 'ms'
+import { useState } from 'react'
 
 // In the future we can split this out but the code is 99% the same as
 // the PromptCard, which came first.
-export interface ConvoCardProps extends IResponseMlConversation {
-  onAction?: (prompt: IResponseMlConversation['first_prompt']) => void
+export interface ConvoCardProps extends Conversation {
+  onAction?: (prompt: Conversation['first_prompt']) => void
 }
 
 export const ConvoCard = (props: ConvoCardProps) => {
-  const cssCard = `flex flex-col border rounded-md p-2 gap-2 justify-between`
+  const cssCard = `flex flex-col border b-4 rounded-md p-2 gap-2 justify-between`
   return (
     <div className={cssCard}>
       <div className="flex flex-row justify-between gap-2">
@@ -39,9 +39,9 @@ export const ConvoCard = (props: ConvoCardProps) => {
   )
 }
 
-export interface PromptCardProps extends Prompt {
+export type PromptCardProps = Prompt & {
   disabled?: boolean
-  thoughts?: Thought[]
+  thoughts?: MlCopilotServerMessage[]
   userAvatar?: string
   onSeeReasoning: (id: Prompt['id']) => void
   onAction?: (id: Prompt['id'], prompt: Prompt['prompt']) => void
@@ -97,7 +97,7 @@ export const PromptCardActionButton = (props: {
 }) => {
   return (
     <button
-      className="rounded-full bg-gray-100"
+      className="rounded-full bg-2 hover:bg-6 text-default hover:text-5"
       onClick={props.onClick}
       disabled={
         props.disabled ||
@@ -112,7 +112,7 @@ export const PromptCardActionButton = (props: {
 
 export const PromptCardStatus = (props: {
   id: Prompt['id']
-  thoughts?: Thought[]
+  thoughts?: MlCopilotServerMessage[]
   status: Prompt['status']
   onlyShowImmediateThought: boolean
   startedAt: Prompt['started_at']
@@ -179,8 +179,9 @@ export const AvatarUser = (props: { src?: string }) => {
 }
 
 export const PromptCard = (props: PromptCardProps) => {
+  const hasReasoningToShow =
+    props.thoughts !== undefined && props.thoughts.length > 0
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(false)
-  const [showSeeReasoning, setShowSeeReasoning] = useState<boolean>(false)
 
   const cssCard = `flex flex-col p-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden
@@ -194,8 +195,8 @@ export const PromptCard = (props: PromptCardProps) => {
 
   const cssPrompt =
     props.status !== 'failed'
-      ? 'break-all shadow-sm bg-chalkboard-20 text-chalkboard-100 border rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
-      : 'break-all shadow-sm bg-chalkboard-20 text-chalkboard-60 border rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
+      ? 'select-text whitespace-pre-line hyphens-auto shadow-sm bg-2 text-default border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
+      : 'select-text whitespace-pre-line hyphens-auto shadow-sm bg-2 text-2 border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
 
   return (
     <div className={cssCard}>
@@ -207,7 +208,9 @@ export const PromptCard = (props: PromptCardProps) => {
             disabled={props.disabled}
             onFeedback={(...args) => props.onFeedback?.(...args)}
           />
-          <div className={cssPrompt}>{props.prompt}</div>
+          <div style={{ wordBreak: 'break-word' }} className={cssPrompt}>
+            {props.prompt}
+          </div>
         </div>
         <div className="w-fit-content">
           <AvatarUser src={props.userAvatar} />
@@ -226,15 +229,10 @@ export const PromptCard = (props: PromptCardProps) => {
           />
         </div>
       )}
-      <div className="flex flex-row justify-end gap-2 items-center pl-2 pr-10">
-        <div
-          className={`flex flex-row gap-2 ${showSeeReasoning ? 'hidden' : ''}`}
-          onMouseEnter={() =>
-            props.thoughts !== undefined &&
-            props.thoughts.length > 0 &&
-            setShowSeeReasoning(true)
-          }
-        >
+      <div
+        className={`${hasReasoningToShow ? 'group/reasoning' : ''} relative pl-2 pr-10`}
+      >
+        <div className="flex flex-row justify-end gap-2 group-hover/reasoning:invisible">
           {props.onAction !== undefined && (
             <PromptCardActionButton
               status={props.status}
@@ -253,10 +251,11 @@ export const PromptCard = (props: PromptCardProps) => {
           />
         </div>
         <div
-          onMouseLeave={() => setShowSeeReasoning(false)}
-          className={showSeeReasoning || showFullReasoning ? '' : 'hidden'}
+          className={
+            'hidden group-hover/reasoning:block absolute right-0 top-1/2 -translate-y-1/2'
+          }
         >
-          <button className="w-full p-2" onClick={() => onSeeReasoning()}>
+          <button className="w-fit p-2" onClick={() => onSeeReasoning()}>
             {showFullReasoning ? 'Hide reasoning' : 'See reasoning'}
           </button>
         </div>

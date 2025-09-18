@@ -4,16 +4,16 @@ import type { StateFrom } from 'xstate'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
+  type Selections,
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
-  type Selections,
 } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 
 const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>

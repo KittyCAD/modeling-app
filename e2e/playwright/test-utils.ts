@@ -1,19 +1,19 @@
 import path from 'path'
 import * as TOML from '@iarna/toml'
-import type { Models } from '@kittycad/lib'
+import type { OutputFormat3d } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import { COOKIE_NAME, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import { IS_PLAYWRIGHT_KEY, COOKIE_NAME_PREFIX } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
+import dotenv from 'dotenv'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
-import dotenv from 'dotenv'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
@@ -24,8 +24,8 @@ export const NUMBER_REGEXP = '((-)?\\d+(\\.\\d+)?)'
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
-import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
@@ -59,14 +59,6 @@ export const TEST_COLORS: { [key: string]: TestColor } = {
 export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
 
 export const deg = (Math.PI * 2) / 360
-
-export const commonPoints = {
-  startAt: '[-12.99, -10.63]',
-  num1: 8.2,
-  num2: 14.44,
-  /** The Y-value of a common lineTo move we perform in tests */
-  num3: -2.44,
-} as const
 
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
@@ -810,7 +802,7 @@ export interface Paths {
 }
 
 export const doExport = async (
-  output: Models['OutputFormat3d_type'],
+  output: OutputFormat3d,
   rootDir: string,
   page: Page,
   cmdBar: CmdBarFixture,
@@ -919,7 +911,6 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(
   context: BrowserContext,
   page: Page,
-  testDir: string,
   testInfo?: TestInfo
 ) {
   await page.addInitScript(
@@ -928,7 +919,6 @@ export async function setup(
       settingsKey,
       settings,
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR,
       PERSIST_MODELING_CONTEXT,
     }) => {
       localStorage.clear()
@@ -940,7 +930,9 @@ export async function setup(
       )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
-      localStorage.setItem('PLAYWRIGHT_TEST_DIR', PLAYWRIGHT_TEST_DIR)
+      window.addEventListener('beforeunload', () => {
+        localStorage.removeItem(IS_PLAYWRIGHT_KEY)
+      })
     },
     {
       token,
@@ -955,10 +947,6 @@ export async function setup(
             },
             ...TEST_SETTINGS.project,
             onboarding_status: 'dismissed',
-            // Tests were written before this setting existed.
-            // It's true by default because it's a good user experience, but
-            // these tests require it to be false.
-            fixed_size_grid: false,
           },
           project: {
             ...TEST_SETTINGS.project,
@@ -967,14 +955,13 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: testDir,
       PERSIST_MODELING_CONTEXT,
     }
   )
 
   await context.addCookies([
     {
-      name: COOKIE_NAME,
+      name: COOKIE_NAME_PREFIX + 'dev.zoo.dev',
       value: token,
       path: '/',
       domain: 'localhost',
@@ -1067,7 +1054,7 @@ export async function createProject({
 
 async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
-  await expect(page.getByRole('tab', { name: 'Projects' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {
