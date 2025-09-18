@@ -106,7 +106,6 @@ export const ClientSideScene = ({
     container.appendChild(canvas)
     container.appendChild(sceneInfra.labelRenderer.domElement)
 
-    sceneInfra.onCanvasResized()
     sceneInfra.animate()
 
     const onMouseMove = toSync(sceneInfra.onMouseMove, reportRejection)
