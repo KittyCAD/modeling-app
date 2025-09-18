@@ -20,19 +20,17 @@ const toolRegistry: Record<EquipTool, any> = {
 
 // Helper function to get tool machine
 const getToolMachine = (tool: EquipTool) =>
-  toolRegistry[tool] || centerRectToolMachine
+  toolRegistry[tool] || dimensionToolMachine
 
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'update selection'; data?: SetSelections }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
-  | { type: 'add point'; data: [x: number, y: number] }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'Set Segment Overlays'; data: SegmentOverlayPayload }
   | { type: 'Delete segment'; data: PathToNode }
   | { type: 'change tool'; data: { tool: EquipTool } }
-  | { type: 'Center camera on selection' }
   | { type: 'click in scene'; data: [x: number, y: number] }
 
 export const sketchSolveMachine = setup({
@@ -49,9 +47,6 @@ export const sketchSolveMachine = setup({
     }),
     'send updated selection to move tool': sendTo('moveTool', {
       type: 'update selection',
-    }),
-    'request unequip': sendTo('toolInvoker', {
-      type: 'unequip',
     }),
   },
   actors: {
