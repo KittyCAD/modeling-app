@@ -13,7 +13,6 @@ import {
   MlEphantManagerStates2,
   MlEphantManagerTransitions2,
 } from '@src/machines/mlEphantManagerMachine2'
-import type { Prompt } from '@src/lib/prompt'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingMachine'

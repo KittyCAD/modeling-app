@@ -147,6 +147,7 @@ const generators = {
     reasoning,
     reasoning,
     reasoning,
+    error,
   ],
   conversation: [delta],
 }
@@ -189,7 +190,9 @@ export class MockSocket extends WebSocket {
   constructor(public url: string) {
     try {
       super('') // This WILL throw. '' is not a valid URL.
-    } catch (e: unknown) {}
+    } catch (e: unknown) {
+      console.error(e)
+    }
   }
 
   addEventListener<K extends keyof WebSocketEventMap>(

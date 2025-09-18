@@ -1,4 +1,3 @@
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { AppStateProvider } from '@src/AppState'
 import LspProvider from '@src/components/LspProvider'
 import { MachineManagerProvider } from '@src/components/MachineManagerProvider'

@@ -1,9 +1,7 @@
 import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
-import type { Prompt } from '@src/lib/prompt'
 import type {
-  MlEphantManagerContext2,
   Conversation,
   Exchange,
 } from '@src/machines/mlEphantManagerMachine2'
@@ -179,9 +177,8 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
         top: refScroll.current.scrollHeight,
         behavior: 'smooth',
       })
-    }, ANIMATION_TIME / 4) // This is a heuristic. I'm sorry. We'd need to
-    // hook up "animation is done" otherwise to all children.
-  }, [props.conversation?.exchanges.length, autoScroll])
+    })
+  }, [props.conversation?.exchanges, autoScroll])
 
   useEffect(() => {
     if (autoScroll === false) {

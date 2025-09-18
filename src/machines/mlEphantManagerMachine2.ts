@@ -2,12 +2,11 @@ import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
 } from '@kittycad/lib'
-import { assertEvent, assign, setup, fromPromise, sendTo } from 'xstate'
+import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import { createActorContext } from '@xstate/react'
 import type { ActorRefFrom } from 'xstate'
 
 import { S, transitions } from '@src/machines/utils'
-import { err } from '@src/lib/trap'
 import { getKclVersion } from '@src/lib/kclVersion'
 
 import { Socket } from '@src/lib/utils'
@@ -98,25 +97,21 @@ export const mlEphantDefaultContext2 = (args: {
   lastMessageId: undefined,
 })
 
-function assertsString(x: unknown): asserts x is string {
-  if (typeof x !== 'string') {
-    throw new Error('Expected payload to be of type string')
-  }
+function isString(x: unknown): x is string {
+  return x === 'string'
 }
 
-function assertsPresent<T>(x: undefined | T): asserts x is T {
-  if (x === null || x === undefined) {
-    throw new Error('Expected value to be present')
-  }
+function isPresent<T>(x: undefined | T): x is T {
+  return x !== null && x !== undefined
 }
 
 function xor(a: boolean, b: boolean): boolean {
   return (a && !b) || (!a && b)
 }
 
-function assertsMlCopilotServerMessage(
+function isMlCopilotServerMessage(
   response: unknown
-): asserts response is MlCopilotServerMessage {
+): response is MlCopilotServerMessage {
   if (
     typeof response === 'object' &&
     response !== null &&
@@ -143,8 +138,9 @@ function assertsMlCopilotServerMessage(
       )
     )
   ) {
-    throw new Error('response not a MlCopilotServerMessage')
+    return false
   }
+  return true
 }
 
 type XSInput<T> = {
@@ -184,16 +180,18 @@ export const mlEphantManagerMachine2 = setup({
       )
 
       ws.addEventListener('message', function (event: MessageEvent<any>) {
-        assertsString(event.data)
+        if (!isString(event.data))
+          return console.error(new Error('Expected payload to be a string'))
 
         let response: unknown
         try {
           response = JSON.parse(event.data)
         } catch (e: unknown) {
-          throw e
+          return console.error(e)
         }
 
-        assertsMlCopilotServerMessage(response)
+        if (!isMlCopilotServerMessage(response))
+          return new Error('Not a MlCopilotServerMessage')
 
         // Ignore the authorization bug
         if (
@@ -224,7 +222,8 @@ export const mlEphantManagerMachine2 = setup({
     [MlEphantManagerTransitions2.ContextNew]: fromPromise(async function (
       args: XSInput<MlEphantManagerTransitions2.ContextNew>
     ): Promise<Partial<MlEphantManagerContext2>> {
-      assertsPresent<WebSocket>(args.input.context.ws)
+      if (!isPresent<WebSocket>(args.input.context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
 
       args.input.context.ws.send(
         JSON.stringify({
@@ -247,7 +246,8 @@ export const mlEphantManagerMachine2 = setup({
       async function (
         args: XSInput<MlEphantManagerTransitions2.ConversationFetch>
       ): Promise<Partial<MlEphantManagerContext2>> {
-        assertsPresent<WebSocket>(args.input.context.ws)
+        if (!isPresent<WebSocket>(args.input.context.ws))
+          return Promise.reject(new Error('WebSocket not present'))
 
         return {
           conversation: {
@@ -261,8 +261,10 @@ export const mlEphantManagerMachine2 = setup({
       args: XSInput<MlEphantManagerTransitions2.MessageSend>
     ): Promise<Partial<MlEphantManagerContext2>> {
       const { context, event } = args.input
-      assertsPresent<WebSocket>(context.ws)
-      assertsPresent<Conversation>(context.conversation)
+      if (!isPresent<WebSocket>(context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
+      if (!isPresent<Conversation>(context.conversation))
+        return Promise.reject(new Error('Conversation not present'))
 
       const requestData = constructMultiFileIterationRequestWithPromptHelpers({
         // TODO: NEED CONVO ID AGAIN
