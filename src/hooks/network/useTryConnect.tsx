@@ -85,6 +85,10 @@ const attemptToConnectToEngine = async ({
         // Scene is ready, start firing events!
         videoRef.current.srcObject = engineCommandManager.connection.mediaStream
         setIsSceneReady(true)
+        EngineDebugger.addLog({
+          label: 'attemptToConnectToEngine',
+          message: 'setIsSceneReady(true)',
+        })
 
         const settings = await jsAppSettings()
         EngineDebugger.addLog({
@@ -189,6 +193,10 @@ async function tryConnecting({
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAtttempts.current = 0
           setShowManualConnect(false)
+          EngineDebugger.addLog({
+            label: 'tryConnecting',
+            message: 'setAppState({ isStreamAcceptingInput: true })',
+          })
           resolve('connected')
         } catch (e) {
           isConnecting.current = false
