@@ -4509,7 +4509,7 @@ export const modelingMachine = setup({
       },
     },
 
-    sketchMode: {
+    sketchSolveMode: {
       invoke: {
         src: sketchSolveMachine,
         input: ({ context }) => ({
@@ -4898,7 +4898,7 @@ export const modelingMachine = setup({
     'animating to sketch solve mode': {
       invoke: {
         src: 'animate-to-sketch-solve',
-        onDone: 'sketchMode',
+        onDone: 'sketchSolveMode',
         onError: 'Sketch no face',
         input: ({ event }) => {
           if (event.type !== 'Select sketch solve plane') return undefined
