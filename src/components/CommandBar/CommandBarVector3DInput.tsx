@@ -132,11 +132,11 @@ function CommandBarVector3DInput({
         data-testid="vector3d-form"
         onSubmit={handleSubmit}
       >
-        <div className="flex items-center mx-4 mt-4 mb-2">
-          <span className="capitalize px-2 py-1 rounded-l bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80">
+        <div className="flex items-center mx-4 mt-4 mb-2 min-w-0">
+          <span className="capitalize px-2 py-1 rounded-l bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 flex-shrink-0">
             {arg.displayName || arg.name}
           </span>
-          <div className="flex flex-1">
+          <div className="flex flex-1 min-w-0">
             <input
               ref={xInputRef}
               data-testid="vector3d-x-input"
@@ -146,7 +146,7 @@ function CommandBarVector3DInput({
               value={x}
               onChange={(e) => setX(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, yInputRef)}
-              className="flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 focus:outline-none text-center"
+              className="w-0 flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 focus:outline-none text-center min-w-0"
             />
             <input
               ref={yInputRef}
@@ -157,7 +157,7 @@ function CommandBarVector3DInput({
               value={y}
               onChange={(e) => setY(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, zInputRef)}
-              className="flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 focus:outline-none text-center border-l border-l-chalkboard-100 dark:border-l-chalkboard-80"
+              className="w-0 flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 focus:outline-none text-center border-l border-l-chalkboard-100 dark:border-l-chalkboard-80 min-w-0"
             />
             <input
               ref={zInputRef}
@@ -168,7 +168,7 @@ function CommandBarVector3DInput({
               value={z}
               onChange={(e) => setZ(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e)}
-              className="flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 focus:outline-none text-center border-l border-l-chalkboard-100 dark:border-l-chalkboard-80"
+              className="w-0 flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 focus:outline-none text-center border-l border-l-chalkboard-100 dark:border-l-chalkboard-80 min-w-0"
             />
           </div>
         </div>
