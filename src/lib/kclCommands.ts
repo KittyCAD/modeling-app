@@ -2,8 +2,14 @@ import type { UnitLength } from '@kittycad/lib'
 import toast from 'react-hot-toast'
 
 import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { addModuleImport } from '@src/lang/modifyAst'
-import { changeDefaultUnits } from '@src/lang/wasm'
+import { addModuleImport, insertNamedConstant } from '@src/lang/modifyAst'
+import {
+  changeDefaultUnits,
+  isPathToNode,
+  type PathToNode,
+  type SourceRange,
+  type VariableDeclarator,
+} from '@src/lang/wasm'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -16,6 +22,10 @@ import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -177,6 +187,150 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           name: commandProps.projectData.project?.name || '',
           isRestrictedToOrg: input?.event.data.isRestrictedToOrg ?? false,
           password: input?.event.data.password,
+        }).catch(reportRejection)
+      },
+    },
+    {
+      name: 'parameter.create',
+      displayName: 'Create parameter',
+      description: 'Add a named constant to use in geometry',
+      groupId: 'code',
+      icon: 'make-variable',
+      needsReview: false,
+      args: {
+        value: {
+          inputType: 'kcl',
+          required: true,
+          createVariable: 'force',
+          variableName: 'myParameter',
+          defaultValue: '5',
+        },
+      },
+      onSubmit: (data) => {
+        if (!data) {
+          return new Error('No input provided')
+        }
+
+        const { value } = data
+        if (!('variableName' in value)) {
+          return new Error('variable name is required')
+        }
+        const newAst = insertNamedConstant({
+          node: kclManager.ast,
+          newExpression: value,
+        })
+        updateModelingState(newAst, EXECUTION_TYPE_REAL, {
+          kclManager,
+          editorManager,
+          codeManager,
+        }).catch(reportRejection)
+      },
+    },
+    {
+      name: 'parameter.edit',
+      displayName: 'Edit parameter',
+      description: 'Edit the value of a named constant',
+      groupId: 'code',
+      icon: 'make-variable',
+      needsReview: false,
+      args: {
+        nodeToEdit: {
+          displayName: 'Name',
+          inputType: 'options',
+          valueSummary: (nodeToEdit: PathToNode) => {
+            const node = getNodeFromPath<VariableDeclarator>(
+              kclManager.ast,
+              nodeToEdit,
+              'VariableDeclarator',
+              true
+            )
+            if (err(node) || node.node.type !== 'VariableDeclarator')
+              return 'Error'
+            return node.node.id.name || ''
+          },
+          required: true,
+          options() {
+            return (
+              Object.entries(kclManager.execState.variables)
+                // TODO: @franknoirot && @jtran would love to make this go away soon 🥺
+                .filter(([_, variable]) => variable?.type === 'Number')
+                .map(([name, _variable]) => {
+                  const node = getVariableDeclaration(kclManager.ast, name)
+                  if (node === undefined) return
+                  const range: SourceRange = [
+                    node.start,
+                    node.end,
+                    node.moduleId,
+                  ]
+                  const pathToNode = getNodePathFromSourceRange(
+                    kclManager.ast,
+                    range
+                  )
+                  return {
+                    name,
+                    value: pathToNode,
+                  }
+                })
+                .filter((a) => !!a) || []
+            )
+          },
+        },
+        value: {
+          inputType: 'kcl',
+          required: true,
+          defaultValue(commandBarContext) {
+            const nodeToEdit = commandBarContext.argumentsToSubmit.nodeToEdit
+            if (!nodeToEdit || !isPathToNode(nodeToEdit)) return '5'
+            const node = getNodeFromPath<VariableDeclarator>(
+              kclManager.ast,
+              nodeToEdit
+            )
+            if (err(node) || node.node.type !== 'VariableDeclarator')
+              return 'Error'
+            const variableName = node.node.id.name || ''
+            if (typeof variableName !== 'string') return '5'
+            const variableNode = getVariableDeclaration(
+              kclManager.ast,
+              variableName
+            )
+            if (!variableNode) return '5'
+            const code = codeManager.code.slice(
+              variableNode.declaration.init.start,
+              variableNode.declaration.init.end
+            )
+            return code
+          },
+          createVariable: 'disallow',
+        },
+      },
+      onSubmit: (data) => {
+        if (!data) {
+          return new Error('No input provided')
+        }
+
+        // Get the variable AST node to edit
+        const { nodeToEdit, value } = data
+        const newAst = structuredClone(kclManager.ast)
+        const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
+          newAst,
+          nodeToEdit
+        )
+
+        if (
+          err(variableNode) ||
+          variableNode.node.type !== 'VariableDeclarator' ||
+          !variableNode.node
+        ) {
+          return new Error('No variable found, this is a bug')
+        }
+
+        // Mutate the variable's value
+        variableNode.node.init = value.valueAst
+
+        updateModelingState(newAst, EXECUTION_TYPE_REAL, {
+          codeManager,
+          editorManager,
+          kclManager,
         }).catch(reportRejection)
       },
     },
