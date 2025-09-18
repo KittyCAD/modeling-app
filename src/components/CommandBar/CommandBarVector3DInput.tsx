@@ -155,6 +155,7 @@ function CommandBarVector3DInput({
   useEffect(() => {
     if (xInputRef.current) {
       xInputRef.current.focus()
+      xInputRef.current.select()
     }
   }, [])
 
@@ -252,6 +253,7 @@ function CommandBarVector3DInput({
               placeholder="X coordinate"
               value={x}
               onChange={(e) => setX(e.target.value)}
+              onFocus={(e) => e.target.select()}
               onKeyDown={(e) => handleKeyDown(e, yInputRef)}
               className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
             />
@@ -288,6 +290,7 @@ function CommandBarVector3DInput({
               placeholder="Y coordinate"
               value={y}
               onChange={(e) => setY(e.target.value)}
+              onFocus={(e) => e.target.select()}
               onKeyDown={(e) => handleKeyDown(e, zInputRef)}
               className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
             />
@@ -324,6 +327,7 @@ function CommandBarVector3DInput({
               placeholder="Z coordinate"
               value={z}
               onChange={(e) => setZ(e.target.value)}
+              onFocus={(e) => e.target.select()}
               onKeyDown={(e) => handleKeyDown(e)}
               className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
             />
