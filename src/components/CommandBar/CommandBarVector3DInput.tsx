@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import { createArrayExpression, createLiteral } from '@src/lang/create'
+import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
 
 function CommandBarVector3DInput({
   arg,
@@ -75,31 +75,35 @@ function CommandBarVector3DInput({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    const xNum = parseFloat(x) || 0
-    const yNum = parseFloat(y) || 0
-    const zNum = parseFloat(z) || 0
-
-    // Basic validation - ensure all values are valid numbers
-    if (window.isNaN(xNum) || window.isNaN(yNum) || window.isNaN(zNum)) {
-      return // Don't submit if any value is invalid
+    // Validate that all values are not empty
+    if (!x.trim() || !y.trim() || !z.trim()) {
+      return // Don't submit if any value is empty
     }
 
-    // Create AST array expression from the numbers
-    const arrayElements = [
-      createLiteral(xNum),
-      createLiteral(yNum),
-      createLiteral(zNum),
-    ]
-    const arrayExpression = createArrayExpression(arrayElements)
+    // Use KCL expression parsing to handle scientific notation properly
+    const vectorExpression = `[${x.trim()}, ${y.trim()}, ${z.trim()}]`
+    
+    // Calculate the KCL expression asynchronously
+    getCalculatedKclExpressionValue(vectorExpression, true)
+      .then((result) => {
+        if (result instanceof Error || 'errors' in result || !result.astNode) {
+          // Validation failed - could show an error message here
+          console.error('Invalid vector expression:', vectorExpression)
+          return
+        }
 
-    // Create KclCommandValue with the array expression AST
-    const kclValue: KclCommandValue = {
-      valueAst: arrayExpression,
-      valueText: `[${xNum}, ${yNum}, ${zNum}]`,
-      valueCalculated: `[${xNum}, ${yNum}, ${zNum}]`,
-    }
+        // Create KclCommandValue with the properly parsed AST
+        const kclValue: KclCommandValue = {
+          valueAst: result.astNode,
+          valueText: vectorExpression,
+          valueCalculated: result.valueAsString,
+        }
 
-    onSubmit(kclValue)
+        onSubmit(kclValue)
+      })
+      .catch((error) => {
+        console.error('Error parsing vector expression:', error)
+      })
   }
 
   function handleKeyDown(
