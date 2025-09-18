@@ -812,6 +812,11 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown(options?: ManagerTearDown) {
+    if (this.callbackOnUnitTestingConnection) {
+      // VITEST NO OP
+      return
+    }
+
     if (!this.started) {
       EngineDebugger.addLog({
         label: 'connectionManager',
