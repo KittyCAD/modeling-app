@@ -252,7 +252,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - namespace-profile-ubuntu-2-cores
+          - namespace-profile-ubuntu-8-cores
           - namespace-profile-macos-6-cores
       fail-fast: false
     runs-on: ${{ matrix.os }}
