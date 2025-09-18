@@ -78,7 +78,6 @@ export const ClientSideScene = ({
     typeof useSettings
   >['modeling']['enableTouchControls']['current']
 }) => {
-  const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
 
@@ -97,49 +96,36 @@ export const ClientSideScene = ({
     )
   }, [state?.context?.selectionRanges?.otherSelections])
 
+  const containerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (!canvasRef.current) return
-    const canvas = canvasRef.current
-    canvas.appendChild(sceneInfra.renderer.domElement)
-    canvas.appendChild(sceneInfra.labelRenderer.domElement)
+    const container = containerRef.current
+    if (!container) {
+      return
+    }
+    const canvas = sceneInfra.renderer.domElement
+    container.appendChild(canvas)
+    container.appendChild(sceneInfra.labelRenderer.domElement)
+
     sceneInfra.onCanvasResized()
     sceneInfra.animate()
-    canvas.addEventListener(
+
+    container.addEventListener(
       'mousemove',
       toSync(sceneInfra.onMouseMove, reportRejection)
     )
-    canvas.addEventListener('mousedown', sceneInfra.onMouseDown)
-    canvas.addEventListener(
+    container.addEventListener('mousedown', sceneInfra.onMouseDown)
+    container.addEventListener(
       'mouseup',
       toSync(sceneInfra.onMouseUp, reportRejection)
     )
-    sceneInfra.setSend(send)
-    engineCommandManager.modelingSend = send
-    return () => {
-      canvas?.removeEventListener(
-        'mousemove',
-        toSync(sceneInfra.onMouseMove, reportRejection)
-      )
-      canvas?.removeEventListener('mousedown', sceneInfra.onMouseDown)
-      canvas?.removeEventListener(
-        'mouseup',
-        toSync(sceneInfra.onMouseUp, reportRejection)
-      )
-      sceneEntitiesManager.tearDownSketch({ removeAxis: true })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
 
     // Detect canvas size changes
     const observer = new ResizeObserver(() => {
+      // This is called initially too, not just on resize
       sceneInfra.onCanvasResized()
       sceneInfra.camControls.onWindowResize()
     })
-    observer.observe(canvas)
+    observer.observe(container)
 
     // Detect dpr changes
     let media = window.matchMedia(
@@ -155,10 +141,26 @@ export const ClientSideScene = ({
     }
     media.addEventListener('change', handleChange)
 
+    // send
+    sceneInfra.setSend(send)
+    engineCommandManager.modelingSend = send
+
     return () => {
+      container.removeEventListener(
+        'mousemove',
+        toSync(sceneInfra.onMouseMove, reportRejection)
+      )
+      container.removeEventListener('mousedown', sceneInfra.onMouseDown)
+      container.removeEventListener(
+        'mouseup',
+        toSync(sceneInfra.onMouseUp, reportRejection)
+      )
+      sceneEntitiesManager.tearDownSketch({ removeAxis: true })
+
       observer.disconnect()
       media.removeEventListener('change', handleChange)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   let cursor = 'default'
@@ -191,7 +193,7 @@ export const ClientSideScene = ({
   return (
     <>
       <div
-        ref={canvasRef}
+        ref={containerRef}
         style={{ cursor: cursor }}
         data-testid="client-side-scene"
         className={`absolute inset-0 h-full w-full transition-all duration-300 ${
