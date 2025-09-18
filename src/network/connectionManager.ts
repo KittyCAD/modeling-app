@@ -437,7 +437,11 @@ export class ConnectionManager extends EventTarget {
     command: EngineCommand,
     forceWebsocket = false
   ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
-    if (this.connection === undefined) {
+    if (
+      this.connection === undefined ||
+      !this.started ||
+      this.connection.websocket?.readyState !== WebSocket.OPEN
+    ) {
       EngineDebugger.addLog({
         label: 'sendSceneCommand',
         message: 'connection is undefined, you are too early',
@@ -447,8 +451,6 @@ export class ConnectionManager extends EventTarget {
       })
       return Promise.resolve(null)
     }
-
-    // TODO: connection.isReady()? No.
 
     if (
       !(
