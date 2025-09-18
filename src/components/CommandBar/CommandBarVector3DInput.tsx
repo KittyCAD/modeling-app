@@ -3,6 +3,9 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { Spinner } from '@src/components/Spinner'
+import { roundOffWithUnits } from '@src/lib/utils'
 
 function CommandBarVector3DInput({
   arg,
@@ -58,12 +61,86 @@ function CommandBarVector3DInput({
   const [y, setY] = useState(defaultValues.y)
   const [z, setZ] = useState(defaultValues.z)
 
+  // Validation states for each coordinate
+  const [xValidation, setXValidation] = useState<{
+    isValid: boolean
+    result: string | null
+    isCalculating: boolean
+  }>({ isValid: true, result: null, isCalculating: false })
+  
+  const [yValidation, setYValidation] = useState<{
+    isValid: boolean
+    result: string | null
+    isCalculating: boolean
+  }>({ isValid: true, result: null, isCalculating: false })
+  
+  const [zValidation, setZValidation] = useState<{
+    isValid: boolean
+    result: string | null
+    isCalculating: boolean
+  }>({ isValid: true, result: null, isCalculating: false })
+
   const xInputRef = useRef<HTMLInputElement>(null)
   const yInputRef = useRef<HTMLInputElement>(null)
   const zInputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
+
+  // Validate individual coordinate value
+  const validateCoordinate = async (
+    value: string,
+    setValidation: React.Dispatch<React.SetStateAction<{
+      isValid: boolean
+      result: string | null
+      isCalculating: boolean
+    }>>
+  ) => {
+    if (!value.trim()) {
+      setValidation({ isValid: true, result: null, isCalculating: false })
+      return
+    }
+
+    setValidation(prev => ({ ...prev, isCalculating: true }))
+
+    try {
+      const result = await getCalculatedKclExpressionValue(value.trim(), true)
+      
+      if (result instanceof Error || 'errors' in result || !result.astNode) {
+        setValidation({ isValid: false, result: "Can't calculate", isCalculating: false })
+      } else {
+        setValidation({ 
+          isValid: true, 
+          result: result.valueAsString, 
+          isCalculating: false 
+        })
+      }
+    } catch (error) {
+      setValidation({ isValid: false, result: "Can't calculate", isCalculating: false })
+    }
+  }
+
+  // Debounced validation effect for each coordinate
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      validateCoordinate(x, setXValidation)
+    }, 300)
+    return () => clearTimeout(timeoutId)
+  }, [x])
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      validateCoordinate(y, setYValidation)
+    }, 300)
+    return () => clearTimeout(timeoutId)
+  }, [y])
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      validateCoordinate(z, setZValidation)
+    }, 300)
+    return () => clearTimeout(timeoutId)
+  }, [z])
 
   // Focus the first input on mount
   useEffect(() => {
@@ -75,9 +152,14 @@ function CommandBarVector3DInput({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    // Validate that all values are not empty
+    // Validate that all values are not empty and are valid
     if (!x.trim() || !y.trim() || !z.trim()) {
       return // Don't submit if any value is empty
+    }
+
+    // Check if all coordinates are valid
+    if (!xValidation.isValid || !yValidation.isValid || !zValidation.isValid) {
+      return // Don't submit if any coordinate is invalid
     }
 
     // Use KCL expression parsing to handle scientific notation properly
@@ -141,53 +223,113 @@ function CommandBarVector3DInput({
             {arg.displayName || arg.name}
           </span>
           <div className="space-y-2">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 border-b border-chalkboard-50 mx-0 pb-1">
               <label className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
                 X
               </label>
               <input
                 ref={xInputRef}
                 data-testid="vector3d-x-input"
-                type="number"
-                step="any"
+                type="text"
                 placeholder="X coordinate"
                 value={x}
                 onChange={(e) => setX(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, yInputRef)}
-                className="flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-50 focus:outline-none"
+                className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
               />
+              <CustomIcon
+                name="equal"
+                className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+              <span
+                className={
+                  !xValidation.isValid
+                    ? 'text-destroy-80 dark:text-destroy-40'
+                    : 'text-succeed-80 dark:text-succeed-40'
+                }
+              >
+                {xValidation.isCalculating ? (
+                  <Spinner className="text-inherit w-4 h-4" />
+                ) : !xValidation.isValid ? (
+                  "Can't calculate"
+                ) : xValidation.result ? (
+                  roundOffWithUnits(xValidation.result, 4)
+                ) : (
+                  ''
+                )}
+              </span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 border-b border-chalkboard-50 mx-0 pb-1">
               <label className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
                 Y
               </label>
               <input
                 ref={yInputRef}
                 data-testid="vector3d-y-input"
-                type="number"
-                step="any"
+                type="text"
                 placeholder="Y coordinate"
                 value={y}
                 onChange={(e) => setY(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, zInputRef)}
-                className="flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-50 focus:outline-none"
+                className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
               />
+              <CustomIcon
+                name="equal"
+                className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+              <span
+                className={
+                  !yValidation.isValid
+                    ? 'text-destroy-80 dark:text-destroy-40'
+                    : 'text-succeed-80 dark:text-succeed-40'
+                }
+              >
+                {yValidation.isCalculating ? (
+                  <Spinner className="text-inherit w-4 h-4" />
+                ) : !yValidation.isValid ? (
+                  "Can't calculate"
+                ) : yValidation.result ? (
+                  roundOffWithUnits(yValidation.result, 4)
+                ) : (
+                  ''
+                )}
+              </span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 border-b border-chalkboard-50 mx-0 pb-1">
               <label className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
                 Z
               </label>
               <input
                 ref={zInputRef}
                 data-testid="vector3d-z-input"
-                type="number"
-                step="any"
+                type="text"
                 placeholder="Z coordinate"
                 value={z}
                 onChange={(e) => setZ(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e)}
-                className="flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-50 focus:outline-none"
+                className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
               />
+              <CustomIcon
+                name="equal"
+                className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
+              />
+              <span
+                className={
+                  !zValidation.isValid
+                    ? 'text-destroy-80 dark:text-destroy-40'
+                    : 'text-succeed-80 dark:text-succeed-40'
+                }
+              >
+                {zValidation.isCalculating ? (
+                  <Spinner className="text-inherit w-4 h-4" />
+                ) : !zValidation.isValid ? (
+                  "Can't calculate"
+                ) : zValidation.result ? (
+                  roundOffWithUnits(zValidation.result, 4)
+                ) : (
+                  ''
+                )}
+              </span>
             </div>
           </div>
         </div>
