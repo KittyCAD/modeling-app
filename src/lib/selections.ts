@@ -857,7 +857,7 @@ export function getSemanticSelectionType(selectionType: Artifact['type'][]) {
   return Array.from(semanticSelectionType)
 }
 
-export function selectDefaultSketchPlanePure(
+export function getDefaultSketchPlaneData(
   defaultPlaneId: string
 ): Error | false | DefaultPlane {
   const defaultPlanes = rustContext.defaultPlanes
@@ -932,7 +932,7 @@ export function selectDefaultSketchPlanePure(
 export function selectDefaultSketchPlane(
   defaultPlaneId: string
 ): Error | boolean {
-  const result = selectDefaultSketchPlanePure(defaultPlaneId)
+  const result = getDefaultSketchPlaneData(defaultPlaneId)
   if (err(result) || result === false) return result
   sceneInfra.modelingSend({
     type: 'Select sketch plane',
@@ -941,7 +941,7 @@ export function selectDefaultSketchPlane(
   return true
 }
 
-export async function selectOffsetSketchPlanePure(
+export async function getOffsetSketchPlaneData(
   artifact: Artifact | undefined
 ): Promise<Error | false | OffsetPlane> {
   if (artifact?.type !== 'plane') {
@@ -1014,7 +1014,7 @@ export async function selectOffsetSketchPlanePure(
 export async function selectOffsetSketchPlane(
   artifact: Artifact | undefined
 ): Promise<Error | boolean> {
-  const result = await selectOffsetSketchPlanePure(artifact)
+  const result = await getOffsetSketchPlaneData(artifact)
   if (err(result) || result === false) return result
 
   try {

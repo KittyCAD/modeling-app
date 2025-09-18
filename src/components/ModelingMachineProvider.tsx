@@ -89,9 +89,9 @@ import { exportSave } from '@src/lib/exportSave'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import {
-  selectDefaultSketchPlanePure,
+  getDefaultSketchPlaneData,
   selectionBodyFace,
-  selectOffsetSketchPlanePure,
+  getOffsetPlaneData,
   updateSelections,
 } from '@src/lib/selections'
 import {
@@ -525,17 +525,16 @@ export const ModelingMachineProvider = ({
             let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null =
               null
 
-            const defaultResult =
-              selectDefaultSketchPlanePure(artifactOrPlaneId)
+            const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId)
             if (!err(defaultResult) && defaultResult) {
               result = defaultResult
             }
             console.log('result', result)
 
-            // Look up the artifact from the artifact graph for selectOffsetSketchPlanePure
+            // Look up the artifact from the artifact graph for getOffsetPlaneData
             if (!result) {
               const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
-              const offsetResult = await selectOffsetSketchPlanePure(artifact)
+              const offsetResult = await getOffsetPlaneData(artifact)
               if (!err(offsetResult) && offsetResult) {
                 result = offsetResult
               }
