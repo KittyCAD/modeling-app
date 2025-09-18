@@ -1,11 +1,26 @@
-import { sketchSolveMachine } from '@src/machines/sketchSolveMode'
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
 import { assign, fromPromise, setup } from 'xstate'
 
+import type {
+  SetSelections,
+  MouseState,
+  SegmentOverlayPayload,
+  SketchDetails,
+  SketchDetailsUpdate,
+  SegmentOverlays,
+  ExtrudeFacePlane,
+  DefaultPlane,
+  OffsetPlane,
+  Store,
+  SketchTool,
+  MoveDesc,
+  PlaneVisibilityMap,
+} from '@src/machines/modelingSharedTypes'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
@@ -20,7 +35,6 @@ import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { ModelingMachineContext } from '@src/components/ModelingMachineProvider'
-import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -101,7 +115,6 @@ import {
   getPathsFromPlaneArtifact,
   getPlaneFromArtifact,
 } from '@src/lang/std/artifactGraph'
-import type { Coords2d } from '@src/lang/std/sketch'
 import {
   crossProduct,
   isCursorInSketchCommandRange,
@@ -121,15 +134,8 @@ import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingC
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { EXECUTION_TYPE_REAL, VALID_PANE_IDS } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import type {
-  Axis,
-  DefaultPlaneSelection,
-  Selection,
-  Selections,
-} from '@src/lib/selections'
+import type { Selections } from '@src/lib/selections'
 import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
-import type { Setting } from '@src/lib/settings/initialSettings'
 import {
   codeManager,
   editorManager,
@@ -142,167 +148,7 @@ import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
-
-export type SetSelections =
-  | {
-      selectionType: 'singleCodeCursor'
-      selection?: Selection
-      scrollIntoView?: boolean
-    }
-  | {
-      selectionType: 'axisSelection'
-      selection: Axis
-    }
-  | {
-      selectionType: 'defaultPlaneSelection'
-      selection: DefaultPlaneSelection
-    }
-  | {
-      selectionType: 'completeSelection'
-      selection: Selections
-      updatedSketchEntryNodePath?: PathToNode
-      updatedSketchNodePaths?: PathToNode[]
-      updatedPlaneNodePath?: PathToNode
-    }
-  | {
-      selectionType: 'mirrorCodeMirrorSelections'
-      selection: Selections
-    }
-
-export type MouseState =
-  | {
-      type: 'idle'
-    }
-  | {
-      type: 'isHovering'
-      on: any
-    }
-  | {
-      type: 'isDragging'
-      on: any
-    }
-  | {
-      type: 'timeoutEnd'
-      pathToNodeString: string
-    }
-
-export interface SketchDetails {
-  // there is no artifactGraph in sketch mode, so this is only used as vital information when entering sketch mode
-  // or on full/nonMock execution in sketch mode (manual code edit) as the entry point, as it will be accurate in these situations
-  sketchEntryNodePath: PathToNode
-  sketchNodePaths: PathToNode[]
-  planeNodePath: PathToNode
-  zAxis: [number, number, number]
-  yAxis: [number, number, number]
-  origin: [number, number, number]
-  // face id or plane id, both are strings
-  animateTargetId?: string
-  // this is the expression that was added when as sketch tool was used but not completed
-  // i.e first click for the center of the circle, but not the second click for the radius
-  // we added a circle to editor, but they bailed out early so we should remove it, set to -1 to ignore
-  expressionIndexToDelete?: number
-}
-
-export interface SketchDetailsUpdate {
-  updatedEntryNodePath: PathToNode
-  updatedSketchNodePaths: PathToNode[]
-  updatedPlaneNodePath?: PathToNode
-  // see comment in SketchDetails
-  expressionIndexToDelete: number
-}
-
-export interface SegmentOverlay {
-  windowCoords: Coords2d
-  angle: number
-  group: any
-  pathToNode: PathToNode
-  visible: boolean
-  hasThreeDotMenu: boolean
-  filterValue?: string
-}
-
-export interface SegmentOverlays {
-  [pathToNodeString: string]: SegmentOverlay[]
-}
-
-export interface EdgeCutInfo {
-  type: 'edgeCut'
-  tagName: string
-  subType: 'base' | 'opposite' | 'adjacent'
-}
-
-export interface CapInfo {
-  type: 'cap'
-  subType: 'start' | 'end'
-}
-
-export type ExtrudeFacePlane = {
-  type: 'extrudeFace'
-  position: [number, number, number]
-  sketchPathToNode: PathToNode
-  extrudePathToNode: PathToNode
-  faceInfo:
-    | {
-        type: 'wall'
-      }
-    | CapInfo
-    | EdgeCutInfo
-  faceId: string
-  zAxis: [number, number, number]
-  yAxis: [number, number, number]
-}
-
-export type DefaultPlane = {
-  type: 'defaultPlane'
-  plane: DefaultPlaneStr
-  planeId: string
-  zAxis: [number, number, number]
-  yAxis: [number, number, number]
-}
-
-export type OffsetPlane = {
-  type: 'offsetPlane'
-  position: [number, number, number]
-  planeId: string
-  pathToNode: PathToNode
-  zAxis: [number, number, number]
-  yAxis: [number, number, number]
-  negated: boolean
-}
-
-export type SegmentOverlayPayload =
-  | {
-      type: 'set-one'
-      pathToNodeString: string
-      seg: SegmentOverlay[]
-    }
-  | {
-      type: 'delete-one'
-      pathToNodeString: string
-    }
-  | { type: 'clear' }
-  | {
-      type: 'set-many'
-      overlays: SegmentOverlays
-    }
-
-export interface Store {
-  videoElement?: HTMLVideoElement
-  openPanes: SidebarId[]
-  cameraProjection?: Setting<CameraProjectionType>
-  useNewSketchMode?: Setting<boolean>
-}
-
-export type SketchTool =
-  | 'line'
-  | 'tangentialArc'
-  | 'rectangle'
-  | 'center rectangle'
-  | 'circle'
-  | 'circleThreePoint'
-  | 'arc'
-  | 'arcThreePoint'
-  | 'none'
+import { sketchSolveMachine } from '@src/machines/sketchSolveMode'
 
 export type ModelingMachineEvent =
   | {
@@ -484,7 +330,7 @@ export type ModelingMachineEvent =
       type: 'Restore default plane visibility'
     }
 
-export type MoveDesc = { line: number; snippet: string }
+// export type MoveDesc = { line: number; snippet: string }
 
 export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
 
@@ -537,60 +383,6 @@ export interface ModelingMachineContext {
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
-}
-
-export type PlaneVisibilityMap = {
-  xy: boolean
-  xz: boolean
-  yz: boolean
-}
-
-export const modelingMachineDefaultContext: ModelingMachineContext = {
-  currentMode: 'modeling',
-  currentTool: 'none',
-  toastId: null,
-  machineManager: {
-    machines: [],
-    machineApiIp: null,
-    currentMachine: null,
-    setCurrentMachine: () => {},
-    noMachinesReason: () => undefined,
-  },
-  selection: [],
-  selectionRanges: {
-    otherSelections: [],
-    graphSelections: [],
-  },
-
-  sketchDetails: {
-    sketchEntryNodePath: [],
-    planeNodePath: [],
-    sketchNodePaths: [],
-    zAxis: [0, 0, 1],
-    yAxis: [0, 1, 0],
-    origin: [0, 0, 0],
-  },
-  sketchPlaneId: '',
-  sketchEnginePathId: '',
-  moveDescs: [],
-  mouseState: { type: 'idle' },
-  segmentOverlays: {},
-  segmentHoverMap: {},
-  store: {
-    openPanes: getPersistedContext().openPanes || ['code'],
-  },
-  defaultPlaneVisibility: {
-    xy: true,
-    xz: true,
-    yz: true,
-  },
-  // Manually toggled plane visibility is saved and restored when going back to modeling mode
-  savedDefaultPlaneVisibility: {
-    xy: true,
-    xz: true,
-    yz: true,
-  },
-  planesInitialized: false,
 }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'

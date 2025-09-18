@@ -108,12 +108,12 @@ import type {
   DefaultPlane,
   ExtrudeFacePlane,
   OffsetPlane,
-} from '@src/machines/modelingMachine'
+} from '@src/machines/modelingSharedTypes'
 import {
   getPersistedContext,
   modelingMachine,
-  modelingMachineDefaultContext,
 } from '@src/machines/modelingMachine'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
 import type { WebContentSendPayload } from '@src/menu/channels'
 

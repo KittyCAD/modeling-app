@@ -70,17 +70,16 @@ import {
   isOverlap,
   uuidv4,
 } from '@src/lib/utils'
+import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
   EdgeCutInfo,
   ExtrudeFacePlane,
-  ModelingMachineEvent,
   OffsetPlane,
-  SketchDetails,
-} from '@src/machines/modelingMachine'
+} from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
-import { getStringAfterLastSeparator } from './paths'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'

@@ -1,11 +1,11 @@
 import { createMachine, sendTo, setup, type AnyActorLogic } from 'xstate'
-import { modelingMachineDefaultContext } from '@src/machines/modelingMachine'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type {
   ModelingMachineContext,
   SetSelections,
   MouseState,
   SegmentOverlayPayload,
-} from '@src/machines/modelingMachine'
+} from '@src/machines/modelingSharedTypes'
 import type { PathToNode } from '@src/lang/wasm'
 import { machine as centerRectToolMachine } from '@src/machines/centerRectTool'
 import { machine as dimensionToolMachine } from '@src/machines/dimensionTool'

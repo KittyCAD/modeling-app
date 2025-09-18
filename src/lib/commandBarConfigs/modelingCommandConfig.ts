@@ -30,9 +30,9 @@ import { codeManager, kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type {
   ModelingMachineContext,
-  SketchTool,
   modelingMachine,
 } from '@src/machines/modelingMachine'
+import type { SketchTool } from '@src/machines/modelingSharedTypes'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']

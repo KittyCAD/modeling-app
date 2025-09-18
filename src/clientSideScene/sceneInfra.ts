@@ -38,7 +38,7 @@ import { getAngle, getLength, throttle } from '@src/lib/utils'
 import type {
   MouseState,
   SegmentOverlayPayload,
-} from '@src/machines/modelingMachine'
+} from '@src/machines/modelingSharedTypes'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 

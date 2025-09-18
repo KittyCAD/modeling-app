@@ -178,7 +178,7 @@ import type {
   SketchDetails,
   SketchDetailsUpdate,
   SketchTool,
-} from '@src/machines/modelingMachine'
+} from '@src/machines/modelingSharedTypes'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 
 type DraftSegment = 'line' | 'tangentialArc'
