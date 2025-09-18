@@ -83,7 +83,6 @@ function CommandBarVector3DInput({
   const xInputRef = useRef<HTMLInputElement>(null)
   const yInputRef = useRef<HTMLInputElement>(null)
   const zInputRef = useRef<HTMLInputElement>(null)
-  const formRef = useRef<HTMLFormElement>(null)
 
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
 
@@ -216,138 +215,146 @@ function CommandBarVector3DInput({
     // Submit form when Enter is pressed in the last field
     if (e.key === 'Enter' && !nextInputRef) {
       e.preventDefault()
-      formRef.current?.dispatchEvent(new Event('submit', { bubbles: true }))
+      const form = e.currentTarget.form
+      if (form) {
+        form.dispatchEvent(new Event('submit', { bubbles: true }))
+      }
     }
   }
 
   return (
-    <div className="w-full">
-      <form
-        ref={formRef}
-        id="vector3d-form"
-        data-testid="vector3d-form"
-        onSubmit={handleSubmit}
-      >
-        <div className="mx-4 mt-4 mb-2">
-          <span className="capitalize text-chalkboard-80 dark:text-chalkboard-20 block mb-4">
-            {arg.displayName || arg.name}
-          </span>
-          <div className="space-y-2">
-            <div className="flex items-center gap-4 border-b border-chalkboard-50 mx-0 pb-1">
-              <label className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
-                X
-              </label>
-              <input
-                ref={xInputRef}
-                data-testid="vector3d-x-input"
-                type="text"
-                placeholder="X coordinate"
-                value={x}
-                onChange={(e) => setX(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, yInputRef)}
-                className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
-              />
-              <CustomIcon
-                name="equal"
-                className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
-              />
-              <span
-                className={
-                  !xValidation.isValid
-                    ? 'text-destroy-80 dark:text-destroy-40'
-                    : 'text-succeed-80 dark:text-succeed-40'
-                }
-              >
-                {xValidation.isCalculating ? (
-                  <Spinner className="text-inherit w-4 h-4" />
-                ) : !xValidation.isValid ? (
-                  "Can't calculate"
-                ) : xValidation.result ? (
-                  roundOffWithUnits(xValidation.result, 4)
-                ) : (
-                  ''
-                )}
-              </span>
-            </div>
-            <div className="flex items-center gap-4 border-b border-chalkboard-50 mx-0 pb-1">
-              <label className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
-                Y
-              </label>
-              <input
-                ref={yInputRef}
-                data-testid="vector3d-y-input"
-                type="text"
-                placeholder="Y coordinate"
-                value={y}
-                onChange={(e) => setY(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, zInputRef)}
-                className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
-              />
-              <CustomIcon
-                name="equal"
-                className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
-              />
-              <span
-                className={
-                  !yValidation.isValid
-                    ? 'text-destroy-80 dark:text-destroy-40'
-                    : 'text-succeed-80 dark:text-succeed-40'
-                }
-              >
-                {yValidation.isCalculating ? (
-                  <Spinner className="text-inherit w-4 h-4" />
-                ) : !yValidation.isValid ? (
-                  "Can't calculate"
-                ) : yValidation.result ? (
-                  roundOffWithUnits(yValidation.result, 4)
-                ) : (
-                  ''
-                )}
-              </span>
-            </div>
-            <div className="flex items-center gap-4 border-b border-chalkboard-50 mx-0 pb-1">
-              <label className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
-                Z
-              </label>
-              <input
-                ref={zInputRef}
-                data-testid="vector3d-z-input"
-                type="text"
-                placeholder="Z coordinate"
-                value={z}
-                onChange={(e) => setZ(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e)}
-                className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
-              />
-              <CustomIcon
-                name="equal"
-                className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
-              />
-              <span
-                className={
-                  !zValidation.isValid
-                    ? 'text-destroy-80 dark:text-destroy-40'
-                    : 'text-succeed-80 dark:text-succeed-40'
-                }
-              >
-                {zValidation.isCalculating ? (
-                  <Spinner className="text-inherit w-4 h-4" />
-                ) : !zValidation.isValid ? (
-                  "Can't calculate"
-                ) : zValidation.result ? (
-                  roundOffWithUnits(zValidation.result, 4)
-                ) : (
-                  ''
-                )}
-              </span>
-            </div>
-          </div>
+    <form
+      id="vector3d-form"
+      className="mb-2"
+      onSubmit={handleSubmit}
+      data-can-submit={
+        xValidation.isValid &&
+        yValidation.isValid &&
+        zValidation.isValid &&
+        x.trim() &&
+        y.trim() &&
+        z.trim()
+      }
+    >
+      <div className="mx-4 mt-4 mb-2">
+        <span className="capitalize text-chalkboard-80 dark:text-chalkboard-20 block mb-4">
+          {arg.displayName || arg.name}
+        </span>
+        <div className="space-y-2">
+          <label className="flex gap-4 items-center border-solid border-b border-chalkboard-50">
+            <span className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
+              X
+            </span>
+            <input
+              ref={xInputRef}
+              data-testid="vector3d-x-input"
+              type="text"
+              placeholder="X coordinate"
+              value={x}
+              onChange={(e) => setX(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, yInputRef)}
+              className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
+            />
+            <CustomIcon
+              name="equal"
+              className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
+            />
+            <span
+              className={
+                !xValidation.isValid
+                  ? 'text-destroy-80 dark:text-destroy-40'
+                  : 'text-succeed-80 dark:text-succeed-40'
+              }
+            >
+              {xValidation.isCalculating ? (
+                <Spinner className="text-inherit w-4 h-4" />
+              ) : !xValidation.isValid ? (
+                "Can't calculate"
+              ) : xValidation.result ? (
+                roundOffWithUnits(xValidation.result, 4)
+              ) : (
+                ''
+              )}
+            </span>
+          </label>
+          <label className="flex gap-4 items-center border-solid border-b border-chalkboard-50">
+            <span className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
+              Y
+            </span>
+            <input
+              ref={yInputRef}
+              data-testid="vector3d-y-input"
+              type="text"
+              placeholder="Y coordinate"
+              value={y}
+              onChange={(e) => setY(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, zInputRef)}
+              className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
+            />
+            <CustomIcon
+              name="equal"
+              className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
+            />
+            <span
+              className={
+                !yValidation.isValid
+                  ? 'text-destroy-80 dark:text-destroy-40'
+                  : 'text-succeed-80 dark:text-succeed-40'
+              }
+            >
+              {yValidation.isCalculating ? (
+                <Spinner className="text-inherit w-4 h-4" />
+              ) : !yValidation.isValid ? (
+                "Can't calculate"
+              ) : yValidation.result ? (
+                roundOffWithUnits(yValidation.result, 4)
+              ) : (
+                ''
+              )}
+            </span>
+          </label>
+          <label className="flex gap-4 items-center border-solid border-b border-chalkboard-50">
+            <span className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
+              Z
+            </span>
+            <input
+              ref={zInputRef}
+              data-testid="vector3d-z-input"
+              type="text"
+              placeholder="Z coordinate"
+              value={z}
+              onChange={(e) => setZ(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e)}
+              className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
+            />
+            <CustomIcon
+              name="equal"
+              className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
+            />
+            <span
+              className={
+                !zValidation.isValid
+                  ? 'text-destroy-80 dark:text-destroy-40'
+                  : 'text-succeed-80 dark:text-succeed-40'
+              }
+            >
+              {zValidation.isCalculating ? (
+                <Spinner className="text-inherit w-4 h-4" />
+              ) : !zValidation.isValid ? (
+                "Can't calculate"
+              ) : zValidation.result ? (
+                roundOffWithUnits(zValidation.result, 4)
+              ) : (
+                ''
+              )}
+            </span>
+          </label>
         </div>
-        <p className="mx-4 mb-4 text-sm text-chalkboard-70 dark:text-chalkboard-40">
-          Enter X, Y, Z coordinates for the 3D vector
-        </p>
-      </form>
-    </div>
+      </div>
+      <p className="mx-4 mb-4 text-sm text-chalkboard-70 dark:text-chalkboard-40">
+        Enter X, Y, Z coordinates for the 3D vector
+      </p>
+    </form>
   )
 }
 
