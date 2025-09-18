@@ -82,7 +82,7 @@ function CommandBarVector3DInput({
 
     // Use KCL expression parsing to handle scientific notation properly
     const vectorExpression = `[${x.trim()}, ${y.trim()}, ${z.trim()}]`
-    
+
     // Calculate the KCL expression asynchronously
     getCalculatedKclExpressionValue(vectorExpression, true)
       .then((result) => {
@@ -136,44 +136,59 @@ function CommandBarVector3DInput({
         data-testid="vector3d-form"
         onSubmit={handleSubmit}
       >
-        <div className="flex items-center mx-4 mt-4 mb-2 min-w-0">
-          <span className="capitalize px-2 py-1 rounded-l bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 flex-shrink-0">
+        <div className="mx-4 mt-4 mb-2">
+          <span className="capitalize text-chalkboard-80 dark:text-chalkboard-20 block mb-4">
             {arg.displayName || arg.name}
           </span>
-          <div className="flex flex-1 min-w-0">
-            <input
-              ref={xInputRef}
-              data-testid="vector3d-x-input"
-              type="number"
-              step="any"
-              placeholder="X"
-              value={x}
-              onChange={(e) => setX(e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e, yInputRef)}
-              className="w-0 flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 focus:outline-none text-center min-w-0"
-            />
-            <input
-              ref={yInputRef}
-              data-testid="vector3d-y-input"
-              type="number"
-              step="any"
-              placeholder="Y"
-              value={y}
-              onChange={(e) => setY(e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e, zInputRef)}
-              className="w-0 flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 focus:outline-none text-center border-l border-l-chalkboard-100 dark:border-l-chalkboard-80 min-w-0"
-            />
-            <input
-              ref={zInputRef}
-              data-testid="vector3d-z-input"
-              type="number"
-              step="any"
-              placeholder="Z"
-              value={z}
-              onChange={(e) => setZ(e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e)}
-              className="w-0 flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 focus:outline-none text-center border-l border-l-chalkboard-100 dark:border-l-chalkboard-80 min-w-0"
-            />
+          <div className="space-y-2">
+            <div className="flex items-center gap-4">
+              <label className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
+                X
+              </label>
+              <input
+                ref={xInputRef}
+                data-testid="vector3d-x-input"
+                type="number"
+                step="any"
+                placeholder="X coordinate"
+                value={x}
+                onChange={(e) => setX(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, yInputRef)}
+                className="flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-50 focus:outline-none"
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <label className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
+                Y
+              </label>
+              <input
+                ref={yInputRef}
+                data-testid="vector3d-y-input"
+                type="number"
+                step="any"
+                placeholder="Y coordinate"
+                value={y}
+                onChange={(e) => setY(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, zInputRef)}
+                className="flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-50 focus:outline-none"
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <label className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
+                Z
+              </label>
+              <input
+                ref={zInputRef}
+                data-testid="vector3d-z-input"
+                type="number"
+                step="any"
+                placeholder="Z coordinate"
+                value={z}
+                onChange={(e) => setZ(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e)}
+                className="flex-1 px-2 py-1 bg-transparent border-b border-b-chalkboard-50 focus:outline-none"
+              />
+            </div>
           </div>
         </div>
         <p className="mx-4 mb-4 text-sm text-chalkboard-70 dark:text-chalkboard-40">
