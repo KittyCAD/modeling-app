@@ -1,44 +1,57 @@
-import type { MlCopilotServerMessage, MlCopilotClientMessage } from '@kittycad/lib'
+import type {
+  MlCopilotServerMessage,
+  MlCopilotClientMessage,
+} from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Thinking } from '@src/components/Thinking'
 import { type Exchange } from '@src/machines/mlEphantManagerMachine2'
 import ms from 'ms'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
 }
 
-type MlCopilotServerMessageError<T = MlCopilotServerMessage> = T extends { error: any }
-? T
-: never
+type MlCopilotServerMessageError<T = MlCopilotServerMessage> = T extends {
+  error: any
+}
+  ? T
+  : never
 
 export const ExchangeCardStatus = (props: {
-  reasoning?: MlCopilotServerMessage[]
+  responses?: MlCopilotServerMessage[]
   onlyShowImmediateThought: boolean
-  startedAt: Date,
-  updatedAt?: Date,
+  startedAt: Date
+  updatedAt?: Date
   maybeError?: MlCopilotServerMessageError
 }) => {
   const thinker = (
     <Thinking
-      thoughts={props.reasoning}
+      thoughts={props.responses}
       onlyShowImmediateThought={props.onlyShowImmediateThought}
     />
   )
 
-  const failed = props.onlyShowImmediateThought ? (
-    <div data-testid="exchange-card-status-failed">{props.maybeError?.error.detail}</div>
-  ) : (
-    thinker
-  )
+  const isEndOfStream = 'end_of_stream' in (props.responses?.slice(-1)[0] ?? {})
+
+  const MaybeError =  () => props.maybeError ? <div className="text-rose-400">
+    <CustomIcon name="triangleExclamation" className="w-4 h-4 inline valign" />
+    {' '}
+    { props.maybeError?.error.detail }
+  </div> : null
 
   return (
-    <div className="text-sm text-chalkboard-70">
-      {props.maybeError
-        ? failed
-        : thinker}
-    </div>
+    props.onlyShowImmediateThought
+     ?
+      (<div className="text-sm text-chalkboard-70">
+        { isEndOfStream && <MaybeError /> }
+        { !isEndOfStream && thinker }
+      </div>)
+      :
+      <div>
+        { thinker }
+        { props.updatedAt && <div className="text-chalkboard-70 p-2">Reasoned for { ms(props.updatedAt.getTime() - props.startedAt.getTime(),{ long: true })}</div> }
+      </div>
   )
 }
 
@@ -63,15 +76,42 @@ export const AvatarUser = (props: { src?: string }) => {
 }
 
 type RequestCardProps = Exchange['request'] & {
-  userAvatar?: string
+  userAvatar?: ReactNode
 }
 
-type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends { type: 'user' }
-? T
-: never
+type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
+  type: 'user'
+}
+  ? T
+  : never
 
 function isMlCopilotUserRequest(x: unknown): x is MlCopilotClientMessageUser {
   return typeof x === 'object' && x !== null && 'type' in x && x.type === 'user'
+}
+
+const hasVisibleChildren = (children: ReactNode) => {
+  return (children instanceof Array && children.length > 0) || (typeof children === 'string' && children !== '')
+}
+
+export const ChatBubble = (props: { side: 'left' | 'right', userAvatar?: ReactNode, wfull?: true, children: ReactNode }) => {
+  const cssRequest =
+    `${props.wfull ? 'w-full ' : ''} select-text whitespace-pre-line hyphens-auto shadow-sm ${props.side === 'left' ? 'bg-1' : 'bg-2'} text-default border b-4 rounded-t-md pl-4 pr-4 pt-2 pb-2 ` +
+    (props.side === 'left' ? 'rounded-br-md' : 'rounded-bl-md')
+
+  return (
+    <div className={`flex justify-end items-end gap-2 w-full ${props.side === 'right' ? 'flex-row' : 'flex-row-reverse'}`}>
+      <div className="flex flex-col items-end gap-2 w-full">
+        <div style={{ wordBreak: 'break-word' }} className={cssRequest}>
+        { hasVisibleChildren(props.children) ? props.children :
+          <div className="animate-pulse animate-shimmer h-4 w-full p-1 bg-chalkboard-80 rounded"></div>
+        }
+        </div>
+      </div>
+      <div className="w-fit-content">
+        { props.userAvatar }
+      </div>
+    </div>
+  )
 }
 
 export const RequestCard = (props: RequestCardProps) => {
@@ -79,36 +119,43 @@ export const RequestCard = (props: RequestCardProps) => {
     return null
   }
 
-  const cssRequest = 'select-text whitespace-pre-line hyphens-auto shadow-sm bg-2 text-default border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
-  return props.content === 'undefined'
-  ? null 
-  : 
-  <div className="flex flex-row justify-end items-end gap-2">
-  <div className="flex flex-col items-end gap-2 w-full">
-    <div style={{ wordBreak: 'break-word' }} className={cssRequest}>
-      { props.content }
-    </div>
-  </div>
-  <div className="w-fit-content">
-    <AvatarUser src={props.userAvatar} />
-  </div>
-  </div>
+  return <ChatBubble side={'right'} userAvatar={props.userAvatar}>
+    {props.content}
+  </ChatBubble>
 }
+
+export const Delta = (props: { children: ReactNode }) => <span className="animate-delta-in" style={{ opacity: 0 }}>
+  { props.children }
+</span>
 
 type ResponsesCardProp = {
   items: Exchange['responses']
 }
-// This can be used to show `tool_output`
+
+// This can be used to show `delta` or `tool_output`
 export const ResponsesCard = (props: ResponsesCardProp) => {
-  return null
+  const items = props.items.map((response: MlCopilotServerMessage, index: number) => {
+    if ('delta' in response) {
+      return <Delta key={index}>{ response.delta.delta }</Delta>
+    }
+    return null
+  })
+
+  const itemsFilteredNulls = items.filter((x: ReactNode | null) => x !== null)
+
+  return <ChatBubble side={'left'} wfull={true} userAvatar={<AvatarUser src="/public/mleyphun.jpg" />}>
+    {itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null}
+  </ChatBubble>
 }
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
+  const refExchange = useRef<HTMLDivElement>(null)
   const [startedAt] = useState<Date>(new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
 
   const hasReasoningToShow =
-    props.responses !== undefined && props.responses.some((response) => 'reasoning' in response)
+    props.responses !== undefined &&
+    props.responses.some((response) => 'reasoning' in response)
 
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(false)
 
@@ -121,49 +168,48 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   }
 
   useEffect(() => {
-    if (props.responses.some((response) => 'end_of_stream' in response)) {
       setUpdatedAt(new Date())
-    }
-  }, [props.responses])
+  }, [props.responses.length])
+
+  useEffect(() => {
+      if (refExchange.current !== null && showFullReasoning === false) {
+        refExchange.current.scrollIntoView({ behavior: 'smooth' })
+      }
+  }, [props.responses.length, showFullReasoning])
+
+  const maybeError = props.responses.filter((r) => 'error' in r)[0]
 
   return (
-    <div className={cssCard}>
-      { isMlCopilotUserRequest(props.request) && <RequestCard {...props.request} /> }
-      <ResponsesCard items={props.responses} />
+    <div className={cssCard} ref={refExchange}>
+      <div className="p-7 text-chalkboard-70 text-center">{ ms(Date.now() - startedAt.getTime(), { long: true}) } ago</div>
+      {isMlCopilotUserRequest(props.request) && (
+        <RequestCard {...props.request} userAvatar={<AvatarUser src={props.userAvatar}/>} />
+      )}
       {showFullReasoning && (
         <div>
           <ExchangeCardStatus
-            maybeError={props.responses.filter((r) => 'error' in r)[0]}
-            reasoning={props.responses}
+            responses={props.responses}
             onlyShowImmediateThought={false}
             startedAt={startedAt}
             updatedAt={updatedAt}
           />
         </div>
       )}
-      <div
-        className={`${hasReasoningToShow ? 'group/reasoning' : ''} relative pl-2 pr-10`}
-      >
-        <div className="flex flex-row justify-end gap-2 group-hover/reasoning:invisible">
-          <ExchangeCardStatus
-            maybeError={props.responses.filter((r) => 'error' in r)[0]}
-            reasoning={props.responses}
-            onlyShowImmediateThought={true}
-            startedAt={startedAt}
-            updatedAt={updatedAt}
-          />
-        </div>
-        <div
-          className={
-            'hidden group-hover/reasoning:block absolute right-0 top-1/2 -translate-y-1/2'
-          }
-        >
-          <button className="w-fit p-2" onClick={() => onSeeReasoning()}>
-            {showFullReasoning ? 'Hide reasoning' : 'See reasoning'}
+      <div className="flex flex-row items-center cursor-pointer justify-end gap-2" onClick={() => onSeeReasoning()}>
+        <ExchangeCardStatus
+          maybeError={maybeError}
+          responses={props.responses}
+          onlyShowImmediateThought={true}
+          startedAt={startedAt}
+          updatedAt={updatedAt}
+        />
+        <div>
+          <button className="flex justify-center items-center">
+            { showFullReasoning ? <>Collapse <CustomIcon name="collapse" className="w-5 h-5"/></> : <>See reasoning <CustomIcon name="plus" className="w-5 h-5" /></>  }
           </button>
         </div>
       </div>
+      <ResponsesCard items={props.responses} />
     </div>
   )
 }
-

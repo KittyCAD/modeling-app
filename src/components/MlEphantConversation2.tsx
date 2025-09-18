@@ -2,7 +2,11 @@ import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import type { Prompt } from '@src/lib/prompt'
-import type { MlEphantManagerContext2, Conversation, Exchange } from '@src/machines/mlEphantManagerMachine2'
+import type {
+  MlEphantManagerContext2,
+  Conversation,
+  Exchange,
+} from '@src/machines/mlEphantManagerMachine2'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 
@@ -195,13 +199,14 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
     })
   }, [props.hasPromptCompleted, autoScroll])
 
-  const exchangeCards = props.conversation?.exchanges.flatMap((exchange: Exchange, exchangeIndex: number) => (
-    <ExchangeCard
-      key={`exchange-${exchangeIndex}`}
-      {...exchange}
-      userAvatar={props.userAvatarSrc}
-    />
-  ))
+  const exchangeCards = props.conversation?.exchanges.flatMap(
+    (exchange: Exchange, exchangeIndex: number) => (
+      <ExchangeCard
+        {...exchange}
+        userAvatar={props.userAvatarSrc}
+      />
+    )
+  )
   return (
     <div className="relative">
       <div className="absolute inset-0">
@@ -274,4 +279,3 @@ export const MLEphantConversationPaneMenu2 = () => (
     </Transition>
   </Popover>
 )
-

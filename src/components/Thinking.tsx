@@ -468,7 +468,7 @@ export const Thinking = (props: {
   if (props.thoughts === undefined) {
     return (
       <div className="animate-shimmer p-2">
-        <Text content={'Processing...'} />
+        <Generic content={'Thinking...'} />
       </div>
     )
   }
@@ -485,7 +485,7 @@ export const Thinking = (props: {
             'reasoning' in thought && thought.reasoning?.type === 'text'
           // Typescript can't figure out only a `text` type or undefined is found
           // @ts-expect-error
-        )?.reasoning?.content ?? 'Processing...'
+        )?.reasoning?.content ?? 'Thinking...'
       }
     />
   )
@@ -493,12 +493,12 @@ export const Thinking = (props: {
   const ViewFull = (
     <div
       ref={refViewFull}
-      className="text-2 bg-2 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
+      className="text-2 text-sm bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
     >
       {componentThoughts.length > 0 ? (
         componentThoughts
       ) : (
-        <Text content={'Processing...'} />
+        <Generic content={'Thinking...'} />
       )}
     </div>
   )

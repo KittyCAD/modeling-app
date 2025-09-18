@@ -282,4 +282,3 @@ export const MLEphantConversationPaneMenu = () => (
     </Transition>
   </Popover>
 )
-

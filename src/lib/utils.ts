@@ -697,7 +697,11 @@ export function promiseFactory<T = void>() {
   return { promise, resolve, reject }
 }
 
-export function Socket<T extends WebSocket>(WsClass: new (url: string) => T, path: string, token: string): Promise<T> {
+export function Socket<T extends WebSocket>(
+  WsClass: new (url: string) => T,
+  path: string,
+  token: string
+): Promise<T> {
   const ws = new WsClass(withAPIBaseURL(path))
   const { promise, resolve } = promiseFactory<T>()
 
