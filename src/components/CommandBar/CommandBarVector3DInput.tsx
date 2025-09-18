@@ -67,13 +67,13 @@ function CommandBarVector3DInput({
     result: string | null
     isCalculating: boolean
   }>({ isValid: true, result: null, isCalculating: false })
-  
+
   const [yValidation, setYValidation] = useState<{
     isValid: boolean
     result: string | null
     isCalculating: boolean
   }>({ isValid: true, result: null, isCalculating: false })
-  
+
   const [zValidation, setZValidation] = useState<{
     isValid: boolean
     result: string | null
@@ -90,33 +90,43 @@ function CommandBarVector3DInput({
   // Validate individual coordinate value
   const validateCoordinate = async (
     value: string,
-    setValidation: React.Dispatch<React.SetStateAction<{
-      isValid: boolean
-      result: string | null
-      isCalculating: boolean
-    }>>
+    setValidation: React.Dispatch<
+      React.SetStateAction<{
+        isValid: boolean
+        result: string | null
+        isCalculating: boolean
+      }>
+    >
   ) => {
     if (!value.trim()) {
       setValidation({ isValid: true, result: null, isCalculating: false })
       return
     }
 
-    setValidation(prev => ({ ...prev, isCalculating: true }))
+    setValidation((prev) => ({ ...prev, isCalculating: true }))
 
     try {
       const result = await getCalculatedKclExpressionValue(value.trim(), true)
-      
+
       if (result instanceof Error || 'errors' in result || !result.astNode) {
-        setValidation({ isValid: false, result: "Can't calculate", isCalculating: false })
+        setValidation({
+          isValid: false,
+          result: "Can't calculate",
+          isCalculating: false,
+        })
       } else {
-        setValidation({ 
-          isValid: true, 
-          result: result.valueAsString, 
-          isCalculating: false 
+        setValidation({
+          isValid: true,
+          result: result.valueAsString,
+          isCalculating: false,
         })
       }
     } catch (error) {
-      setValidation({ isValid: false, result: "Can't calculate", isCalculating: false })
+      setValidation({
+        isValid: false,
+        result: "Can't calculate",
+        isCalculating: false,
+      })
     }
   }
 
