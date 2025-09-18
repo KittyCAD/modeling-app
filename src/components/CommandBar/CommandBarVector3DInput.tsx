@@ -3,6 +3,8 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import { roundOffWithUnits } from '@src/lib/utils'
@@ -49,7 +51,7 @@ function CommandBarVector3DInput({
     }
 
     return ''
-  }, [arg.defaultValue, previouslySetValue, commandBarState.context])
+  }, [previouslySetValue, commandBarState.context, arg])
 
   // Extract individual x, y, z values from the vector string
   const defaultValues = useMemo(
@@ -61,104 +63,34 @@ function CommandBarVector3DInput({
   const [y, setY] = useState(defaultValues.y)
   const [z, setZ] = useState(defaultValues.z)
 
-  // Validation states for each coordinate
-  const [xValidation, setXValidation] = useState<{
-    isValid: boolean
-    result: string | null
-    isCalculating: boolean
-  }>({ isValid: true, result: null, isCalculating: false })
+  const {
+    context: { selectionRanges },
+  } = useModelingContext()
 
-  const [yValidation, setYValidation] = useState<{
-    isValid: boolean
-    result: string | null
-    isCalculating: boolean
-  }>({ isValid: true, result: null, isCalculating: false })
+  // Use calculation hook for each coordinate
+  const xCalculation = useCalculateKclExpression({
+    value: x,
+    selectionRanges,
+    allowArrays: false,
+  })
 
-  const [zValidation, setZValidation] = useState<{
-    isValid: boolean
-    result: string | null
-    isCalculating: boolean
-  }>({ isValid: true, result: null, isCalculating: false })
+  const yCalculation = useCalculateKclExpression({
+    value: y,
+    selectionRanges,
+    allowArrays: false,
+  })
+
+  const zCalculation = useCalculateKclExpression({
+    value: z,
+    selectionRanges,
+    allowArrays: false,
+  })
 
   const xInputRef = useRef<HTMLInputElement>(null)
   const yInputRef = useRef<HTMLInputElement>(null)
   const zInputRef = useRef<HTMLInputElement>(null)
 
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
-
-  // Validate individual coordinate value
-  const validateCoordinate = async (
-    value: string,
-    setValidation: React.Dispatch<
-      React.SetStateAction<{
-        isValid: boolean
-        result: string | null
-        isCalculating: boolean
-      }>
-    >
-  ) => {
-    if (!value.trim()) {
-      setValidation({ isValid: true, result: null, isCalculating: false })
-      return
-    }
-
-    setValidation((prev) => ({ ...prev, isCalculating: true }))
-
-    try {
-      const result = await getCalculatedKclExpressionValue(value.trim(), true)
-
-      if (result instanceof Error || 'errors' in result || !result.astNode) {
-        setValidation({
-          isValid: false,
-          result: "Can't calculate",
-          isCalculating: false,
-        })
-      } else {
-        // Check if the result is NAN and treat it as invalid
-        if (result.valueAsString === 'NAN') {
-          setValidation({
-            isValid: false,
-            result: "Can't calculate",
-            isCalculating: false,
-          })
-        } else {
-          setValidation({
-            isValid: true,
-            result: result.valueAsString,
-            isCalculating: false,
-          })
-        }
-      }
-    } catch (error) {
-      setValidation({
-        isValid: false,
-        result: "Can't calculate",
-        isCalculating: false,
-      })
-    }
-  }
-
-  // Debounced validation effect for each coordinate
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      validateCoordinate(x, setXValidation)
-    }, 300)
-    return () => clearTimeout(timeoutId)
-  }, [x])
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      validateCoordinate(y, setYValidation)
-    }, 300)
-    return () => clearTimeout(timeoutId)
-  }, [y])
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      validateCoordinate(z, setZValidation)
-    }, 300)
-    return () => clearTimeout(timeoutId)
-  }, [z])
 
   // Focus the first input on mount
   useEffect(() => {
@@ -177,8 +109,13 @@ function CommandBarVector3DInput({
     }
 
     // Check if all coordinates are valid
-    if (!xValidation.isValid || !yValidation.isValid || !zValidation.isValid) {
+    if (xCalculation.calcResult === 'NAN' || yCalculation.calcResult === 'NAN' || zCalculation.calcResult === 'NAN') {
       return // Don't submit if any coordinate is invalid
+    }
+
+    // Check if all coordinates have valid AST nodes
+    if (!xCalculation.valueNode || !yCalculation.valueNode || !zCalculation.valueNode) {
+      return // Don't submit if any coordinate doesn't have a valid AST node
     }
 
     // Use KCL expression parsing to handle scientific notation properly
@@ -238,12 +175,15 @@ function CommandBarVector3DInput({
       className="mb-2"
       onSubmit={handleSubmit}
       data-can-submit={
-        xValidation.isValid &&
-        yValidation.isValid &&
-        zValidation.isValid &&
+        xCalculation.calcResult !== 'NAN' &&
+        yCalculation.calcResult !== 'NAN' &&
+        zCalculation.calcResult !== 'NAN' &&
         x.trim() &&
         y.trim() &&
-        z.trim()
+        z.trim() &&
+        !xCalculation.isExecuting &&
+        !yCalculation.isExecuting &&
+        !zCalculation.isExecuting
       }
     >
       <div className="mx-4 mt-4 mb-2">
@@ -272,17 +212,17 @@ function CommandBarVector3DInput({
             />
             <span
               className={
-                !xValidation.isValid
+                xCalculation.calcResult === 'NAN'
                   ? 'text-destroy-80 dark:text-destroy-40'
                   : 'text-succeed-80 dark:text-succeed-40'
               }
             >
-              {xValidation.isCalculating ? (
+              {xCalculation.isExecuting ? (
                 <Spinner className="text-inherit w-4 h-4" />
-              ) : !xValidation.isValid ? (
+              ) : xCalculation.calcResult === 'NAN' ? (
                 "Can't calculate"
-              ) : xValidation.result ? (
-                roundOffWithUnits(xValidation.result, 4)
+              ) : xCalculation.calcResult ? (
+                roundOffWithUnits(xCalculation.calcResult, 4)
               ) : (
                 ''
               )}
@@ -309,17 +249,17 @@ function CommandBarVector3DInput({
             />
             <span
               className={
-                !yValidation.isValid
+                yCalculation.calcResult === 'NAN'
                   ? 'text-destroy-80 dark:text-destroy-40'
                   : 'text-succeed-80 dark:text-succeed-40'
               }
             >
-              {yValidation.isCalculating ? (
+              {yCalculation.isExecuting ? (
                 <Spinner className="text-inherit w-4 h-4" />
-              ) : !yValidation.isValid ? (
+              ) : yCalculation.calcResult === 'NAN' ? (
                 "Can't calculate"
-              ) : yValidation.result ? (
-                roundOffWithUnits(yValidation.result, 4)
+              ) : yCalculation.calcResult ? (
+                roundOffWithUnits(yCalculation.calcResult, 4)
               ) : (
                 ''
               )}
@@ -346,17 +286,17 @@ function CommandBarVector3DInput({
             />
             <span
               className={
-                !zValidation.isValid
+                zCalculation.calcResult === 'NAN'
                   ? 'text-destroy-80 dark:text-destroy-40'
                   : 'text-succeed-80 dark:text-succeed-40'
               }
             >
-              {zValidation.isCalculating ? (
+              {zCalculation.isExecuting ? (
                 <Spinner className="text-inherit w-4 h-4" />
-              ) : !zValidation.isValid ? (
+              ) : zCalculation.calcResult === 'NAN' ? (
                 "Can't calculate"
-              ) : zValidation.result ? (
-                roundOffWithUnits(zValidation.result, 4)
+              ) : zCalculation.calcResult ? (
+                roundOffWithUnits(zCalculation.calcResult, 4)
               ) : (
                 ''
               )}
