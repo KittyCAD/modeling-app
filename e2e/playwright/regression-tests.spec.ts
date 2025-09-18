@@ -593,7 +593,7 @@ extrude002 = extrude(profile002, length = 150)`
     const planeColor: [number, number, number] = [170, 220, 170]
     const bgColor: [number, number, number] = TEST_COLORS.DARK_MODE_BKGD
     const middlePixelIsColor = async (color: [number, number, number]) => {
-      return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
+      return u.getGreatestPixDiff({ x: 601, y: 250 }, color)
     }
     const gizmo = page.locator('[aria-label*=gizmo]')
 
