@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+import toast from 'react-hot-toast'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
@@ -105,6 +106,7 @@ function CommandBarVector3DInput({
 
     // Validate that all values are not empty and are valid
     if (!x.trim() || !y.trim() || !z.trim()) {
+      toast.error('Please enter values for all coordinates (X, Y, Z)')
       return // Don't submit if any value is empty
     }
 
@@ -114,6 +116,7 @@ function CommandBarVector3DInput({
       yCalculation.calcResult === 'NAN' ||
       zCalculation.calcResult === 'NAN'
     ) {
+      toast.error('Invalid coordinate values - please check your input')
       return // Don't submit if any coordinate is invalid
     }
 
@@ -123,6 +126,7 @@ function CommandBarVector3DInput({
       !yCalculation.valueNode ||
       !zCalculation.valueNode
     ) {
+      toast.error('Unable to parse coordinate expressions')
       return // Don't submit if any coordinate doesn't have a valid AST node
     }
 
@@ -133,7 +137,7 @@ function CommandBarVector3DInput({
     getCalculatedKclExpressionValue(vectorExpression, true)
       .then((result) => {
         if (result instanceof Error || 'errors' in result || !result.astNode) {
-          // Validation failed - could show an error message here
+          toast.error('Unable to create valid vector expression')
           console.error('Invalid vector expression:', vectorExpression)
           return
         }
@@ -148,7 +152,8 @@ function CommandBarVector3DInput({
         onSubmit(kclValue)
       })
       .catch((error) => {
-        console.error('Error parsing vector expression:', error)
+        toast.error('Failed to calculate vector expression')
+        console.error('Error calculating vector expression:', error)
       })
   }
 
