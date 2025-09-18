@@ -434,8 +434,7 @@ const fixturesBasedOnProcessEnvPlatform = {
         return newLog
       })
 
-      const engineLogKey = testInfo.title + '-engine-logs'
-      await testInfo.attach(engineLogKey, {
+      await testInfo.attach('logs', {
         body: JSON.stringify(formattedLogs, null, 2),
         contentType: 'application/json',
       })

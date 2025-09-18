@@ -54,9 +54,11 @@ class APIReporter implements Reporter {
   }
 
   onTestEnd(test: TestCase, result: TestResult): void {
-    const engineLogKey = test.title + '-engine-logs'
-    const engineLogs = result.attachments.find((a) => {
-      return a.name === engineLogKey
+    if (!process.env.TAB_API_URL || !process.env.TAB_API_KEY) {
+      return
+    }
+    const logs = result.attachments.find((a) => {
+      return a.name === 'logs'
     })
     const payload = {
       // Required information
@@ -88,12 +90,9 @@ class APIReporter implements Reporter {
       GITHUB_SHA: process.env.GITHUB_SHA || null,
       GITHUB_WORKFLOW: process.env.GITHUB_WORKFLOW || null,
       RUNNER_ARCH: process.env.RUNNER_ARCH || null,
-      engineLogs: engineLogs,
+      logs: logs,
     }
 
-    if (!process.env.TAB_API_URL || !process.env.TAB_API_KEY) {
-      return
-    }
     const request = (async () => {
       try {
         const response = await fetch(`${process.env.TAB_API_URL}/api/results`, {
