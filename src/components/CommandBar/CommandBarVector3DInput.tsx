@@ -114,11 +114,20 @@ function CommandBarVector3DInput({
           isCalculating: false,
         })
       } else {
-        setValidation({
-          isValid: true,
-          result: result.valueAsString,
-          isCalculating: false,
-        })
+        // Check if the result is NAN and treat it as invalid
+        if (result.valueAsString === 'NAN') {
+          setValidation({
+            isValid: false,
+            result: "Can't calculate",
+            isCalculating: false,
+          })
+        } else {
+          setValidation({
+            isValid: true,
+            result: result.valueAsString,
+            isCalculating: false,
+          })
+        }
       }
     } catch (error) {
       setValidation({
