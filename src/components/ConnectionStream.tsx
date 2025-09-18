@@ -34,6 +34,7 @@ import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { PATHS } from '@src/lib/paths'
 import type { IndexLoaderData } from '@src/lib/types'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
+import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -45,7 +46,8 @@ export const ConnectionStream = (props: {
   const settings = useSettings()
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
-  const { state: modelingMachineState } = useModelingContext()
+  const { state: modelingMachineState, send: modelingSend } =
+    useModelingContext()
   const { project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
@@ -281,6 +283,11 @@ export const ConnectionStream = (props: {
     },
   })
   useOnFileRoute()
+  useOnOfflineToExitSketchMode({
+    callback: () => {
+      modelingSend({ type: 'Cancel' })
+    },
+  })
 
   return (
     <div
