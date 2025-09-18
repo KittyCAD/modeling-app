@@ -134,7 +134,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
   billingActor: BillingActor,
   token: string,
   fn: (prompt: Prompt, promptMeta: PromptMeta) => void,
-  fn2: (toolOutputTextToCad: MlToolResult) => void,
+  fn2: (toolOutputTextToCad: MlToolResult) => void
 ) => {
   useEffect(() => {
     const subscription = mlEphantManagerActor.subscribe((next) => {
@@ -176,7 +176,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
     let lastId: number | undefined = undefined
     const subscription2 = mlEphantManagerActor2.subscribe((next) => {
       if (next.context.lastMessageId === lastId) return
-      const exchanges = (next.context.conversation?.exchanges ?? [])
+      const exchanges = next.context.conversation?.exchanges ?? []
       const lastExchange = exchanges[exchanges.length - 1]
       if (lastExchange === undefined) return
       const lastResponse = (lastExchange.responses ?? [])[0] ?? {}

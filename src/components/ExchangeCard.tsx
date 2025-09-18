@@ -34,24 +34,34 @@ export const ExchangeCardStatus = (props: {
 
   const isEndOfStream = 'end_of_stream' in (props.responses?.slice(-1)[0] ?? {})
 
-  const MaybeError =  () => props.maybeError ? <div className="text-rose-400">
-    <CustomIcon name="triangleExclamation" className="w-4 h-4 inline valign" />
-    {' '}
-    { props.maybeError?.error.detail }
-  </div> : null
-
-  return (
-    props.onlyShowImmediateThought
-     ?
-      (<div className="text-sm text-chalkboard-70">
-        { isEndOfStream && <MaybeError /> }
-        { !isEndOfStream && thinker }
-      </div>)
-      :
-      <div>
-        { thinker }
-        { props.updatedAt && <div className="text-chalkboard-70 p-2">Reasoned for { ms(props.updatedAt.getTime() - props.startedAt.getTime(),{ long: true })}</div> }
+  const MaybeError = () =>
+    props.maybeError ? (
+      <div className="text-rose-400">
+        <CustomIcon
+          name="triangleExclamation"
+          className="w-4 h-4 inline valign"
+        />{' '}
+        {props.maybeError?.error.detail}
       </div>
+    ) : null
+
+  return props.onlyShowImmediateThought ? (
+    <div className="text-sm text-chalkboard-70">
+      {isEndOfStream && <MaybeError />}
+      {!isEndOfStream && thinker}
+    </div>
+  ) : (
+    <div>
+      {thinker}
+      {props.updatedAt && (
+        <div className="text-chalkboard-70 p-2">
+          Reasoned for{' '}
+          {ms(props.updatedAt.getTime() - props.startedAt.getTime(), {
+            long: true,
+          })}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -90,26 +100,36 @@ function isMlCopilotUserRequest(x: unknown): x is MlCopilotClientMessageUser {
 }
 
 const hasVisibleChildren = (children: ReactNode) => {
-  return (children instanceof Array && children.length > 0) || (typeof children === 'string' && children !== '')
+  return (
+    (children instanceof Array && children.length > 0) ||
+    (typeof children === 'string' && children !== '')
+  )
 }
 
-export const ChatBubble = (props: { side: 'left' | 'right', userAvatar?: ReactNode, wfull?: true, children: ReactNode }) => {
+export const ChatBubble = (props: {
+  side: 'left' | 'right'
+  userAvatar?: ReactNode
+  wfull?: true
+  children: ReactNode
+}) => {
   const cssRequest =
     `${props.wfull ? 'w-full ' : ''} select-text whitespace-pre-line hyphens-auto shadow-sm ${props.side === 'left' ? 'bg-1' : 'bg-2'} text-default border b-4 rounded-t-md pl-4 pr-4 pt-2 pb-2 ` +
     (props.side === 'left' ? 'rounded-br-md' : 'rounded-bl-md')
 
   return (
-    <div className={`flex justify-end items-end gap-2 w-full ${props.side === 'right' ? 'flex-row' : 'flex-row-reverse'}`}>
+    <div
+      className={`flex justify-end items-end gap-2 w-full ${props.side === 'right' ? 'flex-row' : 'flex-row-reverse'}`}
+    >
       <div className="flex flex-col items-end gap-2 w-full">
         <div style={{ wordBreak: 'break-word' }} className={cssRequest}>
-        { hasVisibleChildren(props.children) ? props.children :
-          <div className="animate-pulse animate-shimmer h-4 w-full p-1 bg-chalkboard-80 rounded"></div>
-        }
+          {hasVisibleChildren(props.children) ? (
+            props.children
+          ) : (
+            <div className="animate-pulse animate-shimmer h-4 w-full p-1 bg-chalkboard-80 rounded"></div>
+          )}
         </div>
       </div>
-      <div className="w-fit-content">
-        { props.userAvatar }
-      </div>
+      <div className="w-fit-content">{props.userAvatar}</div>
     </div>
   )
 }
@@ -119,14 +139,18 @@ export const RequestCard = (props: RequestCardProps) => {
     return null
   }
 
-  return <ChatBubble side={'right'} userAvatar={props.userAvatar}>
-    {props.content}
-  </ChatBubble>
+  return (
+    <ChatBubble side={'right'} userAvatar={props.userAvatar}>
+      {props.content}
+    </ChatBubble>
+  )
 }
 
-export const Delta = (props: { children: ReactNode }) => <span className="animate-delta-in" style={{ opacity: 0 }}>
-  { props.children }
-</span>
+export const Delta = (props: { children: ReactNode }) => (
+  <span className="animate-delta-in" style={{ opacity: 0 }}>
+    {props.children}
+  </span>
+)
 
 type ResponsesCardProp = {
   items: Exchange['responses']
@@ -134,18 +158,26 @@ type ResponsesCardProp = {
 
 // This can be used to show `delta` or `tool_output`
 export const ResponsesCard = (props: ResponsesCardProp) => {
-  const items = props.items.map((response: MlCopilotServerMessage, index: number) => {
-    if ('delta' in response) {
-      return <Delta key={index}>{ response.delta.delta }</Delta>
+  const items = props.items.map(
+    (response: MlCopilotServerMessage, index: number) => {
+      if ('delta' in response) {
+        return <Delta key={index}>{response.delta.delta}</Delta>
+      }
+      return null
     }
-    return null
-  })
+  )
 
   const itemsFilteredNulls = items.filter((x: ReactNode | null) => x !== null)
 
-  return <ChatBubble side={'left'} wfull={true} userAvatar={<AvatarUser src="/public/mleyphun.jpg" />}>
-    {itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null}
-  </ChatBubble>
+  return (
+    <ChatBubble
+      side={'left'}
+      wfull={true}
+      userAvatar={<AvatarUser src="/public/mleyphun.jpg" />}
+    >
+      {itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null}
+    </ChatBubble>
+  )
 }
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
@@ -168,22 +200,27 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   }
 
   useEffect(() => {
-      setUpdatedAt(new Date())
+    setUpdatedAt(new Date())
   }, [props.responses.length])
 
   useEffect(() => {
-      if (refExchange.current !== null && showFullReasoning === false) {
-        refExchange.current.scrollIntoView({ behavior: 'smooth' })
-      }
+    if (refExchange.current !== null && showFullReasoning === false) {
+      refExchange.current.scrollIntoView({ behavior: 'smooth' })
+    }
   }, [props.responses.length, showFullReasoning])
 
   const maybeError = props.responses.filter((r) => 'error' in r)[0]
 
   return (
     <div className={cssCard} ref={refExchange}>
-      <div className="p-7 text-chalkboard-70 text-center">{ ms(Date.now() - startedAt.getTime(), { long: true}) } ago</div>
+      <div className="p-7 text-chalkboard-70 text-center">
+        {ms(Date.now() - startedAt.getTime(), { long: true })} ago
+      </div>
       {isMlCopilotUserRequest(props.request) && (
-        <RequestCard {...props.request} userAvatar={<AvatarUser src={props.userAvatar}/>} />
+        <RequestCard
+          {...props.request}
+          userAvatar={<AvatarUser src={props.userAvatar} />}
+        />
       )}
       {showFullReasoning && (
         <div>
@@ -195,7 +232,10 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           />
         </div>
       )}
-      <div className="flex flex-row items-center cursor-pointer justify-end gap-2" onClick={() => onSeeReasoning()}>
+      <div
+        className="flex flex-row items-center cursor-pointer justify-end gap-2"
+        onClick={() => onSeeReasoning()}
+      >
         <ExchangeCardStatus
           maybeError={maybeError}
           responses={props.responses}
@@ -205,7 +245,15 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         />
         <div>
           <button className="flex justify-center items-center">
-            { showFullReasoning ? <>Collapse <CustomIcon name="collapse" className="w-5 h-5"/></> : <>See reasoning <CustomIcon name="plus" className="w-5 h-5" /></>  }
+            {showFullReasoning ? (
+              <>
+                Collapse <CustomIcon name="collapse" className="w-5 h-5" />
+              </>
+            ) : (
+              <>
+                See reasoning <CustomIcon name="plus" className="w-5 h-5" />
+              </>
+            )}
           </button>
         </div>
       </div>

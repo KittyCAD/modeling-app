@@ -201,10 +201,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number) => (
-      <ExchangeCard
-        {...exchange}
-        userAvatar={props.userAvatarSrc}
-      />
+      <ExchangeCard {...exchange} userAvatar={props.userAvatarSrc} />
     )
   )
   return (
