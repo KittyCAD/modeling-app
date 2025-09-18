@@ -322,6 +322,9 @@ export function SystemIOMachineLogicListenerDesktop() {
           },
         })
       }
+    },
+
+    (toolOutput) => {
     }
   )
 

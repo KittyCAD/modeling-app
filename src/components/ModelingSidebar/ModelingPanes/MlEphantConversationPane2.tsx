@@ -32,15 +32,12 @@ export const MlEphantConversationPane2 = (props: {
   user?: User
 }) => {
   const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
-  const conversation = useSelector(
-    props.mlEphantManagerActor,
-    (actor) => {
-      return actor.context.conversation
-    }
-  )
+  const conversation = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.conversation
+  })
 
   const onSeeMoreHistory = (nextPage?: string) => {
-    console.log('next page' , nextPage)
+    console.log('next page', nextPage)
   }
 
   const onProcess = async (request: string) => {
@@ -106,10 +103,7 @@ export const MlEphantConversationPane2 = (props: {
 
     // We can now reliably use the mlConversations data.
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
-    if (
-      props.theProject !== undefined &&
-      conversationId !== undefined
-    ) {
+    if (props.theProject !== undefined && conversationId !== undefined) {
       // TODO:
       // request to get exchanges in a particular conversation
       // hopefully with { command: 'switch', conversation_id, limit }

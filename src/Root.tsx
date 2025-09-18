@@ -29,7 +29,7 @@ function RootLayout() {
         <MlEphantManagerReactContext.Provider
           options={{
             input: {
-              apiToken
+              apiToken,
             },
           }}
         >

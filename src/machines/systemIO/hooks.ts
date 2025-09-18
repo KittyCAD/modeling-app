@@ -1,3 +1,4 @@
+import { type MlToolResult } from '@kittycad/lib'
 import type { Prompt } from '@src/lib/prompt'
 import { type settings } from '@src/lib/settings/initialSettings'
 import type { SystemIOActor } from '@src/lib/singletons'
@@ -132,7 +133,8 @@ export const useWatchForNewFileRequestsFromMlEphant = (
   mlEphantManagerActor2: MlEphantManagerActor2,
   billingActor: BillingActor,
   token: string,
-  fn: (prompt: Prompt, promptMeta: PromptMeta) => void
+  fn: (prompt: Prompt, promptMeta: PromptMeta) => void,
+  fn2: (toolOutputTextToCad: MlToolResult) => void,
 ) => {
   useEffect(() => {
     const subscription = mlEphantManagerActor.subscribe((next) => {
@@ -171,10 +173,18 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       })
     })
 
+    let lastId: number | undefined = undefined
     const subscription2 = mlEphantManagerActor2.subscribe((next) => {
-      console.log('systemIO/hooks.ts: ', next.value)
-      console.log('systemIO/hooks.ts: ', next.context)
+      if (next.context.lastMessageId === lastId) return
+      const exchanges = (next.context.conversation?.exchanges ?? [])
+      const lastExchange = exchanges[exchanges.length - 1]
+      if (lastExchange === undefined) return
+      const lastResponse = (lastExchange.responses ?? [])[0] ?? {}
+      if (!('tool_output' in lastResponse)) return
+
+      fn2(lastResponse.tool_output.result)
     })
+
     return () => {
       subscription.unsubscribe()
       subscription2.unsubscribe()

@@ -76,7 +76,7 @@ export interface Exchange {
 }
 
 export type Conversation = {
-  exchanges: Exchange[],
+  exchanges: Exchange[]
   pageToken?: string
 }
 
@@ -84,6 +84,7 @@ export interface MlEphantManagerContext2 {
   apiToken: string
   ws?: WebSocket
   conversation?: Conversation
+  lastMessageId?: number
 }
 
 export const mlEphantDefaultContext2 = (args: {
@@ -94,6 +95,7 @@ export const mlEphantDefaultContext2 = (args: {
   apiToken: args.input?.apiToken ?? '',
   ws: undefined,
   conversation: undefined,
+  lastMessageId: undefined,
 })
 
 function assertsString(x: unknown): asserts x is string {
@@ -146,9 +148,9 @@ function assertsMlCopilotServerMessage(
 }
 
 type XSInput<T> = {
-  input:
-    { event: Extract<MlEphantManagerEvents2, { type: T }> }
-    & { context: MlEphantManagerContext2 }
+  input: { event: Extract<MlEphantManagerEvents2, { type: T }> } & {
+    context: MlEphantManagerContext2
+  }
 }
 
 export const mlEphantManagerMachine2 = setup({
@@ -170,73 +172,74 @@ export const mlEphantManagerMachine2 = setup({
     },
   },
   actors: {
-    [MlEphantManagerStates2.Setup]: fromPromise(async function (args:
-      XSInput<MlEphantManagerStates2.Setup>,
+    [MlEphantManagerStates2.Setup]: fromPromise(async function (
+      args: XSInput<MlEphantManagerStates2.Setup>
     ): Promise<Partial<MlEphantManagerContext2>> {
       assertEvent(args.input.event, [MlEphantManagerStates2.Setup])
 
-      const ws = await Socket(MockSocket, '/ws/ml/copilot', args.input.context.apiToken)
-
-      ws.addEventListener(
-        'message',
-        function (event: MessageEvent<any>) {
-          console.log(event)
-          assertsString(event.data)
-
-          let response: unknown
-          try {
-            response = JSON.parse(event.data)
-          } catch (e: unknown) {
-            throw e
-          }
-
-          assertsMlCopilotServerMessage(response)
-
-          args.input.event.refParentSend({
-            type: MlEphantManagerTransitions2.ResponseReceive,
-            response,
-          })
-        }
+      const ws = await Socket(
+        WebSocket,
+        '/ws/ml/copilot',
+        args.input.context.apiToken
       )
 
-      ws.addEventListener(
-        'close',
-        function (event: Event) {
-          console.log(event)
+      ws.addEventListener('message', function (event: MessageEvent<any>) {
+        assertsString(event.data)
+
+        let response: unknown
+        try {
+          response = JSON.parse(event.data)
+        } catch (e: unknown) {
+          throw e
         }
-      )
+
+        assertsMlCopilotServerMessage(response)
+
+        // Ignore the authorization bug
+        if ('error' in response && response.error.detail === 'Please send `{ headers: { Authorization: "Bearer <token>" } }` over this websocket.') return
+
+        // Ignore the dang 'ML-Ephant Copilot' banner
+        if ('info' in response && response.info.text === '🤖 ML-ephant Copilot') return
+
+        args.input.event.refParentSend({
+          type: MlEphantManagerTransitions2.ResponseReceive,
+          response,
+        })
+      })
+
+      ws.addEventListener('close', function (event: Event) {
+        console.log(event)
+      })
 
       return {
         ws,
       }
     }),
-    [MlEphantManagerTransitions2.ContextNew]: fromPromise(
-      async function (args:
-        XSInput<MlEphantManagerTransitions2.ContextNew>,
-      ): Promise<Partial<MlEphantManagerContext2>> {
-        assertsPresent<WebSocket>(args.input.context.ws)
+    [MlEphantManagerTransitions2.ContextNew]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions2.ContextNew>
+    ): Promise<Partial<MlEphantManagerContext2>> {
+      assertsPresent<WebSocket>(args.input.context.ws)
 
-        args.input.context.ws.send(
-          JSON.stringify({
-            body: {
-              system: {
-                command: 'new',
-              },
+      args.input.context.ws.send(
+        JSON.stringify({
+          body: {
+            system: {
+              command: 'new',
             },
-          })
-        )
-
-        return {
-          conversation: {
-            exchanges: [],
-            pageToken: undefined,
           },
-        }
+        })
+      )
+
+      return {
+        conversation: {
+          exchanges: [],
+          pageToken: undefined,
+        },
       }
-    ),
+    }),
     [MlEphantManagerTransitions2.ConversationFetch]: fromPromise(
-      async function (args: 
-        XSInput<MlEphantManagerTransitions2.ConversationFetch>,
+      async function (
+        args: XSInput<MlEphantManagerTransitions2.ConversationFetch>
       ): Promise<Partial<MlEphantManagerContext2>> {
         assertsPresent<WebSocket>(args.input.context.ws)
 
@@ -248,60 +251,58 @@ export const mlEphantManagerMachine2 = setup({
         }
       }
     ),
-    [MlEphantManagerTransitions2.MessageSend]: fromPromise(
-      async function (args:
-        XSInput<MlEphantManagerTransitions2.MessageSend>,
-      ): Promise<Partial<MlEphantManagerContext2>> {
-        const { context, event } = args.input
-        assertsPresent<WebSocket>(context.ws)
-        assertsPresent<Conversation>(context.conversation)
+    [MlEphantManagerTransitions2.MessageSend]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions2.MessageSend>
+    ): Promise<Partial<MlEphantManagerContext2>> {
+      const { context, event } = args.input
+      assertsPresent<WebSocket>(context.ws)
+      assertsPresent<Conversation>(context.conversation)
 
-        const requestData = constructMultiFileIterationRequestWithPromptHelpers(
-          {
-            // TODO: NEED CONVO ID AGAIN
-            conversationId: '',
-            prompt: event.prompt,
-            selections: event.selections,
-            applicationProjectDirectory: event.applicationProjectDirectory,
-            projectFiles: event.projectFiles,
-            artifactGraph: event.artifactGraph,
-            projectName: event.projectForPromptOutput.name,
-            currentFile: event.fileSelectedDuringPrompting,
-            kclVersion: getKclVersion(),
-          }
+      const requestData = constructMultiFileIterationRequestWithPromptHelpers({
+        // TODO: NEED CONVO ID AGAIN
+        conversationId: '',
+        prompt: event.prompt,
+        selections: event.selections,
+        applicationProjectDirectory: event.applicationProjectDirectory,
+        projectFiles: event.projectFiles,
+        artifactGraph: event.artifactGraph,
+        projectName: event.projectForPromptOutput.name,
+        currentFile: event.fileSelectedDuringPrompting,
+        kclVersion: getKclVersion(),
+      })
+
+      const filesAsByteArrays: Record<string, number[]> = {}
+
+      for (let file of requestData.files) {
+        filesAsByteArrays[file.name] = Array.from(
+          new Uint8Array(await file.data.arrayBuffer())
         )
-
-        const filesAsByteArrays: Record<string, number[]> = {}
-
-        for (let file of requestData.files) {
-          filesAsByteArrays[file.name] = Array.from(new Uint8Array(await file.data.arrayBuffer()))
-        }
-
-        const request: Extract<MlCopilotClientMessage, { type: 'user' }>  = {
-          type: 'user',
-          content: requestData.body.prompt ?? '',
-          project_name: requestData.body.project_name,
-          source_ranges: requestData.body.source_ranges,
-          current_files: filesAsByteArrays,
-        }
-
-        context.ws.send(JSON.stringify(request))
-
-        const conversation: Conversation = {
-          exchanges: Array.from(context.conversation.exchanges),
-          pageToken: context.conversation.pageToken,
-        }
-
-        conversation.exchanges.push({
-          request,
-          responses: []
-        })
-
-        return {
-          conversation
-        }
       }
-    ),
+
+      const request: Extract<MlCopilotClientMessage, { type: 'user' }> = {
+        type: 'user',
+        content: requestData.body.prompt ?? '',
+        project_name: requestData.body.project_name,
+        source_ranges: requestData.body.source_ranges,
+        current_files: filesAsByteArrays,
+      }
+
+      context.ws.send(JSON.stringify(request))
+
+      const conversation: Conversation = {
+        exchanges: Array.from(context.conversation.exchanges),
+        pageToken: context.conversation.pageToken,
+      }
+
+      conversation.exchanges.push({
+        request,
+        responses: [],
+      })
+
+      return {
+        conversation,
+      }
+    }),
   },
 }).createMachine({
   initial: MlEphantManagerStates2.Setup,
@@ -321,7 +322,7 @@ export const mlEphantManagerMachine2 = setup({
         src: MlEphantManagerStates2.Setup,
         onDone: {
           target: MlEphantManagerStates2.Ready,
-          actions: [ assign(({ event }) => event.output) ],
+          actions: [assign(({ event }) => event.output)],
         },
         onError: {
           actions: ['toastError'],
@@ -343,10 +344,16 @@ export const mlEphantManagerMachine2 = setup({
                 target: S.Await,
                 actions: [
                   assign(({ event, context }) => {
-                    assertEvent(event, [MlEphantManagerTransitions2.ResponseReceive])
+                    assertEvent(event, [
+                      MlEphantManagerTransitions2.ResponseReceive,
+                    ])
+
+                    const lastMessageId = (context.lastMessageId ?? -1) + 1
 
                     const conversation: Conversation = {
-                      exchanges: Array.from(context.conversation?.exchanges ?? []),
+                      exchanges: Array.from(
+                        context.conversation?.exchanges ?? []
+                      ),
                       pageToken: context.conversation?.pageToken,
                     }
 
@@ -364,6 +371,7 @@ export const mlEphantManagerMachine2 = setup({
 
                     return {
                       conversation,
+                      lastMessageId,
                     }
                   }),
                 ],
@@ -384,44 +392,59 @@ export const mlEphantManagerMachine2 = setup({
             [MlEphantManagerTransitions2.ConversationFetch]: {
               invoke: {
                 input: (args) => {
-                  assertEvent(args.event, [MlEphantManagerTransitions2.ConversationFetch])
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions2.ConversationFetch,
+                  ])
                   return {
                     event: args.event,
                     context: args.context,
                   }
                 },
                 src: MlEphantManagerTransitions2.ConversationFetch,
-                onDone: { target: S.Await, actions: [assign(({ event }) => event.output)] },
+                onDone: {
+                  target: S.Await,
+                  actions: [assign(({ event }) => event.output)],
+                },
                 onError: { target: S.Await, actions: ['toastError'] },
-              }
+              },
             },
             [MlEphantManagerTransitions2.ContextNew]: {
               invoke: {
                 input: (args) => {
-                  assertEvent(args.event, [MlEphantManagerTransitions2.ContextNew])
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions2.ContextNew,
+                  ])
                   return {
                     event: args.event,
                     context: args.context,
                   }
                 },
                 src: MlEphantManagerTransitions2.ContextNew,
-                onDone: { target: S.Await, actions: [assign(({ event }) => event.output)] },
+                onDone: {
+                  target: S.Await,
+                  actions: [assign(({ event }) => event.output)],
+                },
                 onError: { target: S.Await, actions: ['toastError'] },
-              }
+              },
             },
             [MlEphantManagerTransitions2.MessageSend]: {
               invoke: {
                 input: (args) => {
-                  assertEvent(args.event, [MlEphantManagerTransitions2.MessageSend])
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions2.MessageSend,
+                  ])
                   return {
                     event: args.event,
                     context: args.context,
                   }
                 },
                 src: MlEphantManagerTransitions2.MessageSend,
-                onDone: { target: S.Await, actions: [assign(({ event }) => event.output)] },
+                onDone: {
+                  target: S.Await,
+                  actions: [assign(({ event }) => event.output)],
+                },
                 onError: { target: S.Await, actions: ['toastError'] },
-              }
+              },
             },
           },
         },
@@ -431,5 +454,6 @@ export const mlEphantManagerMachine2 = setup({
 })
 
 export type MlEphantManagerActor2 = ActorRefFrom<typeof mlEphantManagerMachine2>
-export const MlEphantManagerReactContext =
-  createActorContext(mlEphantManagerMachine2)
+export const MlEphantManagerReactContext = createActorContext(
+  mlEphantManagerMachine2
+)
