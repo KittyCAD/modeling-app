@@ -260,11 +260,25 @@ export class Connection extends EventTarget {
       return Promise.reject('currently connecting, try again later.')
     }
 
-    // TODO: Make sure each resolve and each reject is called.
     this.deferredConnection = promiseFactory<any>()
     this.deferredPeerConnection = promiseFactory<any>()
     this.deferredMediaStreamAndWebrtcStatsCollector = promiseFactory<any>()
     this.deferredSdpAnswer = promiseFactory<any>()
+
+    const warnAndRejectConnect = (e: any) => {
+      console.warn(e)
+      this.deferredConnection?.reject(e)
+    }
+
+    // Make sure to catch all of these.
+    this.deferredConnection.promise.catch((e) => {
+      console.warn(e)
+    })
+    this.deferredPeerConnection.promise.catch(warnAndRejectConnect)
+    this.deferredMediaStreamAndWebrtcStatsCollector.promise.catch(
+      warnAndRejectConnect
+    )
+    this.deferredSdpAnswer.promise.catch(warnAndRejectConnect)
 
     this.createWebSocketConnection()
 
