@@ -450,7 +450,8 @@ export class SceneInfra {
   private _processingMouseMove = false
   private _lastUnprocessedMouseEvent: MouseEvent | undefined
 
-  private updateCurrentMouseVector(event: MouseEvent, target: HTMLElement) {
+  private updateCurrentMouseVector(event: MouseEvent) {
+    const target = this.renderer.domElement
 
     const rect = target.getBoundingClientRect()
     if (rect.width === 0 || rect.height === 0) {
@@ -463,11 +464,6 @@ export class SceneInfra {
   }
 
   onMouseMove = async (mouseEvent: MouseEvent) => {
-    if (!(mouseEvent.currentTarget instanceof HTMLElement)) {
-      console.error('unexpected targetless event')
-      return
-    }
-
     if (this.mouseMoveThrottling) {
       // Throttle mouse move events to help with performance.
       // Without this a new call to executeAstMock() is made by SceneEntities/onDragSegment() while the
@@ -480,7 +476,7 @@ export class SceneInfra {
       this._processingMouseMove = true
     }
 
-    this.updateCurrentMouseVector(mouseEvent, mouseEvent.currentTarget)
+    this.updateCurrentMouseVector(mouseEvent)
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
@@ -650,11 +646,7 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
-    if (!(event.currentTarget instanceof HTMLElement)) {
-      console.error('unexpected targetless event')
-      return
-    }
-    this.updateCurrentMouseVector(event, event.currentTarget)
+    this.updateCurrentMouseVector(event)
 
     const mouseDownVector = this.currentMouseVector.clone()
     const intersect = this.raycastRing()[0]
@@ -672,11 +664,7 @@ export class SceneInfra {
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
-    if (!(mouseEvent.currentTarget instanceof HTMLElement)) {
-      console.error('unexpected targetless event')
-      return
-    }
-    this.updateCurrentMouseVector(mouseEvent, mouseEvent.currentTarget)
+    this.updateCurrentMouseVector(mouseEvent)
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 
