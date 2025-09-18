@@ -109,15 +109,11 @@ export const ClientSideScene = ({
     sceneInfra.onCanvasResized()
     sceneInfra.animate()
 
-    container.addEventListener(
-      'mousemove',
-      toSync(sceneInfra.onMouseMove, reportRejection)
-    )
+    const onMouseMove = toSync(sceneInfra.onMouseMove, reportRejection)
+    container.addEventListener('mousemove', onMouseMove)
     container.addEventListener('mousedown', sceneInfra.onMouseDown)
-    container.addEventListener(
-      'mouseup',
-      toSync(sceneInfra.onMouseUp, reportRejection)
-    )
+    const onMouseUp = toSync(sceneInfra.onMouseUp, reportRejection)
+    container.addEventListener('mouseup', onMouseUp)
 
     // Detect canvas size changes
     const observer = new ResizeObserver(() => {
@@ -146,15 +142,9 @@ export const ClientSideScene = ({
     engineCommandManager.modelingSend = send
 
     return () => {
-      container.removeEventListener(
-        'mousemove',
-        toSync(sceneInfra.onMouseMove, reportRejection)
-      )
+      container.removeEventListener('mousemove', onMouseMove)
       container.removeEventListener('mousedown', sceneInfra.onMouseDown)
-      container.removeEventListener(
-        'mouseup',
-        toSync(sceneInfra.onMouseUp, reportRejection)
-      )
+      container.removeEventListener('mouseup', onMouseUp)
       sceneEntitiesManager.tearDownSketch({ removeAxis: true })
 
       observer.disconnect()
