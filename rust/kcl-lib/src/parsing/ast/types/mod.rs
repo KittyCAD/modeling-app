@@ -216,6 +216,7 @@ impl<T> From<&BoxNode<T>> for SourceRange {
 pub type BoxNode<T> = Box<Node<T>>;
 pub type NodeList<T> = Vec<Node<T>>;
 pub type NodeRef<'a, T> = &'a Node<T>;
+pub type NodeRefMut<'a, T> = &'a mut Node<T>;
 
 /// A way to abstract over blocks of code.
 pub trait CodeBlock {
