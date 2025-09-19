@@ -267,6 +267,8 @@ export function addLoft({
   ast,
   sketches,
   vDegree,
+  bezApproximateRational,
+  baseCurveIndex,
   tagStart,
   tagEnd,
   nodeToEdit,
@@ -274,6 +276,8 @@ export function addLoft({
   ast: Node<Program>
   sketches: Selections
   vDegree?: KclCommandValue
+  bezApproximateRational?: boolean
+  baseCurveIndex?: KclCommandValue
   tagStart?: string
   tagEnd?: string
   nodeToEdit?: PathToNode
@@ -297,6 +301,17 @@ export function addLoft({
   const vDegreeExpr = vDegree
     ? [createLabeledArg('vDegree', valueOrVariable(vDegree))]
     : []
+  const bezApproximateRationalExpr = bezApproximateRational
+    ? [
+        createLabeledArg(
+          'bezApproximateRational',
+          createLiteral(bezApproximateRational)
+        ),
+      ]
+    : []
+  const baseCurveIndexExpr = baseCurveIndex
+    ? [createLabeledArg('baseCurveIndex', valueOrVariable(baseCurveIndex))]
+    : []
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
     : []
@@ -307,6 +322,8 @@ export function addLoft({
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('loft', sketchesExpr, [
     ...vDegreeExpr,
+    ...bezApproximateRationalExpr,
+    ...baseCurveIndexExpr,
     ...tagStartExpr,
     ...tagEndExpr,
   ])
@@ -314,6 +331,13 @@ export function addLoft({
   // Insert variables for labeled arguments if provided
   if (vDegree && 'variableName' in vDegree && vDegree.variableName) {
     insertVariableAndOffsetPathToNode(vDegree, modifiedAst, nodeToEdit)
+  }
+  if (
+    baseCurveIndex &&
+    'variableName' in baseCurveIndex &&
+    baseCurveIndex.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(baseCurveIndex, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,

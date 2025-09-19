@@ -60,6 +60,12 @@ const objectsTypesAndFilters: {
   selectionFilter: ['object'],
 }
 
+// For all boolean args
+const booleanOptions = [
+  { name: 'False', value: false },
+  { name: 'True', value: true },
+]
+
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
   Export: {
@@ -105,8 +111,8 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     vDegree?: KclCommandValue
-    // TODO: add `bez_approximate_rational` bool arg if we think we should have it
-    // TODO: add `base_curve_index` number arg if we think we should have it
+    bezApproximateRational?: boolean
+    baseCurveIndex?: KclCommandValue
     // TODO: figure out if we should expose `tolerance` or not
     tagStart?: string
     tagEnd?: string
@@ -446,10 +452,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       symmetric: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
       bidirectionalLength: {
         inputType: 'kcl',
@@ -514,10 +517,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sectional: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
       relativeTo: {
         inputType: 'options',
@@ -554,6 +554,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       vDegree: {
+        inputType: 'kcl',
+        required: false,
+      },
+      bezApproximateRational: {
+        inputType: 'options',
+        required: false,
+        options: booleanOptions,
+      },
+      baseCurveIndex: {
         inputType: 'kcl',
         required: false,
       },
@@ -624,10 +633,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       symmetric: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
       bidirectionalAngle: {
         inputType: 'kcl',
@@ -821,10 +827,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         required: false,
         displayName: 'CounterClockWise',
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
     },
   },
@@ -1021,10 +1024,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       global: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
     },
   },
@@ -1061,10 +1061,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       global: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
     },
   },
@@ -1101,10 +1098,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       global: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
     },
   },

@@ -315,7 +315,39 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
     vDegree = result
   }
 
-  // tagStart and tagEng arguments
+  // bezApproximateRational argument from a string to boolean
+  let bezApproximateRational: boolean | undefined
+  if (
+    'bezApproximateRational' in operation.labeledArgs &&
+    operation.labeledArgs.bezApproximateRational
+  ) {
+    bezApproximateRational =
+      codeManager.code.slice(
+        operation.labeledArgs.bezApproximateRational.sourceRange[0],
+        operation.labeledArgs.bezApproximateRational.sourceRange[1]
+      ) === 'true'
+  }
+
+  // baseCurveIndex argument from a string to a KCL expression
+  let baseCurveIndex: KclCommandValue | undefined
+  if (
+    'baseCurveIndex' in operation.labeledArgs &&
+    operation.labeledArgs.baseCurveIndex
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.baseCurveIndex.sourceRange[0],
+        operation.labeledArgs.baseCurveIndex.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve baseCurveIndex argument" }
+    }
+
+    baseCurveIndex = result
+  }
+
+  // tagStart and tagEnd arguments
   let tagStart: string | undefined
   let tagEnd: string | undefined
   if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
@@ -337,6 +369,8 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
   const argDefaultValues: ModelingCommandSchema['Loft'] = {
     sketches,
     vDegree,
+    bezApproximateRational,
+    baseCurveIndex,
     tagStart,
     tagEnd,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),

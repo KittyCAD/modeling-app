@@ -407,7 +407,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
     )
   })
 
-  it('should edit a loft call with vDegree', async () => {
+  it('should edit a loft call with vDegree, bezApproximateRational, and baseCurveIndex', async () => {
     const twoCirclesCodeWithLoft = `${twoCirclesCode}
 loft001 = loft([profile001, profile002])`
     const { ast, sketches } = await getAstAndSketchSelections(
@@ -415,18 +415,27 @@ loft001 = loft([profile001, profile002])`
     )
     expect(sketches.graphSelections).toHaveLength(2)
     const vDegree = await getKclCommandValue('3')
+    const bezApproximateRational = true
+    const baseCurveIndex = await getKclCommandValue('0')
     const nodeToEdit = createPathToNodeForLastVariable(ast)
     const result = addLoft({
       ast,
       sketches,
       vDegree,
+      bezApproximateRational,
+      baseCurveIndex,
       nodeToEdit,
     })
     if (err(result)) throw result
     const newCode = recast(result.modifiedAst)
     expect(newCode).toContain(twoCirclesCode)
     expect(newCode).toContain(
-      `loft001 = loft([profile001, profile002], vDegree = 3)`
+      `loft001 = loft(
+  [profile001, profile002],
+  vDegree = 3,
+  bezApproximateRational = true,
+  baseCurveIndex = 0,
+)`
     )
     // Don't think we can find the artifact here for loft?
   })
