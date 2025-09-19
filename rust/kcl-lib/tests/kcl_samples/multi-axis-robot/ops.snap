@@ -1613,6 +1613,13 @@ description: Operations executed multi-axis-robot.kcl
             }
           },
           "sourceRange": []
+        },
+        "method": {
+          "value": {
+            "type": "String",
+            "value": "new"
+          },
+          "sourceRange": []
         }
       },
       "nodePath": {
@@ -1668,6 +1675,13 @@ description: Operations executed multi-axis-robot.kcl
               "len": "in",
               "angle": "degrees"
             }
+          },
+          "sourceRange": []
+        },
+        "method": {
+          "value": {
+            "type": "String",
+            "value": "new"
           },
           "sourceRange": []
         }
@@ -1802,6 +1816,13 @@ description: Operations executed multi-axis-robot.kcl
             }
           },
           "sourceRange": []
+        },
+        "method": {
+          "value": {
+            "type": "String",
+            "value": "new"
+          },
+          "sourceRange": []
         }
       },
       "nodePath": {
@@ -1859,6 +1880,13 @@ description: Operations executed multi-axis-robot.kcl
             }
           },
           "sourceRange": []
+        },
+        "method": {
+          "value": {
+            "type": "String",
+            "value": "new"
+          },
+          "sourceRange": []
         }
       },
       "nodePath": {
@@ -1871,10 +1899,33 @@ description: Operations executed multi-axis-robot.kcl
       "name": "appearance",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
         },
         "sourceRange": []
       },
