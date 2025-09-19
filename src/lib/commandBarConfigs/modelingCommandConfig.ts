@@ -2,17 +2,8 @@ import type { EntityType, OutputFormat3d } from '@kittycad/lib'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
-import type {
-  Artifact,
-  PathToNode,
-  SourceRange,
-  VariableDeclarator,
-} from '@src/lang/wasm'
-import { isPathToNode } from '@src/lang/wasm'
+import type { Artifact, PathToNode } from '@src/lang/wasm'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -26,7 +17,7 @@ import {
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type {
   ModelingMachineContext,
@@ -166,13 +157,6 @@ export type ModelingCommandSchema = {
     radius?: KclCommandValue // axis or edge modes only
     length?: KclCommandValue // axis or edge modes only
     ccw?: boolean // optional boolean argument, default value to false
-  }
-  'event.parameter.create': {
-    value: KclCommandValue
-  }
-  'event.parameter.edit': {
-    nodeToEdit: PathToNode
-    value: KclCommandValue
   }
   'change tool': {
     tool: SketchTool
@@ -853,93 +837,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
-      },
-    },
-  },
-  'event.parameter.create': {
-    displayName: 'Create parameter',
-    description: 'Add a named constant to use in geometry',
-    icon: 'make-variable',
-    needsReview: false,
-    args: {
-      value: {
-        inputType: 'kcl',
-        required: true,
-        createVariable: 'force',
-        variableName: 'myParameter',
-        defaultValue: '5',
-      },
-    },
-  },
-  'event.parameter.edit': {
-    displayName: 'Edit parameter',
-    description: 'Edit the value of a named constant',
-    icon: 'make-variable',
-    needsReview: false,
-    args: {
-      nodeToEdit: {
-        displayName: 'Name',
-        inputType: 'options',
-        valueSummary: (nodeToEdit: PathToNode) => {
-          const node = getNodeFromPath<VariableDeclarator>(
-            kclManager.ast,
-            nodeToEdit,
-            'VariableDeclarator',
-            true
-          )
-          if (err(node) || node.node.type !== 'VariableDeclarator')
-            return 'Error'
-          return node.node.id.name || ''
-        },
-        required: true,
-        options() {
-          return (
-            Object.entries(kclManager.execState.variables)
-              // TODO: @franknoirot && @jtran would love to make this go away soon 🥺
-              .filter(([_, variable]) => variable?.type === 'Number')
-              .map(([name, _variable]) => {
-                const node = getVariableDeclaration(kclManager.ast, name)
-                if (node === undefined) return
-                const range: SourceRange = [node.start, node.end, node.moduleId]
-                const pathToNode = getNodePathFromSourceRange(
-                  kclManager.ast,
-                  range
-                )
-                return {
-                  name,
-                  value: pathToNode,
-                }
-              })
-              .filter((a) => !!a) || []
-          )
-        },
-      },
-      value: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue(commandBarContext) {
-          const nodeToEdit = commandBarContext.argumentsToSubmit.nodeToEdit
-          if (!nodeToEdit || !isPathToNode(nodeToEdit)) return '5'
-          const node = getNodeFromPath<VariableDeclarator>(
-            kclManager.ast,
-            nodeToEdit
-          )
-          if (err(node) || node.node.type !== 'VariableDeclarator')
-            return 'Error'
-          const variableName = node.node.id.name || ''
-          if (typeof variableName !== 'string') return '5'
-          const variableNode = getVariableDeclaration(
-            kclManager.ast,
-            variableName
-          )
-          if (!variableNode) return '5'
-          const code = codeManager.code.slice(
-            variableNode.declaration.init.start,
-            variableNode.declaration.init.end
-          )
-          return code
-        },
-        createVariable: 'disallow',
       },
     },
   },
