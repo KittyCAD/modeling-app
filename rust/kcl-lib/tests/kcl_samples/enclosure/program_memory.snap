@@ -253,7 +253,6 @@ description: Variables in memory after executing enclosure.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 70.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -690,7 +689,6 @@ description: Variables in memory after executing enclosure.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1446,7 +1444,6 @@ description: Variables in memory after executing enclosure.kcl
               "originalId": "[uuid]",
               "units": "mm"
             },
-            "height": 3.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -1550,7 +1547,6 @@ description: Variables in memory after executing enclosure.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -2779,7 +2775,6 @@ description: Variables in memory after executing enclosure.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 3.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [

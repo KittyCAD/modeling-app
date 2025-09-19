@@ -166,7 +166,6 @@ description: Variables in memory after executing union_self.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -332,7 +331,6 @@ description: Variables in memory after executing union_self.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

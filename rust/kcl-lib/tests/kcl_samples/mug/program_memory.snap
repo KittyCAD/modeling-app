@@ -206,7 +206,6 @@ description: Variables in memory after executing mug.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -295,10 +294,10 @@ description: Variables in memory after executing mug.kcl
             74.7546519737157
           ],
           "tag": {
-            "commentStart": 1438,
-            "end": 1444,
+            "commentStart": 1465,
+            "end": 1471,
             "moduleId": 0,
-            "start": 1438,
+            "start": 1465,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -820,7 +819,6 @@ description: Variables in memory after executing mug.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -1214,7 +1212,6 @@ description: Variables in memory after executing mug.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",

@@ -335,7 +335,6 @@ description: Variables in memory after executing brake-rotor.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -525,7 +524,6 @@ description: Variables in memory after executing brake-rotor.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -657,7 +655,6 @@ description: Variables in memory after executing brake-rotor.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1079,7 +1076,6 @@ description: Variables in memory after executing brake-rotor.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -1107,7 +1103,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -7.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -1477,7 +1472,6 @@ description: Variables in memory after executing brake-rotor.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -1505,7 +1499,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -7.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -1875,7 +1868,6 @@ description: Variables in memory after executing brake-rotor.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -1903,7 +1895,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -7.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -2273,7 +2264,6 @@ description: Variables in memory after executing brake-rotor.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -2301,7 +2291,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -7.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -2671,7 +2660,6 @@ description: Variables in memory after executing brake-rotor.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 0.0,
                 "startCapId": null,
                 "endCapId": null,
                 "units": "mm",
@@ -2699,7 +2687,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -7.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -3152,7 +3139,6 @@ description: Variables in memory after executing brake-rotor.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
-              "height": 0.0,
               "startCapId": null,
               "endCapId": null,
               "units": "mm",
@@ -3531,7 +3517,6 @@ description: Variables in memory after executing brake-rotor.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
-              "height": 0.0,
               "startCapId": null,
               "endCapId": null,
               "units": "mm",
@@ -3910,7 +3895,6 @@ description: Variables in memory after executing brake-rotor.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
-              "height": 0.0,
               "startCapId": null,
               "endCapId": null,
               "units": "mm",
@@ -4289,7 +4273,6 @@ description: Variables in memory after executing brake-rotor.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
-              "height": 0.0,
               "startCapId": null,
               "endCapId": null,
               "units": "mm",
@@ -4668,7 +4651,6 @@ description: Variables in memory after executing brake-rotor.kcl
                 "originalId": "[uuid]",
                 "units": "mm"
               },
-              "height": 0.0,
               "startCapId": null,
               "endCapId": null,
               "units": "mm",
@@ -5311,7 +5293,6 @@ description: Variables in memory after executing brake-rotor.kcl
           "originalId": "[uuid]",
           "units": "mm"
         },
-        "height": 0.0,
         "startCapId": null,
         "endCapId": null,
         "units": "mm",
@@ -5629,7 +5610,6 @@ description: Variables in memory after executing brake-rotor.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -5947,7 +5927,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6262,7 +6241,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6577,7 +6555,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -6892,7 +6869,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7207,7 +7183,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7522,7 +7497,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -7837,7 +7811,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8152,7 +8125,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8467,7 +8439,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8782,7 +8753,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -9097,7 +9067,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -9412,7 +9381,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -9727,7 +9695,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -10042,7 +10009,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -10357,7 +10323,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -10672,7 +10637,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -10987,7 +10951,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -11302,7 +11265,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -11617,7 +11579,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -11932,7 +11893,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -12247,7 +12207,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -12562,7 +12521,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -12877,7 +12835,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -13192,7 +13149,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -13507,7 +13463,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -13822,7 +13777,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -14137,7 +14091,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -14452,7 +14405,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -14767,7 +14719,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -15082,7 +15033,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -15397,7 +15347,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -15712,7 +15661,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -16027,7 +15975,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -16342,7 +16289,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -16657,7 +16603,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -16972,7 +16917,6 @@ description: Variables in memory after executing brake-rotor.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [

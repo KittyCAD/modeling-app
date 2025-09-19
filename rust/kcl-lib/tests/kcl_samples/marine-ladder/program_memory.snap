@@ -331,7 +331,6 @@ description: Variables in memory after executing marine-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -431,7 +430,6 @@ description: Variables in memory after executing marine-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -653,7 +651,6 @@ description: Variables in memory after executing marine-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 450.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -753,7 +750,6 @@ description: Variables in memory after executing marine-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 450.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -853,7 +849,6 @@ description: Variables in memory after executing marine-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 450.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -953,7 +948,6 @@ description: Variables in memory after executing marine-ladder.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": 450.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "mm",
@@ -1055,7 +1049,6 @@ description: Variables in memory after executing marine-ladder.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1155,7 +1148,6 @@ description: Variables in memory after executing marine-ladder.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 450.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

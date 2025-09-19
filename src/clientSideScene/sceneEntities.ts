@@ -2939,15 +2939,6 @@ export class SceneEntities {
         zAxis,
       })
     } else {
-      // Ignore if there are huge jumps in the mouse position,
-      // that is likely a strange behavior
-      if (
-        draftPoint.position.distanceTo(
-          new Vector3(snappedPoint.x, snappedPoint.y, 0)
-        ) > 100
-      ) {
-        return
-      }
       draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
     }
   }

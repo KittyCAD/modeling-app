@@ -179,7 +179,6 @@ description: Variables in memory after executing subtract_regression00.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -279,7 +278,6 @@ description: Variables in memory after executing subtract_regression00.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -60.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -462,7 +460,6 @@ description: Variables in memory after executing subtract_regression00.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

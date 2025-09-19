@@ -100,7 +100,6 @@ description: Variables in memory after executing import_whole_simple.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
