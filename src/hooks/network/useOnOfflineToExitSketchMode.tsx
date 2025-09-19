@@ -10,7 +10,7 @@ export function useOnOfflineToExitSketchMode({
     const onOffline = (event: CustomEvent) => {
       EngineDebugger.addLog({
         label: 'useOnOfflineToExitSketchMode',
-        message: 'existing sketch mode',
+        message: 'exiting sketch mode',
       })
       callback()
     }

@@ -399,6 +399,16 @@ export class ConnectionManager extends EventTarget {
     // Set the stream background color
     // This takes RGBA values from 0-1
     // So we convert from the conventional 0-255 found in Figma
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'setTheme - set_background_color - started',
+      metadata: {
+        cmd: {
+          type: 'set_background_color',
+          color: getThemeColorForEngine(theme),
+        },
+      },
+    })
     await this.sendSceneCommand({
       cmd_id: uuidv4(),
       type: 'modeling_cmd_req',
@@ -407,15 +417,45 @@ export class ConnectionManager extends EventTarget {
         color: getThemeColorForEngine(theme),
       },
     })
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'setTheme - set_background_color - done',
+      metadata: {
+        cmd: {
+          type: 'set_background_color',
+          color: getThemeColorForEngine(theme),
+        },
+      },
+    })
 
     // Sets the default line colors
     const opposingTheme = getOppositeTheme(theme)
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'setTheme - set_default_system_properties - started',
+      metadata: {
+        cmd: {
+          type: 'set_default_system_properties',
+          color: getThemeColorForEngine(opposingTheme),
+        },
+      },
+    })
     await this.sendSceneCommand({
       cmd_id: uuidv4(),
       type: 'modeling_cmd_req',
       cmd: {
         type: 'set_default_system_properties',
         color: getThemeColorForEngine(opposingTheme),
+      },
+    })
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'setTheme - set_default_system_properties - done',
+      metadata: {
+        cmd: {
+          type: 'set_default_system_properties',
+          color: getThemeColorForEngine(opposingTheme),
+        },
       },
     })
   }
@@ -560,9 +600,18 @@ export class ConnectionManager extends EventTarget {
     }
 
     const { promise, resolve, reject } = promiseFactory<any>()
+    let isSettled = false
+    const wrappedResolved = (value: any) => {
+      resolve(value)
+      isSettled = true
+    }
+    const wrappedReject = (value: any) => {
+      reject(value)
+      isSettled = true
+    }
     this.pendingCommands[id] = {
-      resolve,
-      reject,
+      resolve: wrappedResolved,
+      reject: wrappedReject,
       promise,
       command: message.command,
       range: message.range,
@@ -570,6 +619,13 @@ export class ConnectionManager extends EventTarget {
       isSceneCommand,
     }
     this.connection.send(message.command)
+    setTimeout(() => {
+      if (!isSettled) {
+        reject(
+          `sendCommand rejected, you hit the timeout. ${JSON.stringify(message.command)}`
+        )
+      }
+    }, 12_000)
     return promise
   }
 

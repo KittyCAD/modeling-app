@@ -98,6 +98,10 @@ export const createOnEngineConnectionOpened = ({
       },
     })
     await setTheme(settings.theme)
+    EngineDebugger.addLog({
+      label: 'onEngineConnectionOpened',
+      message: 'setting theme completed',
+    })
     // External dependency that we attach an event listener for 'change'
     listenToDarkModeMatcher()
 
