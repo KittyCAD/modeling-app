@@ -351,14 +351,6 @@ export type ModelingMachineEvent =
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
   | { type: 'Constrain remove constraints'; data?: PathToNode }
-  | {
-      type: 'event.parameter.create'
-      data: ModelingCommandSchema['event.parameter.create']
-    }
-  | {
-      type: 'event.parameter.edit'
-      data: ModelingCommandSchema['event.parameter.edit']
-    }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | {
       type: 'Boolean Subtract'
@@ -2889,67 +2881,6 @@ export const modelingMachine = setup({
         )
       }
     ),
-    'actor.parameter.create': fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['event.parameter.create'] | undefined
-      }) => {
-        if (!input) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { value } = input
-        if (!('variableName' in value)) {
-          return Promise.reject(new Error('variable name is required'))
-        }
-        const newAst = insertNamedConstant({
-          node: kclManager.ast,
-          newExpression: value,
-        })
-        await updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          kclManager,
-          editorManager,
-          codeManager,
-        })
-      }
-    ),
-    'actor.parameter.edit': fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['event.parameter.edit'] | undefined
-      }) => {
-        if (!input) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        // Get the variable AST node to edit
-        const { nodeToEdit, value } = input
-        const newAst = structuredClone(kclManager.ast)
-        const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
-          newAst,
-          nodeToEdit
-        )
-
-        if (
-          err(variableNode) ||
-          variableNode.node.type !== 'VariableDeclarator' ||
-          !variableNode.node
-        ) {
-          return Promise.reject(new Error('No variable found, this is a bug'))
-        }
-
-        // Mutate the variable's value
-        variableNode.node.init = value.valueAst
-
-        await updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          codeManager,
-          editorManager,
-          kclManager,
-        })
-      }
-    ),
     deleteSelectionAstMod: fromPromise(
       ({
         input: { selectionRanges },
@@ -3431,16 +3362,6 @@ export const modelingMachine = setup({
         Chamfer: {
           target: 'Applying chamfer',
           reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        'event.parameter.create': {
-          target: '#Modeling.state:parameter:creating',
-          guard: 'no kcl errors',
-        },
-
-        'event.parameter.edit': {
-          target: '#Modeling.state:parameter:editing',
           guard: 'no kcl errors',
         },
 
@@ -4891,37 +4812,6 @@ export const modelingMachine = setup({
         onDone: ['idle'],
         onError: {
           target: 'idle',
-          actions: 'toastError',
-        },
-      },
-    },
-
-    'state:parameter:creating': {
-      invoke: {
-        src: 'actor.parameter.create',
-        id: 'actor.parameter.create',
-        input: ({ event }) => {
-          if (event.type !== 'event.parameter.create') return undefined
-          return event.data
-        },
-        onDone: ['#Modeling.idle'],
-        onError: {
-          target: '#Modeling.idle',
-          actions: 'toastError',
-        },
-      },
-    },
-    'state:parameter:editing': {
-      invoke: {
-        src: 'actor.parameter.edit',
-        id: 'actor.parameter.edit',
-        input: ({ event }) => {
-          if (event.type !== 'event.parameter.edit') return undefined
-          return event.data
-        },
-        onDone: ['#Modeling.idle'],
-        onError: {
-          target: '#Modeling.idle',
           actions: 'toastError',
         },
       },
