@@ -315,12 +315,30 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
     vDegree = result
   }
 
+  // tagStart and tagEng arguments
+  let tagStart: string | undefined
+  let tagEnd: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
+    )
+  }
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Loft'] = {
     sketches,
     vDegree,
+    tagStart,
+    tagEnd,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -655,6 +673,22 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     )
   }
 
+  // tagStart and tagEng arguments
+  let tagStart: string | undefined
+  let tagEnd: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
+    )
+  }
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -663,6 +697,8 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     path,
     sectional,
     relativeTo,
+    tagStart,
+    tagEnd,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -892,6 +928,22 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     bidirectionalAngle = result
   }
 
+  // tagStart and tagEng arguments
+  let tagStart: string | undefined
+  let tagEnd: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
+    )
+  }
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -903,6 +955,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     angle,
     symmetric,
     bidirectionalAngle,
+    tagStart,
+    tagEnd,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {

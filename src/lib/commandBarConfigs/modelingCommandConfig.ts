@@ -92,6 +92,8 @@ export type ModelingCommandSchema = {
     path: Selections
     sectional?: boolean
     relativeTo?: string
+    tagStart?: string
+    tagEnd?: string
   }
   Loft: {
     // Enables editing workflow
@@ -99,6 +101,8 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     vDegree?: KclCommandValue
+    tagStart?: string
+    tagEnd?: string
   }
   Revolve: {
     // Enables editing workflow
@@ -112,6 +116,8 @@ export type ModelingCommandSchema = {
     edge: Selections | undefined
     symmetric?: boolean
     bidirectionalAngle?: KclCommandValue
+    tagStart?: string
+    tagEnd?: string
   }
   Shell: {
     // Enables editing workflow
@@ -513,6 +519,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'trajectoryCurve', value: 'trajectoryCurve' },
         ],
       },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
     },
   },
   Loft: {
@@ -533,6 +547,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       vDegree: {
         inputType: 'kcl',
+        required: false,
+      },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
         required: false,
       },
     },
@@ -601,6 +623,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       bidirectionalAngle: {
         inputType: 'kcl',
+        required: false,
+      },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
         required: false,
       },
     },
