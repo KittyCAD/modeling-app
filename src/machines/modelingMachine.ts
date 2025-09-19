@@ -152,36 +152,36 @@ import { sketchSolveMachine } from '@src/machines/sketchSolveMode'
 
 export type ModelingMachineEvent =
   | {
-      type: 'Enter sketch'
-      data?: {
-        forceNewSketch?: boolean
-      }
+    type: 'Enter sketch'
+    data?: {
+      forceNewSketch?: boolean
     }
+  }
   | { type: 'Sketch On Face' }
   | {
-      type: 'Select sketch plane'
-      data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
-    }
+    type: 'Select sketch plane'
+    data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
+  }
   | {
-      type: 'Select sketch solve plane'
-      data: ArtifactId
-    }
+    type: 'Select sketch solve plane'
+    data: ArtifactId
+  }
   | {
-      type: 'Set selection'
-      data: SetSelections
-    }
+    type: 'Set selection'
+    data: SetSelections
+  }
   | {
-      type: 'Delete selection'
-    }
+    type: 'Delete selection'
+  }
   | { type: 'Sketch no face' }
   | { type: 'Cancel'; cleanup?: () => void }
   | {
-      type: 'Add start point' | 'Continue existing profile'
-      data: {
-        sketchNodePaths: PathToNode[]
-        sketchEntryNodePath: PathToNode
-      }
+    type: 'Add start point' | 'Continue existing profile'
+    data: {
+      sketchNodePaths: PathToNode[]
+      sketchEntryNodePath: PathToNode
     }
+  }
   | { type: 'Close sketch' }
   | { type: 'Make segment horizontal' }
   | { type: 'Make segment vertical' }
@@ -196,33 +196,25 @@ export type ModelingMachineEvent =
   | { type: 'Constrain snap to X' }
   | { type: 'Constrain snap to Y' }
   | {
-      type: 'Constrain length'
-      data: ModelingCommandSchema['Constrain length']
-    }
+    type: 'Constrain length'
+    data: ModelingCommandSchema['Constrain length']
+  }
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
   | { type: 'Constrain remove constraints'; data?: PathToNode }
-  | {
-      type: 'event.parameter.create'
-      data: ModelingCommandSchema['event.parameter.create']
-    }
-  | {
-      type: 'event.parameter.edit'
-      data: ModelingCommandSchema['event.parameter.edit']
-    }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | {
-      type: 'Boolean Subtract'
-      data: ModelingCommandSchema['Boolean Subtract']
-    }
+    type: 'Boolean Subtract'
+    data: ModelingCommandSchema['Boolean Subtract']
+  }
   | {
-      type: 'Boolean Union'
-      data: ModelingCommandSchema['Boolean Union']
-    }
+    type: 'Boolean Union'
+    data: ModelingCommandSchema['Boolean Union']
+  }
   | {
-      type: 'Boolean Intersect'
-      data: ModelingCommandSchema['Boolean Intersect']
-    }
+    type: 'Boolean Intersect'
+    data: ModelingCommandSchema['Boolean Intersect']
+  }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
@@ -235,79 +227,79 @@ export type ModelingMachineEvent =
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
-      type: 'Delete selection'
-      data: ModelingCommandSchema['Delete selection']
-    }
+    type: 'Delete selection'
+    data: ModelingCommandSchema['Delete selection']
+  }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
-      type:
-        | 'Add circle origin'
-        | 'Add circle center'
-        | 'Add center rectangle origin'
-        | 'click in scene'
-        | 'Add first point'
-      data: [x: number, y: number]
-    }
+    type:
+    | 'Add circle origin'
+    | 'Add circle center'
+    | 'Add center rectangle origin'
+    | 'click in scene'
+    | 'Add first point'
+    data: [x: number, y: number]
+  }
   | {
-      type: 'Add second point'
-      data: {
-        p1: [x: number, y: number]
-        p2: [x: number, y: number]
-      }
+    type: 'Add second point'
+    data: {
+      p1: [x: number, y: number]
+      p2: [x: number, y: number]
     }
+  }
   | {
-      type: 'xstate.done.actor.animate-to-face'
-      output: SketchDetails
-    }
+    type: 'xstate.done.actor.animate-to-face'
+    output: SketchDetails
+  }
   | { type: 'xstate.done.actor.animate-to-sketch'; output: SketchDetails }
   | { type: `xstate.done.actor.do-constrain${string}`; output: SetSelections }
   | {
-      type:
-        | 'xstate.done.actor.set-up-draft-circle'
-        | 'xstate.done.actor.set-up-draft-rectangle'
-        | 'xstate.done.actor.set-up-draft-center-rectangle'
-        | 'xstate.done.actor.set-up-draft-circle-three-point'
-        | 'xstate.done.actor.set-up-draft-arc'
-        | 'xstate.done.actor.set-up-draft-arc-three-point'
-        | 'xstate.done.actor.split-sketch-pipe-if-needed'
-        | 'xstate.done.actor.actor-circle-three-point'
-        | 'xstate.done.actor.reeval-node-paths'
+    type:
+    | 'xstate.done.actor.set-up-draft-circle'
+    | 'xstate.done.actor.set-up-draft-rectangle'
+    | 'xstate.done.actor.set-up-draft-center-rectangle'
+    | 'xstate.done.actor.set-up-draft-circle-three-point'
+    | 'xstate.done.actor.set-up-draft-arc'
+    | 'xstate.done.actor.set-up-draft-arc-three-point'
+    | 'xstate.done.actor.split-sketch-pipe-if-needed'
+    | 'xstate.done.actor.actor-circle-three-point'
+    | 'xstate.done.actor.reeval-node-paths'
 
-      output: SketchDetailsUpdate
-    }
+    output: SketchDetailsUpdate
+  }
   | {
-      type: 'xstate.done.actor.setup-client-side-sketch-segments9'
-    }
+    type: 'xstate.done.actor.setup-client-side-sketch-segments9'
+  }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'Set context'; data: Partial<Store> }
   | {
-      type: 'Set Segment Overlays'
-      data: SegmentOverlayPayload
-    }
+    type: 'Set Segment Overlays'
+    data: SegmentOverlayPayload
+  }
   | {
-      type: 'Center camera on selection'
-    }
+    type: 'Center camera on selection'
+  }
   | {
-      type: 'Delete segment'
-      data: PathToNode
-    }
+    type: 'Delete segment'
+    data: PathToNode
+  }
   | {
-      type: 'code edit during sketch'
-    }
+    type: 'code edit during sketch'
+  }
   | {
-      type: 'Constrain with named value'
-      data: ModelingCommandSchema['Constrain with named value']
-    }
+    type: 'Constrain with named value'
+    data: ModelingCommandSchema['Constrain with named value']
+  }
   | {
-      type: 'change tool'
-      data: {
-        tool: SketchTool
-      }
+    type: 'change tool'
+    data: {
+      tool: SketchTool
     }
+  }
   | { type: 'Finish rectangle' }
   | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
@@ -317,18 +309,18 @@ export type ModelingMachineEvent =
   | { type: 'Artifact graph emptied' }
   | { type: 'Artifact graph initialized' }
   | {
-      type: 'Toggle default plane visibility'
-      planeId: string
-      planeKey: keyof PlaneVisibilityMap
-    }
+    type: 'Toggle default plane visibility'
+    planeId: string
+    planeKey: keyof PlaneVisibilityMap
+  }
   | {
-      type: 'Save default plane visibility'
-      planeId: string
-      planeKey: keyof PlaneVisibilityMap
-    }
+    type: 'Save default plane visibility'
+    planeId: string
+    planeKey: keyof PlaneVisibilityMap
+  }
   | {
-      type: 'Restore default plane visibility'
-    }
+    type: 'Restore default plane visibility'
+  }
 
 // export type MoveDesc = { line: number; snippet: string }
 
@@ -559,8 +551,8 @@ export const modelingMachine = setup({
       const pathToNodes = event.data
         ? [event.data]
         : selectionRanges.graphSelections.map(({ codeRef }) => {
-            return codeRef.pathToNode
-          })
+          return codeRef.pathToNode
+        })
       const info = removeConstrainingValuesInfo(pathToNodes)
       if (err(info)) return false
       return info.enabled
@@ -1179,8 +1171,8 @@ export const modelingMachine = setup({
         },
       }
     }),
-    'enable copilot': () => {},
-    'disable copilot': () => {},
+    'enable copilot': () => { },
+    'disable copilot': () => { },
     'Set selection': assign(
       ({ context: { selectionRanges, sketchDetails }, event }) => {
         // this was needed for ts after adding 'Set selection' action to on done modal events
@@ -1386,11 +1378,11 @@ export const modelingMachine = setup({
         return {}
       }
     ),
-    'Set mouse state': () => {},
-    'Set Segment Overlays': () => {},
-    'Center camera on selection': () => {},
-    'Submit to Text-to-CAD API': () => {},
-    'Set sketchDetails': () => {},
+    'Set mouse state': () => { },
+    'Set Segment Overlays': () => { },
+    'Center camera on selection': () => { },
+    'Submit to Text-to-CAD API': () => { },
+    'Set sketchDetails': () => { },
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
     },
@@ -2257,7 +2249,7 @@ export const modelingMachine = setup({
         input,
       }: {
         input: ModelingCommandSchema['Prompt-to-edit']
-      }) => {}
+      }) => { }
     ),
 
     /* Below are recent modeling codemods that are using updateModelinState,
@@ -2686,67 +2678,6 @@ export const modelingMachine = setup({
         )
       }
     ),
-    'actor.parameter.create': fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['event.parameter.create'] | undefined
-      }) => {
-        if (!input) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { value } = input
-        if (!('variableName' in value)) {
-          return Promise.reject(new Error('variable name is required'))
-        }
-        const newAst = insertNamedConstant({
-          node: kclManager.ast,
-          newExpression: value,
-        })
-        await updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          kclManager,
-          editorManager,
-          codeManager,
-        })
-      }
-    ),
-    'actor.parameter.edit': fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['event.parameter.edit'] | undefined
-      }) => {
-        if (!input) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        // Get the variable AST node to edit
-        const { nodeToEdit, value } = input
-        const newAst = structuredClone(kclManager.ast)
-        const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
-          newAst,
-          nodeToEdit
-        )
-
-        if (
-          err(variableNode) ||
-          variableNode.node.type !== 'VariableDeclarator' ||
-          !variableNode.node
-        ) {
-          return Promise.reject(new Error('No variable found, this is a bug'))
-        }
-
-        // Mutate the variable's value
-        variableNode.node.init = value.valueAst
-
-        await updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          codeManager,
-          editorManager,
-          kclManager,
-        })
-      }
-    ),
     deleteSelectionAstMod: fromPromise(
       ({
         input: { selectionRanges },
@@ -2951,12 +2882,12 @@ export const modelingMachine = setup({
       }
     ),
     exportFromEngine: fromPromise(
-      async ({}: { input?: ModelingCommandSchema['Export'] }) => {
+      async ({ }: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
       }
     ),
     makeFromEngine: fromPromise(
-      async ({}: {
+      async ({ }: {
         input?: {
           machineManager: MachineManager
         } & ModelingCommandSchema['Make']
@@ -3228,16 +3159,6 @@ export const modelingMachine = setup({
         Chamfer: {
           target: 'Applying chamfer',
           reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        'event.parameter.create': {
-          target: '#Modeling.state:parameter:creating',
-          guard: 'no kcl errors',
-        },
-
-        'event.parameter.edit': {
-          target: '#Modeling.state:parameter:editing',
           guard: 'no kcl errors',
         },
 
@@ -4665,38 +4586,6 @@ export const modelingMachine = setup({
         onDone: ['idle'],
         onError: {
           target: 'idle',
-          actions: 'toastError',
-        },
-      },
-    },
-
-    'state:parameter:creating': {
-      invoke: {
-        src: 'actor.parameter.create',
-        id: 'actor.parameter.create',
-        input: ({ event }) => {
-          if (event.type !== 'event.parameter.create') return undefined
-          return event.data
-        },
-        onDone: ['#Modeling.idle'],
-        onError: {
-          target: '#Modeling.idle',
-          actions: 'toastError',
-        },
-      },
-    },
-
-    'state:parameter:editing': {
-      invoke: {
-        src: 'actor.parameter.edit',
-        id: 'actor.parameter.edit',
-        input: ({ event }) => {
-          if (event.type !== 'event.parameter.edit') return undefined
-          return event.data
-        },
-        onDone: ['#Modeling.idle'],
-        onError: {
-          target: '#Modeling.idle',
           actions: 'toastError',
         },
       },
