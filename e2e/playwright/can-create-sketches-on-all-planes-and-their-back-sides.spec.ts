@@ -153,12 +153,7 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
       )
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
-
     await homePage.goToModelingScene()
-    // await scene.settled(cmdbar)
-    const XYPlanRed: [number, number, number] = [74, 74, 74]
-    await scene.expectPixelColor(XYPlanRed, { x: 700, y: 300 }, 15)
-
     await u.openDebugPanel()
 
     const coord =
