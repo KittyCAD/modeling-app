@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   prepare-files:
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
     outputs:
       version: ${{ steps.export_version.outputs.version }}
       notes: ${{ steps.export_notes.outputs.notes }}
