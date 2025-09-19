@@ -6,6 +6,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createTagDeclarator,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -92,10 +93,10 @@ export function addExtrude({
       ]
     : []
   const tagStartExpr = tagStart
-    ? [createLabeledArg('tagStart', createLocalName(tagStart))]
+    ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
     : []
   const tagEndExpr = tagEnd
-    ? [createLabeledArg('tagEnd', createLocalName(tagEnd))]
+    ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
   const twistAngleExpr = twistAngle
     ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]

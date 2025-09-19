@@ -95,6 +95,24 @@ describe('Testing addExtrude', () => {
     await runNewAstAndCheckForSweep(result.modifiedAst)
   })
 
+  it('should add a basic extrude call with tags', async () => {
+    const { ast, sketches } = await getAstAndSketchSelections(circleProfileCode)
+    const length = await getKclCommandValue('1')
+    const tagStart = 'myExtrudeStart'
+    const tagEnd = 'myExtrudeEnd'
+    const result = addExtrude({ ast, sketches, length, tagStart, tagEnd })
+    if (err(result)) throw result
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(circleProfileCode)
+    expect(newCode).toContain(`extrude001 = extrude(
+  profile001,
+  length = 1,
+  tagStart = \$${tagStart},
+  tagEnd = \$${tagEnd},
+)`)
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+  })
+
   it('should add a basic multi-profile extrude call', async () => {
     const { ast, sketches } = await getAstAndSketchSelections(
       circleAndRectProfilesCode
@@ -144,6 +162,36 @@ describe('Testing addExtrude', () => {
   length = 10,
   bidirectionalLength = 20,
   twistAngle = 30,
+)`)
+  })
+
+  it('should add an extrude call with bidirectional length and twist angle with step and center', async () => {
+    const { ast, sketches } = await getAstAndSketchSelections(circleProfileCode)
+    const length = await getKclCommandValue('10')
+    const bidirectionalLength = await getKclCommandValue('20')
+    const twistAngle = await getKclCommandValue('30')
+    const twistAngleStep = await getKclCommandValue('45')
+    const twistCenter = await getKclCommandValue('[2, 2]')
+    const result = addExtrude({
+      ast,
+      sketches,
+      length,
+      bidirectionalLength,
+      twistAngle,
+      twistAngleStep,
+      twistCenter,
+    })
+    if (err(result)) throw result
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(circleProfileCode)
+    expect(newCode).toContain(`extrude001 = extrude(
+  profile001,
+  length = 10,
+  bidirectionalLength = 20,
+  twistAngle = 30,
+  twistAngleStep = 45,
+  twistCenter = [2, 2],
 )`)
   })
 
