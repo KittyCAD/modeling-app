@@ -42,6 +42,8 @@ interface KclCommandConfig {
   password?: string
 }
 
+const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
+
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
   return [
     {
@@ -142,7 +144,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (!data) {
-          return new Error('No input provided')
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
         const ast = kclManager.ast
@@ -208,7 +210,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (!data) {
-          return new Error('No input provided')
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
         const { value } = data
@@ -305,7 +307,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (!data) {
-          return new Error('No input provided')
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
         // Get the variable AST node to edit
