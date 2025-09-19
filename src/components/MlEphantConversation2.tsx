@@ -202,7 +202,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
               {props.isLoading === false ? (
-                  <MLEphantConversationStarter />
+                <MLEphantConversationStarter />
               ) : (
                 <div className="text-center p-4 text-chalkboard-60 text-md animate-pulse">
                   Loading history
