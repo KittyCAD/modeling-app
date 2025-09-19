@@ -56,8 +56,8 @@ export type MlEphantManagerEvents2 =
       response: MlCopilotServerMessage
     }
   | {
-    type: MlEphantManagerTransitions2.ConversationClose
-  }
+      type: MlEphantManagerTransitions2.ConversationClose
+    }
 
 export interface Exchange {
   // Technically the WebSocket could send us a response at any time, without
@@ -283,7 +283,7 @@ export const mlEphantManagerMachine2 = setup({
   context: mlEphantDefaultContext2,
   states: {
     [S.Await]: {
-      on: transitions([MlEphantManagerStates2.Setup])
+      on: transitions([MlEphantManagerStates2.Setup]),
     },
     [MlEphantManagerStates2.Setup]: {
       invoke: {

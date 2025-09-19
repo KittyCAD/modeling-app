@@ -331,50 +331,50 @@ export function SystemIOMachineLogicListenerDesktop() {
       ) {
         return
       }
-       const outputsRecord: Record<string, string> = {
-          ...(toolOutput.outputs ?? {}),
+      const outputsRecord: Record<string, string> = {
+        ...(toolOutput.outputs ?? {}),
+      }
+      const requestedFiles: RequestedKCLFile[] = Object.entries(
+        outputsRecord
+      ).map(([relativePath, fileContents]) => {
+        const lastSep = relativePath.lastIndexOf(window.electron?.sep ?? '')
+        let pathPart = relativePath.slice(0, lastSep)
+        let filePart = relativePath.slice(lastSep)
+        if (lastSep < 0) {
+          pathPart = ''
+          filePart = relativePath
         }
-        const requestedFiles: RequestedKCLFile[] = Object.entries(
-          outputsRecord
-        ).map(([relativePath, fileContents]) => {
-          const lastSep = relativePath.lastIndexOf(window.electron?.sep ?? '')
-          let pathPart = relativePath.slice(0, lastSep)
-          let filePart = relativePath.slice(lastSep)
-          if (lastSep < 0) {
-            pathPart = ''
-            filePart = relativePath
-          }
-          return {
-            requestedCode: fileContents,
-            requestedFileName: filePart,
-            requestedProjectName:
-              projectNameCurrentlyOpened + window.electron?.sep + pathPart,
-          }
-        })
+        return {
+          requestedCode: fileContents,
+          requestedFileName: filePart,
+          requestedProjectName:
+            projectNameCurrentlyOpened + window.electron?.sep + pathPart,
+        }
+      })
 
-        // I know, it's confusing as hell.
-        const targetFilePathWithoutFileAndRelativeToProjectDir =
-          fileFocusedOnInEditor?.path.slice(
-            fileFocusedOnInEditor?.path.indexOf(projectNameCurrentlyOpened) ?? 0
-          ) ?? ''
+      // I know, it's confusing as hell.
+      const targetFilePathWithoutFileAndRelativeToProjectDir =
+        fileFocusedOnInEditor?.path.slice(
+          fileFocusedOnInEditor?.path.indexOf(projectNameCurrentlyOpened) ?? 0
+        ) ?? ''
 
-        const requestedProjectNameNext =
-          targetFilePathWithoutFileAndRelativeToProjectDir.slice(
-            0,
-            targetFilePathWithoutFileAndRelativeToProjectDir.lastIndexOf(
-              window.electron?.sep ?? ''
-            )
+      const requestedProjectNameNext =
+        targetFilePathWithoutFileAndRelativeToProjectDir.slice(
+          0,
+          targetFilePathWithoutFileAndRelativeToProjectDir.lastIndexOf(
+            window.electron?.sep ?? ''
           )
+        )
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
-          data: {
-            files: requestedFiles,
-            override: true,
-            requestedProjectName: requestedProjectNameNext,
-            requestedFileNameWithExtension: fileFocusedOnInEditor?.name ?? '',
-          },
-        })
+      systemIOActor.send({
+        type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+        data: {
+          files: requestedFiles,
+          override: true,
+          requestedProjectName: requestedProjectNameNext,
+          requestedFileNameWithExtension: fileFocusedOnInEditor?.name ?? '',
+        },
+      })
     }
   )
 

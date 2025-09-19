@@ -137,7 +137,11 @@ export const useWatchForNewFileRequestsFromMlEphant = (
   billingActor: BillingActor,
   token: string,
   fn: (prompt: Prompt, promptMeta: PromptMeta) => void,
-  fn2: (toolOutputTextToCad: MlToolResult, projectNameCurrentlyOpened: string, fileFocusedOnInEditor?: FileEntry) => void
+  fn2: (
+    toolOutputTextToCad: MlToolResult,
+    projectNameCurrentlyOpened: string,
+    fileFocusedOnInEditor?: FileEntry
+  ) => void
 ) => {
   useEffect(() => {
     const subscription = mlEphantManagerActor.subscribe((next) => {
@@ -190,7 +194,11 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       // We don't know what project to write to, so do nothing.
       if (!next.context.projectNameCurrentlyOpened) return
 
-      fn2(lastResponse.tool_output.result, next.context.projectNameCurrentlyOpened, next.context.fileFocusedOnInEditor)
+      fn2(
+        lastResponse.tool_output.result,
+        next.context.projectNameCurrentlyOpened,
+        next.context.fileFocusedOnInEditor
+      )
     })
 
     return () => {

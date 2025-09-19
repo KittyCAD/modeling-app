@@ -71,7 +71,9 @@ export const MlEphantConversationPane2 = (props: {
   const lastExchange = conversation?.exchanges.slice(-1) ?? []
 
   const isProcessing = lastExchange[0]
-    ? lastExchange[0].responses.some((x: MlCopilotServerMessage) => 'end_of_stream' in x) === false
+    ? lastExchange[0].responses.some(
+        (x: MlCopilotServerMessage) => 'end_of_stream' in x
+      ) === false
     : false
 
   const tryToGetExchanges = () => {
