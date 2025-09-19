@@ -75,6 +75,7 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     length: KclCommandValue
+    // TODO: add `to` as Selections arg here
     symmetric?: boolean
     bidirectionalLength?: KclCommandValue
     tagStart?: string
@@ -82,6 +83,8 @@ export type ModelingCommandSchema = {
     twistAngle?: KclCommandValue
     twistAngleStep?: KclCommandValue
     twistCenter?: KclCommandValue
+    // TODO: figure out if we should expose `tolerance` or not
+    // @pierremtb: I don't even think it should be in KCL
     method?: string
   }
   Sweep: {
@@ -91,6 +94,7 @@ export type ModelingCommandSchema = {
     sketches: Selections
     path: Selections
     sectional?: boolean
+    // TODO: figure out if we should expose `tolerance` or not
     relativeTo?: string
     tagStart?: string
     tagEnd?: string
@@ -101,6 +105,9 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     vDegree?: KclCommandValue
+    // TODO: add `bez_approximate_rational` bool arg if we think we should have it
+    // TODO: add `base_curve_index` number arg if we think we should have it
+    // TODO: figure out if we should expose `tolerance` or not
     tagStart?: string
     tagEnd?: string
   }
@@ -111,13 +118,14 @@ export type ModelingCommandSchema = {
     axisOrEdge: 'Axis' | 'Edge'
     // KCL stdlib arguments
     sketches: Selections
-    angle: KclCommandValue
     axis: string | undefined
     edge: Selections | undefined
-    symmetric?: boolean
-    bidirectionalAngle?: KclCommandValue
+    angle: KclCommandValue
+    // TODO: figure out if we should expose `tolerance` or not
     tagStart?: string
     tagEnd?: string
+    symmetric?: boolean
+    bidirectionalAngle?: KclCommandValue
   }
   Shell: {
     // Enables editing workflow
