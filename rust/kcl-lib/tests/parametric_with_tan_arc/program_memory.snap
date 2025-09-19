@@ -277,7 +277,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 11.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

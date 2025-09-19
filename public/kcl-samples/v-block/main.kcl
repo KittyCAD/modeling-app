@@ -8,7 +8,7 @@
 vBlockLength = 1 + 1 / 4
 vBlockWidth = 3
 vBlockHeight = 2 + 3 / 8
-vAngle = 90
+vAngle = 90deg
 vDepth = 13 / 16
 vWidth = vDepth * tan(vAngle / 2) * 2
 

@@ -6827,7 +6827,6 @@ description: Variables in memory after executing kittycad_svg.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",

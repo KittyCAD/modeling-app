@@ -155,7 +155,6 @@ description: Variables in memory after executing revolve-colinear.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",

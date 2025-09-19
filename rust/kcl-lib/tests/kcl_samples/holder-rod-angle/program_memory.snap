@@ -265,7 +265,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1041,7 +1040,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "originalId": "[uuid]",
               "units": "cm"
             },
-            "height": 4.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -1171,7 +1169,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": 0.25,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1787,7 +1784,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   "originalId": "[uuid]",
                   "units": "cm"
                 },
-                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -1917,7 +1913,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "originalId": "[uuid]",
             "units": "cm"
           },
-          "height": 0.25,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2552,7 +2547,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   "originalId": "[uuid]",
                   "units": "cm"
                 },
-                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -2682,7 +2676,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "originalId": "[uuid]",
             "units": "cm"
           },
-          "height": 0.25,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -3317,7 +3310,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   "originalId": "[uuid]",
                   "units": "cm"
                 },
-                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -3447,7 +3439,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "originalId": "[uuid]",
             "units": "cm"
           },
-          "height": 0.25,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -4082,7 +4073,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                   "originalId": "[uuid]",
                   "units": "cm"
                 },
-                "height": 4.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "edgeCuts": [
@@ -4212,7 +4202,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "originalId": "[uuid]",
             "units": "cm"
           },
-          "height": 0.25,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -4398,7 +4387,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": -0.9,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "cm",
@@ -5134,7 +5122,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "originalId": "[uuid]",
                     "units": "cm"
                   },
-                  "height": 4.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "edgeCuts": [
@@ -5264,7 +5251,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "originalId": "[uuid]",
               "units": "cm"
             },
-            "height": 0.25,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -5356,7 +5342,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": -0.25,
       "startCapId": null,
       "endCapId": null,
       "edgeCuts": [
@@ -5941,7 +5926,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "originalId": "[uuid]",
                     "units": "cm"
                   },
-                  "height": 4.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "edgeCuts": [
@@ -6071,7 +6055,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "originalId": "[uuid]",
               "units": "cm"
             },
-            "height": 0.25,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -6163,7 +6146,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": -0.25,
       "startCapId": null,
       "endCapId": null,
       "edgeCuts": [
@@ -6748,7 +6730,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "originalId": "[uuid]",
                     "units": "cm"
                   },
-                  "height": 4.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "edgeCuts": [
@@ -6878,7 +6859,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "originalId": "[uuid]",
               "units": "cm"
             },
-            "height": 0.25,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -6970,7 +6950,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": -0.25,
       "startCapId": null,
       "endCapId": null,
       "edgeCuts": [
@@ -7555,7 +7534,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "originalId": "[uuid]",
                     "units": "cm"
                   },
-                  "height": 4.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "edgeCuts": [
@@ -7685,7 +7663,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "originalId": "[uuid]",
               "units": "cm"
             },
-            "height": 0.25,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
@@ -7777,7 +7754,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": -0.25,
       "startCapId": null,
       "endCapId": null,
       "edgeCuts": [
@@ -8209,7 +8185,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "originalId": "[uuid]",
             "units": "cm"
           },
-          "height": 4.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -8600,7 +8575,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
           "originalId": "[uuid]",
           "units": "cm"
         },
-        "height": 4.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -9016,7 +8990,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
         "originalId": "[uuid]",
         "units": "cm"
       },
-      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [

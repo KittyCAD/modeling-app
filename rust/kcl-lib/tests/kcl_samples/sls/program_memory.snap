@@ -172,7 +172,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -348,7 +347,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -800,7 +798,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -1072,7 +1069,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -1453,7 +1449,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 7.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -1591,7 +1586,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 7.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1750,7 +1744,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 7.1,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -2012,7 +2005,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -2112,7 +2104,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -2357,7 +2348,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -2457,7 +2447,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "m",
@@ -2778,7 +2767,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -2954,7 +2942,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -3513,7 +3500,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -3701,7 +3687,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -3867,7 +3852,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -4033,7 +4017,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -4221,7 +4204,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -4409,7 +4391,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -4762,7 +4743,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -4928,7 +4908,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -5094,7 +5073,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -5260,7 +5238,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -5876,7 +5853,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -6319,7 +6295,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -6903,7 +6878,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -7487,7 +7461,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
@@ -8362,7 +8335,6 @@ description: Variables in memory after executing sls.kcl
         "originalId": "[uuid]",
         "units": "m"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "m",
