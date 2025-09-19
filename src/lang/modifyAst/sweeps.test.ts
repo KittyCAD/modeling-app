@@ -7,6 +7,7 @@ import {
   addSweep,
   getAxisExpressionAndIndex,
   retrieveAxisOrEdgeSelectionsFromOpArg,
+  retrieveTagDeclaratorFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import {
   type Artifact,
@@ -652,5 +653,25 @@ helix001 = helix(
     expect(result.edge).toBeDefined()
     expect(result.edge!.graphSelections[0].codeRef).toEqual(segId!.codeRef)
     expect(result.axis).toBeUndefined()
+  })
+})
+
+describe('Testing retrieveTagDeclaratorFromOpArg', () => {
+  it('should return tag declarator value without the $', async () => {
+    const extrudeCode = `${circleProfileCode}
+extrude001 = extrude(profile001, length = 1, tagStart = $abc)`
+    const ast = assertParse(extrudeCode)
+    const { operations } = await enginelessExecutor(ast)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.tagStart) {
+      throw new Error('Extrude operation not found')
+    }
+    const result = retrieveTagDeclaratorFromOpArg(
+      op.labeledArgs.tagStart,
+      extrudeCode
+    )
+    expect(result).toEqual('abc')
   })
 })

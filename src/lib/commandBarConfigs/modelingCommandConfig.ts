@@ -442,11 +442,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       tagStart: {
-        inputType: 'string',
+        inputType: 'tagDeclarator',
         required: false,
+        // TODO: add validation like for Clone command
       },
       tagEnd: {
-        inputType: 'string',
+        inputType: 'tagDeclarator',
         required: false,
       },
       twistAngle: {

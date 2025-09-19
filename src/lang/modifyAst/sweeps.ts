@@ -559,3 +559,14 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   }
   return { axisOrEdge, axis, edge }
 }
+
+export function retrieveTagDeclaratorFromOpArg(
+  opArg: OpArg,
+  code: string
+): string {
+  const dollarSignOffset = 1
+  return code.slice(
+    opArg.sourceRange[0] + dollarSignOffset,
+    opArg.sourceRange[1]
+  )
+}

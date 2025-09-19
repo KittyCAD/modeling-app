@@ -5,7 +5,10 @@ import {
   retrieveFaceSelectionsFromOpArgs,
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
-import { retrieveAxisOrEdgeSelectionsFromOpArg } from '@src/lang/modifyAst/sweeps'
+import {
+  retrieveAxisOrEdgeSelectionsFromOpArg,
+  retrieveTagDeclaratorFromOpArg,
+} from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
   retrieveSelectionsFromOpArg,
@@ -165,22 +168,19 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     bidirectionalLength = result
   }
 
-  // tagStart argument from a string starting with $ to a string
+  // tagStart and tagEng arguments
   let tagStart: string | undefined
-  const dollarSignOffset = 1
+  let tagEnd: string | undefined
   if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
-    tagStart = codeManager.code.slice(
-      operation.labeledArgs.tagStart.sourceRange[0] + dollarSignOffset,
-      operation.labeledArgs.tagStart.sourceRange[1]
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
     )
   }
-
-  // tagEnd argument from a string starting with $ to a string
-  let tagEnd: string | undefined
   if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
-    tagEnd = codeManager.code.slice(
-      operation.labeledArgs.tagEnd.sourceRange[0] + dollarSignOffset,
-      operation.labeledArgs.tagEnd.sourceRange[1]
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
     )
   }
 
