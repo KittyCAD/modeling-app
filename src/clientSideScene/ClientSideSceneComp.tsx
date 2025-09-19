@@ -42,7 +42,7 @@ import type { useSettings } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { throttle, toSync } from '@src/lib/utils'
-import type { SegmentOverlay } from '@src/machines/modelingMachine'
+import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
