@@ -165,20 +165,21 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     bidirectionalLength = result
   }
 
-  // tagStart argument from a string to a string
+  // tagStart argument from a string starting with $ to a string
   let tagStart: string | undefined
+  const dollarSignOffset = 1
   if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
     tagStart = codeManager.code.slice(
-      operation.labeledArgs.tagStart.sourceRange[0],
+      operation.labeledArgs.tagStart.sourceRange[0] + dollarSignOffset,
       operation.labeledArgs.tagStart.sourceRange[1]
     )
   }
 
-  // tagEnd argument from a string to a string
+  // tagEnd argument from a string starting with $ to a string
   let tagEnd: string | undefined
   if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
     tagEnd = codeManager.code.slice(
-      operation.labeledArgs.tagEnd.sourceRange[0],
+      operation.labeledArgs.tagEnd.sourceRange[0] + dollarSignOffset,
       operation.labeledArgs.tagEnd.sourceRange[1]
     )
   }
