@@ -70,8 +70,8 @@ const prepareToEditParameter: PrepareToEditCallback = async ({ operation }) => {
   }
 
   const baseCommand = {
-    name: 'event.parameter.edit',
-    groupId: 'modeling',
+    name: 'parameter.edit',
+    groupId: 'code',
   }
 
   // 1. Convert from the parameter's Operation to a KCL-type arg value
@@ -89,7 +89,7 @@ const prepareToEditParameter: PrepareToEditCallback = async ({ operation }) => {
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
-  const argDefaultValues: ModelingCommandSchema['event.parameter.edit'] = {
+  const argDefaultValues = {
     value,
     nodeToEdit,
   }
