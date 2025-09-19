@@ -28,14 +28,18 @@ const toolOutput = (): Extract<
     {
       outputs: {
         ['main' + '.kcl']: stringRand(ALPHA, Math.trunc(Math.random() * 500)),
+        ['main2' + '.kcl']: stringRand(ALPHA, Math.trunc(Math.random() * 500)),
       },
+      project_name: 'untitled-1',
       status_code: 200,
       type: 'text_to_cad',
     },
     {
       outputs: {
         ['main' + '.kcl']: stringRand(ALPHA, Math.trunc(Math.random() * 500)),
+        ['main2' + '.kcl']: stringRand(ALPHA, Math.trunc(Math.random() * 500)),
       },
+      project_name: 'untitled-1',
       status_code: 200,
       type: 'edit_kcl_code',
     },
@@ -143,11 +147,9 @@ const generators = {
     toolOutput,
     toolOutput,
     toolOutput,
-    info,
     reasoning,
     reasoning,
     reasoning,
-    error,
   ],
   conversation: [delta],
 }

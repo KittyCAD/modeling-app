@@ -17,7 +17,7 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingMachine'
 import type { FileEntry, Project } from '@src/lib/project'
-import type { User } from '@kittycad/lib/dist/types/src/models'
+import type { User, MlCopilotServerMessage } from '@kittycad/lib'
 
 export const MlEphantConversationPane2 = (props: {
   mlEphantManagerActor: MlEphantManagerActor2
@@ -30,14 +30,9 @@ export const MlEphantConversationPane2 = (props: {
   settings: typeof settings
   user?: User
 }) => {
-  const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
   const conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
   })
-
-  const onSeeMoreHistory = (nextPage?: string) => {
-    console.log('next page', nextPage)
-  }
 
   const onProcess = async (request: string) => {
     if (props.theProject === undefined) {
@@ -73,12 +68,11 @@ export const MlEphantConversationPane2 = (props: {
     })
   }
 
-  const isProcessing =
-    mlEphantManagerActorSnapshot.matches({
-      [MlEphantManagerStates2.Ready]: {
-        [MlEphantManagerStates2.Request]: S.Await,
-      },
-    }) === false
+  const lastExchange = conversation?.exchanges.slice(-1) ?? []
+
+  const isProcessing = lastExchange[0]
+    ? lastExchange[0].responses.some((x: MlCopilotServerMessage) => 'end_of_stream' in x) === false
+    : false
 
   const tryToGetExchanges = () => {
     const mlEphantConversations =
@@ -103,11 +97,9 @@ export const MlEphantConversationPane2 = (props: {
     // We can now reliably use the mlConversations data.
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
     if (props.theProject !== undefined && conversationId !== undefined) {
-      // TODO:
-      // request to get exchanges in a particular conversation
-      // hopefully with { command: 'switch', conversation_id, limit }
       props.mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions2.ConversationFetch,
+        type: MlEphantManagerStates2.Setup,
+        refParentSend: props.mlEphantManagerActor.send,
         conversationId,
       })
     }
@@ -126,6 +118,13 @@ export const MlEphantConversationPane2 = (props: {
           props.systemIOActor.send({
             type: SystemIOMachineEvents.getMlEphantConversations,
           })
+          return
+        }
+
+        if (
+          props.mlEphantManagerActor.getSnapshot().context.conversation !==
+          undefined
+        ) {
           return
         }
 
@@ -175,7 +174,6 @@ export const MlEphantConversationPane2 = (props: {
       }}
       disabled={isProcessing}
       hasPromptCompleted={isProcessing}
-      onSeeMoreHistory={onSeeMoreHistory}
       userAvatarSrc={props.user?.image}
     />
   )
