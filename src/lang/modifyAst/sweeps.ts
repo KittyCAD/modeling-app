@@ -47,8 +47,7 @@ export function addExtrude({
   tagEnd,
   twistAngle,
   twistAngleStep,
-  twistCenterX,
-  twistCenterY,
+  twistCenter,
   method,
   nodeToEdit,
 }: {
@@ -61,8 +60,7 @@ export function addExtrude({
   tagEnd?: string
   twistAngle?: KclCommandValue
   twistAngleStep?: KclCommandValue
-  twistCenterX?: KclCommandValue
-  twistCenterY?: KclCommandValue
+  twistCenter?: KclCommandValue
   method?: string
   nodeToEdit?: PathToNode
 }):
@@ -105,11 +103,8 @@ export function addExtrude({
   const twistAngleStepExpr = twistAngleStep
     ? [createLabeledArg('twistAngleStep', valueOrVariable(twistAngleStep))]
     : []
-  const twistCenterXExpr = twistCenterX
-    ? [createLabeledArg('twistCenterX', valueOrVariable(twistCenterX))]
-    : []
-  const twistCenterYExpr = twistCenterY
-    ? [createLabeledArg('twistCenterY', valueOrVariable(twistCenterY))]
+  const twistCenterExpr = twistCenter
+    ? [createLabeledArg('twistCenter', valueOrVariable(twistCenter))]
     : []
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
@@ -124,8 +119,7 @@ export function addExtrude({
     ...tagEndExpr,
     ...twistAngleExpr,
     ...twistAngleStepExpr,
-    ...twistCenterXExpr,
-    ...twistCenterYExpr,
+    ...twistCenterExpr,
     ...methodExpr,
   ])
 
@@ -155,18 +149,11 @@ export function addExtrude({
     insertVariableAndOffsetPathToNode(twistAngleStep, modifiedAst, nodeToEdit)
   }
   if (
-    twistCenterX &&
-    'variableName' in twistCenterX &&
-    twistCenterX.variableName
+    twistCenter &&
+    'variableName' in twistCenter &&
+    twistCenter.variableName
   ) {
-    insertVariableAndOffsetPathToNode(twistCenterX, modifiedAst, nodeToEdit)
-  }
-  if (
-    twistCenterY &&
-    'variableName' in twistCenterY &&
-    twistCenterY.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(twistCenterY, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(twistCenter, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,

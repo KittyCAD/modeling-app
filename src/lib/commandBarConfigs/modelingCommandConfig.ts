@@ -81,9 +81,7 @@ export type ModelingCommandSchema = {
     tagEnd?: string
     twistAngle?: KclCommandValue
     twistAngleStep?: KclCommandValue
-    // TODO: add support for Point2d args and replace with twistCenter
-    twistCenterX?: KclCommandValue
-    twistCenterY?: KclCommandValue
+    twistCenter?: KclCommandValue
     method?: string
   }
   Sweep: {
@@ -459,12 +457,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         required: false,
       },
-      twistCenterX: {
+      twistCenter: {
         inputType: 'kcl',
-        required: false,
-      },
-      twistCenterY: {
-        inputType: 'kcl',
+        allowArrays: true,
         required: false,
       },
       method: {

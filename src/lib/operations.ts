@@ -222,8 +222,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // twistCenter argument from a Point2d to two KCL expression
-  let twistCenterX: KclCommandValue | undefined
-  let twistCenterY: KclCommandValue | undefined
+  let twistCenter: KclCommandValue | undefined
   if (
     'twistCenter' in operation.labeledArgs &&
     operation.labeledArgs.twistCenter
@@ -238,9 +237,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
       return { reason: "Couldn't retrieve twistCenter argument" }
     }
 
-    twistCenterX = result
-    twistCenterY = result
-    // FIXME: this will not work
+    twistCenter = result
   }
 
   // method argument from a string to boolean
@@ -264,8 +261,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     tagEnd,
     twistAngle,
     twistAngleStep,
-    twistCenterX,
-    twistCenterY,
+    twistCenter,
     method,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
