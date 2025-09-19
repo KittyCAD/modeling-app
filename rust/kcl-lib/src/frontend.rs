@@ -42,22 +42,11 @@ impl FrontendState {
         let plane_ast = match &args.on {
             // TODO: sketch-api: implement ObjectId to source.
             kcl_api::Plane::Object(_) => todo!(),
-            kcl_api::Plane::Default(plane) => ast_name(plane.to_string()),
+            kcl_api::Plane::Default(plane) => ast_name_expr(plane.to_string()),
         };
         let sketch_ast = ast::SketchBlock {
             arguments: vec![ast::LabeledArg {
-                label: Some(ast::Node {
-                    inner: ast::Identifier {
-                        name: "on".to_string(),
-                        digest: None,
-                    },
-                    start: Default::default(),
-                    end: Default::default(),
-                    module_id: Default::default(),
-                    outer_attrs: Default::default(),
-                    pre_comments: Default::default(),
-                    comment_start: Default::default(),
-                }),
+                label: Some(ast::Identifier::new("on")),
                 arg: plane_ast,
             }],
             body: Default::default(),
@@ -146,6 +135,30 @@ impl FrontendState {
         // Create updated KCL source from args.
         let start_ast = to_ast_point2d(&start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&end).map_err(|err| Error { msg: err.to_string() })?;
+        let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node {
+            inner: ast::CallExpressionKw {
+                callee: ast_name("line".to_owned()),
+                unlabeled: None,
+                arguments: vec![
+                    ast::LabeledArg {
+                        label: Some(ast::Identifier::new("from")),
+                        arg: start_ast,
+                    },
+                    ast::LabeledArg {
+                        label: Some(ast::Identifier::new("to")),
+                        arg: end_ast,
+                    },
+                ],
+                digest: None,
+                non_code_meta: Default::default(),
+            },
+            start: Default::default(),
+            end: Default::default(),
+            module_id: Default::default(),
+            outer_attrs: Default::default(),
+            pre_comments: Default::default(),
+            comment_start: Default::default(),
+        }));
         // Look up existing sketch.
         let sketch_object = self.scene_graph.objects.get(sketch.0).ok_or_else(|| Error {
             msg: format!("Sketch not found: {sketch:?}"),
@@ -403,10 +416,10 @@ impl FrontendState {
     }
 }
 
-fn to_ast_point2d(start: &Point2d<Expr>) -> anyhow::Result<ast::Expr> {
+fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr> {
     Ok(ast::Expr::ArrayExpression(Box::new(ast::Node {
         inner: ast::ArrayExpression {
-            elements: vec![to_source_expr(&start.x)?, to_source_expr(&start.y)?],
+            elements: vec![to_source_expr(&point.x)?, to_source_expr(&point.y)?],
             non_code_meta: Default::default(),
             digest: None,
         },
@@ -450,7 +463,7 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
             pre_comments: Default::default(),
             comment_start: Default::default(),
         }))),
-        Expr::Variable(variable) => Ok(ast_name(variable.clone())),
+        Expr::Variable(variable) => Ok(ast_name_expr(variable.clone())),
     }
 }
 
@@ -463,8 +476,12 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
     })
 }
 
-fn ast_name(name: String) -> ast::Expr {
-    ast::Expr::Name(Box::new(ast::Node {
+fn ast_name_expr(name: String) -> ast::Expr {
+    ast::Expr::Name(Box::new(ast_name(name)))
+}
+
+fn ast_name(name: String) -> ast::Node<ast::Name> {
+    ast::Node {
         inner: ast::Name {
             name: ast::Node {
                 inner: ast::Identifier { name, digest: None },
@@ -485,5 +502,5 @@ fn ast_name(name: String) -> ast::Expr {
         outer_attrs: Default::default(),
         pre_comments: Default::default(),
         comment_start: Default::default(),
-    }))
+    }
 }
