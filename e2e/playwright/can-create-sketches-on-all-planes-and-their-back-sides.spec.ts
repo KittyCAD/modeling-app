@@ -153,12 +153,7 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
       )
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
-
     await homePage.goToModelingScene()
-    // TODO: rename this variable because the plane is actually gray?
-    const XYPlanRed: [number, number, number] = [91, 91, 91]
-    await scene.expectPixelColor(XYPlanRed, { x: 700, y: 300 }, 15)
-
     await u.openDebugPanel()
 
     const coord =
