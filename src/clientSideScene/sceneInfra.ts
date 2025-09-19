@@ -29,7 +29,7 @@ import {
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { Coords2d } from '@src/lang/std/sketch'
-import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
+import { vec2WithinDistance } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/lib/selections'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal } from '@src/lib/signal'
@@ -277,13 +277,13 @@ export class SceneInfra {
   hoveredObject: null | Object3D<Object3DEventMap> = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
+  // Given in NDC: [-1, 1] range, where (-1, -1) corresponds to the bottom left of the canvas, (0, 0) is the center.
   currentMouseVector = new Vector2()
   selected: {
     mouseDownVector: Vector2
     object: Object3D<Object3DEventMap>
     hasBeenDragged: boolean
   } | null = null
-  mouseDownVector: null | Vector2 = null
   private isRenderingPaused = false
   private lastFrameTime = 0
 
@@ -485,17 +485,17 @@ export class SceneInfra {
     const intersects = this.raycastRing()
 
     if (this.selected) {
-      const hasBeenDragged = !compareVec2Epsilon2(
-        [this.currentMouseVector.x, this.currentMouseVector.y],
-        [this.selected.mouseDownVector.x, this.selected.mouseDownVector.y],
-        0.02
+      const hasBeenDragged = !vec2WithinDistance(
+        this.ndc2screenSpace(this.currentMouseVector),
+        this.ndc2screenSpace(this.selected.mouseDownVector),
+        10 // Drag threshold in pixels
       )
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
         this.selected.hasBeenDragged = true
         // this is where we could fire a onDragStart event
       }
       if (
-        hasBeenDragged &&
+        this.selected.hasBeenDragged &&
         planeIntersectPoint &&
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
@@ -759,11 +759,18 @@ export class SceneInfra {
     })
   }
 
+  // a and b given in world space
   screenSpaceDistance(a: Coords2d, b: Coords2d): number {
     const dummy = new Mesh()
     dummy.position.set(0, 0, 0)
     const scale = this.getClientSceneScaleFactor(dummy)
     return getLength(a, b) / scale
+  }
+  ndc2screenSpace(ndc: Vector2): Coords2d {
+    return [
+      ((ndc.x + 1) / 2) * this.renderer.domElement.clientWidth,
+      ((ndc.y + 1) / 2) * this.renderer.domElement.clientHeight,
+    ]
   }
   pauseRendering() {
     this.isRenderingPaused = true
