@@ -1,3 +1,4 @@
+import type { FileEntry } from '@src/lib/project'
 import { type MlToolResult } from '@kittycad/lib'
 import type { Prompt } from '@src/lib/prompt'
 import { type settings } from '@src/lib/settings/initialSettings'
@@ -63,8 +64,10 @@ export const useProjectIdToConversationId = (
     mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.ClearProjectSpecificState,
     })
+
+    // Close the current conversation.
     mlEphantManagerActor2.send({
-      type: MlEphantManagerTransitions2.ContextNew,
+      type: MlEphantManagerTransitions2.ConversationClose,
     })
 
     const subscription = mlEphantManagerActor.subscribe((next) => {
@@ -134,7 +137,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
   billingActor: BillingActor,
   token: string,
   fn: (prompt: Prompt, promptMeta: PromptMeta) => void,
-  fn2: (toolOutputTextToCad: MlToolResult) => void
+  fn2: (toolOutputTextToCad: MlToolResult, projectNameCurrentlyOpened: string, fileFocusedOnInEditor?: FileEntry) => void
 ) => {
   useEffect(() => {
     const subscription = mlEphantManagerActor.subscribe((next) => {
@@ -181,10 +184,13 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       const exchanges = next.context.conversation?.exchanges ?? []
       const lastExchange = exchanges[exchanges.length - 1]
       if (lastExchange === undefined) return
-      const lastResponse = (lastExchange.responses ?? [])[0] ?? {}
+      const lastResponse = (lastExchange.responses ?? []).slice(-1)[0] ?? {}
       if (!('tool_output' in lastResponse)) return
 
-      fn2(lastResponse.tool_output.result)
+      // We don't know what project to write to, so do nothing.
+      if (!next.context.projectNameCurrentlyOpened) return
+
+      fn2(lastResponse.tool_output.result, next.context.projectNameCurrentlyOpened, next.context.fileFocusedOnInEditor)
     })
 
     return () => {

@@ -245,7 +245,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
       >
         {props.responses.length > 0 && (
           <div>
-            <button className="flex justify-center items-center">
+            <button className="flex justify-center items-center flex-none">
               {showFullReasoning ? (
                 <>
                   Collapse <CustomIcon name="collapse" className="w-5 h-5" />

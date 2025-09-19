@@ -12,7 +12,6 @@ export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
   onProcess: (request: string) => void
-  onSeeMoreHistory: (nextPage?: string) => void
   disabled?: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
@@ -148,11 +147,6 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
-  const onSeeMoreHistory = () => {
-    setAutoScroll(false)
-    props.onSeeMoreHistory(props.conversation?.pageToken)
-  }
-
   const onProcess = (request: string) => {
     setAutoScroll(true)
     props.onProcess(request)
@@ -208,17 +202,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
               {props.isLoading === false ? (
-                props.conversation?.pageToken ? (
-                  /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */
-                  <div
-                    onClick={() => onSeeMoreHistory()}
-                    className="cursor-pointer underline text-center p-4 text-chalkboard-60 text-sm"
-                  >
-                    See more history
-                  </div>
-                ) : (
                   <MLEphantConversationStarter />
-                )
               ) : (
                 <div className="text-center p-4 text-chalkboard-60 text-md animate-pulse">
                   Loading history

@@ -29,20 +29,17 @@ export enum MlEphantManagerStates2 {
 }
 
 export enum MlEphantManagerTransitions2 {
-  ConversationFetch = 'conversation-fetch',
   MessageSend = 'message-send',
-  ContextNew = 'context-new',
   ResponseReceive = 'response-receive',
+  ConversationClose = 'conversation-close',
 }
 
 export type MlEphantManagerEvents2 =
   | {
       type: MlEphantManagerStates2.Setup
       refParentSend: (event: MlEphantManagerEvents2) => void
-    }
-  | {
-      type: MlEphantManagerTransitions2.ConversationFetch
-      conversationId: string
+      // If not present, a new conversation is created.
+      conversationId?: string
     }
   | {
       type: MlEphantManagerTransitions2.MessageSend
@@ -55,12 +52,12 @@ export type MlEphantManagerEvents2 =
       artifactGraph: ArtifactGraph
     }
   | {
-      type: MlEphantManagerTransitions2.ContextNew
-    }
-  | {
       type: MlEphantManagerTransitions2.ResponseReceive
       response: MlCopilotServerMessage
     }
+  | {
+    type: MlEphantManagerTransitions2.ConversationClose
+  }
 
 export interface Exchange {
   // Technically the WebSocket could send us a response at any time, without
@@ -76,7 +73,6 @@ export interface Exchange {
 
 export type Conversation = {
   exchanges: Exchange[]
-  pageToken?: string
 }
 
 export interface MlEphantManagerContext2 {
@@ -84,6 +80,8 @@ export interface MlEphantManagerContext2 {
   ws?: WebSocket
   conversation?: Conversation
   lastMessageId?: number
+  fileFocusedOnInEditor?: FileEntry
+  projectNameCurrentlyOpened?: string
 }
 
 export const mlEphantDefaultContext2 = (args: {
@@ -95,10 +93,12 @@ export const mlEphantDefaultContext2 = (args: {
   ws: undefined,
   conversation: undefined,
   lastMessageId: undefined,
+  fileFocusedOnInEditor: undefined,
+  projectNameCurrentlyOpened: undefined,
 })
 
 function isString(x: unknown): x is string {
-  return x === 'string'
+  return typeof x === 'string'
 }
 
 function isPresent<T>(x: undefined | T): x is T {
@@ -174,7 +174,7 @@ export const mlEphantManagerMachine2 = setup({
       assertEvent(args.input.event, [MlEphantManagerStates2.Setup])
 
       const ws = await Socket(
-        WebSocket,
+        MockSocket,
         '/ws/ml/copilot',
         args.input.context.apiToken
       )
@@ -216,47 +216,12 @@ export const mlEphantManagerMachine2 = setup({
       })
 
       return {
+        conversation: {
+          exchanges: [],
+        },
         ws,
       }
     }),
-    [MlEphantManagerTransitions2.ContextNew]: fromPromise(async function (
-      args: XSInput<MlEphantManagerTransitions2.ContextNew>
-    ): Promise<Partial<MlEphantManagerContext2>> {
-      if (!isPresent<WebSocket>(args.input.context.ws))
-        return Promise.reject(new Error('WebSocket not present'))
-
-      args.input.context.ws.send(
-        JSON.stringify({
-          body: {
-            system: {
-              command: 'new',
-            },
-          },
-        })
-      )
-
-      return {
-        conversation: {
-          exchanges: [],
-          pageToken: undefined,
-        },
-      }
-    }),
-    [MlEphantManagerTransitions2.ConversationFetch]: fromPromise(
-      async function (
-        args: XSInput<MlEphantManagerTransitions2.ConversationFetch>
-      ): Promise<Partial<MlEphantManagerContext2>> {
-        if (!isPresent<WebSocket>(args.input.context.ws))
-          return Promise.reject(new Error('WebSocket not present'))
-
-        return {
-          conversation: {
-            exchanges: [],
-            pageToken: undefined,
-          },
-        }
-      }
-    ),
     [MlEphantManagerTransitions2.MessageSend]: fromPromise(async function (
       args: XSInput<MlEphantManagerTransitions2.MessageSend>
     ): Promise<Partial<MlEphantManagerContext2>> {
@@ -299,7 +264,6 @@ export const mlEphantManagerMachine2 = setup({
 
       const conversation: Conversation = {
         exchanges: Array.from(context.conversation.exchanges),
-        pageToken: context.conversation.pageToken,
       }
 
       conversation.exchanges.push({
@@ -309,13 +273,18 @@ export const mlEphantManagerMachine2 = setup({
 
       return {
         conversation,
+        fileFocusedOnInEditor: event.fileSelectedDuringPrompting.entry,
+        projectNameCurrentlyOpened: requestData.body.project_name,
       }
     }),
   },
 }).createMachine({
-  initial: MlEphantManagerStates2.Setup,
+  initial: S.Await,
   context: mlEphantDefaultContext2,
   states: {
+    [S.Await]: {
+      on: transitions([MlEphantManagerStates2.Setup])
+    },
     [MlEphantManagerStates2.Setup]: {
       invoke: {
         input: (args) => {
@@ -344,7 +313,13 @@ export const mlEphantManagerMachine2 = setup({
           initial: S.Await,
           states: {
             [S.Await]: {
-              on: transitions([MlEphantManagerTransitions2.ResponseReceive]),
+              on: transitions([
+                MlEphantManagerTransitions2.ConversationClose,
+                MlEphantManagerTransitions2.ResponseReceive,
+              ]),
+            },
+            [MlEphantManagerTransitions2.ConversationClose]: {
+              type: 'final',
             },
             // Triggered by the WebSocket 'message' event.
             [MlEphantManagerTransitions2.ResponseReceive]: {
@@ -362,7 +337,6 @@ export const mlEphantManagerMachine2 = setup({
                       exchanges: Array.from(
                         context.conversation?.exchanges ?? []
                       ),
-                      pageToken: context.conversation?.pageToken,
                     }
 
                     let lastExchange: Exchange | undefined =
@@ -392,48 +366,12 @@ export const mlEphantManagerMachine2 = setup({
           states: {
             [S.Await]: {
               on: transitions([
-                MlEphantManagerTransitions2.ConversationFetch,
+                MlEphantManagerTransitions2.ConversationClose,
                 MlEphantManagerTransitions2.MessageSend,
-                MlEphantManagerTransitions2.ContextNew,
               ]),
             },
-            [MlEphantManagerTransitions2.ConversationFetch]: {
-              invoke: {
-                input: (args) => {
-                  assertEvent(args.event, [
-                    MlEphantManagerTransitions2.ConversationFetch,
-                  ])
-                  return {
-                    event: args.event,
-                    context: args.context,
-                  }
-                },
-                src: MlEphantManagerTransitions2.ConversationFetch,
-                onDone: {
-                  target: S.Await,
-                  actions: [assign(({ event }) => event.output)],
-                },
-                onError: { target: S.Await, actions: ['toastError'] },
-              },
-            },
-            [MlEphantManagerTransitions2.ContextNew]: {
-              invoke: {
-                input: (args) => {
-                  assertEvent(args.event, [
-                    MlEphantManagerTransitions2.ContextNew,
-                  ])
-                  return {
-                    event: args.event,
-                    context: args.context,
-                  }
-                },
-                src: MlEphantManagerTransitions2.ContextNew,
-                onDone: {
-                  target: S.Await,
-                  actions: [assign(({ event }) => event.output)],
-                },
-                onError: { target: S.Await, actions: ['toastError'] },
-              },
+            [MlEphantManagerTransitions2.ConversationClose]: {
+              type: 'final',
             },
             [MlEphantManagerTransitions2.MessageSend]: {
               invoke: {
@@ -456,6 +394,9 @@ export const mlEphantManagerMachine2 = setup({
             },
           },
         },
+      },
+      onDone: {
+        target: S.Await,
       },
     },
   },

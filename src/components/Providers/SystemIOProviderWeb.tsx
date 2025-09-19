@@ -63,7 +63,7 @@ export function SystemIOMachineLogicListenerWeb() {
         },
       })
     },
-    (toolOutput) => {
+    (toolOutput, projectNameCurrentlyOpened) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
         toolOutput.type !== 'edit_kcl_code'
@@ -73,7 +73,7 @@ export function SystemIOMachineLogicListenerWeb() {
       systemIOActor.send({
         type: SystemIOMachineEvents.createKCLFile,
         data: {
-          requestedProjectName: toolOutput.project_name ?? '',
+          requestedProjectName: projectNameCurrentlyOpened,
           requestedCode: toolOutput.outputs?.[DEFAULT_PROJECT_KCL_FILE] ?? '',
           requestedFileNameWithExtension: DEFAULT_PROJECT_KCL_FILE,
         },
