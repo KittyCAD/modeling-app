@@ -6,9 +6,10 @@ import type { AnyMachineSnapshot } from 'xstate'
 
 import * as THREE from 'three'
 
-import type { CameraViewState, UnitLength } from '@kittycad/lib'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { ConnectionManager } from '@src/network/connectionManager'
+
+import type { CameraViewState, UnitLength } from '@kittycad/lib'
 
 export const uuidv4 = v4
 
@@ -625,7 +626,7 @@ export async function engineStreamZoomToFit({
   engineCommandManager,
   padding,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   padding: number
 }) {
   // It makes sense to also call zoom to fit here, when a new file is
@@ -647,7 +648,7 @@ export async function engineViewIsometricWithGeometryPresent({
   engineCommandManager,
   padding,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   padding: number
 }) {
   /**
@@ -683,7 +684,7 @@ export async function engineViewIsometricWithoutGeometryPresent({
   unit,
   cameraProjection,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   unit: UnitLength
   cameraProjection: CameraProjectionType
 }) {

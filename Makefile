@@ -57,6 +57,7 @@ KCL_SOURCES := $(wildcard public/kcl-samples/*/*.kcl)
 RUST_SOURCES := $(wildcard rust/*.rs rust/*/*.rs rust/*/*/*.rs rust/*/*/*/*.rs rust/*/*/*/*/*.rs)
 
 REACT_SOURCES := $(wildcard src/*.tsx src/*/*.tsx src/*/*/*.tsx src/*/*/*/*.tsx)
+E2E_SOURCES := $(wildcard e2e/*.spec.ts e2e/*/*.spec.ts e2e/*/*/*.spec.ts e2e/*/*/*/*.spec.ts)
 TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts src/*/*.ts src/*/*/*.ts src/*/*/*/*.ts)
 VITE_SOURCES := .env* $(wildcard vite.*)
 
@@ -76,7 +77,7 @@ ifndef WINDOWS
 	@ touch $@
 endif
 
-.vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
+.vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES) $(E2E_SOURCES)
 	npm run tronb:vite:dev
 
 ###############################################################################

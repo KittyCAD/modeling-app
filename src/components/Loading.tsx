@@ -5,18 +5,11 @@ import type { ReactNode } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
-import type { ErrorType } from '@src/lang/std/engineConnection'
-import {
-  CONNECTION_ERROR_TEXT,
-  ConnectionError,
-  DisconnectingType,
-  EngineCommandManagerEvents,
-  EngineConnectionEvents,
-  EngineConnectionStateType,
-} from '@src/lang/std/engineConnection'
 import { SafeRenderer } from '@src/lib/markdown'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { engineCommandManager } from '@src/lib/singletons'
+
+import { CONNECTION_ERROR_TEXT, ConnectionError } from '@src/network/utils'
+import type { IErrorType } from '@src/network/utils'
 
 interface LoadingProps extends React.PropsWithChildren {
   isDummy?: boolean
@@ -88,7 +81,7 @@ const Loading = ({
   retryAttemptCountdown,
   isRetrying,
 }: LoadingProps) => {
-  const [error, setError] = useState<ErrorType>({
+  const [error, setError] = useState<IErrorType>({
     error: ConnectionError.Unset,
   })
   const [countdown, setCountdown] = useState<undefined | number>(
@@ -128,59 +121,6 @@ const Loading = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [countdown])
-
-  useEffect(() => {
-    const onConnectionStateChange = ({ detail: state }: CustomEvent) => {
-      if (
-        (state.type !== EngineConnectionStateType.Disconnected ||
-          state.type !== EngineConnectionStateType.Disconnecting) &&
-        state.value?.type !== DisconnectingType.Error
-      )
-        return
-      setError(state.value.value)
-    }
-
-    const onEngineAvailable = ({ detail: engineConnection }: CustomEvent) => {
-      engineConnection.addEventListener(
-        EngineConnectionEvents.ConnectionStateChanged,
-        onConnectionStateChange as EventListener
-      )
-    }
-
-    if (engineCommandManager.engineConnection) {
-      // Do an initial state check in case there is an immediate issue
-      onConnectionStateChange(
-        new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
-          detail: engineCommandManager.engineConnection.state,
-        })
-      )
-      // Set up a listener on the state for future updates
-      onEngineAvailable(
-        new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
-          detail: engineCommandManager.engineConnection,
-        })
-      )
-    } else {
-      // If there is no engine connection yet, listen for it to be there *then*
-      // attach the listener
-      engineCommandManager.addEventListener(
-        EngineCommandManagerEvents.EngineAvailable,
-        onEngineAvailable as EventListener
-      )
-    }
-
-    return () => {
-      engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.EngineAvailable,
-        onEngineAvailable as EventListener
-      )
-      engineCommandManager.engineConnection?.removeEventListener(
-        EngineConnectionEvents.ConnectionStateChanged,
-        onConnectionStateChange as EventListener
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, engineCommandManager.engineConnection])
 
   useEffect(() => {
     // Don't set long loading time if there's a more severe error

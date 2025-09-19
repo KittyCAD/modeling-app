@@ -57,7 +57,9 @@ class APIReporter implements Reporter {
     if (!process.env.TAB_API_URL || !process.env.TAB_API_KEY) {
       return
     }
-
+    const logs = result.attachments.find((a) => {
+      return a.name === 'logs'
+    })
     const payload = {
       // Required information
       project: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`,
@@ -88,6 +90,7 @@ class APIReporter implements Reporter {
       GITHUB_SHA: process.env.GITHUB_SHA || null,
       GITHUB_WORKFLOW: process.env.GITHUB_WORKFLOW || null,
       RUNNER_ARCH: process.env.RUNNER_ARCH || null,
+      logs: logs,
     }
 
     const request = (async () => {

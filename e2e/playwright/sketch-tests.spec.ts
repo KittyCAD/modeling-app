@@ -502,7 +502,7 @@ test.describe('Sketch tests', () => {
   test(
     'Can edit a sketch that has been extruded in the same pipe',
     { tag: '@web' },
-    async ({ page, homePage, editor, toolbar, scene, cmdBar }) => {
+    async ({ page, editor, toolbar, scene, cmdBar }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -516,7 +516,6 @@ sketch001 = startSketchOn(XZ)
         )
       })
 
-      await homePage.goToModelingScene()
       await toolbar.waitForFeatureTreeToBeBuilt()
       await scene.settled(cmdBar)
 
