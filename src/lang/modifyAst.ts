@@ -705,13 +705,23 @@ export function deleteSegmentFromPipeExpression(
     _modifiedAst = transform.modifiedAst
   })
 
-  const pipeExpression = getNodeFromPath<PipeExpression>(
+  const pipeExpression = getNodeFromPath<PipeExpression | CallExpressionKw>(
     _modifiedAst,
     pathToNode,
     'PipeExpression'
   )
   if (err(pipeExpression)) return pipeExpression
 
+  if (pipeExpression.node.type === 'CallExpressionKw') {
+    const topLevelDeleteResult = deleteTopLevelStatement(
+      _modifiedAst,
+      pathToNode
+    )
+    if (topLevelDeleteResult instanceof Error) {
+      return topLevelDeleteResult
+    }
+    return _modifiedAst
+  }
   const pipeInPathIndex = pathToNode.findIndex(
     ([_, desc]) => desc === 'PipeExpression'
   )
