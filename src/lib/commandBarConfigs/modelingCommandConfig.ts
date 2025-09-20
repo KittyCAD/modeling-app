@@ -60,6 +60,12 @@ const objectsTypesAndFilters: {
   selectionFilter: ['object'],
 }
 
+// For all boolean args
+const booleanOptions = [
+  { name: 'False', value: false },
+  { name: 'True', value: true },
+]
+
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
   Export: {
@@ -75,9 +81,16 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     length: KclCommandValue
+    // TODO: add `to` as Selections arg here
     symmetric?: boolean
     bidirectionalLength?: KclCommandValue
+    tagStart?: string
+    tagEnd?: string
     twistAngle?: KclCommandValue
+    twistAngleStep?: KclCommandValue
+    twistCenter?: KclCommandValue
+    // TODO: figure out if we should expose `tolerance` or not
+    // @pierremtb: I don't even think it should be in KCL
     method?: string
   }
   Sweep: {
@@ -87,7 +100,10 @@ export type ModelingCommandSchema = {
     sketches: Selections
     path: Selections
     sectional?: boolean
+    // TODO: figure out if we should expose `tolerance` or not
     relativeTo?: string
+    tagStart?: string
+    tagEnd?: string
   }
   Loft: {
     // Enables editing workflow
@@ -95,6 +111,11 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     vDegree?: KclCommandValue
+    bezApproximateRational?: boolean
+    baseCurveIndex?: KclCommandValue
+    // TODO: figure out if we should expose `tolerance` or not
+    tagStart?: string
+    tagEnd?: string
   }
   Revolve: {
     // Enables editing workflow
@@ -103,9 +124,12 @@ export type ModelingCommandSchema = {
     axisOrEdge: 'Axis' | 'Edge'
     // KCL stdlib arguments
     sketches: Selections
-    angle: KclCommandValue
     axis: string | undefined
     edge: Selections | undefined
+    angle: KclCommandValue
+    // TODO: figure out if we should expose `tolerance` or not
+    tagStart?: string
+    tagEnd?: string
     symmetric?: boolean
     bidirectionalAngle?: KclCommandValue
   }
@@ -428,17 +452,32 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       symmetric: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
       bidirectionalLength: {
         inputType: 'kcl',
         required: false,
       },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+        // TODO: add validation like for Clone command
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
       twistAngle: {
         inputType: 'kcl',
+        required: false,
+      },
+      twistAngleStep: {
+        inputType: 'kcl',
+        required: false,
+      },
+      twistCenter: {
+        inputType: 'kcl',
+        allowArrays: true,
         required: false,
       },
       method: {
@@ -478,10 +517,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sectional: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
       relativeTo: {
         inputType: 'options',
@@ -490,6 +526,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'sketchPlane', value: 'sketchPlane' },
           { name: 'trajectoryCurve', value: 'trajectoryCurve' },
         ],
+      },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
+        required: false,
       },
     },
   },
@@ -511,6 +555,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       vDegree: {
         inputType: 'kcl',
+        required: false,
+      },
+      bezApproximateRational: {
+        inputType: 'options',
+        required: false,
+        options: booleanOptions,
+      },
+      baseCurveIndex: {
+        inputType: 'kcl',
+        required: false,
+      },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
         required: false,
       },
     },
@@ -572,13 +633,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       symmetric: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
       bidirectionalAngle: {
         inputType: 'kcl',
+        required: false,
+      },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
         required: false,
       },
     },
@@ -761,10 +827,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         required: false,
         displayName: 'CounterClockWise',
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
     },
   },
@@ -961,10 +1024,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       global: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
     },
   },
@@ -1001,10 +1061,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       global: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
     },
   },
@@ -1041,10 +1098,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       global: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        options: booleanOptions,
       },
     },
   },

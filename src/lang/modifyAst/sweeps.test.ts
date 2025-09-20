@@ -7,6 +7,7 @@ import {
   addSweep,
   getAxisExpressionAndIndex,
   retrieveAxisOrEdgeSelectionsFromOpArg,
+  retrieveTagDeclaratorFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import {
   type Artifact,
@@ -95,6 +96,24 @@ describe('Testing addExtrude', () => {
     await runNewAstAndCheckForSweep(result.modifiedAst)
   })
 
+  it('should add a basic extrude call with tags', async () => {
+    const { ast, sketches } = await getAstAndSketchSelections(circleProfileCode)
+    const length = await getKclCommandValue('1')
+    const tagStart = 'myExtrudeStart'
+    const tagEnd = 'myExtrudeEnd'
+    const result = addExtrude({ ast, sketches, length, tagStart, tagEnd })
+    if (err(result)) throw result
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(circleProfileCode)
+    expect(newCode).toContain(`extrude001 = extrude(
+  profile001,
+  length = 1,
+  tagStart = \$${tagStart},
+  tagEnd = \$${tagEnd},
+)`)
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+  })
+
   it('should add a basic multi-profile extrude call', async () => {
     const { ast, sketches } = await getAstAndSketchSelections(
       circleAndRectProfilesCode
@@ -144,6 +163,36 @@ describe('Testing addExtrude', () => {
   length = 10,
   bidirectionalLength = 20,
   twistAngle = 30,
+)`)
+  })
+
+  it('should add an extrude call with bidirectional length and twist angle with step and center', async () => {
+    const { ast, sketches } = await getAstAndSketchSelections(circleProfileCode)
+    const length = await getKclCommandValue('10')
+    const bidirectionalLength = await getKclCommandValue('20')
+    const twistAngle = await getKclCommandValue('30')
+    const twistAngleStep = await getKclCommandValue('45')
+    const twistCenter = await getKclCommandValue('[2, 2]')
+    const result = addExtrude({
+      ast,
+      sketches,
+      length,
+      bidirectionalLength,
+      twistAngle,
+      twistAngleStep,
+      twistCenter,
+    })
+    if (err(result)) throw result
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(circleProfileCode)
+    expect(newCode).toContain(`extrude001 = extrude(
+  profile001,
+  length = 10,
+  bidirectionalLength = 20,
+  twistAngle = 30,
+  twistAngleStep = 45,
+  twistCenter = [2, 2],
 )`)
   })
 
@@ -208,6 +257,24 @@ profile002 = startProfile(sketch002, at = [0, 0])
     const newCode = recast(result.modifiedAst)
     expect(newCode).toContain(circleAndLineCode)
     expect(newCode).toContain(`sweep001 = sweep(profile001, path = profile002)`)
+  })
+
+  it('should add a basic sweep call with tags', async () => {
+    const { ast, sketches, path } =
+      await getAstAndSketchesForSweep(circleAndLineCode)
+    const tagStart = 'myExtrudeStart'
+    const tagEnd = 'myExtrudeEnd'
+    const result = addSweep({ ast, sketches, path, tagStart, tagEnd })
+    if (err(result)) throw result
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(circleAndLineCode)
+    expect(newCode).toContain(`sweep001 = sweep(
+  profile001,
+  path = profile002,
+  tagStart = \$${tagStart},
+  tagEnd = \$${tagEnd},
+)`)
   })
 
   it('should add a sweep call with sectional true and relativeTo setting', async () => {
@@ -321,7 +388,26 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
     // Don't think we can find the artifact here for loft?
   })
 
-  it('should edit a loft call with vDegree', async () => {
+  it('should add a basic loft call with tags', async () => {
+    const { ast, sketches } = await getAstAndSketchSelections(twoCirclesCode)
+    expect(sketches.graphSelections).toHaveLength(2)
+    const tagStart = 'myLoftStart'
+    const tagEnd = 'myLoftEnd'
+    const result = addLoft({
+      ast,
+      sketches,
+      tagStart,
+      tagEnd,
+    })
+    if (err(result)) throw result
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(twoCirclesCode)
+    expect(newCode).toContain(
+      `loft001 = loft([profile001, profile002], tagStart = \$${tagStart}, tagEnd = \$${tagEnd})`
+    )
+  })
+
+  it('should edit a loft call with vDegree, bezApproximateRational, and baseCurveIndex', async () => {
     const twoCirclesCodeWithLoft = `${twoCirclesCode}
 loft001 = loft([profile001, profile002])`
     const { ast, sketches } = await getAstAndSketchSelections(
@@ -329,18 +415,27 @@ loft001 = loft([profile001, profile002])`
     )
     expect(sketches.graphSelections).toHaveLength(2)
     const vDegree = await getKclCommandValue('3')
+    const bezApproximateRational = true
+    const baseCurveIndex = await getKclCommandValue('0')
     const nodeToEdit = createPathToNodeForLastVariable(ast)
     const result = addLoft({
       ast,
       sketches,
       vDegree,
+      bezApproximateRational,
+      baseCurveIndex,
       nodeToEdit,
     })
     if (err(result)) throw result
     const newCode = recast(result.modifiedAst)
     expect(newCode).toContain(twoCirclesCode)
     expect(newCode).toContain(
-      `loft001 = loft([profile001, profile002], vDegree = 3)`
+      `loft001 = loft(
+  [profile001, profile002],
+  vDegree = 3,
+  bezApproximateRational = true,
+  baseCurveIndex = 0,
+)`
     )
     // Don't think we can find the artifact here for loft?
   })
@@ -362,6 +457,29 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
     expect(newCode).toContain(circleCode)
     expect(newCode).toContain(
       `revolve001 = revolve(profile001, angle = 10, axis = X)`
+    )
+  })
+
+  it('should add basic revolve call with tags', async () => {
+    const { ast, sketches } = await getAstAndSketchSelections(circleCode)
+    expect(sketches.graphSelections).toHaveLength(1)
+    const angle = await getKclCommandValue('10')
+    const axis = 'X'
+    const tagStart = 'myRevolveStart'
+    const tagEnd = 'myRevolveEnd'
+    const result = addRevolve({ ast, sketches, angle, axis, tagStart, tagEnd })
+    if (err(result)) throw result
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(circleCode)
+    expect(newCode).toContain(
+      `revolve001 = revolve(
+  profile001,
+  angle = 10,
+  axis = X,
+  tagStart = \$${tagStart},
+  tagEnd = \$${tagEnd},
+)`
     )
   })
 
@@ -604,5 +722,25 @@ helix001 = helix(
     expect(result.edge).toBeDefined()
     expect(result.edge!.graphSelections[0].codeRef).toEqual(segId!.codeRef)
     expect(result.axis).toBeUndefined()
+  })
+})
+
+describe('Testing retrieveTagDeclaratorFromOpArg', () => {
+  it('should return tag declarator value without the $', async () => {
+    const extrudeCode = `${circleProfileCode}
+extrude001 = extrude(profile001, length = 1, tagStart = $abc)`
+    const ast = assertParse(extrudeCode)
+    const { operations } = await enginelessExecutor(ast)
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.tagStart) {
+      throw new Error('Extrude operation not found')
+    }
+    const result = retrieveTagDeclaratorFromOpArg(
+      op.labeledArgs.tagStart,
+      extrudeCode
+    )
+    expect(result).toEqual('abc')
   })
 })

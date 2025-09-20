@@ -221,7 +221,7 @@ export type CommandArgumentConfig<
           ) => string)
     }
   | {
-      inputType: 'string' | 'color'
+      inputType: 'string' | 'color' | 'tagDeclarator'
       defaultValue?:
         | OutputType
         | ((
@@ -395,7 +395,7 @@ export type CommandArgument<
           ) => string)
     }
   | {
-      inputType: 'string' | 'color'
+      inputType: 'string' | 'color' | 'tagDeclarator'
       defaultValue?:
         | OutputType
         | ((

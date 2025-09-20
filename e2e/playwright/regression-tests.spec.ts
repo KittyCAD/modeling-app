@@ -866,6 +866,66 @@ s2 = startSketchOn(XY)
 
     await editor.expectEditor.toContain('s2 = startSketchOn(XY)')
   })
+
+  test("Editing an Extrude operation via Feature Tree shouldn't remove tagEnd and tagStart", async ({
+    context,
+    editor,
+    homePage,
+    page,
+    scene,
+    toolbar,
+    cmdBar,
+  }) => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> angledLine(angle = 0, length = 1.83, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 2.45)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 4, tagEnd = $capEnd001)
+  |> chamfer(
+       length = .5,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )
+    `
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, code)
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await test.step(`Edit first extrude via feature tree #8071`, async () => {
+      await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: '4',
+        headerArguments: {
+          Length: '4',
+          TagEnd: 'capEnd001',
+        },
+        highlightedHeaderArg: 'length',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('3')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Length: '3',
+          TagEnd: 'capEnd001',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain(
+        'extrude(profile001, length = 3, tagEnd = $capEnd001)'
+      )
+    })
+  })
 })
 
 async function clickExportButton(page: Page, cmdBar: CmdBarFixture) {
