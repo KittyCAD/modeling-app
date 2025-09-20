@@ -628,7 +628,28 @@ impl Stack {
     /// Add a value to the program memory (in the current scope). The value must not already exist.
     pub fn add(&mut self, key: String, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         let env = self.memory.get_env(self.current_env.index());
+
         if env.contains_key(&key) {
+            if let KclValue::Function { value: new_fn, .. } = value {
+                if Some(true)
+                    == env.update(
+                        &key,
+                        move |value, epoch| {
+                            match value {
+                                KclValue::Function { value, ..} => {
+                                    value.extend(new_fn.into_iter().map(|f| (epoch, f.1)));
+                                    true
+                                }
+                                _ => false,
+                            }
+                        },
+                        self.memory.epoch.load(Ordering::Relaxed),
+                        self.id,
+                    )
+                {
+                    return Ok(());
+                }
+            }
             return Err(KclError::new_value_already_defined(KclErrorDetails::new(
                 format!("Cannot redefine `{key}`"),
                 vec![source_range],
@@ -979,13 +1000,19 @@ mod env {
                 .ok_or(self.parent)
         }
 
-        pub(super) fn update(&self, key: &str, f: impl Fn(&mut KclValue, usize), epoch: usize, owner: usize) {
+        pub(super) fn update<T>(
+            &self,
+            key: &str,
+            f: impl FnOnce(&mut KclValue, usize) -> T,
+            epoch: usize,
+            owner: usize,
+        ) -> Option<T> {
             let Some((_, value)) = self.get_mut_bindings(owner).get_mut(key) else {
                 debug_assert!(false, "Missing memory entry for {key}");
-                return;
+                return None;
             };
 
-            f(value, epoch);
+            Some(f(value, epoch))
         }
 
         pub(super) fn parent(&self) -> Option<EnvironmentRef> {
@@ -1291,11 +1318,11 @@ mod test {
         mem.add(
             "f".to_owned(),
             KclValue::Function {
-                value: Box::new(FunctionSource::kcl(
+                value: vec![(0, FunctionSource::kcl(
                     crate::parsing::ast::types::FunctionExpression::dummy(),
                     sn2,
                     false,
-                )),
+                ))],
                 meta: Vec::new(),
             },
             sr(),
@@ -1306,7 +1333,7 @@ mod test {
         assert_get(mem, "a", 1);
         assert_get(mem, "b", 2);
         match mem.get("f", SourceRange::default()).unwrap() {
-            KclValue::Function { value, .. } => match &**value {
+            KclValue::Function { value, .. } if value.len() == 1 => match &value[0].1 {
                 FunctionSource {
                     body: crate::execution::kcl_value::FunctionBody::Kcl(memory),
                     ..
