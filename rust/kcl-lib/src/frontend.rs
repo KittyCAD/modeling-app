@@ -1,4 +1,6 @@
-use anyhow::bail;
+use std::ops::ControlFlow;
+
+use anyhow::{anyhow, bail};
 use kcl_api::{
     Error, Expr, FileId, Number, NumericSuffix, Object, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta,
     Settings, SourceDelta, SourceRef, Version,
@@ -6,7 +8,11 @@ use kcl_api::{
 };
 use kcl_error::SourceRange;
 
-use crate::{Program, fmt::format_number_literal, id::IncIdGenerator, parsing::ast::types as ast};
+use crate::{
+    Program, fmt::format_number_literal, frontend::traverse::dfs_mut, id::IncIdGenerator, parsing::ast::types as ast,
+};
+
+mod traverse;
 
 #[derive(Debug, Clone)]
 pub(crate) struct FrontendState {
@@ -358,24 +364,38 @@ impl FrontendState {
         todo!()
     }
 
-    fn sketch_ast_from_id(&self, sketch_id: ObjectId) -> kcl_api::Result<ast::Expr> {
-        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
-            msg: format!("Sketch not found: {sketch_id:?}"),
-        })?;
-        let ObjectKind::Sketch(_) = &sketch_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a sketch: {sketch_object:?}"),
-            });
-        };
-        self.ast_node_from_source_ref(&sketch_object.source)
-    }
-
-    fn ast_node_from_source_ref<F>(&self, source_ref: &SourceRef, f: F) -> anyhow::Result<bool>
+    fn sketch_ast_from_id<F>(&self, sketch_id: ObjectId, f: F) -> anyhow::Result<bool>
     where
         F: Fn(&crate::walk::Node) -> anyhow::Result<()>,
     {
-        match source_ref {
+        let sketch_object = self
+            .scene_graph
+            .objects
+            .get(sketch_id.0)
+            .ok_or_else(|| anyhow!("Sketch not found: {sketch_id:?}"))?;
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
+            bail!("Object is not a sketch: {sketch_object:?}");
+        };
+        match &sketch_object.source {
             SourceRef::Simple(range) => self.ast_node_from_source_range(*range, f),
+            SourceRef::BackTrace(_) => bail!("BackTrace source refs not supported yet"),
+        }
+    }
+
+    fn sketch_ast_from_id_mut<B, F>(&mut self, sketch_id: ObjectId, f: F) -> anyhow::Result<B>
+    where
+        F: Fn(crate::walk::NodeMut) -> ControlFlow<B>,
+    {
+        let sketch_object = self
+            .scene_graph
+            .objects
+            .get(sketch_id.0)
+            .ok_or_else(|| anyhow!("Sketch not found: {sketch_id:?}"))?;
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
+            bail!("Object is not a sketch: {sketch_object:?}");
+        };
+        match &sketch_object.source {
+            SourceRef::Simple(range) => self.ast_node_from_source_range_mut(*range, f),
             SourceRef::BackTrace(_) => bail!("BackTrace source refs not supported yet"),
         }
     }
@@ -394,6 +414,25 @@ impl FrontendState {
             f(&node)?;
             Ok(false)
         })
+    }
+
+    fn ast_node_from_source_range_mut<B, F>(&mut self, source_range: SourceRange, f: F) -> anyhow::Result<B>
+    where
+        F: Fn(crate::walk::NodeMut) -> ControlFlow<B>,
+    {
+        let control = dfs_mut(&mut self.program.ast, |node| {
+            let Ok(node_range) = SourceRange::try_from(&node) else {
+                return ControlFlow::Continue(());
+            };
+            if node_range != source_range {
+                return ControlFlow::Continue(());
+            }
+            f(node)
+        });
+        match control {
+            ControlFlow::Continue(_) => Err(anyhow!("Source range not found: {source_range:?}")),
+            ControlFlow::Break(break_value) => Ok(break_value),
+        }
     }
 
     fn position_from_expr(&self, _point: &Point2d<Expr>) -> kcl_api::Result<Point2d<Number>> {
