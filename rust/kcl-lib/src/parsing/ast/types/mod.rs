@@ -1364,6 +1364,11 @@ impl SketchBlock {
         self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg))
     }
 
+    /// Iterate over all arguments.
+    pub fn iter_arguments_mut(&mut self) -> impl Iterator<Item = (Option<&mut Node<Identifier>>, &mut Expr)> {
+        self.arguments.iter_mut().map(|arg| (arg.label.as_mut(), &mut arg.arg))
+    }
+
     fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for arg in &mut self.arguments {
             arg.arg.replace_value(source_range, new_value.clone());
@@ -2145,6 +2150,14 @@ impl CallExpressionKw {
             .iter()
             .map(|e| (None, e))
             .chain(self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg)))
+    }
+
+    /// Iterate over all arguments (labeled or not)
+    pub fn iter_arguments_mut(&mut self) -> impl Iterator<Item = (Option<&mut Node<Identifier>>, &mut Expr)> {
+        self.unlabeled
+            .iter_mut()
+            .map(|e| (None, e))
+            .chain(self.arguments.iter_mut().map(|arg| (arg.label.as_mut(), &mut arg.arg)))
     }
 
     pub fn num_arguments(&self) -> usize {
