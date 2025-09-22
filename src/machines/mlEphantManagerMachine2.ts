@@ -10,7 +10,7 @@ import type { ActorRefFrom } from 'xstate'
 import { S, transitions } from '@src/machines/utils'
 import { getKclVersion } from '@src/lib/kclVersion'
 
-import { Socket } from '@src/lib/utils'
+import { Socket } from '@src/lib/socket'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'

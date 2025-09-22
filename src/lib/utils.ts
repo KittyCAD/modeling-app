@@ -1,4 +1,3 @@
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
 import type { AsyncFn } from '@src/lib/types'
 import type { Binary as BSONBinary } from 'bson'
@@ -695,35 +694,4 @@ export function promiseFactory<T = void>() {
     reject = _reject
   })
   return { promise, resolve, reject }
-}
-
-export function Socket<T extends WebSocket>(
-  WsClass: new (url: string) => T,
-  path: string,
-  token: string
-): Promise<T> {
-  const ws = new WsClass(withAPIBaseURL(path))
-  const { promise, resolve } = promiseFactory<T>()
-
-  ws.addEventListener('open', () => {
-    ws.send(
-      JSON.stringify({
-        type: 'headers',
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
-      })
-    )
-    resolve(ws)
-  })
-
-  ws.addEventListener('close', () => {
-    console.log('CLOSED')
-  })
-
-  return promise
-}
-
-export function ZooSocket(path: string, token: string): Promise<WebSocket> {
-  return Socket(WebSocket, path, token)
 }
