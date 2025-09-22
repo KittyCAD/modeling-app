@@ -582,7 +582,7 @@ export const EngineStream = (props: {
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={videoWrapperRef}
-      className="absolute inset-[-4px] z-0"
+      className="absolute inset-[-4px] z-0" // negative inset to hide SSAO border artifacts
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
