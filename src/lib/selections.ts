@@ -15,17 +15,37 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
-import { getNodeFromPath, isSingleCursorInPipe } from '@src/lang/queryAst'
+import {
+  findAllChildrenAndOrderByPlaceInCode,
+  getNodeFromPath,
+  isSingleCursorInPipe,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
+import type {
+  Artifact,
+  ArtifactId,
+  CodeRef,
+  SegmentArtifact,
+} from '@src/lang/std/artifactGraph'
+import {
+  getArtifactOfTypes,
+  getCapCodeRef,
+  getCodeRefsByArtifactId,
+  getSweepFromSuspectedSweepSurface,
+  getWallCodeRef,
+} from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
-import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
+import {
+  isCursorInSketchCommandRange,
+  isTopLevelModule,
+  topLevelRange,
+} from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpressionKw,
   Expr,
+  PathToNode,
   Program,
   SourceRange,
 } from '@src/lang/wasm'
@@ -43,6 +63,7 @@ import {
 import { engineStreamActor } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import {
+  getModuleId,
   getNormalisedCoordinates,
   isArray,
   isNonNullable,
@@ -50,7 +71,16 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
+import type {
+  DefaultPlane,
+  EdgeCutInfo,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import toast from 'react-hot-toast'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
+import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -827,9 +857,9 @@ export function getSemanticSelectionType(selectionType: Artifact['type'][]) {
   return Array.from(semanticSelectionType)
 }
 
-export function selectDefaultSketchPlane(
+export function getDefaultSketchPlaneData(
   defaultPlaneId: string
-): Error | boolean {
+): Error | false | DefaultPlane {
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) {
     return new Error('No default planes defined in rustContext')
@@ -891,23 +921,29 @@ export function selectDefaultSketchPlane(
     [defaultPlanes.negYz]: '-YZ',
   }
 
+  return {
+    type: 'defaultPlane',
+    planeId: defaultPlaneId,
+    plane: defaultPlaneStrMap[defaultPlaneId],
+    zAxis,
+    yAxis,
+  }
+}
+export function selectDefaultSketchPlane(
+  defaultPlaneId: string
+): Error | boolean {
+  const result = getDefaultSketchPlaneData(defaultPlaneId)
+  if (err(result) || result === false) return result
   sceneInfra.modelingSend({
     type: 'Select sketch plane',
-    data: {
-      type: 'defaultPlane',
-      planeId: defaultPlaneId,
-      plane: defaultPlaneStrMap[defaultPlaneId],
-      zAxis,
-      yAxis,
-    },
+    data: result,
   })
-
   return true
 }
 
-export async function selectOffsetSketchPlane(
+export async function getOffsetSketchPlaneData(
   artifact: Artifact | undefined
-): Promise<Error | boolean> {
+): Promise<Error | false | OffsetPlane> {
   if (artifact?.type !== 'plane') {
     return new Error(
       `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`
@@ -952,29 +988,202 @@ export async function selectOffsetSketchPlane(
       // offset of the XZ is being weird, not sure if this is a camera bug
       negated = !negated
     }
-    sceneInfra.modelingSend({
-      type: 'Select sketch plane',
-      data: {
-        type: 'offsetPlane',
-        zAxis,
-        yAxis,
-        position: [
-          planeInfo.origin.x,
-          planeInfo.origin.y,
-          planeInfo.origin.z,
-        ].map((num) => num / sceneInfra.baseUnitMultiplier) as [
-          number,
-          number,
-          number,
-        ],
-        planeId,
-        pathToNode: artifact.codeRef.pathToNode,
-        negated,
-      },
-    })
+    return {
+      type: 'offsetPlane',
+      zAxis,
+      yAxis,
+      position: [
+        planeInfo.origin.x,
+        planeInfo.origin.y,
+        planeInfo.origin.z,
+      ].map((num) => num / sceneInfra.baseUnitMultiplier) as [
+        number,
+        number,
+        number,
+      ],
+      planeId,
+      pathToNode: artifact.codeRef.pathToNode,
+      negated,
+    }
   } catch (err) {
     console.error(err)
     return new Error('Error getting face details')
   }
+}
+
+export async function selectOffsetSketchPlane(
+  artifact: Artifact | undefined
+): Promise<Error | boolean> {
+  const result = await getOffsetSketchPlaneData(artifact)
+  if (err(result) || result === false) return result
+
+  try {
+    sceneInfra.modelingSend({
+      type: 'Select sketch plane',
+      data: result,
+    })
+  } catch (err) {
+    console.error(err)
+    return false
+  }
   return true
+}
+
+export async function selectionBodyFace(
+  planeOrFaceId: ArtifactId
+): Promise<ExtrudeFacePlane | undefined> {
+  const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId)
+  if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+    return
+  }
+
+  const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+  const offsetPlaneSelected = await selectOffsetSketchPlane(artifact)
+  if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+    return
+  }
+
+  // Artifact is likely an sweep face
+  const faceId = planeOrFaceId
+  const extrusion = getSweepFromSuspectedSweepSurface(
+    faceId,
+    kclManager.artifactGraph
+  )
+  if (!err(extrusion)) {
+    if (!isTopLevelModule(extrusion.codeRef.range)) {
+      const moduleId = getModuleId(extrusion.codeRef.range)
+      const importDetails = kclManager.execState.filenames[moduleId]
+      if (!importDetails) {
+        toast.error("can't sketch on this face")
+        return
+      }
+      if (importDetails?.type === 'Local') {
+        // importDetails has OS specific separators from the rust side!
+        const fileNameWithExtension = getStringAfterLastSeparator(
+          importDetails.value
+        )
+        showSketchOnImportToast(fileNameWithExtension)
+      } else if (
+        importDetails?.type === 'Main' ||
+        importDetails?.type === 'Std'
+      ) {
+        toast.error("can't sketch on this face")
+      } else {
+        // force tsc error if more cases are added
+        const _exhaustiveCheck: never = importDetails
+      }
+    }
+  }
+
+  if (
+    artifact?.type !== 'cap' &&
+    artifact?.type !== 'wall' &&
+    !(artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
+  )
+    return
+
+  const codeRef =
+    artifact.type === 'cap'
+      ? getCapCodeRef(artifact, kclManager.artifactGraph)
+      : artifact.type === 'wall'
+        ? getWallCodeRef(artifact, kclManager.artifactGraph)
+        : artifact.codeRef
+
+  const faceInfo = await sceneEntitiesManager.getFaceDetails(faceId)
+  if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
+  const { z_axis, y_axis, origin } = faceInfo
+  const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
+
+  const getEdgeCutMeta = (): null | EdgeCutInfo => {
+    let chamferInfo: {
+      segment: SegmentArtifact
+      type: EdgeCutInfo['subType']
+    } | null = null
+    if (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer') {
+      const consumedArtifact = getArtifactOfTypes(
+        {
+          key: artifact.consumedEdgeId,
+          types: ['segment', 'sweepEdge'],
+        },
+        kclManager.artifactGraph
+      )
+      if (err(consumedArtifact)) return null
+      if (consumedArtifact.type === 'segment') {
+        chamferInfo = {
+          type: 'base',
+          segment: consumedArtifact,
+        }
+      } else {
+        const segment = getArtifactOfTypes(
+          { key: consumedArtifact.segId, types: ['segment'] },
+          kclManager.artifactGraph
+        )
+        if (err(segment)) return null
+        chamferInfo = {
+          type: consumedArtifact.subType,
+          segment,
+        }
+      }
+    }
+    if (!chamferInfo) return null
+    const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
+      kclManager.ast,
+      chamferInfo?.segment.codeRef.pathToNode || [],
+      ['CallExpressionKw']
+    )
+    if (err(segmentCallExpr)) return null
+    if (segmentCallExpr.node.type !== 'CallExpressionKw') return null
+    const sketchNodeArgs = segmentCallExpr.node.arguments.map((la) => la.arg)
+    const tagDeclarator = sketchNodeArgs.find(
+      ({ type }) => type === 'TagDeclarator'
+    )
+    if (!tagDeclarator || tagDeclarator.type !== 'TagDeclarator') return null
+
+    return {
+      type: 'edgeCut',
+      subType: chamferInfo.type,
+      tagName: tagDeclarator.value,
+    }
+  }
+  const edgeCutMeta = getEdgeCutMeta()
+
+  const _faceInfo: ExtrudeFacePlane['faceInfo'] = edgeCutMeta
+    ? edgeCutMeta
+    : artifact.type === 'cap'
+      ? {
+          type: 'cap',
+          subType: artifact.subType,
+        }
+      : { type: 'wall' }
+
+  if (err(extrusion)) {
+    return Promise.reject(
+      new Error(`Extrusion is not a valid artifact: ${extrusion}`)
+    )
+  }
+
+  const lastChild =
+    findAllChildrenAndOrderByPlaceInCode(
+      { type: 'sweep', ...extrusion },
+      kclManager.artifactGraph
+    )[0] || null
+  const lastChildCodeRef: PathToNode | null =
+    lastChild?.type === 'compositeSolid' ? lastChild.codeRef.pathToNode : null
+
+  const extrudePathToNode = !err(extrusion)
+    ? lastChildCodeRef || extrusion.codeRef.pathToNode
+    : []
+
+  return {
+    type: 'extrudeFace',
+    zAxis: [z_axis.x, z_axis.y, z_axis.z],
+    yAxis: [y_axis.x, y_axis.y, y_axis.z],
+    position: [origin.x, origin.y, origin.z].map(
+      (num) => num / sceneInfra.baseUnitMultiplier
+    ) as [number, number, number],
+    sketchPathToNode,
+    extrudePathToNode,
+    faceInfo: _faceInfo,
+    faceId: faceId,
+  }
 }

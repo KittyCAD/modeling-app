@@ -90,7 +90,7 @@ import type {
   SegmentOverlay,
   SegmentOverlayPayload,
   SegmentOverlays,
-} from '@src/machines/modelingMachine'
+} from '@src/machines/modelingSharedTypes'
 import toast from 'react-hot-toast'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px

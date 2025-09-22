@@ -94,7 +94,7 @@ import {
   roundOff,
 } from '@src/lib/utils'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
-import type { EdgeCutInfo } from '@src/machines/modelingMachine'
+import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')
