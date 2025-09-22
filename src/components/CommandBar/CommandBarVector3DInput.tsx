@@ -27,22 +27,12 @@ function CommandBarVector3DInput({
     arg.name
   ] as KclCommandValue | undefined
 
-  // Parse vector string format "[x, y, z]" into separate components
-  const parseVectorString = (vectorStr: string) => {
-    const match = vectorStr.match(/^\[([^,]+),\s*([^,]+),\s*([^\]]+)\]$/)
-    return match
-      ? {
-          x: match[1].trim(),
-          y: match[2].trim(),
-          z: match[3].trim(),
-        }
-      : { x: '', y: '', z: '' }
-  }
+
 
   // Resolve current vector value, prioritizing previously set values over defaults
   const currentVectorString = useMemo(() => {
-    if (previouslySetValue?.valueText) {
-      return previouslySetValue.valueText
+    if (previouslySetValue?.valueCalculated) {
+      return previouslySetValue.valueCalculated
     }
 
     if (arg.defaultValue) {
@@ -51,14 +41,22 @@ function CommandBarVector3DInput({
         : arg.defaultValue
     }
 
-    return ''
+    return '[0, 0, 0]'
   }, [previouslySetValue, commandBarState.context, arg])
 
-  // Extract individual x, y, z values from the vector string
-  const defaultValues = useMemo(
-    () => parseVectorString(currentVectorString),
-    [currentVectorString]
-  )
+  // Extract individual x, y, z values from the vector string using simple parsing
+  const defaultValues = useMemo(() => {
+    // Remove brackets and split by comma - the KCL system ensures proper format
+    const cleaned = currentVectorString.replace(/^\[|\]$/g, '').trim()
+    if (!cleaned) return { x: '0', y: '0', z: '0' }
+    
+    const parts = cleaned.split(',').map(part => part.trim())
+    return {
+      x: parts[0] || '0',
+      y: parts[1] || '0',
+      z: parts[2] || '0'
+    }
+  }, [currentVectorString])
 
   const [x, setX] = useState(defaultValues.x)
   const [y, setY] = useState(defaultValues.y)
