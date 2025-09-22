@@ -60,12 +60,6 @@ const objectsTypesAndFilters: {
   selectionFilter: ['object'],
 }
 
-// For all boolean args
-const booleanOptions = [
-  { name: 'False', value: false },
-  { name: 'True', value: true },
-]
-
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
   Export: {
@@ -450,9 +444,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
       },
       symmetric: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: booleanOptions,
       },
       bidirectionalLength: {
         inputType: 'kcl',
@@ -515,9 +508,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       sectional: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: booleanOptions,
       },
       relativeTo: {
         inputType: 'options',
@@ -558,9 +550,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       bezApproximateRational: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: booleanOptions,
       },
       baseCurveIndex: {
         inputType: 'kcl',
@@ -631,9 +622,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
       },
       symmetric: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: booleanOptions,
       },
       bidirectionalAngle: {
         inputType: 'kcl',
@@ -824,10 +814,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         // No need for hidden here, as it works with all modes
       },
       ccw: {
-        inputType: 'options',
-        required: false,
         displayName: 'CounterClockWise',
-        options: booleanOptions,
+        inputType: 'boolean',
+        required: false,
       },
     },
   },
@@ -1022,9 +1011,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       global: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: booleanOptions,
       },
     },
   },
@@ -1059,9 +1047,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       global: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: booleanOptions,
       },
     },
   },
@@ -1096,9 +1083,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       global: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: booleanOptions,
       },
     },
   },

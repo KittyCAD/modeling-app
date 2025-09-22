@@ -1036,7 +1036,7 @@ extrude001 = extrude(profile001, length = 100)`
         commandName: 'Helix',
       })
       await cmdBar.clickOptionalArgument('ccw')
-      await cmdBar.selectOption({ name: 'True' }).click()
+      await cmdBar.selectOption({ name: 'On' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -1114,7 +1114,7 @@ extrude001 = extrude(profile001, length = 100)`
         },
         highlightedHeaderArg: 'CounterClockWise',
       })
-      await cmdBar.selectOption({ name: 'False' }).click()
+      await cmdBar.selectOption({ name: 'Off' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
