@@ -78,11 +78,22 @@ export class CmdBarFixture {
       }
     }
 
-    const vectorInputsExist = await this.page
+    const vector3dInputsExist = await this.page
       .getByTestId('vector3d-x-input')
       .isVisible()
       .catch(() => false)
-    if (vectorInputsExist) {
+    if (vector3dInputsExist) {
+      // Validate that all three vector3d inputs are present
+      const inputsPresent = await Promise.all([
+        this.page.getByTestId('vector3d-x-input').isVisible(),
+        this.page.getByTestId('vector3d-y-input').isVisible(),
+        this.page.getByTestId('vector3d-z-input').isVisible()
+      ])
+
+      if (!inputsPresent.every(Boolean)) {
+        throw new Error('Not all vector3d inputs are present')
+      }
+
       const [
         headerArguments,
         highlightedHeaderArg,
