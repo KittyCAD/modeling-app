@@ -27,8 +27,6 @@ function CommandBarVector3DInput({
     arg.name
   ] as KclCommandValue | undefined
 
-
-
   // Resolve current vector value, prioritizing previously set values over defaults
   const currentVectorString = useMemo(() => {
     if (previouslySetValue?.valueCalculated) {
@@ -49,12 +47,12 @@ function CommandBarVector3DInput({
     // Remove brackets and split by comma - the KCL system ensures proper format
     const cleaned = currentVectorString.replace(/^\[|\]$/g, '').trim()
     if (!cleaned) return { x: '0', y: '0', z: '0' }
-    
-    const parts = cleaned.split(',').map(part => part.trim())
+
+    const parts = cleaned.split(',').map((part) => part.trim())
     return {
       x: parts[0] || '0',
       y: parts[1] || '0',
-      z: parts[2] || '0'
+      z: parts[2] || '0',
     }
   }, [currentVectorString])
 
