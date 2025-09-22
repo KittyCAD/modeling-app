@@ -4305,7 +4305,10 @@ export const modelingMachine = setup({
                   actions: 'reset deleteIndex',
                 },
 
-                'Close sketch': 'Finish profile',
+                'Close sketch': {
+                  target: 'Finish profile',
+                  actions: 'reset deleteIndex',
+                }
               },
             },
 
