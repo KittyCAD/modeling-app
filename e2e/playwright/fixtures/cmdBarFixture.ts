@@ -78,7 +78,10 @@ export class CmdBarFixture {
       }
     }
 
-    const vectorInputsExist = await this.page.getByTestId('vector3d-x-input').isVisible().catch(() => false)
+    const vectorInputsExist = await this.page
+      .getByTestId('vector3d-x-input')
+      .isVisible()
+      .catch(() => false)
     if (vectorInputsExist) {
       const [
         headerArguments,
