@@ -10,6 +10,17 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import { roundOffWithUnits } from '@src/lib/utils'
 
+// Type guard to safely check if a value is a KclCommandValue
+function isKclCommandValue(value: unknown): value is KclCommandValue {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    'valueText' in value &&
+    'valueAst' in value &&
+    'valueCalculated' in value
+  )
+}
+
 function CommandBarVector3DInput({
   arg,
   stepBack,
@@ -23,28 +34,30 @@ function CommandBarVector3DInput({
   onSubmit: (data: KclCommandValue) => void
 }) {
   const commandBarState = useCommandBarState()
-  const previouslySetValue = commandBarState.context.argumentsToSubmit[
-    arg.name
-  ] as KclCommandValue | undefined
+  const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
+  const previouslySetValue = isKclCommandValue(argumentValue)
+    ? argumentValue
+    : undefined
 
   // Resolve current vector value, prioritizing previously set values over defaults
   const currentVectorString = useMemo(() => {
+    // previously set value
     if (previouslySetValue?.valueText) {
       return previouslySetValue.valueText
     }
-
+    // smart defaults
     if (arg.defaultValue) {
       return typeof arg.defaultValue === 'function'
         ? arg.defaultValue(commandBarState.context, undefined)
         : arg.defaultValue
     }
-
+    // dumb defaults
     return '[0, 0, 0]'
   }, [previouslySetValue, commandBarState.context, arg])
 
-  // Extract individual x, y, z values from the vector string using simple parsing
+  // Extract individual x, y, z values from the vector string
   const defaultValues = useMemo(() => {
-    // Remove brackets and split by comma - the KCL system ensures proper format
+    // Remove brackets and split by comma
     const cleaned = currentVectorString.replace(/^\[|\]$/g, '').trim()
     if (!cleaned) return { x: '0', y: '0', z: '0' }
 
@@ -56,15 +69,19 @@ function CommandBarVector3DInput({
     }
   }, [currentVectorString])
 
+  // Separate states allow independent editing and better performance
   const [x, setX] = useState(defaultValues.x)
   const [y, setY] = useState(defaultValues.y)
   const [z, setZ] = useState(defaultValues.z)
+  // Tracks form readiness based on calculation execution state
   const [canSubmit, setCanSubmit] = useState(true)
 
+  // Get selection
   const {
     context: { selectionRanges },
   } = useModelingContext()
 
+  // In the render, each input shows real-time feedback
   // Use calculation hook for each coordinate
   const xCalculation = useCalculateKclExpression({
     value: x,
@@ -84,13 +101,15 @@ function CommandBarVector3DInput({
     allowArrays: false,
   })
 
+  // DOM access for focus and keyboard navigation
   const xInputRef = useRef<HTMLInputElement>(null)
   const yInputRef = useRef<HTMLInputElement>(null)
   const zInputRef = useRef<HTMLInputElement>(null)
 
+  // Close the command bar
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
 
-  // Focus the first input on mount
+  // Focus and select the first input on mount
   useEffect(() => {
     if (xInputRef.current) {
       xInputRef.current.focus()
@@ -98,8 +117,9 @@ function CommandBarVector3DInput({
     }
   }, [])
 
+  // Form submission handler
+  // Basic check (Are the calculations still running?)
   useEffect(() => {
-    // Basic check for form submit button state - detailed validation happens in handleSubmit
     setCanSubmit(
       !xCalculation.isExecuting &&
         !yCalculation.isExecuting &&
@@ -111,8 +131,9 @@ function CommandBarVector3DInput({
     zCalculation.isExecuting,
   ])
 
+  // Detailed validation (Is the user's input actually valid?)
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+    e.preventDefault() // stop the browser
 
     // 1. Check if calculations are still running
     if (!canSubmit) {
@@ -149,7 +170,7 @@ function CommandBarVector3DInput({
     // 5. Create the vector expression for KCL parsing
     const vectorExpression = `[${x.trim()}, ${y.trim()}, ${z.trim()}]`
 
-    // Calculate the KCL expression using the utility
+    // Calculate the KCL expression
     stringToKclExpression(vectorExpression, true)
       .then((result) => {
         if (result instanceof Error || 'errors' in result) {
@@ -317,7 +338,7 @@ function CommandBarVector3DInput({
         </div>
       </div>
       <p className="mx-4 mb-4 text-sm text-chalkboard-70 dark:text-chalkboard-40">
-        Enter X, Y, Z coordinates for the 3D vector
+        Enter X, Y, Z coordinates
       </p>
     </form>
   )
