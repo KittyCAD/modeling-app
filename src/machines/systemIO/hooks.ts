@@ -96,7 +96,9 @@ export const useProjectIdToConversationId = (
       })
     })
 
-    const subscription2 = mlEphantManagerActor.subscribe((next) => {
+    let lastConversationId =
+      mlEphantManagerActor2.getSnapshot().context.conversationId
+    const subscription2 = mlEphantManagerActor2.subscribe((next) => {
       if (settings2.meta.id.current === undefined) {
         return
       }
@@ -113,6 +115,12 @@ export const useProjectIdToConversationId = (
       if (next.context.conversationId === undefined) {
         return
       }
+      if (lastConversationId === next.context.conversationId) {
+        return
+      }
+
+      lastConversationId = next.context.conversationId
+
       systemIOActor.send({
         type: SystemIOMachineEvents.saveMlEphantConversations,
         data: {

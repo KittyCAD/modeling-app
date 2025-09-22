@@ -82,6 +82,7 @@ export interface MlEphantManagerContext2 {
   apiToken: string
   ws?: WebSocket
   conversation?: Conversation
+  conversationId?: string
   lastMessageId?: number
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
@@ -178,7 +179,8 @@ export const mlEphantManagerMachine2 = setup({
 
       const ws = await Socket(
         WebSocket,
-        '/ws/ml/copilot',
+        '/ws/ml/copilot?' +
+          `conversation_id=${args.input.event.conversationId ?? ''}`,
         args.input.context.apiToken
       )
 
@@ -257,6 +259,7 @@ export const mlEphantManagerMachine2 = setup({
         conversation: {
           exchanges: [],
         },
+        conversationId: args.input.event.conversationId,
         ws,
       }
     }),
@@ -270,8 +273,7 @@ export const mlEphantManagerMachine2 = setup({
         return Promise.reject(new Error('Conversation not present'))
 
       const requestData = constructMultiFileIterationRequestWithPromptHelpers({
-        // TODO: NEED CONVO ID AGAIN
-        conversationId: '',
+        conversationId: context.conversationId ?? '',
         prompt: event.prompt,
         selections: event.selections,
         applicationProjectDirectory: event.applicationProjectDirectory,
@@ -326,9 +328,11 @@ export const mlEphantManagerMachine2 = setup({
     [MlEphantManagerStates2.Setup]: {
       invoke: {
         input: (args) => {
+          assertEvent(args.event, [MlEphantManagerStates2.Setup])
           return {
             event: {
               type: MlEphantManagerStates2.Setup,
+              conversationId: args.event.conversationId,
               refParentSend: args.self.send,
             },
             context: args.context,
@@ -368,6 +372,13 @@ export const mlEphantManagerMachine2 = setup({
                     assertEvent(event, [
                       MlEphantManagerTransitions2.ResponseReceive,
                     ])
+
+                    if ('conversation_id' in event.response) {
+                      return {
+                        conversationId:
+                          event.response.conversation_id.conversation_id,
+                      }
+                    }
 
                     const lastMessageId = (context.lastMessageId ?? -1) + 1
 
