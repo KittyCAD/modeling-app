@@ -48,7 +48,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -108,7 +108,7 @@ jobs:
       RA_TARGET: ${{ matrix.target }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -222,7 +222,7 @@ jobs:
             npm \
             yarn
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -270,7 +270,7 @@ jobs:
       - run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - run: 'echo "TAG: $TAG"'
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Install Nodejs
