@@ -2,13 +2,14 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing export_var_only_at_top_level.kcl
 ---
-KCL Engine error
+KCL Semantic error
 
-  × engine: could not send request to the engine: could not send json over
-  │ websocket: Trying to work with closed connection
-   ╭─[1:1]
+  × semantic: Exports are only supported at the top-level of a file. Remove
+  │ `export` or move it to the top-level.
+   ╭─[2:3]
  1 │ fn main() {
-   · ▲
-   · ╰── main
  2 │   export x = 2
+   ·   ──────┬─────
+   ·         ╰── main
+ 3 │   return 0
    ╰────

@@ -2,4 +2,18 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing invalid_member_object.kcl
 ---
-{}
+{
+  "num": {
+    "type": "Number",
+    "value": 999.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  }
+}

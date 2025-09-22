@@ -4,11 +4,11 @@ description: Error from executing error_revolve_on_edge_get_edge.kcl
 ---
 KCL Engine error
 
-  × engine: could not send request to the engine: could not send json over
-  │ websocket: Trying to work with closed connection
-   ╭─[1:1]
- 1 │ box = startSketchOn(XY)
-   · ▲
-   · ╰── main
- 2 │   |> startProfile(at = [0, 0])
-   ╰────
+  × engine: Entity found but it was of the wrong type
+  │ No such edge exists, cannot retrieve adjacency information.
+    ╭─[15:6]
+ 14 │   |> close()
+ 15 │   |> revolve(axis = revolveAxis, angle = 90)
+    ·      ───────────────────┬───────────────────
+    ·                         ╰── tests/error_revolve_on_edge_get_edge/input.kcl
+    ╰────

@@ -2,13 +2,12 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing invalid_member_object_prop.kcl
 ---
-KCL Engine error
+KCL Semantic error
 
-  × engine: could not send request to the engine: could not send json over
-  │ websocket: Trying to work with closed connection
-   ╭─[1:1]
+  × semantic: Only numbers (>= 0) can be indexes
+   ╭─[2:5]
  1 │ b = true
-   · ▲
-   · ╰── main
  2 │ x = b["property"]
+   ·     ──────┬──────
+   ·           ╰── tests/invalid_member_object_prop/input.kcl
    ╰────

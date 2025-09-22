@@ -2,4 +2,9 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_only_at_top_level.kcl
 ---
-{}
+{
+  "main": {
+    "type": "Function",
+    "value": null
+  }
+}
