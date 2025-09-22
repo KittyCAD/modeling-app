@@ -9,7 +9,7 @@
 ///   |> line(end = [0, -10])
 ///   |> close()
 ///   |> extrude(length = 5, tagStart = $face1)
-/// flatness(faces = [face1], tolerance = 0.1mm)
+/// gdt::flatness(faces = [face1], tolerance = 0.1mm)
 /// ```
 @(impl = std_rust, experimental = true)
 export fn flatness(
