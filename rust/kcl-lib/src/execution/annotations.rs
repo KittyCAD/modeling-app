@@ -44,13 +44,15 @@ pub(crate) const WARN_DENY: &str = "deny";
 pub(crate) const WARN_WARN: &str = "warn";
 pub(super) const WARN_LEVELS: [&str; 3] = [WARN_ALLOW, WARN_DENY, WARN_WARN];
 pub(crate) const WARN_UNKNOWN_UNITS: &str = "unknownUnits";
+pub(crate) const WARN_ANGLE_UNITS: &str = "angleUnits";
 pub(crate) const WARN_UNKNOWN_ATTR: &str = "unknownAttribute";
 pub(crate) const WARN_MOD_RETURN_VALUE: &str = "moduleReturnValue";
 pub(crate) const WARN_DEPRECATED: &str = "deprecated";
 pub(crate) const WARN_IGNORED_Z_AXIS: &str = "ignoredZAxis";
 pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
-pub(super) const WARN_VALUES: [&str; 6] = [
+pub(super) const WARN_VALUES: [&str; 7] = [
     WARN_UNKNOWN_UNITS,
+    WARN_ANGLE_UNITS,
     WARN_UNKNOWN_ATTR,
     WARN_MOD_RETURN_VALUE,
     WARN_DEPRECATED,

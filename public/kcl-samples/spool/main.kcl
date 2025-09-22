@@ -17,7 +17,7 @@ spoolBase = startSketchOn(XY)
   |> startProfile(at = [0, coreDiameter / 2])
   |> xLine(length = spoolThickness / 2)
   |> yLine(endAbsolute = spoolDiameter / 2 - webThickness)
-  |> tangentialArc(angle = -270, radius = webThickness)
+  |> tangentialArc(angle = -270deg, radius = webThickness)
   |> yLine(endAbsolute = hubDiameter / 2, tag = $seg01)
   |> xLine(endAbsolute = profileStartX())
   |> yLine(endAbsolute = profileStartY())
@@ -29,9 +29,9 @@ spoolBase = startSketchOn(XY)
 fn score(radius, length, depth) {
   scoreFn = startSketchOn(spoolBase, face = seg01)
     |> startProfile(at = [0, radius])
-    |> arc(angleStart = 90, angleEnd = 55, radius = profileStartY(%))
-    |> angledLine(angle = 55, length = length)
-    |> arc(angleStart = 55, angleEnd = 90, radius = profileStartY(%) + length)
+    |> arc(angleStart = 90deg, angleEnd = 55deg, radius = profileStartY(%))
+    |> angledLine(angle = 55deg, length = length)
+    |> arc(angleStart = 55deg, angleEnd = 90deg, radius = profileStartY(%) + length)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
     |> patternCircular2d(instances = 8, center = [0, 0])
@@ -49,7 +49,7 @@ scoreSketch02 = score(radius = coreDiameter / 2, length = (spoolDiameter - coreD
 // Model a wound coil on the spool diameter
 hel01 = helix(
   revolutions = spoolThickness / stockDiameter / 1.5,
-  angleStart = 0,
+  angleStart = 0deg,
   radius = (coreDiameter + stockDiameter) / 2,
   axis = X,
   length = spoolThickness,

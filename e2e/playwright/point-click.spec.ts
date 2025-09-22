@@ -835,7 +835,10 @@ openSketch = startSketchOn(XY)
         await page.waitForTimeout(timeout)
       })
       await test.step('Select the first segment', async () => {
-        await page.waitForTimeout(timeout)
+        // @pierremtb: I believe we can't click too fast after deselecting the line tool,
+        // otherwise the segment gets instantly deselected again.
+        // There's a non-zero chance it's an actual bug.
+        await page.waitForTimeout(timeout * 5)
         await clickFirstSegment()
         await page.waitForTimeout(timeout)
         await scene.expectPixelColor(
