@@ -13,6 +13,7 @@ import {
   type Artifact,
   type CodeRef,
   type Name,
+  type PathToNode,
   type Program,
   assertParse,
   recast,
@@ -208,6 +209,47 @@ extrude001 = extrude(profile001, length = 1, symmetric = true)`
     const newCode = recast(result.modifiedAst)
     expect(newCode).toContain(`${circleProfileCode}
 extrude001 = extrude(profile001, length = 2)`)
+    await runNewAstAndCheckForSweep(result.modifiedAst)
+  })
+
+  it('should edit an extrude call with tags and preserve them', async () => {
+    // From issue #8071
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> angledLine(angle = 0, length = 1.83, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 2.45)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 4, tagEnd = $capEnd001)
+  |> chamfer(
+       length = .5,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )`
+    const { ast, sketches } = await getAstAndSketchSelections(code)
+    const length = await getKclCommandValue('1')
+    const tagEnd = 'capEnd001'
+    // Get to the first call in pipe
+    const nodeToEdit: PathToNode = [
+      ['body', ''],
+      [2, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', ''],
+      ['body', 'PipeExpression'],
+      [0, 'index'],
+    ]
+    console.log('nodeToEdit', nodeToEdit)
+    const result = addExtrude({ ast, sketches, length, tagEnd, nodeToEdit })
+    if (err(result)) throw result
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(
+      code.replace(
+        'extrude(profile001, length = 4',
+        'extrude(profile001, length = 1'
+      )
+    )
     await runNewAstAndCheckForSweep(result.modifiedAst)
   })
 
