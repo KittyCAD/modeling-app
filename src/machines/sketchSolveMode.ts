@@ -1,4 +1,4 @@
-import { createMachine, sendTo, setup, type AnyActorLogic } from 'xstate'
+import { createMachine, fromPromise, sendTo, setup } from 'xstate'
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type {
   ModelingMachineContext,
@@ -11,12 +11,10 @@ import { machine as centerRectToolMachine } from '@src/machines/centerRectTool'
 import { machine as dimensionToolMachine } from '@src/machines/dimensionTool'
 
 type EquipTool = 'dimension' | 'center rectangle'
-
-// Tool registry for dynamic tool selection (including fallback)
-const toolRegistry: Record<EquipTool, any> = {
+const toolRegistry = {
   'center rectangle': centerRectToolMachine,
   dimension: dimensionToolMachine,
-}
+} as const
 
 // Helper function to get tool machine
 const getToolMachine = (tool: EquipTool) =>
@@ -53,8 +51,9 @@ export const sketchSolveMachine = setup({
     moveToolActor: createMachine({
       /* ... */
     }),
-    toolInvoker: (({ input }: { input: { tool: EquipTool } }) =>
-      getToolMachine(input.tool)) as unknown as AnyActorLogic,
+    toolInvoker: fromPromise(({ input }: { input: { tool: EquipTool } }) =>
+      Promise.resolve(getToolMachine(input.tool))
+    ),
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwAmAKwAOAHQcAzABZFGgGwBOebL16A7LIA0IAJ6INencs0a7ixTvUdpAXy+W0mXAIScioaegBXPggAQwwKWDBiMCwMEVFOHiQQASFUsQkpBHk1RwV7WTVFWVlFaR0dSxsEAFpqjmVZXT0OWXcTeQMenz90bHwiMgpqWjpw0TAAR3DmPjwMQhIMiRzhfKzCkx15ZSOOHu61fpNGxBM1dqOdGsNXRRNpRWGQfzGgydDaMoALaEELRUQQPAJJIpOgQMRgZTMUSkQjoYGgsAAFQ2xC2WR2eXE+xkFWkylc-SMT3kdWkNwQ1RKHHebxqeiqtXk8i+P0CExC00RILBEKhiWSGAYACdpYRpco+MRYgAzeVAjHkHGbbjbQS7YmgQpyNTkymGcq0nT06wyEwmDo1OQmDTSV33T6+b6jfnBKZhTUUcGQ6GShhLFZrXH4-j6okFWwsxzSHpPWQmDnp+QM6TydqKDg6S5FgxKRRqXk+8Z+gGI8JCURQKMkOEIpEotGI9YkACSHfQ0pj2TjaQTRSLymMlxM5cLprU2dtjOtJw+h08edddUrAWr-yFynryKb3eIMrlCqVqvVylPfdRA6HhNHJPHJSn9tnRekC5zpmUdg6G47xqO40hmBoPheqIYTwFkfJ7oKYR6rkL5Gog6b5pc8gaD0dzdB8DJqHojq1J0Sg1JUrg7r8Ar+oCIpBmKoYpChBpjncJRqAuejEQMhxcjmvTKGYZHaBwWgKP0NG+vuAZHo2zbEGx8avqaKjlv0uHpsRniKERSgAWcP6KHosi5jOnojLufxIYCTDCI2KloZIMjESoroKO5FRFn+Dr1G8ubyGYOFPBWUFAA */
