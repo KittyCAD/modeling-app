@@ -240,7 +240,6 @@ extrude001 = extrude(profile001, length = 4, tagEnd = $capEnd001)
       ['body', 'PipeExpression'],
       [0, 'index'],
     ]
-    console.log('nodeToEdit', nodeToEdit)
     const result = addExtrude({ ast, sketches, length, tagEnd, nodeToEdit })
     if (err(result)) throw result
     const newCode = recast(result.modifiedAst)

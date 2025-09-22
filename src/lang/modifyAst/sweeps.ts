@@ -70,7 +70,6 @@ export function addExtrude({
       pathToNode: PathToNode
     }
   | Error {
-  console.log('nodeToEdit', nodeToEdit)
   // 1. Clone the ast so we can edit it
   const modifiedAst = structuredClone(ast)
 
