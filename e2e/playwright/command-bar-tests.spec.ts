@@ -393,8 +393,6 @@ solid001 = extrude(sketch001, length = 5)`
       await editor.expectEditor.toContain('arcDegrees = 180')
       await editor.expectEditor.toContain('rotateDuplicates = true')
       await editor.expectEditor.toContain('useOriginal = false')
-      await editor.expectEditor.toContain('rotateDuplicates = true')
-      await editor.expectEditor.toContain('useOriginal = false')
     })
   })
 

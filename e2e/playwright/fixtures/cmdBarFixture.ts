@@ -87,7 +87,7 @@ export class CmdBarFixture {
       const inputsPresent = await Promise.all([
         this.page.getByTestId('vector3d-x-input').isVisible(),
         this.page.getByTestId('vector3d-y-input').isVisible(),
-        this.page.getByTestId('vector3d-z-input').isVisible()
+        this.page.getByTestId('vector3d-z-input').isVisible(),
       ])
 
       if (!inputsPresent.every(Boolean)) {
