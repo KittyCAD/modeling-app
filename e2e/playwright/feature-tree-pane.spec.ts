@@ -442,7 +442,7 @@ solid001 = extrude(sketch001, length = 5)
 pattern001 = patternCircular3d(
   solid001,
   instances = 4,
-  axis = [0, 0, 1],
+  axis = Y,
   center = [0, 0, 0],
 )`
       )
@@ -470,7 +470,7 @@ pattern001 = patternCircular3d(
         currentArgValue: '[0, 0, 0]',
         headerArguments: {
           Instances: '4',
-          Axis: '[0, 0, 1]',
+          Axis: 'Y',
           Center: '[0, 0, 0]',
         },
         highlightedHeaderArg: 'center',
@@ -479,12 +479,19 @@ pattern001 = patternCircular3d(
 
     await test.step('Edit the pattern parameters', async () => {
       await test.step('Edit center parameter', async () => {
-        // Feature tree editing starts on the center parameter step
-        // Update center from [0, 0, 0] to [5, 0, 0]
-        await cmdBar.currentArgumentInput
-          .locator('.cm-content')
-          .fill('[5, 0, 0]')
+        await page.getByTestId('vector3d-x-input').fill('5')
         await cmdBar.progressCmdBar()
+
+        // Expect review state with updated center
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Pattern Circular 3D',
+          headerArguments: {
+            Instances: '4',
+            Axis: 'Y',
+            Center: '[5, 0, 0]',
+          },
+        })
       })
 
       await test.step('Edit instances parameter', async () => {
@@ -497,7 +504,7 @@ pattern001 = patternCircular3d(
           currentArgValue: '4',
           headerArguments: {
             Instances: '4',
-            Axis: '[0, 0, 1]',
+            Axis: 'Y',
             Center: '[5, 0, 0]',
           },
           highlightedHeaderArg: 'instances',
@@ -518,26 +525,26 @@ pattern001 = patternCircular3d(
           currentArgValue: '',
           headerArguments: {
             Instances: '6',
-            Axis: '[0, 0, 1]',
+            Axis: 'Y',
             Center: '[5, 0, 0]',
           },
           highlightedHeaderArg: 'axis',
         })
 
         // Update axis from Z-axis to Y-axis
-        await cmdBar.selectOption({ name: 'Y-axis' }).click()
-        await cmdBar.progressCmdBar()
+        await cmdBar.selectOption({ name: 'Z-axis' }).click()
       })
     })
 
     await test.step('Submit the edited pattern and verify changes', async () => {
-      // Command is automatically submitted after the last parameter edit
+      // Submit changes
+      await cmdBar.progressCmdBar()
       await scene.settled(cmdBar)
 
       // Verify the generated code contains all updated parameters
       await editor.expectEditor.toContain('patternCircular3d(')
       await editor.expectEditor.toContain('instances = 6') // Updated from 4 to 6
-      await editor.expectEditor.toContain('axis = [0, 1, 0]') // Updated from [0, 0, 1] to [0, 1, 0]
+      await editor.expectEditor.toContain('axis = Z') // Updated from Y to Z
       await editor.expectEditor.toContain('center = [5, 0, 0]') // Updated from [0, 0, 0] to [5, 0, 0]
     })
   })
@@ -561,7 +568,7 @@ solid001 = extrude(sketch001, length = 5)
 pattern001 = patternCircular3d(
   solid001,
   instances = 6,
-  axis = [0, 0, 1],
+  axis = Z,
   center = [0, 0, 0],
   arcDegrees = 180,
   rotateDuplicates = true,
@@ -591,7 +598,7 @@ pattern001 = patternCircular3d(
         currentArgValue: '[0, 0, 0]',
         headerArguments: {
           Instances: '6',
-          Axis: '[0, 0, 1]',
+          Axis: 'Z',
           Center: '[0, 0, 0]',
           ArcDegrees: '180',
           RotateDuplicates: '',
@@ -611,7 +618,7 @@ pattern001 = patternCircular3d(
           currentArgValue: '180',
           headerArguments: {
             Instances: '6',
-            Axis: '[0, 0, 1]',
+            Axis: 'Z',
             Center: '[0, 0, 0]',
             ArcDegrees: '180',
             RotateDuplicates: '',
@@ -633,7 +640,7 @@ pattern001 = patternCircular3d(
           currentArgValue: '',
           headerArguments: {
             Instances: '6',
-            Axis: '[0, 0, 1]',
+            Axis: 'Z',
             Center: '[0, 0, 0]',
             ArcDegrees: '270',
             RotateDuplicates: '',
@@ -650,7 +657,7 @@ pattern001 = patternCircular3d(
           commandName: 'Pattern Circular 3D',
           headerArguments: {
             Instances: '6',
-            Axis: '[0, 0, 1]',
+            Axis: 'Z',
             Center: '[0, 0, 0]',
             ArcDegrees: '270',
             // Boolean parameters don't show their values in the header
@@ -668,7 +675,7 @@ pattern001 = patternCircular3d(
           currentArgValue: '',
           headerArguments: {
             Instances: '6',
-            Axis: '[0, 0, 1]',
+            Axis: 'Z',
             Center: '[0, 0, 0]',
             ArcDegrees: '270',
             UseOriginal: '',
@@ -685,7 +692,7 @@ pattern001 = patternCircular3d(
           commandName: 'Pattern Circular 3D',
           headerArguments: {
             Instances: '6',
-            Axis: '[0, 0, 1]',
+            Axis: 'Z',
             Center: '[0, 0, 0]',
             ArcDegrees: '270',
             UseOriginal: '',
@@ -710,7 +717,7 @@ pattern001 = patternCircular3d(
       // Verify the generated code contains all updated parameters
       await editor.expectEditor.toContain('patternCircular3d(')
       await editor.expectEditor.toContain('instances = 6')
-      await editor.expectEditor.toContain('axis = [0, 0, 1]')
+      await editor.expectEditor.toContain('axis = Z')
       await editor.expectEditor.toContain('center = [0, 0, 0]')
       await editor.expectEditor.toContain('arcDegrees = 270') // Updated from 180 to 270
       await editor.expectEditor.toContain('rotateDuplicates = false') // Updated from true to false
