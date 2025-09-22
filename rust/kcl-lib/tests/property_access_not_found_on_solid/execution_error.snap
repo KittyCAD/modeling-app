@@ -2,13 +2,14 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing property_access_not_found_on_solid.kcl
 ---
-KCL Engine error
+KCL Semantic error
 
-  × engine: could not send request to the engine: could not send json over
-  │ websocket: Trying to work with closed connection
-   ╭─[1:1]
- 1 │ fn myFunction() {
-   · ▲
-   · ╰── main
- 2 │   return startSketchOn(XY)
-   ╰────
+  × semantic: Property `tags` not found on a solid. You can get a solid's tags
+  │ through its sketch, as in, `exampleSolid.sketch.tags`.
+    ╭─[13:43]
+ 12 │ 
+ 13 │ sketch001 = startSketchOn(myShape, face = myShape.tags.seg01)
+    ·                                           ──────┬─────
+    ·                                                 ╰── tests/property_access_not_found_on_solid/input.kcl
+ 14 │ 
+    ╰────
