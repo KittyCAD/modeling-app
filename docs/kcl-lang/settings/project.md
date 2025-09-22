@@ -31,6 +31,23 @@ base_unit = "in"
 
 
 
+#### meta
+
+Information about the project itself. Choices about how settings are merged have prevent me (lee) from easily moving this out of the settings structure.
+
+
+**Default:** None
+
+This setting has the following nested options:
+
+##### id
+
+
+
+
+**Default:** None
+
+
 #### app
 
 The settings for the Design Studio.
@@ -117,6 +134,41 @@ Highlight edges of 3D objects?
 ##### enable_ssao
 
 Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+
+
+**Default:** None
+
+##### fixed_size_grid
+
+When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level. If true, the grid cells will be fixed-size, where the width is your default length unit. If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+
+
+**Default:** None
+
+##### snap_to_grid
+
+When enabled, tools like line, rectangle, etc. will snap to the grid.
+
+
+**Default:** None
+
+##### major_grid_spacing
+
+The space between major grid lines, specified in the current unit.
+
+
+**Default:** None
+
+##### minor_grids_per_major
+
+The number of minor grid lines per major grid line.
+
+
+**Default:** None
+
+##### snaps_per_minor
+
+The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
 
 
 **Default:** None

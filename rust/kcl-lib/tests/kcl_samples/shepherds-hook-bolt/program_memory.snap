@@ -8,12 +8,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "boltDiameter": {
@@ -21,12 +17,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "boltNumberOfRevolutions": {
@@ -34,12 +26,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "boltThreadRevolve": {
@@ -104,9 +92,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               -51.76277608090537
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -123,9 +109,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               -51.38777608090537
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -142,9 +126,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               -51.38777608090537
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -161,9 +143,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               -81.38777608090537
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -180,9 +160,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               -52.13777608090537
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -199,9 +177,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               -52.13777608090537
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -211,9 +187,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -221,25 +195,19 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -251,9 +219,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             2.03995,
             -52.13777608090537
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -262,16 +228,11 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -284,34 +245,26 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -336,9 +289,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             -51.76277608090537
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -355,9 +306,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             -51.38777608090537
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -374,9 +323,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             -51.38777608090537
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -393,9 +340,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             -81.38777608090537
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -412,9 +357,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             -52.13777608090537
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -431,9 +374,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             -52.13777608090537
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -443,9 +384,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -453,25 +392,19 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -483,9 +416,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           2.03995,
           -52.13777608090537
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -494,9 +425,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "capEnd001": {
@@ -549,9 +478,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -561,9 +488,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             "x": 0.0,
             "y": 0.0,
             "z": -22.13777608090537,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -571,25 +496,19 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -601,9 +520,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             2.5,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -612,16 +529,11 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": true
     }
   },
@@ -629,13 +541,9 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "type": "Number",
     "value": 150.0,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "degrees": null,
+      "type": "Known",
+      "type": "Angle"
     }
   },
   "hookProfilePlane": {
@@ -647,34 +555,26 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -699,9 +599,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             -17.13777608090537
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -723,9 +621,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             -11.2763114494309
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -742,10 +638,10 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             -11.2763114494309
           ],
           "tag": {
-            "commentStart": 1558,
-            "end": 1563,
+            "commentStart": 1567,
+            "end": 1572,
             "moduleId": 0,
-            "start": 1558,
+            "start": 1567,
             "type": "TagDeclarator",
             "value": "hook"
           },
@@ -754,9 +650,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             5.999999999999999
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -766,9 +660,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -776,25 +668,19 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -806,9 +692,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           0.0,
           -22.13777608090537
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -823,9 +707,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "isClosed": false
     }
   },
   "hookRadius": {
@@ -833,12 +716,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "hookSectionPlane": {
@@ -850,34 +729,26 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "x": 0.0,
         "y": 0.0,
         "z": -22.13777608090537,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -908,9 +779,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -920,9 +789,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "x": 0.0,
           "y": 0.0,
           "z": -22.13777608090537,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -930,25 +797,19 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -960,9 +821,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           2.5,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -971,22 +830,16 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "hookStartAngle": {
     "type": "Number",
     "value": 290.0,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "degrees": null,
+      "type": "Known",
+      "type": "Angle"
     }
   },
   "hypotenuse": {
@@ -994,12 +847,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 12.770133269710945,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "innerRadius": {
@@ -1007,12 +856,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 2.03995,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "nutDistance": {
@@ -1020,12 +865,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "polarToCartesian": {
@@ -1042,12 +883,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "shankOffset": {
@@ -1055,12 +892,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 17.13777608090537,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "side": {
@@ -1068,12 +901,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 4.3676428111944245,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "startTag": {
@@ -1086,12 +915,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 0.46004999999999996,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "threadedEndLength": {
@@ -1099,12 +924,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tipBody": {
@@ -1119,10 +940,10 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2148,
-            "end": 2154,
+            "commentStart": 2157,
+            "end": 2163,
             "moduleId": 0,
-            "start": 2148,
+            "start": 2157,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1133,10 +954,10 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2246,
-            "end": 2255,
+            "commentStart": 2255,
+            "end": 2264,
             "moduleId": 0,
-            "start": 2246,
+            "start": 2255,
             "type": "TagDeclarator",
             "value": "startTag"
           },
@@ -1147,10 +968,10 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2273,
-            "end": 2283,
+            "commentStart": 2282,
+            "end": 2292,
             "moduleId": 0,
-            "start": 2273,
+            "start": 2282,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -1177,10 +998,10 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             ],
             "radius": 2.5,
             "tag": {
-              "commentStart": 2148,
-              "end": 2154,
+              "commentStart": 2157,
+              "end": 2163,
               "moduleId": 0,
-              "start": 2148,
+              "start": 2157,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1189,9 +1010,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1203,17 +1022,13 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -1253,9 +1068,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -1265,9 +1078,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": -22.13777608090537,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "Custom",
@@ -1275,25 +1086,19 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -1305,9 +1110,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
                   2.5,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1316,21 +1119,14 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 0.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": true
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -1341,9 +1137,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             14.5,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1366,11 +1160,8 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1381,21 +1172,15 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             "n": 1.25,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1409,17 +1194,13 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -1459,9 +1240,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
                 0.0
               ],
               "type": "Circle",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             }
           ],
           "on": {
@@ -1471,9 +1250,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               "x": 0.0,
               "y": 0.0,
               "z": -22.13777608090537,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "Custom",
@@ -1481,25 +1258,19 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -1511,9 +1282,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
               2.5,
               0.0
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -1522,21 +1291,14 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
-        "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "sectional": true
       },
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "tipShape": {
@@ -1561,10 +1323,10 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           ],
           "radius": 2.5,
           "tag": {
-            "commentStart": 2148,
-            "end": 2154,
+            "commentStart": 2157,
+            "end": 2163,
             "moduleId": 0,
-            "start": 2148,
+            "start": 2157,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1573,9 +1335,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1587,17 +1347,13 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -1637,9 +1393,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1649,9 +1403,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": -22.13777608090537,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -1659,25 +1411,19 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1689,9 +1435,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
                 2.5,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1700,21 +1444,14 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": true
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -1725,9 +1462,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           14.5,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1750,9 +1485,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   }
 }

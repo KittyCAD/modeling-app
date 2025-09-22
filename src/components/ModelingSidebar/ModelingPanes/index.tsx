@@ -1,14 +1,21 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import type { MouseEventHandler, ReactNode } from 'react'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import {
+  type MouseEventHandler,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+import { useLoaderData } from 'react-router-dom'
 import type { ContextFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import {
-  FileTreeInner,
-  FileTreeMenu,
-  FileTreeRoot,
-  useFileTreeOperations,
-} from '@src/components/FileTree'
+import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
+import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
+import type { FileExplorerEntry } from '@src/components/Explorer/utils'
+import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
+import { MLEphantConversationPaneMenu } from '@src/components/MlEphantConversation'
 import { ModelingPaneHeader } from '@src/components/ModelingSidebar/ModelingPane'
 import { DebugPane } from '@src/components/ModelingSidebar/ModelingPanes/DebugPane'
 import { FeatureTreeMenu } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreeMenu'
@@ -20,20 +27,37 @@ import {
   MemoryPane,
   MemoryPaneMenu,
 } from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
+import { MlEphantConversationPane } from '@src/components/ModelingSidebar/ModelingPanes/MlEphantConversationPane'
+import { ToastInsert } from '@src/components/ToastInsert'
 import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
-import { editorManager } from '@src/lib/singletons'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import {
+  FILE_EXT,
+  INSERT_FOREIGN_TOAST_ID,
+  type VALID_PANE_IDS,
+} from '@src/lib/constants'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import { PATHS, parentPathRelativeToProject } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
+import {
+  codeManager,
+  commandBarActor,
+  editorManager,
+  kclManager,
+  mlEphantManagerActor,
+  systemIOActor,
+  useSettings,
+  useUser,
+} from '@src/lib/singletons'
+import type { IndexLoaderData } from '@src/lib/types'
 import type { settingsMachine } from '@src/machines/settingsMachine'
+import { useFolders } from '@src/machines/systemIO/hooks'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import toast from 'react-hot-toast'
+import { useRouteLoaderData } from 'react-router-dom'
 
-export type SidebarType =
-  | 'code'
-  | 'debug'
-  | 'export'
-  | 'files'
-  | 'feature-tree'
-  | 'logs'
-  | 'lspMessages'
-  | 'variables'
+export type SidebarId = (typeof VALID_PANE_IDS)[number]
 
 export interface BadgeInfo {
   value: (props: PaneCallbackProps) => boolean | number | string
@@ -52,14 +76,20 @@ interface PaneCallbackProps {
   platform: 'web' | 'desktop'
 }
 
+export type SidebarCssOverrides = Partial<{
+  button: string
+  // Could add pane, etc here
+}>
+
 export type SidebarPane = {
-  id: SidebarType
+  id: SidebarId
   sidebarName: string
   icon: CustomIconName | IconDefinition
   keybinding: string
-  Content: React.FC<{ id: SidebarType; onClose: () => void }>
+  Content: React.FC<{ id: SidebarId; onClose: () => void }>
   hide?: boolean | ((props: PaneCallbackProps) => boolean)
   showBadge?: BadgeInfo
+  cssClassOverrides?: SidebarCssOverrides
 }
 
 export type SidebarAction = {
@@ -72,13 +102,55 @@ export type SidebarAction = {
   action: () => void
   hide?: boolean | ((props: PaneCallbackProps) => boolean)
   disable?: () => string | undefined
+  cssClassOverrides?: SidebarCssOverrides
 }
 
 // For now a lot of icons are the same but the reality is they could totally
 // be different, like an icon based on some data for the pane, or the icon
 // changes to be a spinning loader on loading.
+const textToCadPane: SidebarPane = {
+  id: 'text-to-cad',
+  icon: 'sparkles',
+  keybinding: 'Ctrl + T',
+  sidebarName: 'Text-to-CAD',
+  cssClassOverrides: {
+    button:
+      'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
+  },
+  Content: (props) => {
+    const settings = useSettings()
+    const user = useUser()
+    const { context: contextModeling, theProject } = useModelingContext()
+    const { file: loaderFile } = useLoaderData() as IndexLoaderData
 
-export const sidebarPanes: SidebarPane[] = [
+    return (
+      <>
+        <ModelingPaneHeader
+          id={props.id}
+          icon="sparkles"
+          title="Text-to-CAD"
+          Menu={MLEphantConversationPaneMenu}
+          onClose={props.onClose}
+        />
+        <MlEphantConversationPane
+          {...{
+            mlEphantManagerActor,
+            systemIOActor,
+            kclManager,
+            codeManager,
+            contextModeling,
+            theProject: theProject.current,
+            loaderFile,
+            settings,
+            user,
+          }}
+        />
+      </>
+    )
+  },
+}
+
+export const sidebarPanesLeft: SidebarPane[] = [
   {
     id: 'feature-tree',
     icon: 'model',
@@ -101,7 +173,7 @@ export const sidebarPanes: SidebarPane[] = [
     id: 'code',
     icon: 'code',
     sidebarName: 'KCL Code',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
@@ -132,38 +204,141 @@ export const sidebarPanes: SidebarPane[] = [
     id: 'files',
     icon: 'folder',
     sidebarName: 'Project Files',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
-      const {
-        createFile,
-        createFolder,
-        cloneFileOrDir,
-        openInNewWindow,
-        newTreeEntry,
-      } = useFileTreeOperations()
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
+      const projects = useFolders()
+      const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+      const projectRef = useRef(loaderData.project)
+      const [theProject, setTheProject] = useState<Project | null>(null)
+      const { project, file } = loaderData
+      const settings = useSettings()
+      useEffect(() => {
+        projectRef.current = loaderData?.project
+
+        // Have no idea why the project loader data doesn't have the children from the ls on disk
+        // That means it is a different object or cached incorrectly?
+        if (!project || !file) {
+          return
+        }
+
+        // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
+        const theProject = projects.find((p) => {
+          return p.name === project.name
+        })
+
+        if (!theProject) {
+          return
+        }
+
+        // Duplicate the state to not edit the raw data
+        const duplicated = JSON.parse(JSON.stringify(theProject))
+        addPlaceHoldersForNewFileAndFolder(duplicated.children, theProject.path)
+        setTheProject(duplicated)
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+      }, [projects, loaderData])
+
+      const [createFilePressed, setCreateFilePressed] = useState<number>(0)
+      const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
+      const [refreshExplorerPressed, setRefresFolderPressed] =
+        useState<number>(0)
+      const [collapsePressed, setCollapsedPressed] = useState<number>(0)
+
+      const onRowClicked = (entry: FileExplorerEntry, domIndex: number) => {
+        const applicationProjectDirectory =
+          settings.app.projectDirectory.current
+        const requestedFileName = parentPathRelativeToProject(
+          entry.path,
+          applicationProjectDirectory
+        )
+
+        const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
+        const isRelevantFile = (filename: string): boolean =>
+          RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
+
+        // Only open the file if it is a kcl file.
+        if (
+          projectRef.current?.name &&
+          entry.children == null &&
+          entry.path.endsWith(FILE_EXT)
+        ) {
+          systemIOActor.send({
+            type: SystemIOMachineEvents.navigateToFile,
+            data: {
+              requestedProjectName: projectRef.current.name,
+              requestedFileName: requestedFileName,
+            },
+          })
+        } else if (
+          window.electron &&
+          isRelevantFile(entry.path) &&
+          projectRef.current?.path
+        ) {
+          // Allow insert if it is a importable file
+          const electron = window.electron
+          toast.custom(
+            ToastInsert({
+              onInsert: () => {
+                const relativeFilePath = entry.path.replace(
+                  projectRef.current?.path + electron.path.sep,
+                  ''
+                )
+                commandBarActor.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'Insert',
+                    groupId: 'code',
+                    argDefaultValues: { path: relativeFilePath },
+                  },
+                })
+                toast.dismiss(INSERT_FOREIGN_TOAST_ID)
+              },
+            }),
+            { duration: 30000, id: INSERT_FOREIGN_TOAST_ID }
+          )
+        }
+      }
 
       return (
         <>
           <ModelingPaneHeader
             id={props.id}
             icon="folder"
-            title={<FileTreeRoot />}
+            title={`${theProject?.name || ''}`}
             Menu={
-              <FileTreeMenu
-                onCreateFile={() => createFile({ dryRun: true })}
-                onCreateFolder={() => createFolder({ dryRun: true })}
-              />
+              <FileExplorerHeaderActions
+                onCreateFile={() => {
+                  setCreateFilePressed(performance.now())
+                }}
+                onCreateFolder={() => {
+                  setCreateFolderPressed(performance.now())
+                }}
+                onRefreshExplorer={() => {
+                  setRefresFolderPressed(performance.now())
+                }}
+                onCollapseExplorer={() => {
+                  setCollapsedPressed(performance.now())
+                }}
+              ></FileExplorerHeaderActions>
             }
             onClose={props.onClose}
           />
-          <FileTreeInner
-            onCreateFile={(name: string) => createFile({ dryRun: false, name })}
-            onCreateFolder={(name: string) =>
-              createFolder({ dryRun: false, name })
-            }
-            onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
-            onOpenInNewWindow={(path: string) => openInNewWindow({ path })}
-            newTreeEntry={newTreeEntry}
-          />
+          {theProject && file ? (
+            <div className={'w-full h-full flex flex-col'}>
+              <ProjectExplorer
+                project={theProject}
+                file={file}
+                createFilePressed={createFilePressed}
+                createFolderPressed={createFolderPressed}
+                refreshExplorerPressed={refreshExplorerPressed}
+                collapsePressed={collapsePressed}
+                onRowClicked={onRowClicked}
+                onRowEnter={onRowClicked}
+                canNavigate={true}
+                readOnly={false}
+              ></ProjectExplorer>
+            </div>
+          ) : (
+            <div></div>
+          )}
         </>
       )
     },
@@ -193,7 +368,7 @@ export const sidebarPanes: SidebarPane[] = [
     id: 'variables',
     icon: 'make-variable',
     sidebarName: 'Variables',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
@@ -213,7 +388,7 @@ export const sidebarPanes: SidebarPane[] = [
     id: 'logs',
     icon: 'logs',
     sidebarName: 'Logs',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
@@ -233,7 +408,7 @@ export const sidebarPanes: SidebarPane[] = [
     id: 'debug',
     icon: 'bug',
     sidebarName: 'Debug',
-    Content: (props: { id: SidebarType; onClose: () => void }) => {
+    Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
           <ModelingPaneHeader
@@ -250,4 +425,17 @@ export const sidebarPanes: SidebarPane[] = [
     keybinding: 'Shift + D',
     hide: ({ settings }) => !settings.app.showDebugPanel.current,
   },
+  ...(isPlaywright() ? [textToCadPane] : []),
 ]
+
+export const sidebarPanesRight: SidebarPane[] = [
+  ...(!isPlaywright() ? [textToCadPane] : []),
+]
+
+/**
+ * Gathered up all the pane IDs defined in this file
+ * for validating the pane IDs loaded from persisted storage
+ */
+export const validPaneIds = [...sidebarPanesRight, ...sidebarPanesLeft].map(
+  ({ id }) => id
+)

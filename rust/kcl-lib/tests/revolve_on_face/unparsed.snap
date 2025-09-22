@@ -1,0 +1,20 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing revolve_on_face.kcl
+---
+@settings(defaultLengthUnit = mm)
+
+stemSketch = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2.5)
+stemExtrude = extrude(stemSketch, length = 7.1, tagEnd = $end002)
+  |> appearance(color = "#1111FF")
+
+ballSketch = startSketchOn(stemExtrude, face = end002)
+  // TODO: remove silly 0.00001 hack
+  |> startProfile(at = [0, 0.00001])
+  |> line(end = [-5.35, 0])
+  |> arc(angleEnd = 0, angleStart = 180, radius = 5.35)
+  |> close()
+
+ballRevolve = revolve(ballSketch, axis = X)
+  |> appearance(color = "#FF1111")

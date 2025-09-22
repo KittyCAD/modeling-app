@@ -23,12 +23,12 @@ nVentBosses = 36
 
 // Drilling parameters.
 dDrillDia = 6
-aBase = 90
-aSweep = 30
+aBase = 90deg
+aSweep = 30deg
 nArcs = 12
 
 // Bell parameters.
-aDraftBell = 5
+aDraftBell = 5deg
 tBell = 5 // Wall thickness.
 hBellAboveDiscFace = 40
 hBellSubflush = 4
@@ -98,7 +98,7 @@ planeVent = offsetPlane(XY, offset = tDiscHalf)
 sketchVent = startSketchOn(planeVent)
 profileVent = startProfile(sketchVent, at = [-wVent, dDisc / 2])
   |> angledLine(angle = 0, length = wVent, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = hFrictionSurface, tag = $seg02)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = hFrictionSurface, tag = $seg02)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg03)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
@@ -118,7 +118,7 @@ ventSet = patternCircular3d(
   instances = nVentBosses,
   axis = [0, 0, 1],
   center = [0, 0, tDiscHalf],
-  arcDegrees = 360,
+  arcDegrees = 360deg,
   rotateDuplicates = true,
 )
 
@@ -134,8 +134,8 @@ discOutboard = createDiscHalf(
 // Now create bell.
 rCenter = dDisc / 2 - hFrictionSurface - wUndercut
 rBore = dBore / 2
-lDraftExterior = hBellAboveDiscFace / tan(90 - aDraftBell)
-lDraftInterior = (hBellAboveDiscFace - tBell) / tan(90 - aDraftBell)
+lDraftExterior = hBellAboveDiscFace / tan(90deg - aDraftBell)
+lDraftInterior = (hBellAboveDiscFace - tBell) / tan(90deg - aDraftBell)
 
 // Inner and outer radius of outboard face of disc bell.
 rOuter = rCenter - lDraftExterior - rBore
@@ -149,7 +149,7 @@ bodyDiscBell = startProfile(
          tDiscHalf * 2 + tVent
        ],
      )
-  |> arc(angleStart = -180, angleEnd = 0, radius = wUndercut / 2)
+  |> arc(angleStart = -180deg, angleEnd = 0, radius = wUndercut / 2)
   |> line(end = [lDraftExterior, hBellAboveDiscFace])
   |> xLine(length = rOuter, tag = $seg04)
   |> yLine(length = -tBell)
@@ -166,7 +166,7 @@ profileStud = circle(sketchLugs, center = [0, dPitchCircle / 2], radius = dStudD
   |> patternCircular2d(
        instances = nStuds,
        center = [0, 0],
-       arcDegrees = 360,
+       arcDegrees = 360deg,
        rotateDuplicates = true,
      )
 

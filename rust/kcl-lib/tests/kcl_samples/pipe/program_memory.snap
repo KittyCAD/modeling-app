@@ -43,9 +43,7 @@ description: Variables in memory after executing pipe.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -57,17 +55,13 @@ description: Variables in memory after executing pipe.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -107,9 +101,7 @@ description: Variables in memory after executing pipe.kcl
                     0.0
                   ],
                   "type": "Circle",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 }
               ],
               "on": {
@@ -119,9 +111,7 @@ description: Variables in memory after executing pipe.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -129,25 +119,19 @@ description: Variables in memory after executing pipe.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -159,9 +143,7 @@ description: Variables in memory after executing pipe.kcl
                   1.1875,
                   0.0
                 ],
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -170,21 +152,14 @@ description: Variables in memory after executing pipe.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
-            "height": 6.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "sectional": false
           },
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         "start": {
           "from": [
@@ -195,9 +170,7 @@ description: Variables in memory after executing pipe.kcl
             1.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -206,16 +179,11 @@ description: Variables in memory after executing pipe.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": -6.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -259,9 +227,7 @@ description: Variables in memory after executing pipe.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -271,9 +237,7 @@ description: Variables in memory after executing pipe.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -281,25 +245,19 @@ description: Variables in memory after executing pipe.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -311,9 +269,7 @@ description: Variables in memory after executing pipe.kcl
             1.1875,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -322,16 +278,11 @@ description: Variables in memory after executing pipe.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -340,12 +291,8 @@ description: Variables in memory after executing pipe.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "pipeLength": {
@@ -353,12 +300,8 @@ description: Variables in memory after executing pipe.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "pipeOuterDiameter": {
@@ -366,12 +309,8 @@ description: Variables in memory after executing pipe.kcl
     "value": 2.375,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

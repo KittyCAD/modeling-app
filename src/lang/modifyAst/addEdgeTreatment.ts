@@ -12,11 +12,17 @@ import {
   createLocalName,
   createPipeExpression,
 } from '@src/lang/create'
+import { deleteTopLevelStatement } from '@src/lang/modifyAst'
+import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import {
+  createTagExpressions,
+  modifyAstWithTagsForSelection,
+} from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
   hasSketchPipeBeenExtruded,
-  traverse,
   locateVariableWithCallOrPipe,
+  traverse,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -31,21 +37,15 @@ import {
   type ArtifactGraph,
   type CallExpressionKw,
   type Expr,
+  type ExpressionStatement,
   type ObjectExpression,
   type PathToNode,
   type Program,
   type VariableDeclarator,
-  type ExpressionStatement,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selection, Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
-import {
-  createTagExpressions,
-  modifyAstWithTagsForSelection,
-} from '@src/lang/modifyAst/tagManagement'
-import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
-import { deleteTopLevelStatement } from '@src/lang/modifyAst'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {

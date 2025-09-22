@@ -1,7 +1,7 @@
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
-    self as kcmc, EnableSketchMode, ModelingCmd,
+    self as kcmc, EnableSketchMode, FaceIsPlanar, ModelingCmd,
     ok_response::OkModelingCmdResponse,
     shared::ExtrusionFaceCapType,
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
@@ -188,6 +188,15 @@ pub struct Solid2d {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
+pub struct PlaneOfFace {
+    pub id: ArtifactId,
+    pub face_id: ArtifactId,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct StartSketchOnFace {
     pub id: ArtifactId,
     pub face_id: ArtifactId,
@@ -325,6 +334,7 @@ pub enum Artifact {
     Path(Path),
     Segment(Segment),
     Solid2d(Solid2d),
+    PlaneOfFace(PlaneOfFace),
     StartSketchOnFace(StartSketchOnFace),
     StartSketchOnPlane(StartSketchOnPlane),
     Sweep(Sweep),
@@ -346,6 +356,7 @@ impl Artifact {
             Artifact::Solid2d(a) => a.id,
             Artifact::StartSketchOnFace(a) => a.id,
             Artifact::StartSketchOnPlane(a) => a.id,
+            Artifact::PlaneOfFace(a) => a.id,
             Artifact::Sweep(a) => a.id,
             Artifact::Wall(a) => a.id,
             Artifact::Cap(a) => a.id,
@@ -367,6 +378,7 @@ impl Artifact {
             Artifact::Solid2d(_) => None,
             Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
             Artifact::StartSketchOnPlane(a) => Some(&a.code_ref),
+            Artifact::PlaneOfFace(a) => Some(&a.code_ref),
             Artifact::Sweep(a) => Some(&a.code_ref),
             Artifact::Wall(_) => None,
             Artifact::Cap(_) => None,
@@ -387,6 +399,7 @@ impl Artifact {
             | Artifact::Segment(_)
             | Artifact::Solid2d(_)
             | Artifact::StartSketchOnFace(_)
+            | Artifact::PlaneOfFace(_)
             | Artifact::StartSketchOnPlane(_)
             | Artifact::Sweep(_) => None,
             Artifact::Wall(a) => Some(&a.face_code_ref),
@@ -406,6 +419,7 @@ impl Artifact {
             Artifact::Solid2d(_) => Some(new),
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
+            Artifact::PlaneOfFace { .. } => Some(new),
             Artifact::Sweep(a) => a.merge(new),
             Artifact::Wall(a) => a.merge(new),
             Artifact::Cap(a) => a.merge(new),
@@ -588,10 +602,10 @@ pub(super) fn build_artifact_graph(
         // current plane ID.
         // THIS IS THE ONLY THING WE CAN ASSUME IS ALWAYS SEQUENTIAL SINCE ITS PART OF THE
         // SAME ATOMIC COMMANDS BATCHING.
-        if let ModelingCmd::StartPath(_) = artifact_command.command {
-            if let Some(plane_id) = current_plane_id {
-                path_to_plane_id_map.insert(artifact_command.cmd_id, plane_id);
-            }
+        if let ModelingCmd::StartPath(_) = artifact_command.command
+            && let Some(plane_id) = current_plane_id
+        {
+            path_to_plane_id_map.insert(artifact_command.cmd_id, plane_id);
         }
         if let ModelingCmd::SketchModeDisable(_) = artifact_command.command {
             current_plane_id = None;
@@ -757,6 +771,13 @@ fn artifacts_to_update(
             return Ok(vec![Artifact::Plane(Plane {
                 id,
                 path_ids: Vec::new(),
+                code_ref,
+            })]);
+        }
+        ModelingCmd::FaceIsPlanar(FaceIsPlanar { object_id, .. }) => {
+            return Ok(vec![Artifact::PlaneOfFace(PlaneOfFace {
+                id,
+                face_id: object_id.into(),
                 code_ref,
             })]);
         }
@@ -963,9 +984,11 @@ fn artifacts_to_update(
         | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
         | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
+        | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. })
         | ModelingCmd::Sweep(kcmc::Sweep { target, .. }) => {
             let sub_type = match cmd {
                 ModelingCmd::Extrude(_) => SweepSubType::Extrusion,
+                ModelingCmd::ExtrudeToReference(_) => SweepSubType::Extrusion,
                 ModelingCmd::TwistExtrude(_) => SweepSubType::ExtrusionTwist,
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,

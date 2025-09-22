@@ -1,5 +1,5 @@
 import { type Locator, type Page, test } from '@playwright/test'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 
@@ -50,7 +50,11 @@ export class ToolbarFixture {
   loadButton!: Locator
   /** User button for the user sidebar menu */
   userSidebarButton!: Locator
+  /** Project button for the project's settings */
+  projectSidebarToggle!: Locator
   signOutButton!: Locator
+  /** Selection indicator text in the status bar */
+  selectionStatus!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -76,7 +80,7 @@ export class ToolbarFixture {
     this.exitSketchBtn = page.getByTestId('sketch-exit')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
-    this.treeInputField = page.getByTestId('tree-input-field')
+    this.treeInputField = page.getByTestId('file-rename-field')
     this.loadButton = page.getByTestId('add-file-to-project-pane-button')
 
     this.filePane = page.locator('#files-pane')
@@ -91,7 +95,10 @@ export class ToolbarFixture {
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
 
     this.userSidebarButton = page.getByTestId('user-sidebar-toggle')
+    this.projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
     this.signOutButton = page.getByTestId('user-sidebar-sign-out')
+
+    this.selectionStatus = page.getByTestId('selection-status')
   }
 
   get logoLink() {
@@ -212,8 +219,8 @@ export class ToolbarFixture {
   }
   selectArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
-    await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
-    await this.page.getByTestId('dropdown-arc').click()
+    await expect(this.page.getByTestId('dropdown-tangential-arc')).toBeVisible()
+    await this.page.getByTestId('dropdown-tangential-arc').click()
   }
   selectThreePointArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
@@ -228,13 +235,13 @@ export class ToolbarFixture {
       .click()
   }
 
-  async closePane(paneId: SidebarType) {
+  async closePane(paneId: SidebarId) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async openPane(paneId: SidebarType) {
+  async openPane(paneId: SidebarId) {
     return openPane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async checkIfPaneIsOpen(paneId: SidebarType) {
+  async checkIfPaneIsOpen(paneId: SidebarId) {
     return checkIfPaneIsOpen(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
 
@@ -318,5 +325,14 @@ export class ToolbarFixture {
     await operationButton.click({ button: 'right' })
     await expect(goToDefinitionMenuButton).toBeVisible()
     await goToDefinitionMenuButton.click()
+  }
+
+  async fireTtcPrompt(prompt: string) {
+    await this.openPane('text-to-cad')
+    await expect(
+      this.page.getByTestId('ml-ephant-conversation-input')
+    ).toBeVisible()
+    await this.page.getByTestId('ml-ephant-conversation-input').fill(prompt)
+    await this.page.getByTestId('ml-ephant-conversation-input-button').click()
   }
 }

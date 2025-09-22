@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { OkWebSocketResponseData, WebSocketRequest } from '@kittycad/lib'
 
 import type {
   Cap,
@@ -100,9 +100,7 @@ interface SweepArtifactRich extends BaseArtifact {
   codeRef: CodeRef
 }
 
-export type EngineCommand = Models['WebSocketRequest_type']
-
-type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
+export type EngineCommand = WebSocketRequest
 
 export interface ResponseMap {
   [commandId: string]: OkWebSocketResponseData

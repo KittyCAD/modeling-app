@@ -16,7 +16,7 @@ function CommandBarBasicInput({
   onSubmit,
 }: {
   arg: CommandArgument<unknown> & {
-    inputType: 'string' | 'color'
+    inputType: 'string' | 'color' | 'tagDeclarator'
     name: string
   }
   stepBack: () => void
@@ -40,6 +40,7 @@ function CommandBarBasicInput({
           ? arg.defaultValue(commandBarState.context, argMachineContext)
           : arg.defaultValue
         : ''),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
       arg.defaultValue,
       commandBarState.context,
@@ -69,6 +70,11 @@ function CommandBarBasicInput({
         <span className="capitalize px-2 py-1 rounded-l bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80">
           {arg.displayName || arg.name}
         </span>
+        {arg.inputType === 'tagDeclarator' && (
+          <span className="pl-2 py-1 -mr-2 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80">
+            $
+          </span>
+        )}
         <input
           data-testid="cmd-bar-arg-value"
           id="arg-form"
@@ -80,7 +86,7 @@ function CommandBarBasicInput({
           placeholder="Enter a value"
           defaultValue={defaultValue}
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.shiftKey) {
+            if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             }
           }}

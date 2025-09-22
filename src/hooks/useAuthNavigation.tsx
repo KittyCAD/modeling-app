@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
+import { IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM } from '@src/lib/constants'
 import { useAuthState } from '@src/lib/singletons'
 import { generateSignInUrl } from '@src/routes/utils'
 
@@ -38,5 +38,6 @@ export function useAuthNavigation() {
 
       navigate(PATHS.SIGN_IN + (location.search || ''))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [authState, location.pathname])
 }

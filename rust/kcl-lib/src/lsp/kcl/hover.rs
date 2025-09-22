@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::Range as LspRange;
 
-use crate::{SourceRange, parsing::ast::types::*};
+use crate::{SourceRange, lsp::ToLspRange, parsing::ast::types::*};
 
 /// Describes information about a hover.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
@@ -65,14 +65,14 @@ impl Program {
     /// This is really recursive so keep that in mind.
     pub(super) fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         // Check if we are in shebang.
-        if let Some(node) = &self.shebang {
-            if node.contains(pos) {
-                let source_range: SourceRange = node.into();
-                return Some(Hover::Comment {
+        if let Some(node) = &self.shebang
+            && node.contains(pos)
+        {
+            let source_range: SourceRange = node.into();
+            return Some(Hover::Comment {
                     value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
                     range: source_range.to_lsp_range(code),
                 });
-            }
         }
 
         let value = self.get_expr_for_position(pos)?;
@@ -129,6 +129,8 @@ impl Expr {
                 .ty
                 .get_hover_value_for_position(pos, code, opts)
                 .or_else(|| expr.expr.get_hover_value_for_position(pos, code, opts)),
+            Expr::SketchBlock(expr) => expr.get_hover_value_for_position(pos, code, opts),
+            Expr::SketchVar(_) => None,
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Expr::PipeSubstitution(_) => None,
         }
@@ -157,6 +159,7 @@ impl BinaryPart {
             BinaryPart::MemberExpression(member_expression) => {
                 member_expression.get_hover_value_for_position(pos, code, opts)
             }
+            BinaryPart::SketchVar(_) => None,
         }
     }
 }
@@ -185,14 +188,14 @@ impl CallExpressionKw {
                 };
             }
 
-            if let Some(id) = label {
-                if id.as_source_range().contains(pos) {
-                    return Some(Hover::KwArg {
-                        name: id.name.clone(),
-                        callee_name: self.callee.to_string(),
-                        range: id.as_source_range().to_lsp_range(code),
-                    });
-                }
+            if let Some(id) = label
+                && id.as_source_range().contains(pos)
+            {
+                return Some(Hover::KwArg {
+                    name: id.name.clone(),
+                    callee_name: self.callee.to_string(),
+                    range: id.as_source_range().to_lsp_range(code),
+                });
             }
         }
 
@@ -327,22 +330,22 @@ impl Node<Type> {
 
 impl FunctionExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
-        if let Some(ty) = &self.return_type {
-            if let Some(h) = ty.get_hover_value_for_position(pos, code, opts) {
-                return Some(h);
-            }
+        if let Some(ty) = &self.return_type
+            && let Some(h) = ty.get_hover_value_for_position(pos, code, opts)
+        {
+            return Some(h);
         }
         for arg in &self.params {
-            if let Some(ty) = &arg.type_ {
-                if let Some(h) = ty.get_hover_value_for_position(pos, code, opts) {
-                    return Some(h);
-                }
+            if let Some(ty) = &arg.param_type
+                && let Some(h) = ty.get_hover_value_for_position(pos, code, opts)
+            {
+                return Some(h);
             }
         }
         if let Some(value) = self.body.get_expr_for_position(pos) {
             let mut vars = opts.vars.clone().unwrap_or_default();
             for arg in &self.params {
-                let ty = arg.type_.as_ref().map(|ty| ty.to_string());
+                let ty = arg.param_type.as_ref().map(|ty| ty.to_string());
                 vars.insert(arg.identifier.inner.name.clone(), ty);
             }
             return value.get_hover_value_for_position(
@@ -378,5 +381,37 @@ impl ElseIf {
         self.cond
             .get_hover_value_for_position(pos, code, opts)
             .or_else(|| self.then_val.get_hover_value_for_position(pos, code, opts))
+    }
+}
+
+impl SketchBlock {
+    fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
+        for (index, (label, arg)) in self.iter_arguments().enumerate() {
+            let source_range: SourceRange = arg.into();
+            if source_range.contains(pos) {
+                return if opts.prefer_sig {
+                    Some(Hover::Signature {
+                        name: Self::CALLEE_NAME.to_owned(),
+                        parameter_index: index as u32,
+                        range: source_range.to_lsp_range(code),
+                    })
+                } else {
+                    arg.get_hover_value_for_position(pos, code, opts)
+                };
+            }
+
+            if let Some(id) = label
+                && id.as_source_range().contains(pos)
+            {
+                return Some(Hover::KwArg {
+                    name: id.name.clone(),
+                    callee_name: Self::CALLEE_NAME.to_owned(),
+                    range: id.as_source_range().to_lsp_range(code),
+                });
+            }
+        }
+
+        let value = self.body.get_expr_for_position(pos)?;
+        value.get_hover_value_for_position(pos, code, opts)
     }
 }

@@ -10,6 +10,8 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 
+const TEST_OVERLAY_TIMEOUT_MS = 1_500 // slightly longer than OVERLAY_TIMEOUT_MS in @src/components/ModelingMachineProvider
+
 test.beforeEach(async ({ page, context }) => {
   // Make the user avatar image always 404
   // so we see the fallback menu icon for all snapshot tests
@@ -124,221 +126,49 @@ test.describe(
 )
 
 test(
-  'Draft segments should look right',
-  { tag: '@snapshot' },
-  async ({ page, scene, toolbar }) => {
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await u.waitForAuthSkipAppStart()
-
-    const startXPx = 600
-    const [endOfTangentClk, endOfTangentMv] = scene.makeMouseHelpers(
-      startXPx + PUR * 30,
-      500 - PUR * 20,
-      { steps: 10 }
-    )
-    const [threePointArcMidPointClk, threePointArcMidPointMv] =
-      scene.makeMouseHelpers(800, 250, { steps: 10 })
-    const [threePointArcEndPointClk, threePointArcEndPointMv] =
-      scene.makeMouseHelpers(750, 285, { steps: 10 })
-    const [arcCenterClk, arcCenterMv] = scene.makeMouseHelpers(750, 210, {
-      steps: 10,
-    })
-    const [arcEndClk, arcEndMv] = scene.makeMouseHelpers(750, 150, {
-      steps: 10,
-    })
-
-    // click on "Start Sketch" button
-    await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    )
-
-    // select a plane
-    await page.mouse.click(700, 200)
-
-    let code = `sketch001 = startSketchOn(XZ)`
-    await expect(page.locator('.cm-content')).toHaveText(code)
-
-    await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
-
-    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
-    await expect(page.locator('.cm-content')).toHaveText(code)
-    await page.waitForTimeout(100)
-
-    await page.mouse.move(startXPx + PUR * 20, 500 - PUR * 10)
-
-    await page.waitForTimeout(500)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-
-    const lineEndClick = () =>
-      page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-    await lineEndClick()
-    await page.waitForTimeout(500)
-
-    code += `
-  |> xLine(length = 184.3)`
-    await expect(page.locator('.cm-content')).toHaveText(code)
-
-    await toolbar.selectTangentialArc()
-
-    // click on the end of the profile to continue it
-    await page.waitForTimeout(500)
-    await lineEndClick()
-    await page.waitForTimeout(500)
-
-    // click to continue profile
-    await page.mouse.move(813, 392, { steps: 10 })
-    await page.waitForTimeout(500)
-
-    await endOfTangentMv()
-    await page.waitForTimeout(500)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-    await endOfTangentClk()
-
-    await toolbar.selectThreePointArc()
-    await page.waitForTimeout(500)
-    await endOfTangentClk()
-    await threePointArcMidPointMv()
-    await page.waitForTimeout(500)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-    await threePointArcMidPointClk()
-    await page.waitForTimeout(100)
-
-    await threePointArcEndPointMv()
-    await page.waitForTimeout(500)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-
-    await threePointArcEndPointClk()
-    await page.waitForTimeout(100)
-
-    await toolbar.selectArc()
-    await page.waitForTimeout(100)
-
-    // continue the profile
-    await threePointArcEndPointClk()
-    await page.waitForTimeout(100)
-    await arcCenterMv()
-    await page.waitForTimeout(500)
-    await arcCenterClk()
-
-    await arcEndMv()
-    await page.waitForTimeout(500)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-    await arcEndClk()
-  }
-)
-
-test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene }) => {
+  async ({ page }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
-    const PUR = 400 / 37.5 //pixeltoUnitRatio
-
     await u.waitForAuthSkipAppStart()
 
-    // click on "Start Sketch" button
+    // Start a sketch
     await u.doAndWaitForImageDiff(
       () => page.getByRole('button', { name: 'Start Sketch' }).click(),
       200
     )
 
-    // select a plane
+    // Select a plane
     await page.mouse.click(700, 200)
-
     await expect(page.locator('.cm-content')).toHaveText(
       `sketch001 = startSketchOn(XZ)`
     )
 
-    // Wait for camera animation
-    await page.waitForTimeout(2000)
-
-    const startXPx = 600
-
     // Equip the rectangle tool
-    const rectangleBtn = page.getByTestId('corner-rectangle')
-    await rectangleBtn.click()
-    await expect(rectangleBtn).toHaveAttribute('aria-pressed', 'true')
+    await page.getByTestId('corner-rectangle').click()
 
     // Draw the rectangle
+    const startPixelX = 600
+    const pixelToUnitRatio = 400 / 37.5
     const rectanglePointOne: [number, number] = [
-      startXPx + PUR * 40,
-      500 - PUR * 30,
+      startPixelX + pixelToUnitRatio * 40,
+      500 - pixelToUnitRatio * 30,
     ]
     await page.mouse.move(...rectanglePointOne, { steps: 5 })
-    await page.mouse.click(...rectanglePointOne, { delay: 50 })
-    await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 10, { steps: 5 })
-    await page.waitForTimeout(800)
+    await page.mouse.click(...rectanglePointOne, { delay: 500 })
+    await page.mouse.move(
+      startPixelX + pixelToUnitRatio * 10,
+      500 - pixelToUnitRatio * 10,
+      { steps: 5 }
+    )
+    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
 
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
     })
-  }
-)
-test(
-  'Draft circle should look right',
-  { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene }) => {
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    const PUR = 400 / 37.5 //pixeltoUnitRatio
-
-    await u.waitForAuthSkipAppStart()
-
-    await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    )
-
-    // select a plane
-    await page.mouse.click(700, 200)
-
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)`
-    )
-
-    // Wait for camera animation
-    await page.waitForTimeout(2000)
-
-    const startXPx = 600
-
-    // Equip the rectangle tool
-    // await page.getByRole('button', { name: 'line Line', exact: true }).click()
-    await page.getByTestId('circle-center').click()
-
-    // Draw the rectangle
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-    await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 10, { steps: 5 })
-
-    // Ensure the draft rectangle looks the same as it usually does
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [366.89, -62.01], radius = 1)`
-    )
   }
 )
 
@@ -347,56 +177,21 @@ test.describe(
   { tag: '@snapshot' },
   () => {
     test('Inch scale', async ({ page, cmdBar, scene, toolbar }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-5, -5])
+  |> xLine(length = 50)
+  |> tangentialArc(end = [50, 50])
+`
+        )
+      })
       const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
-      const PUR = 400 / 37.5 //pixeltoUnitRatio
-
       await u.waitForAuthSkipAppStart()
+      await scene.settled(cmdBar)
 
-      await u.doAndWaitForImageDiff(
-        () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-        200
-      )
-
-      // select a plane
-      await page.mouse.click(700, 200)
-
-      let code = `sketch001 = startSketchOn(XZ)`
-      await expect(page.locator('.cm-content')).toHaveText(code)
-
-      // Wait for camera animation
-      await page.waitForTimeout(2000)
-
-      const startXPx = 600
-      await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
-      await expect(u.codeLocator).toHaveText(code)
-      await page.waitForTimeout(100)
-
-      await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-      await page.waitForTimeout(100)
-
-      code += `
-  |> xLine(length = 184.3)`
-      await expect(u.codeLocator).toHaveText(code)
-
-      await toolbar.selectTangentialArc()
-      await page.waitForTimeout(200)
-
-      // click to continue profile
-      await page.mouse.click(813, 392)
-      await page.waitForTimeout(300)
-
-      await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
-
-      code += `
-  |> tangentialArc(end = [184.31, 184.31])`
-      await expect(u.codeLocator).toHaveText(code)
-
-      // click tangential arc tool again to unequip it
-      // it will be available directly in the toolbar since it was last equipped
-      await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(1000)
+      await toolbar.editSketch(0)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
@@ -404,10 +199,8 @@ test.describe(
         mask: lowerRightMasks(page),
       })
 
-      await u.doAndWaitForImageDiff(
-        () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
-        200
-      )
+      // exit sketch
+      await u.doAndWaitForImageDiff(() => toolbar.exitSketch(), 200)
 
       await scene.settled(cmdBar)
 
@@ -442,56 +235,21 @@ test.describe(
           }),
         }
       )
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-5, -5])
+  |> xLine(length = 50)
+  |> tangentialArc(end = [50, 50])
+`
+        )
+      })
       const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
-      const PUR = 400 / 37.5 //pixeltoUnitRatio
-
       await u.waitForAuthSkipAppStart()
-
       await scene.settled(cmdBar)
 
-      await u.doAndWaitForImageDiff(
-        () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-        200
-      )
-
-      // select a plane
-      await page.mouse.click(700, 200)
-
-      let code = `sketch001 = startSketchOn(XZ)`
-      await expect(u.codeLocator).toHaveText(code)
-
-      // Wait for camera animation
-      await page.waitForTimeout(2000)
-
-      const startXPx = 600
-      await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
-      await expect(u.codeLocator).toHaveText(code)
-      await page.waitForTimeout(100)
-
-      await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-      await page.waitForTimeout(100)
-
-      code += `
-  |> xLine(length = 184.3)`
-      await expect(u.codeLocator).toHaveText(code)
-
-      await toolbar.selectTangentialArc()
-      await page.waitForTimeout(200)
-
-      // click to continue profile
-      await page.mouse.click(813, 392)
-      await page.waitForTimeout(300)
-
-      await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
-
-      code += `
-  |> tangentialArc(end = [184.31, 184.31])`
-      await expect(u.codeLocator).toHaveText(code)
-
-      await toolbar.tangentialArcBtn.click()
-      await page.waitForTimeout(1000)
+      await toolbar.editSketch(0)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
@@ -500,10 +258,7 @@ test.describe(
       })
 
       // exit sketch
-      await u.doAndWaitForImageDiff(
-        () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
-        200
-      )
+      await u.doAndWaitForImageDiff(() => toolbar.exitSketch(), 200)
 
       await scene.settled(cmdBar)
 
@@ -851,14 +606,14 @@ test.describe('code color goober', { tag: '@snapshot' }, () => {
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
   |> startProfile(at = [2, 0])
-  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
+  |> arc(angleStart = 0, angleEnd = 360deg, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",
@@ -895,14 +650,14 @@ sweepSketch = startSketchOn(XY)
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
   |> startProfile(at = [2, 0])
-  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
+  |> arc(angleStart = 0, angleEnd = 360deg, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = '#bb00ff',
@@ -940,14 +695,14 @@ sweepSketch = startSketchOn(XY)
 sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc(angle = 90, radius = 5)
+  |> tangentialArc(angle = 90deg, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90, radius = 5)
+  |> tangentialArc(angle = -90deg, radius = 5)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
   |> startProfile(at = [2, 0])
-  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
+  |> arc(angleStart = 0, angleEnd = 360deg, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",

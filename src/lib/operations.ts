@@ -1,8 +1,14 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { retrieveFaceSelectionsFromOpArgs } from '@src/lang/modifyAst/faces'
-import { retrieveAxisOrEdgeSelectionsFromOpArg } from '@src/lang/modifyAst/sweeps'
+import {
+  retrieveFaceSelectionsFromOpArgs,
+  retrieveNonDefaultPlaneSelectionFromOpArg,
+} from '@src/lang/modifyAst/faces'
+import {
+  retrieveAxisOrEdgeSelectionsFromOpArg,
+  retrieveTagDeclaratorFromOpArg,
+} from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
   retrieveSelectionsFromOpArg,
@@ -16,8 +22,8 @@ import {
   type CallExpressionKw,
   type PipeExpression,
   type Program,
-  pathToNodeFromRustNodePath,
   type VariableDeclaration,
+  pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
@@ -67,8 +73,8 @@ const prepareToEditParameter: PrepareToEditCallback = async ({ operation }) => {
   }
 
   const baseCommand = {
-    name: 'event.parameter.edit',
-    groupId: 'modeling',
+    name: 'parameter.edit',
+    groupId: 'code',
   }
 
   // 1. Convert from the parameter's Operation to a KCL-type arg value
@@ -86,7 +92,7 @@ const prepareToEditParameter: PrepareToEditCallback = async ({ operation }) => {
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
-  const argDefaultValues: ModelingCommandSchema['event.parameter.edit'] = {
+  const argDefaultValues = {
     value,
     nodeToEdit,
   }
@@ -162,6 +168,22 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     bidirectionalLength = result
   }
 
+  // tagStart and tagEng arguments
+  let tagStart: string | undefined
+  let tagEnd: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
+    )
+  }
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
+    )
+  }
+
   // twistAngle argument from a string to a KCL expression
   let twistAngle: KclCommandValue | undefined
   if (
@@ -181,6 +203,44 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     twistAngle = result
   }
 
+  // twistAngleStep argument from a string to a KCL expression
+  let twistAngleStep: KclCommandValue | undefined
+  if (
+    'twistAngleStep' in operation.labeledArgs &&
+    operation.labeledArgs.twistAngleStep
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.twistAngleStep.sourceRange[0],
+        operation.labeledArgs.twistAngleStep.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve twistAngleStep argument" }
+    }
+
+    twistAngleStep = result
+  }
+
+  // twistCenter argument from a Point2d to two KCL expression
+  let twistCenter: KclCommandValue | undefined
+  if (
+    'twistCenter' in operation.labeledArgs &&
+    operation.labeledArgs.twistCenter
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.twistCenter.sourceRange[0],
+        operation.labeledArgs.twistCenter.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve twistCenter argument" }
+    }
+
+    twistCenter = result
+  }
+
   // method argument from a string to boolean
   let method: string | undefined
   if ('method' in operation.labeledArgs && operation.labeledArgs.method) {
@@ -198,7 +258,11 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     length,
     symmetric,
     bidirectionalLength,
+    tagStart,
+    tagEnd,
     twistAngle,
+    twistAngleStep,
+    twistCenter,
     method,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
@@ -251,12 +315,64 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
     vDegree = result
   }
 
+  // bezApproximateRational argument from a string to boolean
+  let bezApproximateRational: boolean | undefined
+  if (
+    'bezApproximateRational' in operation.labeledArgs &&
+    operation.labeledArgs.bezApproximateRational
+  ) {
+    bezApproximateRational =
+      codeManager.code.slice(
+        operation.labeledArgs.bezApproximateRational.sourceRange[0],
+        operation.labeledArgs.bezApproximateRational.sourceRange[1]
+      ) === 'true'
+  }
+
+  // baseCurveIndex argument from a string to a KCL expression
+  let baseCurveIndex: KclCommandValue | undefined
+  if (
+    'baseCurveIndex' in operation.labeledArgs &&
+    operation.labeledArgs.baseCurveIndex
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.baseCurveIndex.sourceRange[0],
+        operation.labeledArgs.baseCurveIndex.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve baseCurveIndex argument" }
+    }
+
+    baseCurveIndex = result
+  }
+
+  // tagStart and tagEnd arguments
+  let tagStart: string | undefined
+  let tagEnd: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
+    )
+  }
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Loft'] = {
     sketches,
     vDegree,
+    bezApproximateRational,
+    baseCurveIndex,
+    tagStart,
+    tagEnd,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -400,8 +516,8 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
   // 2. Convert the thickness argument from a string to a KCL expression
   const thickness = await stringToKclExpression(
     codeManager.code.slice(
-      operation.labeledArgs?.['thickness']?.sourceRange[0],
-      operation.labeledArgs?.['thickness']?.sourceRange[1]
+      operation.labeledArgs?.thickness?.sourceRange[0],
+      operation.labeledArgs?.thickness?.sourceRange[1]
     )
   )
   if (err(thickness) || 'errors' in thickness) {
@@ -429,58 +545,58 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     name: 'Offset plane',
     groupId: 'modeling',
   }
-  if (
-    operation.type !== 'StdLibCall' ||
-    !operation.labeledArgs ||
-    !operation.unlabeledArg ||
-    !('offset' in operation.labeledArgs) ||
-    !operation.labeledArgs.offset
-  ) {
-    return baseCommand
-  }
-  // TODO: Implement conversion to arbitrary plane selection
-  // once the Offset Plane command supports it.
-  const stdPlane = operation.unlabeledArg
-  const planeName = getStringValue(codeManager.code, stdPlane.sourceRange)
-
-  if (!isDefaultPlaneStr(planeName)) {
-    // TODO: error handling
-    return baseCommand
-  }
-  const planeId = rustContext.getDefaultPlaneId(planeName)
-  if (err(planeId)) {
-    // TODO: error handling
-    return baseCommand
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
   }
 
-  const plane: Selections = {
-    graphSelections: [],
-    otherSelections: [
-      {
-        name: planeName,
-        id: planeId,
-      },
-    ],
+  // 1. Map the plane and faces arguments to plane or face selections
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  // Convert the distance argument from a string to a KCL expression
-  const distanceResult = await stringToKclExpression(
+  let plane: Selections | undefined
+  const maybeDefaultPlaneName = getStringValue(
+    codeManager.code,
+    operation.unlabeledArg.sourceRange
+  )
+  if (isDefaultPlaneStr(maybeDefaultPlaneName)) {
+    const id = rustContext.getDefaultPlaneId(maybeDefaultPlaneName)
+    if (err(id)) {
+      return { reason: "Couldn't retrieve default plane ID" }
+    }
+
+    plane = {
+      graphSelections: [],
+      otherSelections: [{ id, name: maybeDefaultPlaneName }],
+    }
+  } else {
+    const result = retrieveNonDefaultPlaneSelectionFromOpArg(
+      operation.unlabeledArg,
+      kclManager.artifactGraph
+    )
+    if (err(result)) {
+      return { reason: result.message }
+    }
+    plane = result
+  }
+
+  // 2. Convert the offset argument from a string to a KCL expression
+  const offset = await stringToKclExpression(
     codeManager.code.slice(
-      operation.labeledArgs.offset.sourceRange[0],
-      operation.labeledArgs.offset.sourceRange[1]
+      operation.labeledArgs?.offset?.sourceRange[0],
+      operation.labeledArgs?.offset?.sourceRange[1]
     )
   )
-
-  if (err(distanceResult) || 'errors' in distanceResult) {
-    return baseCommand
+  if (err(offset) || 'errors' in offset) {
+    return { reason: "Couldn't retrieve thickness argument" }
   }
 
   // Assemble the default argument values for the Offset Plane command,
   // with `nodeToEdit` set, which will let the Offset Plane actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Offset plane'] = {
-    distance: distanceResult,
     plane,
+    offset,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -591,6 +707,22 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     )
   }
 
+  // tagStart and tagEng arguments
+  let tagStart: string | undefined
+  let tagEnd: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
+    )
+  }
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -599,6 +731,8 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     path,
     sectional,
     relativeTo,
+    tagStart,
+    tagEnd,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -828,6 +962,22 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     bidirectionalAngle = result
   }
 
+  // tagStart and tagEng arguments
+  let tagStart: string | undefined
+  let tagEnd: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
+    )
+  }
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -839,6 +989,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     angle,
     symmetric,
     bidirectionalAngle,
+    tagStart,
+    tagEnd,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -1096,6 +1248,11 @@ export function getOperationVariableName(
   ) {
     return undefined
   }
+  if (program.body.length === 0) {
+    // No program body, no variable name
+    return undefined
+  }
+
   // Find the AST node.
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
   if (pathToNode.length === 0) {

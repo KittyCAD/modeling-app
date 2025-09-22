@@ -2,6 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing kw_fn_unlabeled_but_has_label.kcl
 ---
+<<<<<<< HEAD
 KCL Engine error
 
   × engine: could not send request to the engine: could not send json over
@@ -11,4 +12,15 @@ KCL Engine error
    · ▲
    · ╰── main
  2 │   return x + 1
+=======
+KCL Semantic error
+
+  × semantic: The function `add` expects an unlabeled first argument (`@x`),
+  │ but it is labelled in the call. You might try removing the `x = `
+   ╭─[5:15]
+ 4 │ 
+ 5 │ two = add(x = 1)
+   ·               ┬
+   ·               ╰── main
+>>>>>>> main
    ╰────

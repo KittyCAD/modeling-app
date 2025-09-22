@@ -2,4 +2,14 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing object_prop_not_found.kcl
 ---
+<<<<<<< HEAD
 {}
+=======
+{
+  "obj": {
+    "type": "Object",
+    "value": {},
+    "constrainable": false
+  }
+}
+>>>>>>> main

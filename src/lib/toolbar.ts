@@ -1,19 +1,17 @@
 import type { EventFrom, StateFrom } from 'xstate'
-import { settingsActor } from '@src/lib/singletons'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
 import { commandBarActor } from '@src/lib/singletons'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
-export type ToolbarModeName = 'modeling' | 'sketching'
+export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
 type ToolbarMode = {
   check: (state: StateFrom<typeof modelingMachine>) => boolean
@@ -84,7 +82,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         state.matches('Sketch') ||
         state.matches('Sketch no face') ||
         state.matches('animating to existing sketch') ||
-        state.matches('animating to plane')
+        state.matches('animating to plane') ||
+        state.matches('sketchSolveMode')
       ),
     items: [
       {
@@ -497,59 +496,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 url: withSiteBaseURL('/docs/kcl-std/functions/std-appearance'),
               },
             ],
-          },
-        ],
-      },
-      'break',
-      {
-        id: 'ai',
-        array: [
-          {
-            id: 'text-to-cad',
-            onClick: () => {
-              const currentProject =
-                settingsActor.getSnapshot().context.currentProject
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: {
-                  name: 'Text-to-CAD',
-                  groupId: 'application',
-                  argDefaultValues: {
-                    method: 'existingProject',
-                    projectName: currentProject?.name,
-                  },
-                },
-              })
-            },
-            icon: 'sparkles',
-            iconColor: '#29FFA4',
-            alwaysDark: true,
-            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
-            title: 'Create with Zoo Text-to-CAD',
-            description: 'Create geometry with AI / ML.',
-            links: [
-              {
-                label: 'API docs',
-                url: withSiteBaseURL(
-                  '/docs/api/ml/generate-a-cad-model-from-text'
-                ),
-              },
-            ],
-          },
-          {
-            id: 'prompt-to-edit',
-            onClick: () =>
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: { name: 'Prompt-to-edit', groupId: 'modeling' },
-              }),
-            icon: 'sparkles',
-            iconColor: '#29FFA4',
-            alwaysDark: true,
-            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
-            title: 'Modify with Zoo Text-to-CAD',
-            description: 'Edit geometry with AI / ML.',
-            links: [],
           },
         ],
       },
@@ -1076,6 +1022,25 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [],
           },
         ],
+      },
+    ],
+  },
+  sketchSolve: {
+    check: (state) => state.matches('sketchSolveMode'),
+    items: [
+      {
+        id: 'sketch-exit',
+        onClick: ({ modelingSend }) =>
+          modelingSend({
+            type: 'Cancel',
+          }),
+        icon: 'arrowLeft',
+        status: 'available',
+        title: 'Exit sketch',
+        showTitle: true,
+        hotkey: 'Esc',
+        description: 'Exit the current sketch',
+        links: [],
       },
     ],
   },

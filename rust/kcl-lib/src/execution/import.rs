@@ -14,14 +14,14 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExecutorContext, ImportedGeometry, ModelingCmdMeta, annotations, typed_path::TypedPath,
-        types::UnitLen,
+        types::length_from_str,
     },
     fs::FileSystem,
     parsing::ast::types::{Annotation, Node},
-    source_range::SourceRange,
 };
 
 // Zoo co-ordinate system.
@@ -94,25 +94,26 @@ pub async fn import_foreign(
 
             // Read the gltf file and check if there is a bin file.
             for buffer in json.buffers.iter() {
-                if let Some(uri) = &buffer.uri {
-                    if !uri.starts_with("data:") {
-                        // We want this path relative to the file_path given.
-                        let bin_path = file_path.parent().map(|p| p.join(uri)).ok_or_else(|| {
-                            KclError::new_semantic(KclErrorDetails::new(
-                                format!("Could not get the parent path of the file `{}`", file_path.display()),
-                                vec![source_range],
-                            ))
-                        })?;
+                if let Some(uri) = &buffer.uri
+                    && !uri.starts_with("data:")
+                {
+                    // We want this path relative to the file_path given.
+                    let bin_path = file_path.parent().map(|p| p.join(uri)).ok_or_else(|| {
+                        KclError::new_semantic(KclErrorDetails::new(
+                            format!("Could not get the parent path of the file `{}`", file_path.display()),
+                            vec![source_range],
+                        ))
+                    })?;
 
-                        let bin_contents = ctxt.fs.read(&bin_path, source_range).await.map_err(|e| {
+                    let bin_contents =
+                        ctxt.fs.read(&bin_path, source_range).await.map_err(|e| {
                             KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range]))
                         })?;
 
-                        import_files.push(ImportFile {
-                            path: uri.to_string(),
-                            data: bin_contents,
-                        });
-                    }
+                    import_files.push(ImportFile {
+                        path: uri.to_string(),
+                        data: bin_contents,
+                    });
                 }
             }
         }
@@ -233,12 +234,12 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
 }
 
 fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: SourceRange) -> Result<(), KclError> {
-    let units = UnitLen::from_str(units_str, source_range)?;
+    let units = length_from_str(units_str, source_range)?;
 
     match fmt {
-        InputFormat3d::Obj(opts) => opts.units = units.into(),
-        InputFormat3d::Ply(opts) => opts.units = units.into(),
-        InputFormat3d::Stl(opts) => opts.units = units.into(),
+        InputFormat3d::Obj(opts) => opts.units = units,
+        InputFormat3d::Ply(opts) => opts.units = units,
+        InputFormat3d::Stl(opts) => opts.units = units,
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
@@ -331,22 +332,22 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
 }
 
 fn validate_extension_format(ext: InputFormat3d, given: InputFormat3d) -> Result<()> {
-    if let InputFormat3d::Stl(_) = ext {
-        if let InputFormat3d::Stl(_) = given {
-            return Ok(());
-        }
+    if let InputFormat3d::Stl(_) = ext
+        && let InputFormat3d::Stl(_) = given
+    {
+        return Ok(());
     }
 
-    if let InputFormat3d::Obj(_) = ext {
-        if let InputFormat3d::Obj(_) = given {
-            return Ok(());
-        }
+    if let InputFormat3d::Obj(_) = ext
+        && let InputFormat3d::Obj(_) = given
+    {
+        return Ok(());
     }
 
-    if let InputFormat3d::Ply(_) = ext {
-        if let InputFormat3d::Ply(_) = given {
-            return Ok(());
-        }
+    if let InputFormat3d::Ply(_) = ext
+        && let InputFormat3d::Ply(_) = given
+    {
+        return Ok(());
     }
 
     if ext == given {

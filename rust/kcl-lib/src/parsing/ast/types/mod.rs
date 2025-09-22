@@ -12,7 +12,6 @@ use std::{
 use anyhow::Result;
 use parse_display::{Display, FromStr};
 pub use path::{NodePath, Step};
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
     Color, ColorInformation, ColorPresentation, CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange,
@@ -25,14 +24,11 @@ pub use crate::parsing::ast::types::{
     none::KclNone,
 };
 use crate::{
-    ModuleId, TypedPath,
+    ModuleId, SourceRange, TypedPath,
     errors::KclError,
-    execution::{
-        KclValue, Metadata, TagIdentifier, annotations,
-        types::{ArrayLen, UnitAngle, UnitLen},
-    },
+    execution::{KclValue, Metadata, TagIdentifier, annotations, types::ArrayLen},
+    lsp::ToLspRange,
     parsing::{PIPE_OPERATOR, ast::digest::Digest, token::NumericSuffix},
-    source_range::SourceRange,
 };
 
 mod condition;
@@ -64,28 +60,6 @@ pub struct Node<T> {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pre_comments: Vec<String>,
     pub comment_start: usize,
-}
-
-impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
-    fn schema_name() -> String {
-        T::schema_name()
-    }
-
-    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-        let mut child = T::json_schema(r#gen).into_object();
-        // We want to add the start and end fields to the schema.
-        // Ideally we would add _any_ extra fields from the Node type automatically
-        // but this is a bit hard since this isn't a macro.
-        let Some(object) = &mut child.object else {
-            // This should never happen. But it will panic at compile time of docs if it does.
-            // Which is better than runtime.
-            panic!("Expected object schema for {}", T::schema_name());
-        };
-        object.properties.insert("start".to_string(), usize::json_schema(r#gen));
-        object.properties.insert("end".to_string(), usize::json_schema(r#gen));
-
-        schemars::schema::Schema::Object(child.clone())
-    }
 }
 
 impl<T> Node<T> {
@@ -125,7 +99,7 @@ impl<T> Node<T> {
         }
     }
 
-    pub fn boxed(inner: T, start: usize, end: usize, module_id: ModuleId) -> BoxNode<T> {
+    pub fn boxed(start: usize, end: usize, module_id: ModuleId, inner: T) -> BoxNode<T> {
         Box::new(Node {
             inner,
             start,
@@ -239,7 +213,7 @@ pub type NodeList<T> = Vec<Node<T>>;
 pub type NodeRef<'a, T> = &'a Node<T>;
 
 /// A KCL program top level, or function body.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Program {
@@ -254,6 +228,23 @@ pub struct Program {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
+}
+
+impl From<Node<Block>> for Node<Program> {
+    fn from(block: Node<Block>) -> Self {
+        Node::new(
+            Program {
+                body: block.inner.items,
+                non_code_meta: block.inner.non_code_meta,
+                shebang: None,
+                inner_attrs: block.inner.inner_attrs,
+                digest: None,
+            },
+            block.start,
+            block.end,
+            block.module_id,
+        )
+    }
 }
 
 impl Node<Program> {
@@ -357,8 +348,7 @@ impl Node<Program> {
 
     pub fn change_default_units(
         &self,
-        length_units: Option<UnitLen>,
-        angle_units: Option<UnitAngle>,
+        length_units: Option<kittycad_modeling_cmds::units::UnitLength>,
     ) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
@@ -370,13 +360,6 @@ impl Node<Program> {
                         Expr::Name(Box::new(Name::new(&len.to_string()))),
                     );
                 }
-                if let Some(angle) = angle_units {
-                    node.inner.add_or_update(
-                        annotations::SETTINGS_UNIT_ANGLE,
-                        Expr::Name(Box::new(Name::new(&angle.to_string()))),
-                    );
-                }
-
                 // Previous source range no longer makes sense, but we want to
                 // preserve other things like comments.
                 node.reset_source();
@@ -391,12 +374,6 @@ impl Node<Program> {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_UNIT_LENGTH,
                     Expr::Name(Box::new(Name::new(&len.to_string()))),
-                );
-            }
-            if let Some(angle) = angle_units {
-                settings.inner.add_or_update(
-                    annotations::SETTINGS_UNIT_ANGLE,
-                    Expr::Name(Box::new(Name::new(&angle.to_string()))),
                 );
             }
 
@@ -464,12 +441,12 @@ impl Node<Program> {
                 crate::walk::Node::CallExpressionKw(call) => {
                     if call.inner.callee.inner.name.inner.name == "appearance" {
                         for arg in &call.arguments {
-                            if let Some(l) = &arg.label {
-                                if l.inner.name == "color" {
-                                    // Get the value of the argument.
-                                    if let Expr::Literal(literal) = &arg.arg {
-                                        add_color(literal);
-                                    }
+                            if let Some(l) = &arg.label
+                                && l.inner.name == "color"
+                            {
+                                // Get the value of the argument.
+                                if let Expr::Literal(literal) = &arg.arg {
+                                    add_color(literal);
                                 }
                             }
                         }
@@ -576,12 +553,7 @@ impl Program {
         let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
-        match item {
-            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => None,
-            BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
-            BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
-        }
+        item.get_expr_for_position(pos)
     }
 
     /// Checks if the ast has any import statements.    
@@ -633,12 +605,11 @@ impl Program {
         };
 
         // Check if the expr's non code meta contains the position.
-        if let Some(expr) = expr {
-            if let Some(non_code_meta) = expr.get_non_code_meta() {
-                if non_code_meta.in_comment(pos) {
-                    return true;
-                }
-            }
+        if let Some(expr) = expr
+            && let Some(non_code_meta) = expr.get_non_code_meta()
+            && non_code_meta.in_comment(pos)
+        {
+            return true;
         }
 
         false
@@ -733,21 +704,7 @@ impl Program {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for item in &mut self.body {
-            match item {
-                BodyItem::ImportStatement(stmt) => {
-                    stmt.rename_identifiers(old_name, new_name);
-                }
-                BodyItem::ExpressionStatement(expression_statement) => {
-                    expression_statement.expression.rename_identifiers(old_name, new_name);
-                }
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    variable_declaration.rename_identifiers(old_name, new_name);
-                }
-                BodyItem::TypeDeclaration(_) => {}
-                BodyItem::ReturnStatement(return_statement) => {
-                    return_statement.argument.rename_identifiers(old_name, new_name);
-                }
-            }
+            item.rename_identifiers(old_name, new_name);
         }
     }
 
@@ -778,19 +735,7 @@ impl Program {
     /// Replace a value with the new value, use the source range for matching the exact value.
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for item in &mut self.body {
-            match item {
-                BodyItem::ImportStatement(_) => {} // TODO
-                BodyItem::ExpressionStatement(expression_statement) => expression_statement
-                    .expression
-                    .replace_value(source_range, new_value.clone()),
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    variable_declaration.replace_value(source_range, new_value.clone())
-                }
-                BodyItem::TypeDeclaration(_) => {}
-                BodyItem::ReturnStatement(return_statement) => {
-                    return_statement.argument.replace_value(source_range, new_value.clone())
-                }
-            }
+            item.replace_value(source_range, new_value.clone());
         }
     }
 
@@ -830,7 +775,7 @@ impl Program {
 /// ```python,no_run
 /// #!/usr/bin/env python
 /// ```
-#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct Shebang {
     pub content: String,
@@ -842,7 +787,7 @@ impl Shebang {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
@@ -947,6 +892,49 @@ impl BodyItem {
             BodyItem::ExpressionStatement(_) | BodyItem::ReturnStatement(_) => ItemVisibility::Default,
         }
     }
+
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        match self {
+            BodyItem::ImportStatement(stmt) => {
+                stmt.rename_identifiers(old_name, new_name);
+            }
+            BodyItem::ExpressionStatement(expression_statement) => {
+                expression_statement.expression.rename_identifiers(old_name, new_name);
+            }
+            BodyItem::VariableDeclaration(variable_declaration) => {
+                variable_declaration.rename_identifiers(old_name, new_name);
+            }
+            BodyItem::TypeDeclaration(_) => {}
+            BodyItem::ReturnStatement(return_statement) => {
+                return_statement.argument.rename_identifiers(old_name, new_name);
+            }
+        }
+    }
+
+    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        match self {
+            BodyItem::ImportStatement(_) => {} // TODO
+            BodyItem::ExpressionStatement(expression_statement) => {
+                expression_statement.expression.replace_value(source_range, new_value)
+            }
+            BodyItem::VariableDeclaration(variable_declaration) => {
+                variable_declaration.replace_value(source_range, new_value)
+            }
+            BodyItem::TypeDeclaration(_) => {}
+            BodyItem::ReturnStatement(return_statement) => {
+                return_statement.argument.replace_value(source_range, new_value)
+            }
+        }
+    }
+
+    fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
+        match self {
+            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => None,
+            BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
+            BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
+        }
+    }
 }
 
 impl From<BodyItem> for SourceRange {
@@ -962,7 +950,7 @@ impl From<&BodyItem> for SourceRange {
 }
 
 /// An expression can be evaluated to yield a single KCL value.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -983,6 +971,8 @@ pub enum Expr {
     IfExpression(BoxNode<IfExpression>),
     LabelledExpression(BoxNode<LabelledExpression>),
     AscribedExpression(BoxNode<AscribedExpression>),
+    SketchBlock(BoxNode<SketchBlock>),
+    SketchVar(BoxNode<SketchVar>),
     None(Node<KclNone>),
 }
 
@@ -1032,6 +1022,8 @@ impl Expr {
             Expr::IfExpression(_) => None,
             Expr::LabelledExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::AscribedExpression(expr) => expr.expr.get_non_code_meta(),
+            Expr::SketchBlock(expr) => Some(&expr.non_code_meta),
+            Expr::SketchVar(_) => None,
             Expr::None(_none) => None,
         }
     }
@@ -1059,6 +1051,8 @@ impl Expr {
             Expr::PipeSubstitution(_) => {}
             Expr::LabelledExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::AscribedExpression(expr) => expr.expr.replace_value(source_range, new_value),
+            Expr::SketchBlock(e) => e.replace_value(source_range, new_value),
+            Expr::SketchVar(_) => {}
             Expr::None(_) => {}
         }
     }
@@ -1081,6 +1075,8 @@ impl Expr {
             Expr::IfExpression(expr) => expr.start,
             Expr::LabelledExpression(expr) => expr.start,
             Expr::AscribedExpression(expr) => expr.start,
+            Expr::SketchBlock(sketch_block) => sketch_block.start,
+            Expr::SketchVar(expr) => expr.start,
             Expr::None(none) => none.start,
         }
     }
@@ -1103,6 +1099,8 @@ impl Expr {
             Expr::IfExpression(expr) => expr.end,
             Expr::LabelledExpression(expr) => expr.end,
             Expr::AscribedExpression(expr) => expr.end,
+            Expr::SketchBlock(expr) => expr.end,
+            Expr::SketchVar(expr) => expr.end,
             Expr::None(none) => none.end,
         }
     }
@@ -1131,6 +1129,8 @@ impl Expr {
             Expr::IfExpression(expr) => expr.rename_identifiers(old_name, new_name),
             Expr::LabelledExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
             Expr::AscribedExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
+            Expr::SketchBlock(expr) => expr.rename_identifiers(old_name, new_name),
+            Expr::SketchVar(_) => {}
             Expr::None(_) => {}
         }
     }
@@ -1157,6 +1157,10 @@ impl Expr {
             Expr::IfExpression(expr) => expr.get_constraint_level(),
             Expr::LabelledExpression(expr) => expr.expr.get_constraint_level(),
             Expr::AscribedExpression(expr) => expr.expr.get_constraint_level(),
+            Expr::SketchBlock(expr) => ConstraintLevel::Ignore {
+                source_ranges: vec![expr.into()],
+            },
+            Expr::SketchVar(expr) => expr.get_constraint_level(),
             Expr::None(none) => none.get_constraint_level(),
         }
     }
@@ -1225,11 +1229,12 @@ impl From<&BinaryPart> for Expr {
             BinaryPart::ObjectExpression(e) => Expr::ObjectExpression(e.clone()),
             BinaryPart::IfExpression(e) => Expr::IfExpression(e.clone()),
             BinaryPart::AscribedExpression(e) => Expr::AscribedExpression(e.clone()),
+            BinaryPart::SketchVar(e) => Expr::SketchVar(e.clone()),
         }
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct LabelledExpression {
@@ -1259,7 +1264,7 @@ impl LabelledExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct AscribedExpression {
@@ -1280,7 +1285,127 @@ impl AscribedExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct SketchBlock {
+    pub arguments: Vec<LabeledArg>,
+    pub body: Node<Block>,
+
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl SketchBlock {
+    pub(crate) const CALLEE_NAME: &str = "sketch";
+
+    /// Iterate over all arguments.
+    pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
+        self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg))
+    }
+
+    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for arg in &mut self.arguments {
+            arg.arg.replace_value(source_range, new_value.clone());
+        }
+
+        self.body.replace_value(source_range, new_value);
+    }
+
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for arg in &mut self.arguments {
+            arg.arg.rename_identifiers(old_name, new_name);
+        }
+
+        self.body.rename_identifiers(old_name, new_name);
+    }
+}
+
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct Block {
+    pub items: Vec<BodyItem>,
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub inner_attrs: NodeList<Annotation>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl From<Program> for Block {
+    fn from(program: Program) -> Self {
+        Block {
+            items: program.body,
+            non_code_meta: program.non_code_meta,
+            inner_attrs: program.inner_attrs,
+            digest: None,
+        }
+    }
+}
+
+impl Block {
+    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for item in &mut self.items {
+            item.replace_value(source_range, new_value.clone());
+        }
+    }
+
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for item in &mut self.items {
+            item.rename_identifiers(old_name, new_name);
+        }
+    }
+
+    /// Returns the body item that includes the given character position.
+    fn get_body_item_for_position(&self, pos: usize) -> Option<&BodyItem> {
+        for item in &self.items {
+            let source_range = SourceRange::from(item);
+            if source_range.contains(pos) {
+                return Some(item);
+            }
+        }
+
+        None
+    }
+
+    /// Returns an Expr that includes the given character position.
+    pub fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
+        let item = self.get_body_item_for_position(pos)?;
+
+        item.get_expr_for_position(pos)
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct SketchVar {
+    pub initial: Option<BoxNode<NumericLiteral>>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl Node<SketchVar> {
+    /// Get the constraint level for this variable.
+    /// Variables are always not constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::None {
+            source_ranges: vec![self.into()],
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BinaryPart {
@@ -1295,6 +1420,7 @@ pub enum BinaryPart {
     ObjectExpression(BoxNode<ObjectExpression>),
     IfExpression(BoxNode<IfExpression>),
     AscribedExpression(BoxNode<AscribedExpression>),
+    SketchVar(BoxNode<SketchVar>),
 }
 
 impl From<BinaryPart> for SourceRange {
@@ -1324,6 +1450,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.get_constraint_level(),
             BinaryPart::IfExpression(e) => e.get_constraint_level(),
             BinaryPart::AscribedExpression(e) => e.expr.get_constraint_level(),
+            BinaryPart::SketchVar(e) => e.get_constraint_level(),
         }
     }
 
@@ -1340,6 +1467,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.replace_value(source_range, new_value),
             BinaryPart::IfExpression(e) => e.replace_value(source_range, new_value),
             BinaryPart::AscribedExpression(e) => e.expr.replace_value(source_range, new_value),
+            BinaryPart::SketchVar(_) => {}
         }
     }
 
@@ -1356,6 +1484,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.start,
             BinaryPart::IfExpression(e) => e.start,
             BinaryPart::AscribedExpression(e) => e.start,
+            BinaryPart::SketchVar(e) => e.start,
         }
     }
 
@@ -1372,6 +1501,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.end,
             BinaryPart::IfExpression(e) => e.end,
             BinaryPart::AscribedExpression(e) => e.end,
+            BinaryPart::SketchVar(e) => e.end,
         }
     }
 
@@ -1389,11 +1519,12 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.rename_identifiers(old_name, new_name),
             BinaryPart::IfExpression(if_expression) => if_expression.rename_identifiers(old_name, new_name),
             BinaryPart::AscribedExpression(e) => e.expr.rename_identifiers(old_name, new_name),
+            BinaryPart::SketchVar(_) => {}
         }
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct NonCodeNode {
@@ -1425,7 +1556,7 @@ impl NonCodeNode {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum CommentStyle {
@@ -1452,7 +1583,7 @@ impl CommentStyle {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::large_enum_variant)]
@@ -1490,7 +1621,7 @@ pub enum NonCodeValue {
     NewLine,
 }
 
-#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
@@ -1577,7 +1708,7 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Annotation {
@@ -1621,7 +1752,7 @@ impl Annotation {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ImportItem {
@@ -1673,7 +1804,7 @@ impl ImportItem {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -1739,7 +1870,7 @@ impl ImportSelector {
     }
 }
 
-#[derive(Clone, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Clone, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum ImportPath {
@@ -1757,7 +1888,7 @@ impl fmt::Display for ImportPath {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ImportStatement {
@@ -1871,7 +2002,7 @@ impl From<&ImportStatement> for Vec<CompletionItem> {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ExpressionStatement {
@@ -1882,7 +2013,7 @@ pub struct ExpressionStatement {
     pub digest: Option<Digest>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct CallExpressionKw {
@@ -1898,7 +2029,7 @@ pub struct CallExpressionKw {
     pub non_code_meta: NonCodeMeta,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct LabeledArg {
@@ -1978,7 +2109,7 @@ impl CallExpressionKw {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -1994,7 +2125,7 @@ impl ItemVisibility {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct TypeDeclaration {
@@ -2015,7 +2146,7 @@ impl TypeDeclaration {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclaration {
@@ -2190,7 +2321,7 @@ impl VariableDeclaration {
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -2235,7 +2366,7 @@ impl VariableKind {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclarator {
@@ -2263,7 +2394,30 @@ impl VariableDeclarator {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct NumericLiteral {
+    pub value: f64,
+    pub suffix: NumericSuffix,
+    pub raw: String,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl Node<NumericLiteral> {
+    /// Get the constraint level for this literal.
+    /// Literals are always not constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::None {
+            source_ranges: vec![self.into()],
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Literal {
@@ -2295,7 +2449,7 @@ impl Literal {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Identifier {
@@ -2337,7 +2491,7 @@ impl Identifier {
 }
 
 /// A qualified name, e.g., `foo`, `bar::foo`, or `::bar::foo`.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Name {
@@ -2388,11 +2542,31 @@ impl Name {
 
     /// Rename all identifiers that have the old name to the new given name.
     fn rename(&mut self, old_name: &str, new_name: &str) {
-        if let Some(n) = self.local_ident() {
-            if n.inner == old_name {
-                self.name.name = new_name.to_owned();
-            }
+        if let Some(n) = self.local_ident()
+            && n.inner == old_name
+        {
+            self.name.name = new_name.to_owned();
         }
+    }
+}
+
+impl Name {
+    /// Write the full name to the given string.
+    pub fn write_to<W: std::fmt::Write>(&self, buf: &mut W) -> std::fmt::Result {
+        if self.abs_path {
+            buf.write_str("::")?;
+        };
+        for p in &self.path {
+            buf.write_str(&p.name)?;
+            buf.write_str("::")?;
+        }
+        buf.write_str(&self.name.name)
+    }
+}
+
+impl fmt::Display for Name {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.write_to(f)
     }
 }
 
@@ -2416,20 +2590,7 @@ impl From<Node<Identifier>> for Node<Name> {
     }
 }
 
-impl fmt::Display for Name {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.abs_path {
-            f.write_str("::")?;
-        }
-        for p in &self.path {
-            f.write_str(&p.name)?;
-            f.write_str("::")?;
-        }
-        f.write_str(&self.name.name)
-    }
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct TagDeclarator {
@@ -2542,7 +2703,7 @@ impl TagDeclarator {
     }
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct PipeSubstitution {
@@ -2563,7 +2724,7 @@ impl From<Node<PipeSubstitution>> for Expr {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ArrayExpression {
@@ -2622,7 +2783,7 @@ impl ArrayExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ArrayRangeExpression {
@@ -2674,7 +2835,7 @@ impl ArrayRangeExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ObjectExpression {
@@ -2727,7 +2888,7 @@ impl ObjectExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectProperty {
@@ -2769,7 +2930,7 @@ impl ObjectProperty {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct MemberExpression {
@@ -2801,7 +2962,7 @@ impl MemberExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct BinaryExpression {
@@ -2852,7 +3013,7 @@ impl BinaryExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -2985,7 +3146,7 @@ impl BinaryOperator {
         matches!(self, Self::Add | Self::Mul | Self::And | Self::Or)
     }
 }
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct UnaryExpression {
@@ -3020,7 +3181,7 @@ impl UnaryExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -3044,7 +3205,7 @@ impl UnaryOperator {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct PipeExpression {
@@ -3107,12 +3268,14 @@ impl PipeExpression {
 }
 
 #[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "p_type")]
 pub enum PrimitiveType {
     /// The super type of all other types.
     Any,
+    /// `none`, the type of none values.
+    None,
     /// A string type.
     String,
     /// A number type.
@@ -3134,6 +3297,7 @@ impl PrimitiveType {
     pub fn primitive_from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
         match (s, suffix) {
             ("any", None) => Some(PrimitiveType::Any),
+            ("none", None) => Some(PrimitiveType::None),
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
             ("TagDecl", None) => Some(PrimitiveType::TagDecl),
@@ -3147,6 +3311,7 @@ impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
             PrimitiveType::Any => "values".to_owned(),
+            PrimitiveType::None => "none".to_owned(),
             PrimitiveType::Number(_) => "numbers".to_owned(),
             PrimitiveType::String => "strings".to_owned(),
             PrimitiveType::Boolean => "bools".to_owned(),
@@ -3162,6 +3327,7 @@ impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             PrimitiveType::Any => write!(f, "any"),
+            PrimitiveType::None => write!(f, "none"),
             PrimitiveType::Number(suffix) => {
                 write!(f, "number")?;
                 if *suffix != NumericSuffix::None {
@@ -3201,7 +3367,7 @@ impl fmt::Display for PrimitiveType {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 pub struct FunctionType {
     pub unnamed_arg: Option<BoxNode<Type>>,
@@ -3224,7 +3390,7 @@ impl FunctionType {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -3332,7 +3498,7 @@ impl fmt::Display for Type {
 }
 
 /// Default value for a parameter of a KCL function.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 #[allow(clippy::large_enum_variant)]
@@ -3356,7 +3522,7 @@ impl DefaultParamVal {
 }
 
 /// Parameter of a KCL function.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Parameter {
@@ -3364,8 +3530,8 @@ pub struct Parameter {
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
     /// This is optional if the user defines a type.
-    #[serde(skip)]
-    pub type_: Option<Node<Type>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub param_type: Option<Node<Type>>,
     /// Is the parameter optional?
     /// If so, what is its default value?
     /// If this is None, then the parameter is required.
@@ -3413,7 +3579,7 @@ fn return_true() -> bool {
     true
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
@@ -3536,7 +3702,7 @@ impl FunctionExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ReturnStatement {
@@ -3548,7 +3714,7 @@ pub struct ReturnStatement {
 }
 
 /// Format options.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FormatOptions {
@@ -3609,7 +3775,7 @@ impl FormatOptions {
 }
 
 /// The constraint level.
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, Display)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 #[display(style = "snake_case")]
@@ -3679,7 +3845,7 @@ impl ConstraintLevel {
 }
 
 /// A vector of constraint levels.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 pub struct ConstraintLevels(pub Vec<ConstraintLevel>);
 
@@ -3748,6 +3914,7 @@ impl ConstraintLevels {
 
 #[cfg(test)]
 mod tests {
+    use kittycad_modeling_cmds::units::UnitLength;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -3921,15 +4088,15 @@ cylinder = startSketchOn(-XZ)
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
         assert_eq!(
-            params[0].type_.as_ref().unwrap().inner,
+            params[0].param_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::Number(NumericSuffix::Mm))
         );
         assert_eq!(
-            params[1].type_.as_ref().unwrap().inner,
+            params[1].param_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::String)
         );
         assert_eq!(
-            params[2].type_.as_ref().unwrap().inner,
+            params[2].param_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::String)
         );
     }
@@ -3952,21 +4119,21 @@ cylinder = startSketchOn(-XZ)
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
         assert_eq!(
-            params[0].type_.as_ref().unwrap().inner,
+            params[0].param_type.as_ref().unwrap().inner,
             Type::Array {
                 ty: Box::new(Type::Primitive(PrimitiveType::Number(NumericSuffix::None))),
                 len: ArrayLen::None
             }
         );
         assert_eq!(
-            params[1].type_.as_ref().unwrap().inner,
+            params[1].param_type.as_ref().unwrap().inner,
             Type::Array {
                 ty: Box::new(Type::Primitive(PrimitiveType::String)),
                 len: ArrayLen::None
             }
         );
         assert_eq!(
-            params[2].type_.as_ref().unwrap().inner,
+            params[2].param_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::String)
         );
     }
@@ -3990,14 +4157,14 @@ cylinder = startSketchOn(-XZ)
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
         assert_eq!(
-            params[0].type_.as_ref().unwrap().inner,
+            params[0].param_type.as_ref().unwrap().inner,
             Type::Array {
                 ty: Box::new(Type::Primitive(PrimitiveType::Number(NumericSuffix::None))),
                 len: ArrayLen::None
             }
         );
         assert_eq!(
-            params[1].type_.as_ref().unwrap().inner,
+            params[1].param_type.as_ref().unwrap().inner,
             Type::Object {
                 properties: vec![
                     (
@@ -4053,7 +4220,7 @@ cylinder = startSketchOn(-XZ)
             }
         );
         assert_eq!(
-            params[2].type_.as_ref().unwrap().inner,
+            params[2].param_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::String)
         );
     }
@@ -4080,7 +4247,7 @@ cylinder = startSketchOn(-XZ)
                             name: "foo".to_owned(),
                             digest: None,
                         }),
-                        type_: None,
+                        param_type: None,
                         default_value: None,
                         labeled: true,
                         digest: None,
@@ -4099,7 +4266,7 @@ cylinder = startSketchOn(-XZ)
                             name: "foo".to_owned(),
                             digest: None,
                         }),
-                        type_: None,
+                        param_type: None,
                         default_value: Some(DefaultParamVal::none()),
                         labeled: true,
                         digest: None,
@@ -4119,7 +4286,7 @@ cylinder = startSketchOn(-XZ)
                                 name: "foo".to_owned(),
                                 digest: None,
                             }),
-                            type_: None,
+                            param_type: None,
                             default_value: None,
                             labeled: true,
                             digest: None,
@@ -4129,7 +4296,7 @@ cylinder = startSketchOn(-XZ)
                                 name: "bar".to_owned(),
                                 digest: None,
                             }),
-                            type_: None,
+                            param_type: None,
                             default_value: Some(DefaultParamVal::none()),
                             labeled: true,
                             digest: None,
@@ -4207,10 +4374,7 @@ startSketchOn(XY)"#;
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(
-            meta_settings.default_length_units,
-            crate::execution::types::UnitLen::Inches
-        );
+        assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4223,21 +4387,16 @@ startSketchOn(XY)"#;
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(
-            meta_settings.default_length_units,
-            crate::execution::types::UnitLen::Inches
-        );
+        assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
 
         // Edit the ast.
-        let new_program = program
-            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
-            .unwrap();
+        let new_program = program.change_default_units(Some(UnitLength::Millimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
+        assert_eq!(meta_settings.default_length_units, UnitLength::Millimeters);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 
@@ -4258,15 +4417,13 @@ startSketchOn(XY)
         assert!(result.is_none());
 
         // Edit the ast.
-        let new_program = program
-            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
-            .unwrap();
+        let new_program = program.change_default_units(Some(UnitLength::Millimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
+        assert_eq!(meta_settings.default_length_units, UnitLength::Millimeters);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 
@@ -4293,15 +4450,13 @@ startSketchOn(XY)
 "#;
         let program = crate::parsing::top_level_parse(code).unwrap();
 
-        let new_program = program
-            .change_default_units(Some(crate::execution::types::UnitLen::Cm), None)
-            .unwrap();
+        let new_program = program.change_default_units(Some(UnitLength::Centimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Cm);
+        assert_eq!(meta_settings.default_length_units, UnitLength::Centimeters);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 

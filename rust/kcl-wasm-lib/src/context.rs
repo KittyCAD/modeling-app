@@ -3,7 +3,9 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs, Program};
+use kcl_lib::{
+    wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs, Program, ProjectManager,
+};
 use wasm_bindgen::prelude::*;
 
 const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
@@ -14,6 +16,7 @@ pub struct Context {
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: Arc<FileManager>,
     mock_engine: Arc<Box<dyn EngineManager>>,
+    pub(crate) project_manager: ProjectManager,
 }
 
 #[wasm_bindgen]
@@ -39,6 +42,7 @@ impl Context {
                     .map_err(|e| format!("{:?}", e))?,
             )),
             response_context,
+            project_manager: ProjectManager,
         })
     }
 

@@ -131,13 +131,18 @@ input {
 }
 
 .mono {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+code,
+#code-mirror-override .cm-content {
+  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+#code-mirror-override {
+  @apply text-xs;
 }
 
 /*
@@ -229,6 +234,20 @@ code {
   }
 }
 
+@keyframes send-up {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-1000px);
+  }
+}
+
+@keyframes loading-shimmer {
+  100% {
+    mask-position: left;
+  }
+}
 .react-json-view {
   @apply bg-transparent !important;
 }
@@ -344,6 +363,58 @@ code {
 }
 
 @layer utilities {
+  /** "Foreground" utilities */
+  .text-default {
+    @apply text-chalkboard-100 dark:text-chalkboard-10;
+  }
+  .text-2 {
+    @apply text-chalkboard-70 dark:text-chalkboard-30;
+  }
+  .text-3 {
+    @apply text-chalkboard-50;
+  }
+  .text-4 {
+    @apply text-chalkboard-30 dark:text-chalkboard-70;
+  }
+  .text-5 {
+    @apply text-chalkboard-20 dark:text-chalkboard-90;
+  }
+
+  .b-default {
+    @apply border-chalkboard-100 dark:border-chalkboard-10;
+  }
+  .b-2 {
+    @apply border-chalkboard-70 dark:border-chalkboard-30;
+  }
+  .b-3 {
+    @apply border-chalkboard-50;
+  }
+  .b-4 {
+    @apply border-chalkboard-30 dark:border-chalkboard-80;
+  }
+  .b-5 {
+    @apply border-chalkboard-20 dark:border-chalkboard-90;
+  }
+
+  .bg-default {
+    @apply bg-chalkboard-10 dark:bg-chalkboard-100;
+  }
+  .bg-2 {
+    @apply bg-chalkboard-20 dark:bg-chalkboard-90;
+  }
+  .bg-3 {
+    @apply bg-chalkboard-30 dark:bg-chalkboard-70;
+  }
+  .bg-4 {
+    @apply bg-chalkboard-70 dark:bg-chalkboard-30;
+  }
+  .bg-5 {
+    @apply bg-chalkboard-90 dark:bg-chalkboard-20;
+  }
+  .bg-6 {
+    @apply bg-chalkboard-100 dark:bg-chalkboard-10;
+  }
+
   /*
     This is where your own custom Tailwind utility classes can go,
     which lets you use them with @apply in your CSS, and get
@@ -406,4 +477,13 @@ code {
 /* Can't use #code-mirror-override here as we're outside of this div */
 .body-bg .cm-diagnosticAction {
   @apply bg-primary;
+}
+
+.animate-shimmer {
+  animation-delay: .5s;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-name: loading-shimmer;
+  mask: linear-gradient(90deg, #000 30%, #0001, #000 70%) right / 350% 100%;
+  display: inline-block;
 }

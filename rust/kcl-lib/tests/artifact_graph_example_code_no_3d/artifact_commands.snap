@@ -273,6 +273,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

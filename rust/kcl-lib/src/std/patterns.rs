@@ -20,7 +20,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, Geometries, Geometry, KclObjectFields, KclValue, Sketch, Solid,
-        fn_call::{Arg, Args, KwArgs},
+        fn_call::{Arg, Args},
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType},
     },
@@ -203,16 +203,12 @@ async fn make_transform<T: GeometryTrait>(
         ty: NumericType::count(),
         meta: vec![source_range.into()],
     };
-    let kw_args = KwArgs {
-        unlabeled: Some((None, Arg::new(repetition_num, source_range))),
-        labeled: Default::default(),
-        errors: Vec::new(),
-    };
-    let transform_fn_args = Args::new_kw(
-        kw_args,
+    let transform_fn_args = Args::new(
+        Default::default(),
+        vec![(None, Arg::new(repetition_num, source_range))],
         source_range,
+        exec_state,
         ctxt.clone(),
-        exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
     );
     let transform_fn_return = transform
         .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
@@ -227,7 +223,7 @@ async fn make_transform<T: GeometryTrait>(
         ))
     })?;
     let transforms = match transform_fn_return {
-        KclValue::Object { value, meta: _ } => vec![value],
+        KclValue::Object { value, .. } => vec![value],
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             let transforms: Vec<_> = value
                 .into_iter()
@@ -295,7 +291,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
 
     let mut rotation = Rotation::default();
     if let Some(rot) = transform.get("rotation") {
-        let KclValue::Object { value: rot, meta: _ } = rot else {
+        let KclValue::Object { value: rot, .. } = rot else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "The 'rotation' key must be an object (with optional fields 'angle', 'axis' and 'origin')".to_owned(),
                 source_ranges.clone(),

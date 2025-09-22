@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
-import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -12,11 +12,12 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useKclContext } from '@src/lang/KclProvider'
+import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
+import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   filterOperations,
   getOperationIcon,
@@ -24,6 +25,11 @@ import {
   getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import {
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
 import {
   codeManager,
   commandBarActor,
@@ -32,6 +38,7 @@ import {
   rustContext,
   sceneInfra,
 } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 import {
   featureTreeMachine,
   featureTreeMachineDefaultContext,
@@ -41,13 +48,6 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
-import {
-  selectDefaultSketchPlane,
-  selectOffsetSketchPlane,
-} from '@src/lib/selections'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
-import { err } from '@src/lib/trap'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -188,11 +188,13 @@ export const FeatureTreePane = () => {
     if (codeOpen && isEditorMounted) {
       featureTreeSend({ type: 'codePaneOpened' })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [modelingState.context.store.openPanes, isEditorMounted])
 
   // Watch for changes in the selection and send an event to the feature tree machine
   useEffect(() => {
     featureTreeSend({ type: 'selected' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [lastSelectionEvent])
 
   function goToError() {
@@ -272,6 +274,7 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   const visible = props.visible
   const handleToggleVisible = useCallback(() => {
     props.onVisibilityChange()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.onVisibilityChange])
 
   return (
@@ -400,6 +403,7 @@ const OperationItem = (props: {
         diag.from >= props.item.sourceRange[0] &&
         diag.to <= props.item.sourceRange[1]
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclContext.diagnostics.length])
 
   async function selectOperation() {
@@ -672,6 +676,7 @@ const OperationItem = (props: {
           ]
         : []),
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [props.item, props.send]
   )
 
@@ -723,6 +728,7 @@ const DefaultPlanes = () => {
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [sketchNoFace]
   )
 

@@ -9,8 +9,8 @@ import {
   addToInputHelper,
 } from '@src/components/AvailableVarsHelpers'
 import type { Expr } from '@src/lang/wasm'
-import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import type { Selections } from '@src/lib/selections'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 
 type ModalResolve = {
   value: string
@@ -23,7 +23,7 @@ type ModalResolve = {
 type ModalReject = boolean
 
 type SetAngleLengthModalProps = InstanceProps<ModalResolve, ModalReject> & {
-  value: number
+  value: string
   valueName: string
   shouldCreateVariable?: boolean
   selectionRanges: Selections
@@ -44,8 +44,10 @@ export const SetAngleLengthModal = ({
   shouldCreateVariable: initialShouldCreateVariable = false,
   selectionRanges,
 }: SetAngleLengthModalProps) => {
-  const [sign, setSign] = useState(Math.sign(Number(initialValue)))
-  const [value, setValue] = useState(String(initialValue * sign))
+  const [sign, setSign] = useState(initialValue.startsWith('-') ? -1 : 1)
+  const [value, setValue] = useState(
+    initialValue.startsWith('-') ? initialValue.substring(1) : initialValue
+  )
   const [shouldCreateVariable, setShouldCreateVariable] = useState(
     initialShouldCreateVariable
   )
@@ -64,6 +66,8 @@ export const SetAngleLengthModal = ({
     initialVariableName: valueName,
     selectionRanges,
   })
+  const isDisabled =
+    (calcResult === 'NAN' || !isNewVariableNameUnique) && shouldCreateVariable
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -141,11 +145,9 @@ export const SetAngleLengthModal = ({
                 <div className="mt-4">
                   <button
                     type="button"
-                    disabled={calcResult === 'NAN' || !isNewVariableNameUnique}
+                    disabled={isDisabled}
                     className={`inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
-                      calcResult === 'NAN' || !isNewVariableNameUnique
-                        ? 'opacity-50 cursor-not-allowed'
-                        : ''
+                      isDisabled ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                     onClick={() =>
                       valueNode &&

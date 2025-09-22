@@ -387,6 +387,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

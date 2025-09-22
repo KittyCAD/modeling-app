@@ -6,6 +6,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createTagDeclarator,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -22,6 +23,10 @@ import {
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import {
+  getArtifactOfTypes,
+  getSweepEdgeCodeRef,
+} from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
   PathToNode,
@@ -32,10 +37,6 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
-import {
-  getArtifactOfTypes,
-  getSweepEdgeCodeRef,
-} from '@src/lang/std/artifactGraph'
 
 export function addExtrude({
   ast,
@@ -43,7 +44,11 @@ export function addExtrude({
   length,
   symmetric,
   bidirectionalLength,
+  tagStart,
+  tagEnd,
   twistAngle,
+  twistAngleStep,
+  twistCenter,
   method,
   nodeToEdit,
 }: {
@@ -52,7 +57,11 @@ export function addExtrude({
   length: KclCommandValue
   symmetric?: boolean
   bidirectionalLength?: KclCommandValue
+  tagStart?: string
+  tagEnd?: string
   twistAngle?: KclCommandValue
+  twistAngleStep?: KclCommandValue
+  twistCenter?: KclCommandValue
   method?: string
   nodeToEdit?: PathToNode
 }):
@@ -83,8 +92,20 @@ export function addExtrude({
         ),
       ]
     : []
+  const tagStartExpr = tagStart
+    ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
+    : []
+  const tagEndExpr = tagEnd
+    ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
+    : []
   const twistAngleExpr = twistAngle
     ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
+    : []
+  const twistAngleStepExpr = twistAngleStep
+    ? [createLabeledArg('twistAngleStep', valueOrVariable(twistAngleStep))]
+    : []
+  const twistCenterExpr = twistCenter
+    ? [createLabeledArg('twistCenter', valueOrVariable(twistCenter))]
     : []
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
@@ -95,7 +116,11 @@ export function addExtrude({
     createLabeledArg('length', valueOrVariable(length)),
     ...symmetricExpr,
     ...bidirectionalLengthExpr,
+    ...tagStartExpr,
+    ...tagEndExpr,
     ...twistAngleExpr,
+    ...twistAngleStepExpr,
+    ...twistCenterExpr,
     ...methodExpr,
   ])
 
@@ -116,6 +141,20 @@ export function addExtrude({
   }
   if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
     insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, nodeToEdit)
+  }
+  if (
+    twistAngleStep &&
+    'variableName' in twistAngleStep &&
+    twistAngleStep.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(twistAngleStep, modifiedAst, nodeToEdit)
+  }
+  if (
+    twistCenter &&
+    'variableName' in twistCenter &&
+    twistCenter.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(twistCenter, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -143,6 +182,8 @@ export function addSweep({
   path,
   sectional,
   relativeTo,
+  tagStart,
+  tagEnd,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -150,6 +191,8 @@ export function addSweep({
   path: Selections
   sectional?: boolean
   relativeTo?: string
+  tagStart?: string
+  tagEnd?: string
   nodeToEdit?: PathToNode
 }):
   | {
@@ -185,12 +228,20 @@ export function addSweep({
   const relativeToExpr = relativeTo
     ? [createLabeledArg('relativeTo', createLiteral(relativeTo))]
     : []
+  const tagStartExpr = tagStart
+    ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
+    : []
+  const tagEndExpr = tagEnd
+    ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
     createLabeledArg('path', pathExpr),
     ...sectionalExpr,
     ...relativeToExpr,
+    ...tagStartExpr,
+    ...tagEndExpr,
   ])
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -216,11 +267,19 @@ export function addLoft({
   ast,
   sketches,
   vDegree,
+  bezApproximateRational,
+  baseCurveIndex,
+  tagStart,
+  tagEnd,
   nodeToEdit,
 }: {
   ast: Node<Program>
   sketches: Selections
   vDegree?: KclCommandValue
+  bezApproximateRational?: boolean
+  baseCurveIndex?: KclCommandValue
+  tagStart?: string
+  tagEnd?: string
   nodeToEdit?: PathToNode
 }):
   | {
@@ -242,15 +301,43 @@ export function addLoft({
   const vDegreeExpr = vDegree
     ? [createLabeledArg('vDegree', valueOrVariable(vDegree))]
     : []
+  const bezApproximateRationalExpr = bezApproximateRational
+    ? [
+        createLabeledArg(
+          'bezApproximateRational',
+          createLiteral(bezApproximateRational)
+        ),
+      ]
+    : []
+  const baseCurveIndexExpr = baseCurveIndex
+    ? [createLabeledArg('baseCurveIndex', valueOrVariable(baseCurveIndex))]
+    : []
+  const tagStartExpr = tagStart
+    ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
+    : []
+  const tagEndExpr = tagEnd
+    ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('loft', sketchesExpr, [
     ...vDegreeExpr,
+    ...bezApproximateRationalExpr,
+    ...baseCurveIndexExpr,
+    ...tagStartExpr,
+    ...tagEndExpr,
   ])
 
   // Insert variables for labeled arguments if provided
   if (vDegree && 'variableName' in vDegree && vDegree.variableName) {
     insertVariableAndOffsetPathToNode(vDegree, modifiedAst, nodeToEdit)
+  }
+  if (
+    baseCurveIndex &&
+    'variableName' in baseCurveIndex &&
+    baseCurveIndex.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(baseCurveIndex, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -280,6 +367,8 @@ export function addRevolve({
   edge,
   symmetric,
   bidirectionalAngle,
+  tagStart,
+  tagEnd,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -289,6 +378,8 @@ export function addRevolve({
   edge?: Selections
   symmetric?: boolean
   bidirectionalAngle?: KclCommandValue
+  tagStart?: string
+  tagEnd?: string
   nodeToEdit?: PathToNode
 }):
   | {
@@ -324,6 +415,12 @@ export function addRevolve({
         ),
       ]
     : []
+  const tagStartExpr = tagStart
+    ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
+    : []
+  const tagEndExpr = tagEnd
+    ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('revolve', sketchesExpr, [
@@ -331,6 +428,8 @@ export function addRevolve({
     createLabeledArg('axis', getAxisResult.generatedAxis),
     ...symmetricExpr,
     ...bidirectionalAngleExpr,
+    ...tagStartExpr,
+    ...tagEndExpr,
   ])
 
   // Insert variables for labeled arguments if provided
@@ -519,4 +618,15 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
     return new Error('The type of the axis argument is unsupported')
   }
   return { axisOrEdge, axis, edge }
+}
+
+export function retrieveTagDeclaratorFromOpArg(
+  opArg: OpArg,
+  code: string
+): string {
+  const dollarSignOffset = 1
+  return code.slice(
+    opArg.sourceRange[0] + dollarSignOffset,
+    opArg.sourceRange[1]
+  )
 }

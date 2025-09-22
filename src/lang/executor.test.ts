@@ -67,7 +67,7 @@ newVar = myVar + 1`
         type: 'ToPoint',
         to: [0, 2],
         from: [0, 0],
-        units: { type: 'Mm' },
+        units: 'mm',
         __geoMeta: {
           sourceRange: [expect.any(Number), expect.any(Number), 0],
           id: expect.any(String),
@@ -85,7 +85,7 @@ newVar = myVar + 1`
         type: 'ToPoint',
         to: [2, 3],
         from: [0, 2],
-        units: { type: 'Mm' },
+        units: 'mm',
         tag: null,
         __geoMeta: {
           sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -96,7 +96,7 @@ newVar = myVar + 1`
         type: 'ToPoint',
         to: [5, -1],
         from: [2, 3],
-        units: { type: 'Mm' },
+        units: 'mm',
         __geoMeta: {
           sourceRange: [expect.any(Number), expect.any(Number), 0],
           id: expect.any(String),
@@ -167,7 +167,7 @@ newVar = myVar + 1`
         start: {
           to: [0, 0],
           from: [0, 0],
-          units: { type: 'Mm' },
+          units: 'mm',
           tag: null,
           __geoMeta: {
             id: expect.any(String),
@@ -185,7 +185,7 @@ newVar = myVar + 1`
             type: 'ToPoint',
             to: [1, 1],
             from: [0, 0],
-            units: { type: 'Mm' },
+            units: 'mm',
             tag: null,
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -196,7 +196,7 @@ newVar = myVar + 1`
             type: 'ToPoint',
             to: [0, 1],
             from: [1, 1],
-            units: { type: 'Mm' },
+            units: 'mm',
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
               id: expect.any(String),
@@ -214,7 +214,7 @@ newVar = myVar + 1`
             type: 'ToPoint',
             to: [1, 1],
             from: [0, 1],
-            units: { type: 'Mm' },
+            units: 'mm',
             tag: null,
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -225,9 +225,8 @@ newVar = myVar + 1`
         id: expect.any(String),
         originalId: expect.any(String),
         artifactId: expect.any(String),
-        units: {
-          type: 'Mm',
-        },
+        isClosed: false,
+        units: 'mm',
       },
     })
   })
@@ -270,6 +269,7 @@ newVar = myVar + 1`
     const mem = await exe(code)
     expect(mem['yo']).toEqual({
       type: 'Object',
+      constrainable: false,
       value: {
         aStr: {
           type: 'String',

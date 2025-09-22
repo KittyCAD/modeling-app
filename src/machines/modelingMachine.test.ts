@@ -1,28 +1,26 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import env from '@src/env'
+import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from '@src/machines/modelingMachine'
-import { createActor } from 'xstate'
-import { vi } from 'vitest'
-import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
+  createIdentifier,
+  createLiteral,
+  createVariableDeclaration,
+} from '@src/lang/create'
+import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
+import { type CallExpressionKw, assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import {
   codeManager,
   engineCommandManager,
   kclManager,
 } from '@src/lib/singletons'
-import env from '@src/env'
-import { getConstraintInfoKw } from '@src/lang/std/sketch'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { err } from '@src/lib/trap'
-import {
-  createIdentifier,
-  createLiteral,
-  createVariableDeclaration,
-} from '@src/lang/create'
-import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
-import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
+import { modelingMachine } from '@src/machines/modelingMachine'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import { vi } from 'vitest'
+import { createActor } from 'xstate'
 
 // Store original method to restore in afterAll
 
@@ -66,7 +64,7 @@ vi.mock('@src/components/SetHorVertDistanceModal', () => ({
 vi.mock('@src/components/SetAngleLengthModal', () => ({
   createSetAngleLengthModal: vi.fn(() => ({
     open: vi.fn().mockResolvedValue({
-      value: '45',
+      value: '45deg',
       segName: 'test',
       valueNode: {},
       newVariableInsertIndex: 0,
@@ -375,45 +373,53 @@ p3 = [342.51, 216.38],
       namedConstantConstraint: [
         {
           name: 'should constrain angledLine, angle value',
-          ...makeStraightSegmentSnippet('angledLine(angle = 45, length = 100)'),
+          ...makeStraightSegmentSnippet(
+            'angledLine(angle = 45deg, length = 100)'
+          ),
           constraintIndex: 0,
           expectedResult: 'angledLine(angle = test_variable, length = 100)',
         },
         {
           name: 'should constrain angledLine, length value',
-          ...makeStraightSegmentSnippet('angledLine(angle = 45, length = 100)'),
+          ...makeStraightSegmentSnippet(
+            'angledLine(angle = 45deg, length = 100)'
+          ),
           constraintIndex: 1,
-          expectedResult: 'angledLine(angle = 45, length = test_variable)',
+          expectedResult: 'angledLine(angle = 45deg, length = test_variable)',
         },
         {
           name: 'should constrain angledLine, endAbsoluteY value',
           ...makeStraightSegmentSnippet(
-            'angledLine(angle = 45, endAbsoluteY = 5)'
+            'angledLine(angle = 45deg, endAbsoluteY = 5)'
           ),
           constraintIndex: 1,
           expectedResult:
-            'angledLine(angle = 45, endAbsoluteY = test_variable)',
+            'angledLine(angle = 45deg, endAbsoluteY = test_variable)',
         },
         {
           name: 'should constrain angledLine, endAbsoluteX value',
           ...makeStraightSegmentSnippet(
-            'angledLine(angle = 45, endAbsoluteX = 5)'
+            'angledLine(angle = 45deg, endAbsoluteX = 5)'
           ),
           constraintIndex: 1,
           expectedResult:
-            'angledLine(angle = 45, endAbsoluteX = test_variable)',
+            'angledLine(angle = 45deg, endAbsoluteX = test_variable)',
         },
         {
           name: 'should constrain angledLine, lengthY value',
-          ...makeStraightSegmentSnippet('angledLine(angle = 45, lengthY = 5)'),
+          ...makeStraightSegmentSnippet(
+            'angledLine(angle = 45deg, lengthY = 5)'
+          ),
           constraintIndex: 1,
-          expectedResult: 'angledLine(angle = 45, lengthY = test_variable)',
+          expectedResult: 'angledLine(angle = 45deg, lengthY = test_variable)',
         },
         {
           name: 'should constrain angledLine, lengthX value',
-          ...makeStraightSegmentSnippet('angledLine(angle = 45, lengthX = 5)'),
+          ...makeStraightSegmentSnippet(
+            'angledLine(angle = 45deg, lengthX = 5)'
+          ),
           constraintIndex: 1,
-          expectedResult: 'angledLine(angle = 45, lengthX = test_variable)',
+          expectedResult: 'angledLine(angle = 45deg, lengthX = test_variable)',
         },
       ],
       removeAllConstraintsCases: [
@@ -465,7 +471,7 @@ p3 = [342.51, 216.38],
             'angledLine(angle = testVar1, length = testVar2)'
           ),
           constraintIndex: 0,
-          expectedResult: 'angledLine(angle = 55, length = testVar2)',
+          expectedResult: 'angledLine(angle = 55deg, length = testVar2)',
         },
         {
           name: 'should un-constrain angledLine, length value',
@@ -511,27 +517,33 @@ p3 = [342.51, 216.38],
       deleteSegment: [
         {
           name: 'should delete angledLine, angle length',
-          ...makeStraightSegmentSnippet('angledLine(angle = 45, length = 100)'),
+          ...makeStraightSegmentSnippet(
+            'angledLine(angle = 45deg, length = 100)'
+          ),
         },
         {
           name: 'should delete angledLine, endAbsoluteY',
           ...makeStraightSegmentSnippet(
-            'angledLine(angle = 45, endAbsoluteY = 5)'
+            'angledLine(angle = 45deg, endAbsoluteY = 5)'
           ),
         },
         {
           name: 'should delete angledLine, endAbsoluteX',
           ...makeStraightSegmentSnippet(
-            'angledLine(angle = 45, endAbsoluteX = 5)'
+            'angledLine(angle = 45deg, endAbsoluteX = 5)'
           ),
         },
         {
           name: 'should delete angledLine, lengthY',
-          ...makeStraightSegmentSnippet('angledLine(angle = 45, lengthY = 5)'),
+          ...makeStraightSegmentSnippet(
+            'angledLine(angle = 45deg, lengthY = 5)'
+          ),
         },
         {
           name: 'should delete angledLine, lengthX',
-          ...makeStraightSegmentSnippet('angledLine(angle = 45, lengthX = 5)'),
+          ...makeStraightSegmentSnippet(
+            'angledLine(angle = 45deg, lengthX = 5)'
+          ),
         },
       ],
     },

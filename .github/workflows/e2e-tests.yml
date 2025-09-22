@@ -24,7 +24,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - id: filter
         name: Check for Rust changes
@@ -116,7 +116,7 @@ jobs:
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           token: ${{ steps.app-token.outputs.token }}
 
@@ -165,7 +165,7 @@ jobs:
           TARGET: web
 
       - name: Update snapshots
-        if: always()
+        if: failure()
         run: npm run test:snapshots -- --last-failed --update-snapshots
         env:
           VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
@@ -236,7 +236,7 @@ jobs:
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           token: ${{ steps.app-token.outputs.token }}
 
@@ -350,7 +350,7 @@ jobs:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/download-artifact@v4
         name: prepared-wasm

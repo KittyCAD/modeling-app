@@ -2,12 +2,13 @@
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kittycad_modeling_cmds::units::UnitLength;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
-    AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, UnitLength, is_default,
+    AppColor, DefaultTrue, OnboardingStatus, ProjectCommandBarSettings, ProjectTextEditorSettings, is_default,
 };
 
 /// Project specific settings for the app.
@@ -41,6 +42,13 @@ impl ProjectConfiguration {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct PerProjectSettings {
+    /// Information about the project itself.
+    /// Choices about how settings are merged have prevent me (lee) from easily
+    /// moving this out of the settings structure.
+    #[serde(default)]
+    #[validate(nested)]
+    pub meta: ProjectMetaSettings,
+
     /// The settings for the Design Studio.
     #[serde(default)]
     #[validate(nested)]
@@ -52,11 +60,20 @@ pub struct PerProjectSettings {
     /// Settings that affect the behavior of the KCL text editor.
     #[serde(default)]
     #[validate(nested)]
-    pub text_editor: TextEditorSettings,
+    pub text_editor: ProjectTextEditorSettings,
     /// Settings that affect the behavior of the command bar.
     #[serde(default)]
     #[validate(nested)]
-    pub command_bar: CommandBarSettings,
+    pub command_bar: ProjectCommandBarSettings,
+}
+
+/// Information about the project.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectMetaSettings {
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub id: uuid::Uuid,
 }
 
 /// Project specific application settings.
@@ -85,8 +102,8 @@ pub struct ProjectAppSettings {
     pub allow_orbit_in_sketch_mode: bool,
     /// Whether to show the debug panel, which lets you see various states
     /// of the app to aid in development.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub show_debug_panel: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_debug_panel: Option<bool>,
     /// Settings that affect the behavior of the command bar.
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub named_views: IndexMap<uuid::Uuid, NamedView>,
@@ -104,19 +121,36 @@ pub struct ProjectAppearanceSettings {
 }
 
 /// Project specific settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ProjectModelingSettings {
     /// The default unit to use in modeling dimensions.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub base_unit: UnitLength,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub base_unit: Option<UnitLength>,
     /// Highlight edges of 3D objects?
     #[serde(default, skip_serializing_if = "is_default")]
     pub highlight_edges: DefaultTrue,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
+    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
+    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fixed_size_grid: Option<bool>,
+    /// When enabled, tools like line, rectangle, etc. will snap to the grid.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snap_to_grid: Option<bool>,
+    /// The space between major grid lines, specified in the current unit.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_grid_spacing: Option<f64>,
+    /// The number of minor grid lines per major grid line.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_grids_per_major: Option<f64>,
+    /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snaps_per_minor: Option<f64>,
 }
 
 fn named_view_point_version_one() -> f64 {
@@ -166,8 +200,8 @@ mod tests {
     use serde_json::Value;
 
     use super::{
-        CommandBarSettings, NamedView, PerProjectSettings, ProjectAppSettings, ProjectAppearanceSettings,
-        ProjectConfiguration, ProjectModelingSettings, TextEditorSettings,
+        NamedView, PerProjectSettings, ProjectAppSettings, ProjectAppearanceSettings, ProjectCommandBarSettings,
+        ProjectConfiguration, ProjectMetaSettings, ProjectModelingSettings, ProjectTextEditorSettings,
     };
     use crate::settings::types::UnitLength;
 
@@ -182,7 +216,9 @@ mod tests {
         let serialized = toml::to_string(&parsed).unwrap();
         assert_eq!(
             serialized,
-            r#"[settings.app]
+            r#"[settings.meta]
+
+[settings.app]
 
 [settings.modeling]
 
@@ -268,13 +304,14 @@ color = 1567.4"#;
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
+                meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
                 app: ProjectAppSettings {
                     appearance: ProjectAppearanceSettings { color: 138.0.into() },
                     onboarding_status: Default::default(),
                     dismiss_web_banner: false,
                     stream_idle_mode: false,
                     allow_orbit_in_sketch_mode: false,
-                    show_debug_panel: true,
+                    show_debug_panel: Some(true),
                     named_views: IndexMap::from([
                         (
                             uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
@@ -309,21 +346,28 @@ color = 1567.4"#;
                     ]),
                 },
                 modeling: ProjectModelingSettings {
-                    base_unit: UnitLength::Yd,
+                    base_unit: Some(UnitLength::Yards),
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
+                    snap_to_grid: None,
+                    major_grid_spacing: None,
+                    minor_grids_per_major: None,
+                    snaps_per_minor: None,
+                    fixed_size_grid: None,
                 },
-                text_editor: TextEditorSettings {
-                    text_wrapping: false.into(),
-                    blinking_cursor: false.into(),
+                text_editor: ProjectTextEditorSettings {
+                    text_wrapping: Some(false),
+                    blinking_cursor: Some(false),
                 },
-                command_bar: CommandBarSettings {
-                    include_settings: false.into(),
+                command_bar: ProjectCommandBarSettings {
+                    include_settings: Some(false),
                 },
             },
         };
         let serialized = toml::to_string(&conf).unwrap();
-        let old_project_file = r#"[settings.app]
+        let old_project_file = r#"[settings.meta]
+
+[settings.app]
 show_debug_panel = true
 
 [settings.app.appearance]
