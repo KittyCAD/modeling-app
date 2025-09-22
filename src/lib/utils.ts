@@ -3,13 +3,8 @@ import type { AsyncFn } from '@src/lib/types'
 import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-
 import * as THREE from 'three'
-
-import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { ConnectionManager } from '@src/network/connectionManager'
-
-import type { CameraViewState, UnitLength } from '@kittycad/lib'
 
 export const uuidv4 = v4
 
@@ -644,7 +639,7 @@ export async function engineStreamZoomToFit({
   })
 }
 
-export async function engineViewIsometricWithGeometryPresent({
+export async function engineViewIsometric({
   engineCommandManager,
   padding,
 }: {
@@ -663,91 +658,6 @@ export async function engineViewIsometricWithGeometryPresent({
     cmd: {
       type: 'view_isometric',
       padding, // padding around the objects
-    },
-  })
-
-  /**
-   * HACK: We need to update the gizmo, the command above doesn't trigger gizmo
-   * to render which makes the axis point in an old direction.
-   */
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
-  })
-}
-
-export async function engineViewIsometricWithoutGeometryPresent({
-  engineCommandManager,
-  unit,
-  cameraProjection,
-}: {
-  engineCommandManager: ConnectionManager
-  unit: UnitLength
-  cameraProjection: CameraProjectionType
-}) {
-  // When the video first loads, if the scene is empty (has no sketches/solids/etc defined)
-  // then the grid has a fixed size of 10 mm/cm/inches/whatever unit the user chose, and it
-  // will be at some fixed distance. This means the grid could be way too zoomed in or out.
-  // So, adjust the zoom depending on the chosen unit.
-  const scaleFactor = (() => {
-    const mmScale = 300
-    const cmScale = mmScale / 10
-    const mScale = cmScale / 100
-    const inScale = mmScale / 25.4
-    const ftScale = mmScale / 304.8
-    const ydScale = mmScale / 914.4
-    switch (unit) {
-      case 'mm':
-        return mmScale
-      case 'cm':
-        return cmScale
-      case 'm':
-        return mScale
-      case 'in':
-        return inScale
-      case 'yd':
-        return ydScale
-      case 'ft':
-        return ftScale
-      default:
-        const _exhaustiveCheck: never = unit
-        return 0 // unreachable
-    }
-  })()
-  // If you load an empty scene with any file unit it will have an eye offset of this
-  const magicEngineEyeOffset = 1378.0057 / scaleFactor
-  const quat = computeIsometricQuaternionForEmptyScene()
-  const isometricView: CameraViewState = {
-    pivot_rotation: {
-      x: quat.x,
-      y: quat.y,
-      z: quat.z,
-      w: quat.w,
-    },
-    pivot_position: {
-      x: 0,
-      y: 0,
-      z: 0,
-    },
-    eye_offset: magicEngineEyeOffset,
-    fov_y: 45,
-    ortho_scale_factor: 1.4063792,
-    is_ortho: cameraProjection !== 'perspective',
-    // always keep this enabled
-    ortho_scale_enabled: true,
-    world_coord_system: 'right_handed_up_z',
-  }
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_set_view',
-      view: {
-        ...isometricView,
-      },
     },
   })
 

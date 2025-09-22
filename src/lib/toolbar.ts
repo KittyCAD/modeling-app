@@ -11,7 +11,7 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 
-export type ToolbarModeName = 'modeling' | 'sketching'
+export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
 type ToolbarMode = {
   check: (state: StateFrom<typeof modelingMachine>) => boolean
@@ -82,7 +82,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         state.matches('Sketch') ||
         state.matches('Sketch no face') ||
         state.matches('animating to existing sketch') ||
-        state.matches('animating to plane')
+        state.matches('animating to plane') ||
+        state.matches('sketchSolveMode')
       ),
     items: [
       {
@@ -1021,6 +1022,25 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [],
           },
         ],
+      },
+    ],
+  },
+  sketchSolve: {
+    check: (state) => state.matches('sketchSolveMode'),
+    items: [
+      {
+        id: 'sketch-exit',
+        onClick: ({ modelingSend }) =>
+          modelingSend({
+            type: 'Cancel',
+          }),
+        icon: 'arrowLeft',
+        status: 'available',
+        title: 'Exit sketch',
+        showTitle: true,
+        hotkey: 'Esc',
+        description: 'Exit the current sketch',
+        links: [],
       },
     ],
   },

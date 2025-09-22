@@ -28,7 +28,7 @@ import {
 } from '@src/clientSideScene/sceneUtils'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { Coords2d } from '@src/lang/std/sketch'
-import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
+import { vec2WithinDistance } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/lib/selections'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal } from '@src/lib/signal'
@@ -37,7 +37,8 @@ import { getAngle, getLength, throttle } from '@src/lib/utils'
 import type {
   MouseState,
   SegmentOverlayPayload,
-} from '@src/machines/modelingMachine'
+} from '@src/machines/modelingSharedTypes'
+
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
@@ -97,13 +98,13 @@ export class SceneInfra {
   private _theme: Themes = Themes.System
   lastMouseState: MouseState = { type: 'idle' }
   public readonly baseUnitChange = new Signal()
-  onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
-  onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
-  onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
-  onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
-  onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
-  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
-  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
+  onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => { }
+  onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => { }
+  onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => { }
+  onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => { }
+  onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => { }
+  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => { }
+  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => { }
   setCallbacks = (callbacks: {
     onDragStart?: (arg: OnDragCallbackArgs) => Voidish
     onDragEnd?: (arg: OnDragCallbackArgs) => Voidish
@@ -165,18 +166,18 @@ export class SceneInfra {
 
   resetMouseListeners = () => {
     this.setCallbacks({
-      onDragStart: () => {},
-      onDragEnd: () => {},
-      onDrag: () => {},
-      onMove: () => {},
-      onClick: () => {},
-      onMouseEnter: () => {},
-      onMouseLeave: () => {},
+      onDragStart: () => { },
+      onDragEnd: () => { },
+      onDrag: () => { },
+      onMove: () => { },
+      onClick: () => { },
+      onMouseEnter: () => { },
+      onMouseLeave: () => { },
     })
   }
 
-  modelingSend: SendType = (() => {}) as any
-  throttledModelingSend: any = (() => {}) as any
+  modelingSend: SendType = (() => { }) as any
+  throttledModelingSend: any = (() => { }) as any
 
   setSend(send: SendType) {
     this.modelingSend = send
@@ -277,13 +278,13 @@ export class SceneInfra {
   hoveredObject: null | Object3D<Object3DEventMap> = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
+  // Given in NDC: [-1, 1] range, where (-1, -1) corresponds to the bottom left of the canvas, (0, 0) is the center.
   currentMouseVector = new Vector2()
   selected: {
     mouseDownVector: Vector2
     object: Object3D<Object3DEventMap>
     hasBeenDragged: boolean
   } | null = null
-  mouseDownVector: null | Vector2 = null
   private isRenderingPaused = false
   private lastFrameTime = 0
 
@@ -450,7 +451,9 @@ export class SceneInfra {
   private _processingMouseMove = false
   private _lastUnprocessedMouseEvent: MouseEvent | undefined
 
-  private updateCurrentMouseVector(event: MouseEvent, target: HTMLElement) {
+  private updateCurrentMouseVector(event: MouseEvent) {
+    const target = this.renderer.domElement
+
     const rect = target.getBoundingClientRect()
     if (rect.width === 0 || rect.height === 0) {
       return
@@ -462,11 +465,6 @@ export class SceneInfra {
   }
 
   onMouseMove = async (mouseEvent: MouseEvent) => {
-    if (!(mouseEvent.currentTarget instanceof HTMLElement)) {
-      console.error('unexpected targetless event')
-      return
-    }
-
     if (this.mouseMoveThrottling) {
       // Throttle mouse move events to help with performance.
       // Without this a new call to executeAstMock() is made by SceneEntities/onDragSegment() while the
@@ -479,23 +477,23 @@ export class SceneInfra {
       this._processingMouseMove = true
     }
 
-    this.updateCurrentMouseVector(mouseEvent, mouseEvent.currentTarget)
+    this.updateCurrentMouseVector(mouseEvent)
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 
     if (this.selected) {
-      const hasBeenDragged = !compareVec2Epsilon2(
-        [this.currentMouseVector.x, this.currentMouseVector.y],
-        [this.selected.mouseDownVector.x, this.selected.mouseDownVector.y],
-        0.02
+      const hasBeenDragged = !vec2WithinDistance(
+        this.ndc2screenSpace(this.currentMouseVector),
+        this.ndc2screenSpace(this.selected.mouseDownVector),
+        10 // Drag threshold in pixels
       )
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
         this.selected.hasBeenDragged = true
         // this is where we could fire a onDragStart event
       }
       if (
-        hasBeenDragged &&
+        this.selected.hasBeenDragged &&
         planeIntersectPoint &&
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
@@ -649,11 +647,7 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
-    if (!(event.currentTarget instanceof HTMLElement)) {
-      console.error('unexpected targetless event')
-      return
-    }
-    this.updateCurrentMouseVector(event, event.currentTarget)
+    this.updateCurrentMouseVector(event)
 
     const mouseDownVector = this.currentMouseVector.clone()
     const intersect = this.raycastRing()[0]
@@ -662,20 +656,16 @@ export class SceneInfra {
       const intersectParent = intersect?.object?.parent as Group
       this.selected = intersectParent.isGroup
         ? {
-            mouseDownVector,
-            object: intersect.object,
-            hasBeenDragged: false,
-          }
+          mouseDownVector,
+          object: intersect.object,
+          hasBeenDragged: false,
+        }
         : null
     }
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
-    if (!(mouseEvent.currentTarget instanceof HTMLElement)) {
-      console.error('unexpected targetless event')
-      return
-    }
-    this.updateCurrentMouseVector(mouseEvent, mouseEvent.currentTarget)
+    this.updateCurrentMouseVector(mouseEvent)
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 
@@ -759,11 +749,18 @@ export class SceneInfra {
     })
   }
 
+  // a and b given in world space
   screenSpaceDistance(a: Coords2d, b: Coords2d): number {
     const dummy = new Mesh()
     dummy.position.set(0, 0, 0)
     const scale = this.getClientSceneScaleFactor(dummy)
     return getLength(a, b) / scale
+  }
+  ndc2screenSpace(ndc: Vector2): Coords2d {
+    return [
+      ((ndc.x + 1) / 2) * this.renderer.domElement.clientWidth,
+      ((ndc.y + 1) / 2) * this.renderer.domElement.clientHeight,
+    ]
   }
   pauseRendering() {
     this.isRenderingPaused = true

@@ -85,7 +85,12 @@ import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { updateSelections } from '@src/lib/selections'
+import {
+  getDefaultSketchPlaneData,
+  selectionBodyFace,
+  getOffsetSketchPlaneData,
+  updateSelections,
+} from '@src/lib/selections'
 import {
   codeManager,
   editorManager,
@@ -96,11 +101,16 @@ import {
   sceneInfra,
 } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
 import {
   getPersistedContext,
   modelingMachine,
-  modelingMachineDefaultContext,
 } from '@src/machines/modelingMachine'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
 
 import {
@@ -506,6 +516,54 @@ export const ModelingMachineProvider = ({
               onDrag: () => {},
             })
             return undefined
+          }
+        ),
+        'animate-to-sketch-solve': fromPromise(
+          async ({
+            input: artifactOrPlaneId,
+          }): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane> => {
+            if (!artifactOrPlaneId) {
+              const errorMessage = 'No artifact or plane ID provided'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+            let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null =
+              null
+
+            const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId)
+            if (!err(defaultResult) && defaultResult) {
+              result = defaultResult
+            }
+            console.log('result', result)
+
+            // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
+            if (!result) {
+              const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
+              const offsetResult = await getOffsetSketchPlaneData(artifact)
+              if (!err(offsetResult) && offsetResult) {
+                result = offsetResult
+              }
+            }
+            console.log('result', result)
+            if (!result) {
+              const sweepFaceSelected =
+                await selectionBodyFace(artifactOrPlaneId)
+              if (sweepFaceSelected) {
+                result = sweepFaceSelected
+              }
+            }
+            if (!result) {
+              const errorMessage = 'Please select a valid sketch plane'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            const id =
+              result.type === 'extrudeFace' ? result.faceId : result.planeId
+            await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+            console.log('result', result)
+            return result
           }
         ),
         'animate-to-face': fromPromise(async ({ input }) => {
