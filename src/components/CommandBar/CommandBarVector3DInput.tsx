@@ -3,7 +3,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
+import { getCalculatedKclExpressionValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -129,23 +129,16 @@ function CommandBarVector3DInput({
     // Use KCL expression parsing to handle scientific notation properly
     const vectorExpression = `[${x.trim()}, ${y.trim()}, ${z.trim()}]`
 
-    // Calculate the KCL expression asynchronously
-    getCalculatedKclExpressionValue(vectorExpression, true)
+    // Calculate the KCL expression using the utility
+    stringToKclExpression(vectorExpression, true)
       .then((result) => {
-        if (result instanceof Error || 'errors' in result || !result.astNode) {
+        if (result instanceof Error || 'errors' in result) {
           toast.error('Unable to create valid vector expression')
           console.error('Invalid vector expression:', vectorExpression)
           return
         }
 
-        // Create KclCommandValue with the properly parsed AST
-        const kclValue: KclCommandValue = {
-          valueAst: result.astNode,
-          valueText: vectorExpression,
-          valueCalculated: result.valueAsString,
-        }
-
-        onSubmit(kclValue)
+        onSubmit(result)
       })
       .catch((error) => {
         toast.error('Failed to calculate vector expression')
