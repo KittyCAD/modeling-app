@@ -77,6 +77,40 @@ export class CmdBarFixture {
         commandName: commandName || '',
       }
     }
+
+    const vectorInputsExist = await this.page.getByTestId('vector3d-x-input').isVisible().catch(() => false)
+    if (vectorInputsExist) {
+      const [
+        headerArguments,
+        highlightedHeaderArg,
+        commandName,
+        xValue,
+        yValue,
+        zValue,
+      ] = await Promise.all([
+        getHeaderArgs(),
+        this.page
+          .locator('[data-is-current-arg="true"]')
+          .locator('[data-test-name="arg-name"]')
+          .textContent(),
+        getCommandName(),
+        this.page.getByTestId('vector3d-x-input').inputValue(),
+        this.page.getByTestId('vector3d-y-input').inputValue(),
+        this.page.getByTestId('vector3d-z-input').inputValue(),
+      ])
+
+      const vectorValue = `[${xValue}, ${yValue}, ${zValue}]`
+
+      return {
+        stage: 'arguments',
+        currentArgKey: highlightedHeaderArg || '',
+        currentArgValue: vectorValue,
+        headerArguments,
+        highlightedHeaderArg: highlightedHeaderArg || '',
+        commandName: commandName || '',
+      }
+    }
+
     const [
       currentArgKey,
       currentArgValue,
