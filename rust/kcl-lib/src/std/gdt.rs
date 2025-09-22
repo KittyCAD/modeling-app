@@ -35,18 +35,20 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         exec_state,
     )?;
     let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let offset: Option<[TyF64; 2]> = args.get_kw_arg_opt("offset", &RuntimeType::point2d(), exec_state)?;
     let in_plane: Option<Plane> = args.get_kw_arg_opt("inPlane", &RuntimeType::plane(), exec_state)?;
     let annotation_style_ty = RuntimeType::from_alias("AnnotationStyle", exec_state, args.source_range)
         .map_err(|err| KclError::internal(format!("Error getting AnnotationStyle runtime type; {err:?}")))?;
     let style: Option<AnnotationStyle> = args.get_kw_arg_opt("style", &annotation_style_ty, exec_state)?;
 
-    inner_flatness(faces, tolerance, in_plane, style, exec_state, &args).await?;
+    inner_flatness(faces, tolerance, offset, in_plane, style, exec_state, &args).await?;
     Ok(KclValue::none())
 }
 
 async fn inner_flatness(
     faces: Vec<TagIdentifier>,
     tolerance: TyF64,
+    offset: Option<[TyF64; 2]>,
     in_plane: Option<Plane>,
     style: Option<AnnotationStyle>,
     exec_state: &mut ExecState,
@@ -137,7 +139,14 @@ async fn inner_flatness(
                             prefix: None,
                             suffix: None,
                             plane_id: in_plane_id,
-                            offset: Point2d { x: 50.0, y: 50.0 },
+                            offset: if let Some(offset) = &offset {
+                                Point2d {
+                                    x: offset[0].to_mm(),
+                                    y: offset[1].to_mm(),
+                                }
+                            } else {
+                                Point2d { x: 100.0, y: 100.0 }
+                            },
                             precision: 3,
                             font_scale: style
                                 .as_ref()

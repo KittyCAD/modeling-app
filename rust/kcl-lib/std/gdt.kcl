@@ -19,6 +19,9 @@ export fn flatness(
   /// The amount of deviation from a perfect plane that is acceptable.
   @(includeInSnippet = true)
   tolerance: number(Length),
+  /// The offset of the annotation from the centroid of the faces being annotated. The default is `[100mm, 100mm]`.
+  @(includeInSnippet = true)
+  offset?: Point2d,
   /// The plane in which to display the annotation. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The annotation may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   inPlane?: Plane,
