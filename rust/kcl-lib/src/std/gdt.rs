@@ -22,6 +22,12 @@ use crate::{
     std::{Args, args::TyF64},
 };
 
+#[derive(Debug, Clone)]
+pub(crate) struct AnnotationStyle {
+    pub font_point_size: Option<TyF64>,
+    pub font_scale: Option<TyF64>,
+}
+
 pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let faces: Vec<TagIdentifier> = args.get_kw_arg(
         "faces",
@@ -29,14 +35,18 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         exec_state,
     )?;
     let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let annotation_style_ty = RuntimeType::from_alias("AnnotationStyle", exec_state, args.source_range)
+        .map_err(|err| KclError::internal(format!("Error getting AnnotationStyle runtime type; {err:?}")))?;
+    let style: Option<AnnotationStyle> = args.get_kw_arg_opt("style", &annotation_style_ty, exec_state)?;
 
-    inner_flatness(faces, tolerance, exec_state, &args).await?;
+    inner_flatness(faces, tolerance, style, exec_state, &args).await?;
     Ok(KclValue::none())
 }
 
 async fn inner_flatness(
     faces: Vec<TagIdentifier>,
     tolerance: TyF64,
+    style: Option<AnnotationStyle>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<(), KclError> {
@@ -124,8 +134,14 @@ async fn inner_flatness(
                             plane_id,
                             offset: Point2d { x: 50.0, y: 50.0 },
                             precision: 3,
-                            font_scale: 1.0,
-                            font_point_size: 36,
+                            font_scale: style
+                                .as_ref()
+                                .and_then(|s| s.font_scale.as_ref().map(|n| n.n as f32))
+                                .unwrap_or(1.0),
+                            font_point_size: style
+                                .as_ref()
+                                .and_then(|s| s.font_point_size.as_ref().map(|n| n.n.round() as u32))
+                                .unwrap_or(36),
                         }),
                         feature_tag: None,
                     },

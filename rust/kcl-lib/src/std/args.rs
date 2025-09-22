@@ -516,6 +516,18 @@ macro_rules! let_field_of {
     };
 }
 
+impl<'a> FromKclValue<'a> for super::gdt::AnnotationStyle {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, font_point_size? "fontPointSize");
+        let_field_of!(obj, font_scale? "fontScale");
+        Some(Self {
+            font_point_size,
+            font_scale,
+        })
+    }
+}
+
 impl<'a> FromKclValue<'a> for crate::execution::Plane {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.as_plane().cloned()
