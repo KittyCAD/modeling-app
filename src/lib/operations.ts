@@ -904,7 +904,8 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
     codeManager.code.slice(
       operation.labeledArgs?.['center']?.sourceRange[0],
       operation.labeledArgs?.['center']?.sourceRange[1]
-    )
+    ),
+    true
   )
   if (err(center) || 'errors' in center) {
     return { reason: "Couldn't retrieve center argument" }
