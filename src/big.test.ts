@@ -101,16 +101,14 @@ import { trap } from '@src/lib/trap'
 import fs from 'node:fs'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { Parameter } from '@src/lang/wasm'
-import {
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from '@src/machines/modelingMachine'
+import { modelingMachine } from '@src/machines/modelingMachine'
 import { createActor } from 'xstate'
 import { vi } from 'vitest'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { getTagDeclaratorsInProgram } from '@src/lang/queryAst/getTagDeclaratorsInProgram'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 
 // Unfortunately, we need the real engine here it seems to get sweep faces populated
 beforeAll(async () => {

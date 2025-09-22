@@ -50,7 +50,7 @@ export function useEngineConnectionSubscriptions() {
     const unSubClick = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: (engineEvent) => {
-        ; (async () => {
+        ;(async () => {
           if (stateRef.current.matches('Sketch no face')) return
           const event = await getEventForSelectWithPoint(engineEvent)
           event && send(event)
@@ -71,45 +71,45 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
         ? ({ data }) => {
-          ; (async () => {
-            let planeOrFaceId = data.entity_id
-            if (!planeOrFaceId) return
+            ;(async () => {
+              let planeOrFaceId = data.entity_id
+              if (!planeOrFaceId) return
 
-            if (context.store.useNewSketchMode?.current) {
-              sceneInfra.modelingSend({
-                type: 'Select sketch solve plane',
-                data: planeOrFaceId,
-              })
+              if (context.store.useNewSketchMode?.current) {
+                sceneInfra.modelingSend({
+                  type: 'Select sketch solve plane',
+                  data: planeOrFaceId,
+                })
+                return
+              }
+
+              const defaultSketchPlaneSelected =
+                selectDefaultSketchPlane(planeOrFaceId)
+              if (
+                !err(defaultSketchPlaneSelected) &&
+                defaultSketchPlaneSelected
+              ) {
+                return
+              }
+
+              const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+              const offsetPlaneSelected =
+                await selectOffsetSketchPlane(artifact)
+              if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+                return
+              }
+
+              const sweepFaceSelected = await selectionBodyFace(planeOrFaceId)
+              if (sweepFaceSelected) {
+                sceneInfra.modelingSend({
+                  type: 'Select sketch plane',
+                  data: sweepFaceSelected,
+                })
+              }
               return
-            }
-
-            const defaultSketchPlaneSelected =
-              selectDefaultSketchPlane(planeOrFaceId)
-            if (
-              !err(defaultSketchPlaneSelected) &&
-              defaultSketchPlaneSelected
-            ) {
-              return
-            }
-
-            const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-            const offsetPlaneSelected =
-              await selectOffsetSketchPlane(artifact)
-            if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
-              return
-            }
-
-            const sweepFaceSelected = await selectionBodyFace(planeOrFaceId)
-            if (sweepFaceSelected) {
-              sceneInfra.modelingSend({
-                type: 'Select sketch plane',
-                data: sweepFaceSelected,
-              })
-            }
-            return
-          })().catch(reportRejection)
-        }
-        : () => { },
+            })().catch(reportRejection)
+          }
+        : () => {},
     })
     return unSub
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!

@@ -46,12 +46,10 @@ import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, uuidv4 } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
-
 import { EngineDebugger } from '@src/lib/debugger'
 
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
-
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -136,18 +134,18 @@ export class KclManager extends EventTarget {
 
   engineCommandManager: ConnectionManager
 
-  private _isExecutingCallback: (arg: boolean) => void = () => { }
-  private _astCallBack: (arg: Node<Program>) => void = () => { }
+  private _isExecutingCallback: (arg: boolean) => void = () => {}
+  private _astCallBack: (arg: Node<Program>) => void = () => {}
   private _variablesCallBack: (
     arg: {
       [key in string]?: KclValue | undefined
     }
-  ) => void = () => { }
-  private _logsCallBack: (arg: string[]) => void = () => { }
-  private _kclErrorsCallBack: (errors: KCLError[]) => void = () => { }
-  private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => { }
-  private _wasmInitFailedCallback: (arg: boolean) => void = () => { }
-  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => { }
+  ) => void = () => {}
+  private _logsCallBack: (arg: string[]) => void = () => {}
+  private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
+  private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
+  private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
+  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   get ast() {
     return this._ast
@@ -854,8 +852,8 @@ function setSelectionFilter(
 ) {
   const { engineEvents } = selectionsToRestore
     ? handleSelectionBatch({
-      selections: selectionsToRestore,
-    })
+        selections: selectionsToRestore,
+      })
     : { engineEvents: undefined }
   if (!selectionsToRestore || !engineEvents) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises

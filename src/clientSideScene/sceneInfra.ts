@@ -98,13 +98,13 @@ export class SceneInfra {
   private _theme: Themes = Themes.System
   lastMouseState: MouseState = { type: 'idle' }
   public readonly baseUnitChange = new Signal()
-  onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => { }
-  onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => { }
-  onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => { }
-  onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => { }
-  onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => { }
-  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => { }
-  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => { }
+  onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
+  onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
+  onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
+  onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
+  onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
+  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
+  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   setCallbacks = (callbacks: {
     onDragStart?: (arg: OnDragCallbackArgs) => Voidish
     onDragEnd?: (arg: OnDragCallbackArgs) => Voidish
@@ -166,18 +166,18 @@ export class SceneInfra {
 
   resetMouseListeners = () => {
     this.setCallbacks({
-      onDragStart: () => { },
-      onDragEnd: () => { },
-      onDrag: () => { },
-      onMove: () => { },
-      onClick: () => { },
-      onMouseEnter: () => { },
-      onMouseLeave: () => { },
+      onDragStart: () => {},
+      onDragEnd: () => {},
+      onDrag: () => {},
+      onMove: () => {},
+      onClick: () => {},
+      onMouseEnter: () => {},
+      onMouseLeave: () => {},
     })
   }
 
-  modelingSend: SendType = (() => { }) as any
-  throttledModelingSend: any = (() => { }) as any
+  modelingSend: SendType = (() => {}) as any
+  throttledModelingSend: any = (() => {}) as any
 
   setSend(send: SendType) {
     this.modelingSend = send
@@ -656,10 +656,10 @@ export class SceneInfra {
       const intersectParent = intersect?.object?.parent as Group
       this.selected = intersectParent.isGroup
         ? {
-          mouseDownVector,
-          object: intersect.object,
-          hasBeenDragged: false,
-        }
+            mouseDownVector,
+            object: intersect.object,
+            hasBeenDragged: false,
+          }
         : null
     }
   }
