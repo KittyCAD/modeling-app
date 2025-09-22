@@ -4810,6 +4810,7 @@ description: Operations executed battery-module-cooling-plate.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

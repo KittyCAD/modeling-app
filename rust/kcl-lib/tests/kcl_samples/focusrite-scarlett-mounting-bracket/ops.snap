@@ -1195,6 +1195,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

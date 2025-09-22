@@ -2591,6 +2591,7 @@ description: Artifact commands pillow-block-bearing.kcl
   "public/kcl-samples/pillow-block-bearing/parameters.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

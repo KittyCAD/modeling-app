@@ -6,6 +6,7 @@ description: Artifact commands any_type.kcl
   "rust/kcl-lib/tests/any_type/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

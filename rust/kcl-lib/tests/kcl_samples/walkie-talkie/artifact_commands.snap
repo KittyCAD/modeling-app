@@ -11400,6 +11400,7 @@ description: Artifact commands walkie-talkie.kcl
   "public/kcl-samples/walkie-talkie/zoo-logo.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

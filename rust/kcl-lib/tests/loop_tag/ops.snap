@@ -11737,6 +11737,7 @@ description: Operations executed loop_tag.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

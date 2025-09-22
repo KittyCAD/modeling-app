@@ -2170,6 +2170,7 @@ description: Artifact commands herringbone-planetary-gearset.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

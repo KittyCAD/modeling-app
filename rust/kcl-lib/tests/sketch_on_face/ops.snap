@@ -172,6 +172,7 @@ description: Operations executed sketch_on_face.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
