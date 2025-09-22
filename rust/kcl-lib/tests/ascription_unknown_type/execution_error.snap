@@ -2,12 +2,11 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing ascription_unknown_type.kcl
 ---
-KCL Engine error
+KCL Semantic error
 
-  × engine: could not send request to the engine: could not send json over
-  │ websocket: Trying to work with closed connection
+  × semantic: Unknown type: NotARealType
    ╭────
  1 │ z = 10: NotARealType
-   · ▲
-   · ╰── main
+   ·     ─┬
+   ·      ╰── tests/ascription_unknown_type/input.kcl
    ╰────

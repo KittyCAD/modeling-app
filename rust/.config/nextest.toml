@@ -1,9 +1,9 @@
 [test-groups]
 # If a test uses the engine, we want to limit the number that can run in parallel.
 # This way we don't start and stop too many engine instances, putting pressure on our cloud.
-uses-engine = { max-threads = 32 }
+uses-engine = { max-threads = 1 }
 # If a test must run after the engine tests, we want to make sure the engine tests are done first.
-after-engine = { max-threads = 32 }
+after-engine = { max-threads = 1 }
 
 [profile.default]
 slow-timeout = { period = "280s", terminate-after = 1 }
@@ -15,13 +15,13 @@ slow-timeout = { period = "280s", terminate-after = 5 }
 # If a test starts with kcl_test_, then it uses the engine. So, limit its parallelism.
 filter = "test(kcl_test_)"
 test-group = "uses-engine"
-threads-required = 2
+threads-required = 1
 
 [[profile.ci.overrides]]
 # If a test starts with kcl_test_, then it uses the engine. So, limit its parallelism.
 filter = "test(kcl_test_)"
 test-group = "uses-engine"
-threads-required = 2
+threads-required = 1
 
 [[profile.default.overrides]]
 filter = "test(parser::parser_impl::snapshot_tests)"

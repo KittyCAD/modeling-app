@@ -2,4 +2,9 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing array_elem_pop_empty_fail.kcl
 ---
-{}
+{
+  "arr": {
+    "type": "HomArray",
+    "value": []
+  }
+}

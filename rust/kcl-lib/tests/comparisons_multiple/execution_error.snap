@@ -2,12 +2,11 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing comparisons_multiple.kcl
 ---
-KCL Engine error
+KCL Semantic error
 
-  × engine: could not send request to the engine: could not send json over
-  │ websocket: Trying to work with closed connection
+  × semantic: Expected a number, but found a boolean (`true` or `false`)
    ╭────
  1 │ assert(3 == 3 == 3, error = "this should not compile")
-   · ▲
-   · ╰── main
+   ·        ───┬──
+   ·           ╰── tests/comparisons_multiple/input.kcl
    ╰────

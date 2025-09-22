@@ -2,4 +2,9 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing argument_error.kcl
 ---
-{}
+{
+  "f": {
+    "type": "Function",
+    "value": null
+  }
+}
