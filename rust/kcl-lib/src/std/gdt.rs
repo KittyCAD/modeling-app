@@ -3,8 +3,9 @@ use kittycad_modeling_cmds::{
     self as kcmc,
     ok_response::OkModelingCmdResponse,
     shared::{
-        AnnotationOptions, AnnotationTextAlignmentX, AnnotationTextAlignmentY, AnnotationTextOptions, AnnotationType,
-        Color, Point3d,
+        AnnotationFeatureControl, AnnotationLineEnd, AnnotationMbdControlFrame, AnnotationOptions,
+        AnnotationTextAlignmentX, AnnotationTextAlignmentY, AnnotationTextOptions, AnnotationType, Color, MbdSymbol,
+        Point2d, Point3d,
     },
     websocket::OkWebSocketResponseData,
 };
@@ -45,6 +46,17 @@ async fn inner_flatness(
             vec![args.source_range],
         ))
     })?;
+    let plane_id = {
+        let arc = args.ctx.engine.get_default_planes();
+        let default_planes_guard = arc.read().await;
+        let Some(planes) = &*default_planes_guard else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "No default construction plane found".to_string(),
+                vec![args.source_range],
+            )));
+        };
+        planes.xy
+    };
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, true).await?;
         // Get the center point of the face.
@@ -63,6 +75,7 @@ async fn inner_flatness(
                 vec![args.source_range],
             )));
         };
+        let feature_control_id = exec_state.next_uuid();
         exec_state
             .batch_modeling_cmd(
                 args.into(),
@@ -91,7 +104,29 @@ async fn inner_flatness(
                             z: center.z.0 as f32,
                         }),
                         dimension: None,
-                        feature_control: None,
+                        feature_control: Some(AnnotationFeatureControl {
+                            entity_id: feature_control_id,
+                            entity_pos: Default::default(),
+                            leader_type: AnnotationLineEnd::None,
+                            dimension: None,
+                            control_frame: Some(AnnotationMbdControlFrame {
+                                symbol: MbdSymbol::Flatness,
+                                diameter_symbol: None,
+                                tolerance: tolerance.to_mm(),
+                                modifier: None,
+                                primary_datum: None,
+                                secondary_datum: None,
+                                tertiary_datum: None,
+                            }),
+                            defined_datum: None,
+                            prefix: None,
+                            suffix: None,
+                            plane_id,
+                            offset: Point2d { x: 50.0, y: 50.0 },
+                            precision: 3,
+                            font_scale: 1.0,
+                            font_point_size: 36,
+                        }),
                         feature_tag: None,
                     },
                     clobber: true,
