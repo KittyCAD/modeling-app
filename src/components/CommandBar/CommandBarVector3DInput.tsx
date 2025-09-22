@@ -29,8 +29,8 @@ function CommandBarVector3DInput({
 
   // Resolve current vector value, prioritizing previously set values over defaults
   const currentVectorString = useMemo(() => {
-    if (previouslySetValue?.valueCalculated) {
-      return previouslySetValue.valueCalculated
+    if (previouslySetValue?.valueText) {
+      return previouslySetValue.valueText
     }
 
     if (arg.defaultValue) {
