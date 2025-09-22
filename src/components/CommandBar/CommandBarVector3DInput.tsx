@@ -3,7 +3,10 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import { getCalculatedKclExpressionValue, stringToKclExpression } from '@src/lib/kclHelpers'
+import {
+  getCalculatedKclExpressionValue,
+  stringToKclExpression,
+} from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { CustomIcon } from '@src/components/CustomIcon'
