@@ -531,7 +531,7 @@ pattern001 = patternCircular3d(
           highlightedHeaderArg: 'axis',
         })
 
-        // Update axis from Z-axis to Y-axis
+        // Update axis from Y-axis to Z-axis
         await cmdBar.selectOption({ name: 'Z-axis' }).click()
       })
     })
