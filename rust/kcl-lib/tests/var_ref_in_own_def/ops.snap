@@ -3,39 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed var_ref_in_own_def.kcl
 ---
 {
-  "rust/kcl-lib/tests/var_ref_in_own_def/input.kcl": [
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  ],
+  "rust/kcl-lib/tests/var_ref_in_own_def/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [

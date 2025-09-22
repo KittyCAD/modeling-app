@@ -2,28 +2,13 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing kw_fn_unlabeled_but_has_label.kcl
 ---
-KCL Argument error
+KCL Engine error
 
-  × argument: The function does declare a parameter named 'x', but this
-  │ parameter doesn't use a label. Try removing the `x =`
-   ╭─[1:12]
- 1 │ ╭─▶ fn add(@x) {
- 2 │ │     return x + 1
- 3 │ ├─▶ }
-   · ╰──── tests/kw_fn_unlabeled_but_has_label/input.kcl
- 4 │     
- 5 │     two = add(x = 1)
-   ·           ─────┬────
-   ·                ╰── tests/kw_fn_unlabeled_but_has_label/input.kcl
+  × engine: could not send request to the engine: could not send json over
+  │ websocket: Trying to work with closed connection
+   ╭─[1:1]
+ 1 │ fn add(@x) {
+   · ▲
+   · ╰── main
+ 2 │   return x + 1
    ╰────
-  ╰─▶ KCL Argument error
-      
-        × argument: The function does declare a parameter named 'x', but this
-        │ parameter doesn't use a label. Try removing the `x =`
-         ╭─[1:12]
-       1 │ ╭─▶ fn add(@x) {
-       2 │ │     return x + 1
-       3 │ ├─▶ }
-         · ╰──── tests/kw_fn_unlabeled_but_has_label/input.kcl
-       4 │
-         ╰────

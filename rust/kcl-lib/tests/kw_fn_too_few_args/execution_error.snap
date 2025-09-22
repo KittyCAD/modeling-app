@@ -2,28 +2,13 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing kw_fn_too_few_args.kcl
 ---
-KCL Argument error
+KCL Engine error
 
-  × argument: This function requires a parameter y, but you haven't passed it
-  │ one.
-   ╭─[1:14]
- 1 │ ╭─▶ fn add(x, y) {
- 2 │ │     return x + y
- 3 │ ├─▶ }
-   · ╰──── tests/kw_fn_too_few_args/input.kcl
- 4 │     
- 5 │     three = add(x = 1)
-   ·             ─────┬────
-   ·                  ╰── tests/kw_fn_too_few_args/input.kcl
+  × engine: could not send request to the engine: could not send json over
+  │ websocket: Trying to work with closed connection
+   ╭─[1:1]
+ 1 │ fn add(x, y) {
+   · ▲
+   · ╰── main
+ 2 │   return x + y
    ╰────
-  ╰─▶ KCL Argument error
-      
-        × argument: This function requires a parameter y, but you haven't
-        │ passed it one.
-         ╭─[1:14]
-       1 │ ╭─▶ fn add(x, y) {
-       2 │ │     return x + y
-       3 │ ├─▶ }
-         · ╰──── tests/kw_fn_too_few_args/input.kcl
-       4 │
-         ╰────

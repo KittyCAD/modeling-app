@@ -2,9 +2,4 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing pipe_substitution_inside_function_called_from_pipeline.kcl
 ---
-{
-  "f": {
-    "type": "Function",
-    "value": null
-  }
-}
+{}

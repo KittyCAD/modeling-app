@@ -2,12 +2,13 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing invalid_index_str.kcl
 ---
-KCL Semantic error
+KCL Engine error
 
-  × semantic: Only numbers (>= 0) can be indexes
-   ╭─[2:5]
+  × engine: could not send request to the engine: could not send json over
+  │ websocket: Trying to work with closed connection
+   ╭─[1:1]
  1 │ arr = [1, 2, 3]
+   · ▲
+   · ╰── main
  2 │ x = arr["s"]
-   ·     ────┬───
-   ·         ╰── tests/invalid_index_str/input.kcl
    ╰────

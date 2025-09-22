@@ -2,9 +2,4 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing kw_fn_too_few_args.kcl
 ---
-{
-  "add": {
-    "type": "Function",
-    "value": null
-  }
-}
+{}

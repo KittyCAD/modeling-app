@@ -4,23 +4,11 @@ description: Error from executing multi_target_csg.kcl
 ---
 KCL Engine error
 
-  × engine: Currently the engine does not support multiple targets on subtract
-    ╭─[69:10]
- 68 │ 
- 69 │ cut000 = subtract(extrude001, tools = cut000Extrude)
-    ·          ─────────────────────┬─────────────────────┬
-    ·                               ╰── tests/multi_target_csg/input.kcl
-    ·                               ╰── tests/multi_target_csg/input.kcl
- 70 │ 
-    ╰────
-  ╰─▶ KCL Engine error
-      
-        × engine: Currently the engine does not support multiple targets on
-        │ subtract
-          ╭─[69:10]
-       68 │
-       69 │ cut000 = subtract(extrude001, tools = cut000Extrude)
-          ·          ─────────────────────┬─────────────────────
-          ·                               ╰── tests/multi_target_csg/input.kcl
-       70 │
-          ╰────
+  × engine: could not send request to the engine: could not send json over
+  │ websocket: Trying to work with closed connection
+   ╭─[1:1]
+ 1 │ @settings(defaultLengthUnit = in)
+   · ▲
+   · ╰── main
+ 2 │ 
+   ╰────

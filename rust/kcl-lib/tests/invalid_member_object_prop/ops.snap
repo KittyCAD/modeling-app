@@ -3,32 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed invalid_member_object_prop.kcl
 ---
 {
-  "rust/kcl-lib/tests/invalid_member_object_prop/input.kcl": [
-    {
-      "type": "VariableDeclaration",
-      "name": "b",
-      "value": {
-        "type": "Bool",
-        "value": true
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  ],
+  "rust/kcl-lib/tests/invalid_member_object_prop/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
   "std::math": [

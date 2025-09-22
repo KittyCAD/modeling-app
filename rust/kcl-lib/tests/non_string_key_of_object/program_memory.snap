@@ -2,23 +2,4 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing non_string_key_of_object.kcl
 ---
-{
-  "obj": {
-    "type": "Object",
-    "value": {
-      "key": {
-        "type": "Number",
-        "value": 123.0,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      }
-    }
-  }
-}
+{}

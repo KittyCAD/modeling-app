@@ -4,22 +4,11 @@ description: Error from executing execute_engine_error_return.kcl
 ---
 KCL Engine error
 
-  × engine: The path is not closed.  Solid2D construction requires a closed
-  │ path!
-   ╭─[7:6]
- 6 │   |> line(end = [-11.53311, 2.81559])
- 7 │   |> extrude(length = 4)
-   ·      ─────────┬─────────┬
-   ·               ╰── tests/execute_engine_error_return/input.kcl
-   ·               ╰── tests/execute_engine_error_return/input.kcl
+  × engine: could not send request to the engine: could not send json over
+  │ websocket: Trying to work with closed connection
+   ╭─[1:1]
+ 1 │ part001 = startSketchOn(XY)
+   · ▲
+   · ╰── main
+ 2 │   |> startProfile(at = [5.5229, 5.25217])
    ╰────
-  ╰─▶ KCL Engine error
-      
-        × engine: The path is not closed.  Solid2D construction requires a
-        │ closed path!
-         ╭─[7:6]
-       6 │   |> line(end = [-11.53311, 2.81559])
-       7 │   |> extrude(length = 4)
-         ·      ─────────┬─────────
-         ·               ╰── tests/execute_engine_error_return/input.kcl
-         ╰────

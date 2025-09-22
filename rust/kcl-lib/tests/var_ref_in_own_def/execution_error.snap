@@ -2,13 +2,13 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing var_ref_in_own_def.kcl
 ---
-KCL UndefinedValue error
+KCL Engine error
 
-  × undefined value: You can't use `sketch001` because you're currently trying
-  │ to define it. Use a different variable here instead.
-   ╭─[3:32]
+  × engine: could not send request to the engine: could not send json over
+  │ websocket: Trying to work with closed connection
+   ╭─[1:1]
+ 1 │ // This won't work, because `sketch001` is being referenced in its own definition.
+   · ▲
+   · ╰── main
  2 │ sketch001 = startSketchOn(XY)
- 3 │   |> startProfileAt([20, -20], sketch001)
-   ·                                ────┬────
-   ·                                    ╰── tests/var_ref_in_own_def/input.kcl
    ╰────

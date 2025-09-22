@@ -4,23 +4,11 @@ description: Error from executing user_reported_union_2_bug.kcl
 ---
 KCL Engine error
 
-  × engine: The Zoo engine cannot handle this 3D union yet.  Please report
-  │ this as an issue
-    ╭─[44:22]
- 43 │ 
- 44 │ intermediateUnion1 = union([roundedTriangle, cube1])
-    ·                      ───────────────┬───────────────┬
-    ·                                     ╰── tests/user_reported_union_2_bug/input.kcl
-    ·                                     ╰── tests/user_reported_union_2_bug/input.kcl
-    ╰────
-  ╰─▶ KCL Engine error
-      
-        × engine: The Zoo engine cannot handle this 3D union yet.  Please
-        │ report this as an issue
-          ╭─[44:22]
-       43 │
-       44 │ intermediateUnion1 = union([roundedTriangle, cube1])
-          ·                      ───────────────┬───────────────
-          ·                                     ╰── tests/
-      user_reported_union_2_bug/input.kcl
-          ╰────
+  × engine: could not send request to the engine: could not send json over
+  │ websocket: Trying to work with closed connection
+   ╭─[1:1]
+ 1 │ // TODO IF THIS TEST START PASSING, CLOSE THE FOLLOWING ISSUE 
+   · ▲
+   · ╰── main
+ 2 │ // https://github.com/KittyCAD/modeling-app/issues/7310
+   ╰────
