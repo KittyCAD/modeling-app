@@ -1,3 +1,4 @@
+import { BSON } from 'bson'
 import type {
   MlCopilotServerMessage,
   ReasoningMessage,
@@ -142,6 +143,8 @@ const endOfStream = (): MlCopilotServerMessage & { end_of_stream: any } => {
 
 const generators = {
   reasoning: [
+    error,
+    info,
     toolOutput,
     toolOutput,
     toolOutput,
@@ -162,6 +165,62 @@ function generateCopilotReasoning(): MlCopilotServerMessage {
 function generateCopilotConversation(): MlCopilotServerMessage {
   const index = Math.floor(Math.random() * generators.conversation.length)
   return generators.conversation[index]()
+}
+
+function generateMlServerMessages(): MlCopilotServerMessage[] {
+  const iterations = Math.trunc(Math.random() * 18) + 7
+  const messages = new Array(iterations).fill(undefined).map((_, i: number) => {
+    if (i === iterations - 1) {
+      return endOfStream()
+    }
+
+    return i < Math.floor(iterations / 1.25)
+      ? generateCopilotReasoning()
+      : generateCopilotConversation()
+  })
+  return messages
+}
+
+function generateUserResponse(
+  ms: MockSocket,
+  cbs: WebSocketEventListenerMap['message'][]
+) {
+  const messages = generateMlServerMessages()
+  let i = 0
+  const loop = () => {
+    setTimeout(() => {
+      if (i >= messages.length) {
+        return
+      }
+
+      const response = messages[i]
+
+      for (let cb of cbs) {
+        cb.bind(ms)(
+          new MessageEvent('message', { data: JSON.stringify(response) })
+        )
+      }
+
+      i += 1
+      loop()
+    }, 500)
+  }
+
+  loop()
+}
+
+function generateReplayResponse(): Extract<
+  MlCopilotServerMessage,
+  { replay: any }
+> {
+  // @ts-expect-error
+  return {
+    replay: {
+      messages: generateMlServerMessages().map((m: MlCopilotServerMessage) =>
+        BSON.serialize(m)
+      ),
+    },
+  }
 }
 
 type WebSocketEventListenerMap = {
@@ -205,6 +264,19 @@ export class MockSocket extends WebSocket {
       listener.bind(this)(new Event('', {}))
     } else if (isWebSocketEventType('message', type, listener)) {
       this.cbs.message.push(listener)
+
+      // If there's 1 'message' event listener, fire off the replay on
+      // the next tick (so it's not immediate and the mlephant state machine
+      // can move onto the listening phase
+      if (this.cbs.message.length === 1) {
+        setTimeout(() => {
+          this.cbs.message[0].bind(this)(
+            new MessageEvent('message', {
+              data: JSON.stringify(generateReplayResponse()),
+            })
+          )
+        })
+      }
     } else if (isWebSocketEventType('close', type, listener)) {
       this.cbs.close.push(listener)
     }
@@ -213,38 +285,12 @@ export class MockSocket extends WebSocket {
   send(payload: string) {
     const obj = JSON.parse(payload)
 
-    let response: MlCopilotServerMessage
     if (obj.type === 'system' && obj.command === 'new') {
       // response = { conversation_id: { conversation_id: 'satehusateohustahseut' }}
     }
 
     if (obj.type === 'user') {
-      const iterations = Math.trunc(Math.random() * 18) + 7
-      let i = 0
-      const loop = (fn: () => MlCopilotServerMessage) => {
-        setTimeout(() => {
-          if (i >= iterations) {
-            return
-          }
-
-          response = i === iterations - 1 ? endOfStream() : fn()
-
-          for (let cb of this.cbs.message) {
-            cb.bind(this)(
-              new MessageEvent('message', { data: JSON.stringify(response) })
-            )
-          }
-
-          i += 1
-          loop(
-            i < Math.floor(iterations / 1.25)
-              ? generateCopilotReasoning
-              : generateCopilotConversation
-          )
-        }, 500)
-      }
-
-      loop(generateCopilotReasoning)
+      generateUserResponse(this, this.cbs.message)
     }
   }
 }

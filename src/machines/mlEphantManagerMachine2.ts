@@ -1,3 +1,4 @@
+import { BSON } from 'bson'
 import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
@@ -10,7 +11,9 @@ import { S, transitions } from '@src/machines/utils'
 import { getKclVersion } from '@src/lib/kclVersion'
 
 import { Socket } from '@src/lib/utils'
-import { MockSocket } from '@src/mocks/copilot'
+
+// Uncomment and switch WebSocket below with this MockSocket for development.
+// import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
@@ -174,7 +177,7 @@ export const mlEphantManagerMachine2 = setup({
       assertEvent(args.input.event, [MlEphantManagerStates2.Setup])
 
       const ws = await Socket(
-        MockSocket,
+        WebSocket,
         '/ws/ml/copilot',
         args.input.context.apiToken
       )
@@ -205,10 +208,45 @@ export const mlEphantManagerMachine2 = setup({
         if ('info' in response && response.info.text === '🤖 ML-ephant Copilot')
           return
 
-        args.input.event.refParentSend({
-          type: MlEphantManagerTransitions2.ResponseReceive,
-          response,
-        })
+        // If it's a replay, we'll unravel it and process as if they are real
+        // messages being sent from the server.
+        if ('replay' in response) {
+          // what? ask jess why `response.replay: unknown`
+          // @ts-expect-error
+          for (let bsonMessage of response.replay.messages) {
+            const data: Uint8Array = Uint8Array.from(Object.values(bsonMessage))
+            const responseReplay = Object.freeze(BSON.deserialize(data))
+            if (!isMlCopilotServerMessage(responseReplay)) continue
+
+            // Don't show deltas because the are aggregated in the end_of_stream
+            if ('delta' in responseReplay) continue
+
+            // Instead we transform a end_of_stream into a delta!
+            if ('end_of_stream' in responseReplay) {
+              const fakeDelta = {
+                delta: {
+                  delta: responseReplay.end_of_stream.whole_response ?? '',
+                },
+              }
+              args.input.event.refParentSend({
+                type: MlEphantManagerTransitions2.ResponseReceive,
+                response: fakeDelta,
+              })
+
+              // And we'll send the OG end_of_stream below
+            }
+
+            args.input.event.refParentSend({
+              type: MlEphantManagerTransitions2.ResponseReceive,
+              response: responseReplay,
+            })
+          }
+        } else {
+          args.input.event.refParentSend({
+            type: MlEphantManagerTransitions2.ResponseReceive,
+            response,
+          })
+        }
       })
 
       ws.addEventListener('close', function (event: Event) {
