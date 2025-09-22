@@ -197,6 +197,7 @@ async fn inner_involute_circular(
                     angle: Angle::from_degrees(angle_deg),
                     reverse: reverse.unwrap_or_default(),
                 },
+                label: None,
             }),
         )
         .await?;
@@ -347,6 +348,7 @@ async fn straight_line(
                     end: KPoint2d::from(point_to_mm(point.clone())).with_z(0.0).map(LengthUnit),
                     relative: !is_absolute,
                 },
+                label: None,
             }),
         )
         .await?;
@@ -573,6 +575,7 @@ async fn inner_angled_line_length(
                         .map(LengthUnit),
                     relative,
                 },
+                label: None,
             }),
         )
         .await?;
@@ -1383,6 +1386,7 @@ pub async fn absolute_arc(
                     },
                     relative: false,
                 },
+                label: None,
             }),
         )
         .await?;
@@ -1454,6 +1458,7 @@ pub async fn relative_arc(
                     ),
                     relative: false,
                 },
+                label: None,
             }),
         )
         .await?;
@@ -1621,6 +1626,7 @@ async fn inner_tangential_arc_radius_angle(
                             radius: LengthUnit(radius.to_mm()),
                             offset,
                         },
+                        label: None,
                     }),
                 )
                 .await?;
@@ -1663,6 +1669,7 @@ fn tan_arc_to(sketch: &Sketch, to: [f64; 2]) -> ModelingCmd {
                 .with_z(0.0)
                 .map(LengthUnit),
         },
+        label: None,
     })
 }
 
@@ -1814,6 +1821,7 @@ async fn inner_bezier_curve(
                             end: KPoint2d::from(point_to_mm(delta)).with_z(0.0).map(LengthUnit),
                             relative: true,
                         },
+                        label: None,
                     }),
                 )
                 .await?;
@@ -1833,6 +1841,7 @@ async fn inner_bezier_curve(
                             end: KPoint2d::from(point_to_mm(end)).with_z(0.0).map(LengthUnit),
                             relative: false,
                         },
+                        label: None,
                     }),
                 )
                 .await?;
@@ -2091,6 +2100,7 @@ pub(crate) async fn inner_elliptic(
                     start_angle,
                     end_angle,
                 },
+                label: None,
             }),
         )
         .await?;
@@ -2258,6 +2268,7 @@ pub(crate) async fn inner_hyperbolic(
                     interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
                     relative,
                 },
+                label: None,
             }),
         )
         .await?;
@@ -2471,6 +2482,7 @@ pub(crate) async fn inner_parabolic(
                     interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
                     relative,
                 },
+                label: None,
             }),
         )
         .await?;
@@ -2625,6 +2637,7 @@ pub(crate) async fn inner_conic(
                     interior: KPoint2d::from(untyped_point_to_mm(interior, from.units)).map(LengthUnit),
                     relative,
                 },
+                label: None,
             }),
         )
         .await?;

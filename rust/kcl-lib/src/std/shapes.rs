@@ -111,6 +111,7 @@ async fn inner_rectangle(
                             .map(LengthUnit),
                         relative: true,
                     },
+                    label: None,
                 }),
             )
             .await?;
@@ -205,6 +206,7 @@ async fn inner_circle(
                     radius: LengthUnit(radius.to_mm()),
                     relative: false,
                 },
+                label: None,
             }),
         )
         .await?;
@@ -306,6 +308,7 @@ async fn inner_circle_three_point(
                     radius: adjust_length(units, radius, UnitLength::Millimeters).0.into(),
                     relative: false,
                 },
+                label: None,
             }),
         )
         .await?;
@@ -457,6 +460,7 @@ async fn inner_polygon(
                             .map(LengthUnit),
                         relative: false,
                     },
+                    label: None,
                 }),
             )
             .await?;
@@ -492,6 +496,7 @@ async fn inner_polygon(
                         .map(LengthUnit),
                     relative: false,
                 },
+                label: None,
             }),
         )
         .await?;
@@ -609,6 +614,7 @@ async fn inner_ellipse(
                     start_angle: Angle::from_degrees(angle_start.to_degrees()),
                     end_angle: Angle::from_degrees(angle_end.to_degrees()),
                 },
+                label: None,
             }),
         )
         .await?;
