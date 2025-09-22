@@ -23,7 +23,7 @@ jobs:
       version: ${{ steps.export_version.outputs.version }}
       notes: ${{ steps.export_notes.outputs.notes }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v4
         with:
@@ -141,7 +141,7 @@ jobs:
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/download-artifact@v4
         name: prepared-files
@@ -260,7 +260,7 @@ jobs:
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
     needs: [prepare-files, build-apps]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/download-artifact@v4
         with:

@@ -23,7 +23,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v4
         with:
