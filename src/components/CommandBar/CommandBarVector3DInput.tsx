@@ -3,10 +3,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import {
-  getCalculatedKclExpressionValue,
-  stringToKclExpression,
-} from '@src/lib/kclHelpers'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -62,6 +59,7 @@ function CommandBarVector3DInput({
   const [x, setX] = useState(defaultValues.x)
   const [y, setY] = useState(defaultValues.y)
   const [z, setZ] = useState(defaultValues.z)
+  const [canSubmit, setCanSubmit] = useState(true)
 
   const {
     context: { selectionRanges },
@@ -100,36 +98,55 @@ function CommandBarVector3DInput({
     }
   }, [])
 
+  useEffect(() => {
+    // Basic check for form submit button state - detailed validation happens in handleSubmit
+    setCanSubmit(
+      !xCalculation.isExecuting &&
+        !yCalculation.isExecuting &&
+        !zCalculation.isExecuting
+    )
+  }, [
+    xCalculation.isExecuting,
+    yCalculation.isExecuting,
+    zCalculation.isExecuting,
+  ])
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    // Validate that all values are not empty and are valid
-    if (!x.trim() || !y.trim() || !z.trim()) {
-      toast.error('Please enter values for all coordinates (X, Y, Z)')
-      return // Don't submit if any value is empty
+    // 1. Check if calculations are still running
+    if (!canSubmit) {
+      toast.error('Please wait for calculations to complete')
+      return
     }
 
-    // Check if all coordinates are valid
+    // 2. Validate that all coordinate values are not empty
+    if (!x.trim() || !y.trim() || !z.trim()) {
+      toast.error('Please enter values for all coordinates (X, Y, Z)')
+      return
+    }
+
+    // 3. Check if all coordinates have valid calculated results
     if (
       xCalculation.calcResult === 'NAN' ||
       yCalculation.calcResult === 'NAN' ||
       zCalculation.calcResult === 'NAN'
     ) {
       toast.error('Invalid coordinate values - please check your input')
-      return // Don't submit if any coordinate is invalid
+      return
     }
 
-    // Check if all coordinates have valid AST nodes
+    // 4. Check if all coordinates have valid AST nodes for code generation
     if (
       !xCalculation.valueNode ||
       !yCalculation.valueNode ||
       !zCalculation.valueNode
     ) {
       toast.error('Unable to parse coordinate expressions')
-      return // Don't submit if any coordinate doesn't have a valid AST node
+      return
     }
 
-    // Use KCL expression parsing to handle scientific notation properly
+    // 5. Create the vector expression for KCL parsing
     const vectorExpression = `[${x.trim()}, ${y.trim()}, ${z.trim()}]`
 
     // Calculate the KCL expression using the utility
@@ -179,17 +196,7 @@ function CommandBarVector3DInput({
       id="arg-form"
       className="mb-2"
       onSubmit={handleSubmit}
-      data-can-submit={
-        xCalculation.calcResult !== 'NAN' &&
-        yCalculation.calcResult !== 'NAN' &&
-        zCalculation.calcResult !== 'NAN' &&
-        x.trim() &&
-        y.trim() &&
-        z.trim() &&
-        !xCalculation.isExecuting &&
-        !yCalculation.isExecuting &&
-        !zCalculation.isExecuting
-      }
+      data-can-submit={canSubmit}
     >
       <div className="mx-4 mt-4 mb-2">
         <span className="capitalize text-chalkboard-80 dark:text-chalkboard-20 block mb-4">
