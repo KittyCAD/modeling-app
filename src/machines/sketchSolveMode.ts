@@ -10,11 +10,12 @@ import type { PathToNode } from '@src/lang/wasm'
 import { machine as centerRectToolMachine } from '@src/machines/centerRectTool'
 import { machine as dimensionToolMachine } from '@src/machines/dimensionTool'
 
-type EquipTool = 'dimension' | 'center rectangle'
 const toolRegistry = {
   'center rectangle': centerRectToolMachine,
   dimension: dimensionToolMachine,
 } as const
+
+type EquipTool = keyof typeof toolRegistry
 
 // Helper function to get tool machine
 const getToolMachine = (tool: EquipTool) =>
