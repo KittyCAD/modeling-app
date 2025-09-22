@@ -1,5 +1,5 @@
 import path, { join } from 'path'
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_INSTANCES } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
@@ -159,7 +159,7 @@ solid001 = extrude(sketch001, length = 5)`
         stage: 'arguments',
         commandName: 'Pattern Circular 3D',
         currentArgKey: 'instances',
-        currentArgValue: '5',
+        currentArgValue: KCL_DEFAULT_INSTANCES,
         headerArguments: {
           Solids: '1 sweep',
           Instances: '',
@@ -169,7 +169,7 @@ solid001 = extrude(sketch001, length = 5)`
         highlightedHeaderArg: 'instances',
       })
 
-      // Update instances from 5 to 8
+      // Update instances from DEFAULT to 8
       await cmdBar.currentArgumentInput.locator('.cm-content').fill('8')
       await cmdBar.progressCmdBar()
 
@@ -188,18 +188,35 @@ solid001 = extrude(sketch001, length = 5)`
         highlightedHeaderArg: 'axis',
       })
 
-      // Select Y-axis
+      // Select Y-axis and auto-progress
       await cmdBar.selectOption({ name: 'Y-axis' }).click()
+
+      // Should now be on center parameter step
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Pattern Circular 3D',
+        currentArgKey: 'center',
+        currentArgValue: '[0, 0, 0]',
+        headerArguments: {
+          Solids: '1 sweep',
+          Instances: '8',
+          Axis: 'Y',
+          Center: '',
+        },
+        highlightedHeaderArg: 'center',
+      })
+
+      // Progress without changing center (should default to [0, 0, 0])
       await cmdBar.progressCmdBar()
 
-      // Should now be on review step with auto-filled center
+      // Should now be on review step
       await cmdBar.expectState({
         stage: 'review',
         commandName: 'Pattern Circular 3D',
         headerArguments: {
           Solids: '1 sweep',
           Instances: '8',
-          Axis: '[0, 1, 0]',
+          Axis: 'Y',
           Center: '[0, 0, 0]',
         },
       })
@@ -214,14 +231,14 @@ solid001 = extrude(sketch001, length = 5)`
         headerArguments: {
           Solids: '1 sweep',
           Instances: '8',
-          Axis: '[0, 1, 0]',
+          Axis: 'Y',
           Center: '[0, 0, 0]',
         },
         highlightedHeaderArg: 'center',
       })
 
       // Update center from [0, 0, 0] to [5, 0, 0]
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('[5, 0, 0]')
+      await page.getByTestId('vector3d-x-input').fill('5')
       await cmdBar.progressCmdBar()
     })
 
@@ -232,7 +249,7 @@ solid001 = extrude(sketch001, length = 5)`
         headerArguments: {
           Solids: '1 sweep',
           Instances: '8',
-          Axis: '[0, 1, 0]',
+          Axis: 'Y',
           Center: '[5, 0, 0]',
         },
       })
@@ -243,7 +260,7 @@ solid001 = extrude(sketch001, length = 5)`
       // Verify the generated code contains all parameters
       await editor.expectEditor.toContain('patternCircular3d(')
       await editor.expectEditor.toContain('instances = 8')
-      await editor.expectEditor.toContain('axis = [0, 1, 0]')
+      await editor.expectEditor.toContain('axis = Y')
       await editor.expectEditor.toContain('center = [5, 0, 0]')
     })
   })
@@ -293,7 +310,7 @@ solid001 = extrude(sketch001, length = 5)`
         headerArguments: {
           Solids: '1 sweep',
           Instances: '6',
-          Axis: '[0, 0, 1]',
+          Axis: 'Z',
           Center: '[0, 0, 0]',
         },
       })
@@ -306,11 +323,11 @@ solid001 = extrude(sketch001, length = 5)`
         stage: 'arguments',
         commandName: 'Pattern Circular 3D',
         currentArgKey: 'arcDegrees',
-        currentArgValue: '360',
+        currentArgValue: '360deg',
         headerArguments: {
           Solids: '1 sweep',
           Instances: '6',
-          Axis: '[0, 0, 1]',
+          Axis: 'Z',
           Center: '[0, 0, 0]',
           ArcDegrees: '',
         },
@@ -330,7 +347,7 @@ solid001 = extrude(sketch001, length = 5)`
         headerArguments: {
           Solids: '1 sweep',
           Instances: '6',
-          Axis: '[0, 0, 1]',
+          Axis: 'Z',
           Center: '[0, 0, 0]',
           ArcDegrees: '180',
           RotateDuplicates: '',
@@ -357,7 +374,7 @@ solid001 = extrude(sketch001, length = 5)`
         headerArguments: {
           Solids: '1 sweep',
           Instances: '6',
-          Axis: '[0, 0, 1]',
+          Axis: 'Z',
           Center: '[0, 0, 0]',
           ArcDegrees: '180',
           RotateDuplicates: '', // True value shows as empty string in header
@@ -371,7 +388,7 @@ solid001 = extrude(sketch001, length = 5)`
       // Verify all parameters are in the generated code
       await editor.expectEditor.toContain('patternCircular3d(')
       await editor.expectEditor.toContain('instances = 6')
-      await editor.expectEditor.toContain('axis = [0, 0, 1]')
+      await editor.expectEditor.toContain('axis = Z')
       await editor.expectEditor.toContain('center = [0, 0, 0]')
       await editor.expectEditor.toContain('arcDegrees = 180')
       await editor.expectEditor.toContain('rotateDuplicates = true')
