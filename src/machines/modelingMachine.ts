@@ -4851,7 +4851,6 @@ export const modelingMachine = setup({
         input: ({ event }) => {
           if (event.type !== 'Select sketch solve plane') return undefined
           return event.data
-
         },
       },
     },
