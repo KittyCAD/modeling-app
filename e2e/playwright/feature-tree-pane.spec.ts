@@ -443,7 +443,7 @@ pattern001 = patternCircular3d(
   solid001,
   instances = 4,
   axis = Y,
-  center = [0, 0, 0],
+  center = [0, 2-1, 0],
 )`
       )
     })
@@ -467,11 +467,11 @@ pattern001 = patternCircular3d(
         stage: 'arguments',
         commandName: 'Pattern Circular 3D',
         currentArgKey: 'center',
-        currentArgValue: '[0, 0, 0]',
+        currentArgValue: '[0, 2-1, 0]',
         headerArguments: {
           Instances: '4',
           Axis: 'Y',
-          Center: '[0, 0, 0]',
+          Center: '[0, 1, 0]',
         },
         highlightedHeaderArg: 'center',
       })
@@ -489,7 +489,7 @@ pattern001 = patternCircular3d(
           headerArguments: {
             Instances: '4',
             Axis: 'Y',
-            Center: '[5, 0, 0]',
+            Center: '[5, 1, 0]',
           },
         })
       })
@@ -505,7 +505,7 @@ pattern001 = patternCircular3d(
           headerArguments: {
             Instances: '4',
             Axis: 'Y',
-            Center: '[5, 0, 0]',
+            Center: '[5, 1, 0]',
           },
           highlightedHeaderArg: 'instances',
         })
@@ -526,7 +526,7 @@ pattern001 = patternCircular3d(
           headerArguments: {
             Instances: '6',
             Axis: 'Y',
-            Center: '[5, 0, 0]',
+            Center: '[5, 1, 0]',
           },
           highlightedHeaderArg: 'axis',
         })
@@ -545,7 +545,7 @@ pattern001 = patternCircular3d(
       await editor.expectEditor.toContain('patternCircular3d(')
       await editor.expectEditor.toContain('instances = 6') // Updated from 4 to 6
       await editor.expectEditor.toContain('axis = Z') // Updated from Y to Z
-      await editor.expectEditor.toContain('center = [5, 0, 0]') // Updated from [0, 0, 0] to [5, 0, 0]
+      await editor.expectEditor.toContain('center = [5, 2 - 1, 0]') // Updated from [0, 0, 0] to [5, 2-1, 0]
     })
   })
 
