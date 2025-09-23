@@ -7,6 +7,7 @@ import {
   BillingRemainingMode,
 } from '@kittycad/react-shared'
 import { type BillingContext } from '@src/machines/billingMachine'
+import { type MlCopilotTool } from '@kittycad/lib'
 import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -21,10 +22,144 @@ export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
   billingContext: BillingContext
-  onProcess: (request: string) => void
+  onProcess: (request: string, forcedTools: Set<MlCopilotTool>) => void
   disabled?: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
+}
+
+const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
+  'edit_kcl_code',
+  'text_to_cad',
+  'mechanical_knowledge_base',
+  'web_search',
+])
+const ML_COPILOT_TOOLS_META = Object.freeze({
+  edit_kcl_code: {
+    regexp: /edit|make|change/,
+    pretty: 'Edit',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="beaker" className={props.className} />
+    ),
+  },
+  text_to_cad: {
+    regexp: /create|construct|build|design|model/,
+    pretty: 'Create',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="model" className={props.className} />
+    ),
+  },
+  mechanical_knowledge_base: {
+    regexp: /what|how|where|why|when/,
+    pretty: 'Question',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="brain" className={props.className} />
+    ),
+  },
+  web_search: {
+    regexp: /search|google/,
+    pretty: 'Web search',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="search" className={props.className} />
+    ),
+  },
+} as const)
+
+const MlCopilotTool = <T extends MlCopilotTool>(props: {
+  tool: T
+  onRemove: (tool: T) => void
+}) => {
+  return (
+    <button className="flex flex-row items-center p-0 pr-2">
+      <div
+        tabIndex={0}
+        role="button"
+        onClick={() => props.onRemove(props.tool)}
+      >
+        <CustomIcon name="close" className="w-7 h-7" />
+      </div>
+      <div className="flex flex-row gap-1 items-center">
+        {ML_COPILOT_TOOLS_META[props.tool].icon({ className: 'w-5 h-5' })}
+        {ML_COPILOT_TOOLS_META[props.tool].pretty}
+      </div>
+    </button>
+  )
+}
+
+const MlCopilotTools = (props: { onAdd: (tool: MlCopilotTool) => void }) => {
+  const [show, setShow] = useState<boolean>(false)
+
+  const tools = []
+
+  const onClick = (tool: MlCopilotTool) => {
+    setShow(false)
+    props.onAdd(tool)
+  }
+
+  for (let tool of ML_COPILOT_TOOLS) {
+    tools.push(
+      <div
+        tabIndex={0}
+        role="button"
+        onClick={() => onClick(tool)}
+        className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-chalkboard-70 p-2 pr-4 rounded-md"
+      >
+        {ML_COPILOT_TOOLS_META[tool].icon({ className: 'w-7 h-7' })}
+        {ML_COPILOT_TOOLS_META[tool].pretty}
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <div className={`relative ${show ? '' : 'hidden'}`}>
+        <div
+          className="flex flex-col gap-2 absolute hover:bg-chalkboard-80 bg-chalkboard-90 mb-1 p-2 border border-chalkboard-70 text-sm rounded-md"
+          style={{ left: 1, bottom: 0 }}
+        >
+          {tools}
+        </div>
+      </div>
+      <button
+        onClick={() => setShow(!show)}
+        className="bg-chalkboard-90 flex flex-row items-center p-0 pr-2"
+      >
+        <CustomIcon name="settings" className="w-7 h-7" />
+        <span>Tools</span>
+      </button>
+    </div>
+  )
+}
+
+export interface MlEphantForcedToolsProps {
+  inputToMatch: string
+  forcedTools: Set<MlCopilotTool>
+  excludedTools: Set<MlCopilotTool>
+  onRemove: (tool: MlCopilotTool) => void
+  onAdd: (tool: MlCopilotTool) => void
+}
+export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
+  for (let tool of ML_COPILOT_TOOLS) {
+    if (props.forcedTools.has(tool)) continue
+    if (props.excludedTools.has(tool)) continue
+
+    if (ML_COPILOT_TOOLS_META[tool].regexp.test(props.inputToMatch)) {
+      props.onAdd(tool)
+    }
+  }
+
+  const tools = Array.from(
+    Array.from(props.forcedTools).filter(
+      (tool) => !props.excludedTools.has(tool)
+    )
+  ).map((tool) => <MlCopilotTool tool={tool} onRemove={props.onRemove} />)
+
+  return (
+    <div className="flex flex-row flex-wrap">
+      <MlCopilotTools onAdd={props.onAdd} />
+      {tools}
+    </div>
+  )
 }
 
 interface MlEphantConversationInputProps {
@@ -75,21 +210,56 @@ const ANIMATION_TIME = 2000
 export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
 ) => {
-  const refDiv = useRef<HTMLDivElement>(null)
+  const refDiv = useRef<HTMLTextAreaElement>(null)
+  const [value, setValue] = useState<string>('')
   const [heightConvo, setHeightConvo] = useState(0)
+  const [forcedTools, setForcedTools] = useState<Set<MlCopilotTool>>(new Set())
+  const [excludedTools, setExcludedTools] = useState<Set<MlCopilotTool>>(
+    new Set()
+  )
   const [lettersForAnimation, setLettersForAnimation] = useState<ReactNode[]>(
     []
   )
   const [isAnimating, setAnimating] = useState(false)
 
+  const onRemoveTool = (tool: MlCopilotTool) => {
+    forcedTools.delete(tool)
+    setForcedTools(new Set(forcedTools))
+
+    if (value.length > 0) {
+      excludedTools.add(tool)
+      setExcludedTools(new Set(excludedTools))
+    }
+  }
+
+  const onAddTool = (tool: MlCopilotTool) => {
+    forcedTools.add(tool)
+    excludedTools.delete(tool)
+
+    setForcedTools(new Set(forcedTools))
+    setExcludedTools(new Set(excludedTools))
+  }
+
+  useEffect(() => {
+    if (
+      value.length === 0 &&
+      (excludedTools.size > 0 || forcedTools.size > 0)
+    ) {
+      setForcedTools(new Set())
+      setExcludedTools(new Set())
+    }
+  }, [value.length, excludedTools.size, forcedTools.size])
+
   const onClick = () => {
     if (props.disabled) return
 
-    const value = refDiv.current?.innerText
     if (!value) return
+    if (!refDiv.current) return
+
     setHeightConvo(refDiv.current.getBoundingClientRect().height)
 
-    props.onProcess(value)
+    props.onProcess(value, forcedTools)
+
     setLettersForAnimation(
       value.split('').map((c, index) => (
         <span
@@ -104,7 +274,7 @@ export const MlEphantConversationInput = (
       ))
     )
     setAnimating(true)
-    refDiv.current.innerText = ''
+    setValue('')
 
     setTimeout(() => {
       setAnimating(false)
@@ -125,12 +295,13 @@ export const MlEphantConversationInput = (
       </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-        <div
-          contentEditable={true}
+        <textarea
           autoCapitalize="off"
           autoCorrect="off"
           spellCheck="false"
           data-testid="ml-ephant-conversation-input"
+          onChange={(e) => setValue(e.target.value)}
+          value={value}
           ref={refDiv}
           onKeyDown={(e) => {
             const isOnlyEnter =
@@ -140,9 +311,9 @@ export const MlEphantConversationInput = (
               onClick()
             }
           }}
-          className={`outline-none w-full overflow-auto ${isAnimating ? 'hidden' : ''}`}
+          className={`bg-transparent outline-none w-full overflow-auto ${isAnimating ? 'hidden' : ''}`}
           style={{ height: '2lh' }}
-        ></div>
+        ></textarea>
         <div
           className={`${isAnimating ? '' : 'hidden'} overflow-hidden w-full p-2`}
           style={{ height: heightConvo }}
@@ -150,10 +321,14 @@ export const MlEphantConversationInput = (
           {lettersForAnimation}
         </div>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-        <div
-          className="flex justify-end"
-          onClick={() => refDiv.current?.focus()}
-        >
+        <div className="flex justify-between items-center">
+          <MlEphantForcedTools
+            inputToMatch={value}
+            forcedTools={forcedTools}
+            excludedTools={excludedTools}
+            onRemove={onRemoveTool}
+            onAdd={onAddTool}
+          />
           <button
             data-testid="ml-ephant-conversation-input-button"
             disabled={props.disabled}
@@ -198,9 +373,9 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
-  const onProcess = (request: string) => {
+  const onProcess = (request: string, forcedTools: Set<MlCopilotTool>) => {
     setAutoScroll(true)
-    props.onProcess(request)
+    props.onProcess(request, forcedTools)
   }
 
   useEffect(() => {
