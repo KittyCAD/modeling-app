@@ -73,6 +73,7 @@ export async function deleteSegmentOrTopLevelStatement({
     )
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_err) {
+    console.warn(_err)
     // When deleting the last startProfile in a sketch, the above updateAstAndRejigSketch fails because prepareTruncatedAst
     // calls getNodeFromPath with a path that no longer exists (we just deleted it)..
   }
