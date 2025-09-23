@@ -1,3 +1,5 @@
+import { useAppState } from '@src/AppState'
+import { EngineDebugger } from '@src/lib/debugger'
 import { engineCommandManager } from '@src/lib/singletons'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 import { getDimensions } from '@src/network/utils'
@@ -19,12 +21,21 @@ export const useOnPageResize = ({
   const last = useRef<number>(Date.now())
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)
+  const { isStreamAcceptingInput } = useAppState()
   useEffect(() => {
     // But if the user resizes, and we're stopped or paused, then we want
     // to try to restart the stream!
     if (!videoWrapperRef.current) return
     if (!videoRef.current) return
     if (!canvasRef.current) return
+    if (!isStreamAcceptingInput) {
+      console.warn('attempting to resize stream before it is ready')
+      EngineDebugger.addLog({
+        label: 'useOnPageResize',
+        message: 'attempting to resize stream before it is ready',
+      })
+      return
+    }
 
     const video = videoRef.current
     const wrapper = videoWrapperRef.current
@@ -58,5 +69,5 @@ export const useOnPageResize = ({
     return () => {
       observer.disconnect()
     }
-  }, [videoWrapperRef, videoRef, canvasRef])
+  }, [videoWrapperRef, videoRef, canvasRef, isStreamAcceptingInput])
 }
