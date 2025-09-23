@@ -6,7 +6,6 @@ import type { KclManager } from '@src/lang/KclSingleton'
 import type { SystemIOActor } from '@src/lib/singletons'
 import { useEffect } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useSelector } from '@xstate/react'
 import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
 import type { MlEphantManagerActor2 } from '@src/machines/mlEphantManagerMachine2'
 import {
@@ -18,9 +17,12 @@ import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingMachine'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { User, MlCopilotServerMessage } from '@kittycad/lib'
+import type { BillingActor } from '@src/machines/billingMachine'
+import { useSelector } from '@xstate/react'
 
 export const MlEphantConversationPane2 = (props: {
   mlEphantManagerActor: MlEphantManagerActor2
+  billingActor: BillingActor
   systemIOActor: SystemIOActor
   kclManager: KclManager
   codeManager: CodeManager
@@ -32,6 +34,10 @@ export const MlEphantConversationPane2 = (props: {
 }) => {
   const conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
+  })
+
+  const billingContext = useSelector(props.billingActor, (actor) => {
+    return actor.context
   })
 
   const onProcess = async (request: string) => {
@@ -98,7 +104,7 @@ export const MlEphantConversationPane2 = (props: {
 
     // We can now reliably use the mlConversations data.
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
-    if (props.theProject !== undefined && conversationId !== undefined) {
+    if (props.theProject !== undefined) {
       props.mlEphantManagerActor.send({
         type: MlEphantManagerStates2.Setup,
         refParentSend: props.mlEphantManagerActor.send,
@@ -171,6 +177,7 @@ export const MlEphantConversationPane2 = (props: {
     <MlEphantConversation2
       isLoading={conversation === undefined}
       conversation={conversation}
+      billingContext={billingContext}
       onProcess={(request: string) => {
         onProcess(request).catch(reportRejection)
       }}

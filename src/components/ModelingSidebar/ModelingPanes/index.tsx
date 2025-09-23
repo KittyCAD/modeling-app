@@ -43,6 +43,7 @@ import { isPlaywright } from '@src/lib/isPlaywright'
 import { PATHS, parentPathRelativeToProject } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import {
+  billingActor,
   codeManager,
   commandBarActor,
   editorManager,
@@ -181,6 +182,7 @@ const textToCadPane2: SidebarPane = {
         <MlEphantConversationPane2
           {...{
             mlEphantManagerActor: mlEphantManagerActor2,
+            billingActor,
             systemIOActor,
             kclManager,
             codeManager,

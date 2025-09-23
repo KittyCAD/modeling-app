@@ -506,7 +506,7 @@ export const Thinking = (props: {
     <div
       ref={refViewFull}
       style={{ maxHeight: '20lh' }}
-      className="overflow-auto text-2 text-sm bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
+      className="overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
     >
       {componentThoughts.length > 0 ? (
         componentThoughts
