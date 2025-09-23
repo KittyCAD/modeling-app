@@ -118,7 +118,7 @@ unsafe impl Send for EngineConnection {}
 unsafe impl Sync for EngineConnection {}
 
 impl EngineConnection {
-    pub async fn new(
+    pub fn new(
         manager: EngineCommandManager,
         response_context: Arc<ResponseContext>,
     ) -> Result<EngineConnection, JsValue> {
