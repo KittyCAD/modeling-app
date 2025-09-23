@@ -1,0 +1,22 @@
+name: "Publish every Git push to main to FlakeHub"
+on:
+  push:
+    branches:
+      - "main"
+jobs:
+  flakehub-publish:
+    runs-on: "ubuntu-latest"
+    permissions:
+      id-token: "write"
+      contents: "read"
+    steps:
+      - uses: "actions/checkout@v5"
+        with:
+          persist-credentials: false
+      - uses: "DeterminateSystems/determinate-nix-action@v3"
+      - uses: "DeterminateSystems/flakehub-push@main"
+        with:
+          name: "Zoo/modeling-app"
+          rolling: true
+          visibility: "public"
+          include-output-paths: true

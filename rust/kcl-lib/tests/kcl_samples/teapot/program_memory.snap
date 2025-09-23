@@ -360,7 +360,6 @@ description: Variables in memory after executing teapot.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",
@@ -570,7 +569,6 @@ description: Variables in memory after executing teapot.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",
@@ -681,10 +679,10 @@ description: Variables in memory after executing teapot.kcl
             110.55
           ],
           "tag": {
-            "commentStart": 1780,
-            "end": 1786,
+            "commentStart": 1786,
+            "end": 1792,
             "moduleId": 0,
-            "start": 1780,
+            "start": 1786,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -908,7 +906,6 @@ description: Variables in memory after executing teapot.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1017,7 +1014,6 @@ description: Variables in memory after executing teapot.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": -80.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -1062,10 +1058,10 @@ description: Variables in memory after executing teapot.kcl
             26.0
           ],
           "tag": {
-            "commentStart": 482,
-            "end": 488,
+            "commentStart": 485,
+            "end": 491,
             "moduleId": 0,
-            "start": 482,
+            "start": 485,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1415,7 +1411,6 @@ description: Variables in memory after executing teapot.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": "mm",

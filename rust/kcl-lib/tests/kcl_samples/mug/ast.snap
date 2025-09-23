@@ -579,13 +579,13 @@ description: Result of parsing mug.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -612,13 +612,13 @@ description: Result of parsing mug.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -803,13 +803,13 @@ description: Result of parsing mug.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -835,13 +835,13 @@ description: Result of parsing mug.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0",
+                      "raw": "0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 0.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1017,13 +1017,13 @@ description: Result of parsing mug.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1226,13 +1226,13 @@ description: Result of parsing mug.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -1755,13 +1755,13 @@ description: Result of parsing mug.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "5",
+                        "raw": "5deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 5.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -1866,13 +1866,13 @@ description: Result of parsing mug.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -2071,13 +2071,13 @@ description: Result of parsing mug.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -3683,13 +3683,13 @@ description: Result of parsing mug.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "180",
+                        "raw": "180deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 180.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3716,13 +3716,13 @@ description: Result of parsing mug.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3907,13 +3907,13 @@ description: Result of parsing mug.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -3939,13 +3939,13 @@ description: Result of parsing mug.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0",
+                      "raw": "0deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 0.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4121,13 +4121,13 @@ description: Result of parsing mug.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "90",
+                      "raw": "90deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 90.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4330,13 +4330,13 @@ description: Result of parsing mug.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "180",
+                      "raw": "180deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 180.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4491,13 +4491,13 @@ description: Result of parsing mug.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "90",
+                        "raw": "90deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 90.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,

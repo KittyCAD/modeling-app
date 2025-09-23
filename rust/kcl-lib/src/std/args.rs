@@ -7,11 +7,11 @@ use serde::Serialize;
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
-    ModuleId, SourceRange,
+    CompilationError, ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch, SketchSurface, Solid,
-        TagIdentifier,
+        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchSurface,
+        Solid, TagIdentifier, annotations,
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType, UnitType},
     },
@@ -53,9 +53,17 @@ impl TyF64 {
         crate::execution::types::adjust_length(len, self.n, units).0
     }
 
-    pub fn to_degrees(&self) -> f64 {
+    pub fn to_degrees(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
         let angle = match self.ty {
-            NumericType::Default { angle, .. } => angle,
+            NumericType::Default { angle, .. } => {
+                if self.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                angle
+            }
             NumericType::Known(UnitType::Angle(angle)) => angle,
             _ => unreachable!(),
         };
@@ -63,9 +71,17 @@ impl TyF64 {
         crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Degrees).0
     }
 
-    pub fn to_radians(&self) -> f64 {
+    pub fn to_radians(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
         let angle = match self.ty {
-            NumericType::Default { angle, .. } => angle,
+            NumericType::Default { angle, .. } => {
+                if self.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                angle
+            }
             NumericType::Known(UnitType::Angle(angle)) => angle,
             _ => unreachable!(),
         };
@@ -965,6 +981,33 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrPoint3d {
     }
 }
 
+impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryReference {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = |arg: &KclValue| {
+            let obj = arg.as_object()?;
+            let_field_of!(obj, direction);
+            let_field_of!(obj, origin);
+            Some(Self::Axis { direction, origin })
+        };
+        let case2 = <[TyF64; 3]>::from_kcl_val;
+        let case3 = super::fillet::EdgeReference::from_kcl_val;
+        let case4 = FaceTag::from_kcl_val;
+        let case5 = Box::<Solid>::from_kcl_val;
+        let case6 = TagIdentifier::from_kcl_val;
+        let case7 = Box::<Plane>::from_kcl_val;
+        let case8 = Box::<Sketch>::from_kcl_val;
+
+        case1(arg)
+            .or_else(|| case2(arg).map(Self::Point))
+            .or_else(|| case3(arg).map(Self::Edge))
+            .or_else(|| case4(arg).map(Self::Face))
+            .or_else(|| case5(arg).map(Self::Solid))
+            .or_else(|| case6(arg).map(Self::TaggedEdgeOrFace))
+            .or_else(|| case7(arg).map(Self::Plane))
+            .or_else(|| case8(arg).map(Self::Sketch))
+    }
+}
+
 impl<'a> FromKclValue<'a> for i64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
@@ -1154,6 +1197,24 @@ impl<'a> FromKclValue<'a> for bool {
 impl<'a> FromKclValue<'a> for Box<Solid> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Solid { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Box<Plane> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Plane { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Box<Sketch> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Sketch { value } = arg else {
             return None;
         };
         Some(value.to_owned())

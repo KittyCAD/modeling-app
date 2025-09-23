@@ -228,7 +228,6 @@ description: Variables in memory after executing ssi_pattern.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
@@ -704,7 +703,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -732,7 +730,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -1022,7 +1019,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -1050,7 +1046,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -1340,7 +1335,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -1368,7 +1362,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -1658,7 +1651,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -1686,7 +1678,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -1976,7 +1967,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -2004,7 +1994,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -2294,7 +2283,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -2322,7 +2310,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -2612,7 +2599,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -2640,7 +2626,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -2930,7 +2915,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -2958,7 +2942,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -3248,7 +3231,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -3276,7 +3258,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -3566,7 +3547,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -3594,7 +3574,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -3884,7 +3863,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -3912,7 +3890,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -4202,7 +4179,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -4230,7 +4206,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -4520,7 +4495,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -4548,7 +4522,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -4838,7 +4811,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -4866,7 +4838,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -5156,7 +5127,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -5184,7 +5154,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -5474,7 +5443,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -5502,7 +5470,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -5792,7 +5759,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -5820,7 +5786,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -6110,7 +6075,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -6138,7 +6102,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -6428,7 +6391,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -6456,7 +6418,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -6746,7 +6707,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -6774,7 +6734,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -7064,7 +7023,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -7092,7 +7050,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -7382,7 +7339,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -7410,7 +7366,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -7700,7 +7655,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -7728,7 +7682,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -8018,7 +7971,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -8046,7 +7998,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -8336,7 +8287,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -8364,7 +8314,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -8654,7 +8603,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -8682,7 +8630,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -8972,7 +8919,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -9000,7 +8946,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -9290,7 +9235,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -9318,7 +9262,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -9608,7 +9551,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -9636,7 +9578,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",
@@ -9926,7 +9867,6 @@ description: Variables in memory after executing ssi_pattern.kcl
                   "originalId": "[uuid]",
                   "units": "mm"
                 },
-                "height": 50.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": "mm",
@@ -9954,7 +9894,6 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "height": -40.0,
           "startCapId": null,
           "endCapId": null,
           "units": "mm",

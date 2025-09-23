@@ -191,7 +191,6 @@ description: Variables in memory after executing split-washer-spring-version.kcl
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": "mm",

@@ -706,7 +706,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             force: false,
           })
           return {
-            message: `Folder copied successfully`,
+            message: 'Copied successfully',
             requestedAbsolutePath: '',
           }
         } else {

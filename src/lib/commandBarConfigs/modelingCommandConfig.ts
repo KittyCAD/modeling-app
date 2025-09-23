@@ -2,17 +2,8 @@ import type { EntityType, OutputFormat3d } from '@kittycad/lib'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
-import type {
-  Artifact,
-  PathToNode,
-  SourceRange,
-  VariableDeclarator,
-} from '@src/lang/wasm'
-import { isPathToNode } from '@src/lang/wasm'
+import type { Artifact, PathToNode } from '@src/lang/wasm'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -26,13 +17,13 @@ import {
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type {
   ModelingMachineContext,
-  SketchTool,
   modelingMachine,
 } from '@src/machines/modelingMachine'
+import type { SketchTool } from '@src/machines/modelingSharedTypes'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -84,9 +75,16 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     length: KclCommandValue
+    // TODO: add `to` as Selections arg here
     symmetric?: boolean
     bidirectionalLength?: KclCommandValue
+    tagStart?: string
+    tagEnd?: string
     twistAngle?: KclCommandValue
+    twistAngleStep?: KclCommandValue
+    twistCenter?: KclCommandValue
+    // TODO: figure out if we should expose `tolerance` or not
+    // @pierremtb: I don't even think it should be in KCL
     method?: string
   }
   Sweep: {
@@ -96,7 +94,10 @@ export type ModelingCommandSchema = {
     sketches: Selections
     path: Selections
     sectional?: boolean
+    // TODO: figure out if we should expose `tolerance` or not
     relativeTo?: string
+    tagStart?: string
+    tagEnd?: string
   }
   Loft: {
     // Enables editing workflow
@@ -104,6 +105,11 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     vDegree?: KclCommandValue
+    bezApproximateRational?: boolean
+    baseCurveIndex?: KclCommandValue
+    // TODO: figure out if we should expose `tolerance` or not
+    tagStart?: string
+    tagEnd?: string
   }
   Revolve: {
     // Enables editing workflow
@@ -112,9 +118,12 @@ export type ModelingCommandSchema = {
     axisOrEdge: 'Axis' | 'Edge'
     // KCL stdlib arguments
     sketches: Selections
-    angle: KclCommandValue
     axis: string | undefined
     edge: Selections | undefined
+    angle: KclCommandValue
+    // TODO: figure out if we should expose `tolerance` or not
+    tagStart?: string
+    tagEnd?: string
     symmetric?: boolean
     bidirectionalAngle?: KclCommandValue
   }
@@ -160,13 +169,6 @@ export type ModelingCommandSchema = {
     radius?: KclCommandValue // axis or edge modes only
     length?: KclCommandValue // axis or edge modes only
     ccw?: boolean // optional boolean argument, default value to false
-  }
-  'event.parameter.create': {
-    value: KclCommandValue
-  }
-  'event.parameter.edit': {
-    nodeToEdit: PathToNode
-    value: KclCommandValue
   }
   'change tool': {
     tool: SketchTool
@@ -442,19 +444,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
       },
       symmetric: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
       bidirectionalLength: {
         inputType: 'kcl',
         required: false,
       },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+        // TODO: add validation like for Clone command
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
       twistAngle: {
         inputType: 'kcl',
+        required: false,
+      },
+      twistAngleStep: {
+        inputType: 'kcl',
+        required: false,
+      },
+      twistCenter: {
+        inputType: 'kcl',
+        allowArrays: true,
         required: false,
       },
       method: {
@@ -492,12 +508,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       sectional: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
       relativeTo: {
         inputType: 'options',
@@ -506,6 +518,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'sketchPlane', value: 'sketchPlane' },
           { name: 'trajectoryCurve', value: 'trajectoryCurve' },
         ],
+      },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
+        required: false,
       },
     },
   },
@@ -527,6 +547,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       vDegree: {
         inputType: 'kcl',
+        required: false,
+      },
+      bezApproximateRational: {
+        inputType: 'boolean',
+        required: false,
+      },
+      baseCurveIndex: {
+        inputType: 'kcl',
+        required: false,
+      },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
         required: false,
       },
     },
@@ -586,15 +622,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
       },
       symmetric: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
       bidirectionalAngle: {
         inputType: 'kcl',
+        required: false,
+      },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
         required: false,
       },
     },
@@ -774,13 +814,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         // No need for hidden here, as it works with all modes
       },
       ccw: {
-        inputType: 'options',
-        required: false,
         displayName: 'CounterClockWise',
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        inputType: 'boolean',
+        required: false,
       },
     },
   },
@@ -827,93 +863,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
-      },
-    },
-  },
-  'event.parameter.create': {
-    displayName: 'Create parameter',
-    description: 'Add a named constant to use in geometry',
-    icon: 'make-variable',
-    needsReview: false,
-    args: {
-      value: {
-        inputType: 'kcl',
-        required: true,
-        createVariable: 'force',
-        variableName: 'myParameter',
-        defaultValue: '5',
-      },
-    },
-  },
-  'event.parameter.edit': {
-    displayName: 'Edit parameter',
-    description: 'Edit the value of a named constant',
-    icon: 'make-variable',
-    needsReview: false,
-    args: {
-      nodeToEdit: {
-        displayName: 'Name',
-        inputType: 'options',
-        valueSummary: (nodeToEdit: PathToNode) => {
-          const node = getNodeFromPath<VariableDeclarator>(
-            kclManager.ast,
-            nodeToEdit,
-            'VariableDeclarator',
-            true
-          )
-          if (err(node) || node.node.type !== 'VariableDeclarator')
-            return 'Error'
-          return node.node.id.name || ''
-        },
-        required: true,
-        options() {
-          return (
-            Object.entries(kclManager.execState.variables)
-              // TODO: @franknoirot && @jtran would love to make this go away soon 🥺
-              .filter(([_, variable]) => variable?.type === 'Number')
-              .map(([name, _variable]) => {
-                const node = getVariableDeclaration(kclManager.ast, name)
-                if (node === undefined) return
-                const range: SourceRange = [node.start, node.end, node.moduleId]
-                const pathToNode = getNodePathFromSourceRange(
-                  kclManager.ast,
-                  range
-                )
-                return {
-                  name,
-                  value: pathToNode,
-                }
-              })
-              .filter((a) => !!a) || []
-          )
-        },
-      },
-      value: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue(commandBarContext) {
-          const nodeToEdit = commandBarContext.argumentsToSubmit.nodeToEdit
-          if (!nodeToEdit || !isPathToNode(nodeToEdit)) return '5'
-          const node = getNodeFromPath<VariableDeclarator>(
-            kclManager.ast,
-            nodeToEdit
-          )
-          if (err(node) || node.node.type !== 'VariableDeclarator')
-            return 'Error'
-          const variableName = node.node.id.name || ''
-          if (typeof variableName !== 'string') return '5'
-          const variableNode = getVariableDeclaration(
-            kclManager.ast,
-            variableName
-          )
-          if (!variableNode) return '5'
-          const code = codeManager.code.slice(
-            variableNode.declaration.init.start,
-            variableNode.declaration.init.end
-          )
-          return code
-        },
-        createVariable: 'disallow',
       },
     },
   },
@@ -1062,12 +1011,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       global: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
     },
   },
@@ -1102,12 +1047,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       global: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
     },
   },
@@ -1142,12 +1083,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       global: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
     },
   },

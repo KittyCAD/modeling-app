@@ -446,13 +446,13 @@ description: Result of parsing teapot.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "110",
+                        "raw": "110deg",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 110.0,
-                          "suffix": "None"
+                          "suffix": "Deg"
                         }
                       },
                       "commentStart": 0,
@@ -657,13 +657,13 @@ description: Result of parsing teapot.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "100",
+                      "raw": "100deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 100.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
@@ -4428,13 +4428,13 @@ description: Result of parsing teapot.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "190",
+                      "raw": "190deg",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 190.0,
-                        "suffix": "None"
+                        "suffix": "Deg"
                       }
                     }
                   },
