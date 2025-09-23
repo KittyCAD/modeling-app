@@ -15,11 +15,12 @@ use crate::{
     errors::KclErrorDetails,
     exec::KclValue,
     execution::{
-        Plane, TagIdentifier,
+        Metadata, Plane, StatementKind, TagIdentifier,
         types::{ArrayLen, RuntimeType},
     },
     fmt,
-    std::{Args, args::TyF64},
+    parsing::ast::types as ast,
+    std::{Args, args::TyF64, sketch::make_sketch_plane_from_orientation},
 };
 
 #[derive(Debug, Clone)]
@@ -63,16 +64,44 @@ async fn inner_flatness(
     let in_plane_id = if let Some(plane) = in_plane {
         plane.id
     } else {
-        // No plane given. Use one of the default planes.
-        let arc = args.ctx.engine.get_default_planes();
-        let default_planes_guard = arc.read().await;
-        let Some(planes) = &*default_planes_guard else {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "No default construction plane found".to_string(),
+        // No plane given. Use one of the default planes by evaluating the `XY`
+        // expression.
+        let plane_ast = ast::Node::new(
+            ast::Expr::Name(Box::new(ast::Node::new(
+                ast::Name {
+                    name: ast::Identifier::new("XY"),
+                    path: Vec::new(),
+                    abs_path: false,
+                    digest: None,
+                },
+                args.source_range.start(),
+                args.source_range.end(),
+                args.source_range.module_id(),
+            ))),
+            args.source_range.start(),
+            args.source_range.end(),
+            args.source_range.module_id(),
+        );
+        let metadata = Metadata::from(args.source_range);
+        let plane_value = args
+            .ctx
+            .execute_expr(&plane_ast, exec_state, &metadata, &[], StatementKind::Expression)
+            .await?
+            .clone();
+        let plane = plane_value.as_plane().ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                "Expected XY plane to be defined".to_owned(),
                 vec![args.source_range],
-            )));
-        };
-        planes.xy
+            ))
+        })?;
+        if plane.value == crate::exec::PlaneType::Uninit {
+            // Create it in the engine.
+            let plane =
+                make_sketch_plane_from_orientation(plane.info.clone().into_plane_data(), exec_state, args).await?;
+            plane.id
+        } else {
+            plane.id
+        }
     };
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, true).await?;
@@ -92,7 +121,6 @@ async fn inner_flatness(
                 vec![args.source_range],
             )));
         };
-        let feature_control_id = exec_state.next_uuid();
         exec_state
             .batch_modeling_cmd(
                 args.into(),
@@ -122,7 +150,7 @@ async fn inner_flatness(
                         }),
                         dimension: None,
                         feature_control: Some(AnnotationFeatureControl {
-                            entity_id: feature_control_id,
+                            entity_id: face_id,
                             entity_pos: Default::default(),
                             leader_type: AnnotationLineEnd::None,
                             dimension: None,

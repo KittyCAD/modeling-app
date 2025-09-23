@@ -1,6 +1,8 @@
 /// GD&T annotation specifying how flat faces should be.
 ///
 /// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
