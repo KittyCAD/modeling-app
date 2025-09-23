@@ -15,7 +15,7 @@ import {
   sceneEntitiesManager,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import type { SketchDetails } from '@src/machines/modelingMachine'
+import type { SketchDetails } from '@src/machines/modelingSharedTypes'
 
 export async function deleteSegment({
   pathToNode,

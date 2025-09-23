@@ -108,6 +108,108 @@ test.describe('Point-and-click tests', () => {
     })
   })
 
+  test('Create an Extrude operation with a tag and edit it via Feature Tree', async ({
+    context,
+    editor,
+    homePage,
+    page,
+    scene,
+    toolbar,
+    cmdBar,
+  }) => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 5)`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, code)
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await test.step('Add extrude with tags', async () => {
+      await toolbar.extrudeButton.click()
+      await editor.selectText('circle')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: '5',
+        headerArguments: {
+          Profiles: '1 profile',
+          Length: '',
+        },
+        highlightedHeaderArg: 'length',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('4')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Length: '4',
+          Profiles: '1 profile',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.clickOptionalArgument('tagEnd')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'tagEnd$',
+        currentArgValue: '',
+        headerArguments: {
+          Length: '4',
+          Profiles: '1 profile',
+          TagEnd: '',
+        },
+        highlightedHeaderArg: 'tagEnd',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('myEndTag')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Length: '4',
+          Profiles: '1 profile',
+          TagEnd: 'myEndTag',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.submit()
+      await editor.expectEditor.toContain(
+        'extrude(profile001, length = 4, tagEnd = $myEndTag)'
+      )
+    })
+
+    await test.step(`Edit first extrude via feature tree`, async () => {
+      await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: '4',
+        headerArguments: {
+          Length: '4',
+          TagEnd: 'myEndTag',
+        },
+        highlightedHeaderArg: 'length',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('3')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Length: '3',
+          TagEnd: 'myEndTag',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain(
+        'extrude(profile001, length = 3, tagEnd = $myEndTag)'
+      )
+    })
+  })
+
   test.describe('verify sketch on chamfer works', () => {
     const _sketchOnAChamfer =
       (
@@ -835,7 +937,10 @@ openSketch = startSketchOn(XY)
         await page.waitForTimeout(timeout)
       })
       await test.step('Select the first segment', async () => {
-        await page.waitForTimeout(timeout)
+        // @pierremtb: I believe we can't click too fast after deselecting the line tool,
+        // otherwise the segment gets instantly deselected again.
+        // There's a non-zero chance it's an actual bug.
+        await page.waitForTimeout(timeout * 5)
         await clickFirstSegment()
         await page.waitForTimeout(timeout)
         await scene.expectPixelColor(
@@ -1033,7 +1138,7 @@ extrude001 = extrude(profile001, length = 100)`
         commandName: 'Helix',
       })
       await cmdBar.clickOptionalArgument('ccw')
-      await cmdBar.selectOption({ name: 'True' }).click()
+      await cmdBar.selectOption({ name: 'On' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -1111,7 +1216,7 @@ extrude001 = extrude(profile001, length = 100)`
         },
         highlightedHeaderArg: 'CounterClockWise',
       })
-      await cmdBar.selectOption({ name: 'False' }).click()
+      await cmdBar.selectOption({ name: 'Off' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {

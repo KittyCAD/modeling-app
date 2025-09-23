@@ -16,6 +16,7 @@ import {
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -48,7 +49,7 @@ export function HelpMenu() {
   return (
     <Popover className="relative flex items-stretch">
       <Popover.Button
-        className="flex items-stretch px-2 py-1 m-0 border-none !bg-chalkboard-110 dark:!bg-chalkboard-80 text-chalkboard-10 rounded-none"
+        className={`${defaultStatusBarItemClassNames} m-0`}
         data-testid="help-button"
       >
         <CustomIcon name="questionMark" className="w-5 h-5" />
