@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import type { StdLibCallOp } from '@src/lang/queryAst'
+import { err } from '@src/lib/trap'
 
 // Mock window.electron for desktop environment tests
 const mockElectron = {
@@ -119,7 +120,7 @@ describe('DXF Export', () => {
 
       const result = await exportSketchToDxf(mockOperation, mockDeps)
 
-      expect(result.success).toBe(true)
+      expect(result).toBe(true)
       expect(
         mockDeps.engineCommandManager.sendSceneCommand
       ).toHaveBeenCalledWith(
@@ -196,7 +197,7 @@ describe('DXF Export', () => {
 
       const result = await exportSketchToDxf(mockOperation, mockDeps)
 
-      expect(result.success).toBe(true)
+      expect(result).toBe(true)
       expect(globalThis.window.electron!.save).toHaveBeenCalledWith({
         defaultPath: 'sketch.dxf',
         filters: [
@@ -222,8 +223,10 @@ describe('DXF Export', () => {
 
       const result = await exportSketchToDxf(mockOperation, mockDeps)
 
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('Could not find plane artifact')
+      expect(err(result)).toBe(true)
+      if (err(result)) {
+        expect(result.message).toBe('Could not find plane artifact')
+      }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
         'Could not find sketch for DXF export'
       )
@@ -243,8 +246,10 @@ describe('DXF Export', () => {
 
       let result = await exportSketchToDxf(mockOperation, mockDeps)
 
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('Could not find path IDs')
+      expect(err(result)).toBe(true)
+      if (err(result)) {
+        expect(result.message).toBe('Could not find path IDs')
+      }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
         'Could not find sketch profiles for DXF export'
       )
@@ -266,8 +271,10 @@ describe('DXF Export', () => {
 
       result = await exportSketchToDxf(mockOperation, mockDeps)
 
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('Could not find sketch entities')
+      expect(err(result)).toBe(true)
+      if (err(result)) {
+        expect(result.message).toBe('Could not find sketch entities')
+      }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
         'Could not find sketch entities for DXF export'
       )
@@ -300,8 +307,10 @@ describe('DXF Export', () => {
 
       let result = await exportSketchToDxf(mockOperation, mockDeps)
 
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('Engine command failed')
+      expect(err(result)).toBe(true)
+      if (err(result)) {
+        expect(result.message).toBe('Engine command failed')
+      }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
         'Failed to export sketch to DXF',
         { id: 'toast-id' }
@@ -315,8 +324,10 @@ describe('DXF Export', () => {
 
       result = await exportSketchToDxf(mockOperation, mockDeps)
 
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('Network error')
+      expect(err(result)).toBe(true)
+      if (err(result)) {
+        expect(result.message).toBe('Network error')
+      }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
         'Failed to export sketch to DXF',
         { id: 'toast-id' }
@@ -375,8 +386,10 @@ describe('DXF Export', () => {
 
       const result = await exportSketchToDxf(mockOperation, mockDeps)
 
-      expect(result.success).toBe(false)
-      expect(result.error).toBe('User canceled save')
+      expect(err(result)).toBe(true)
+      if (err(result)) {
+        expect(result.message).toBe('User canceled save')
+      }
       expect(mockDeps.toast.dismiss).toHaveBeenCalledWith('toast-id')
       expect(globalThis.window.electron!.writeFile).not.toHaveBeenCalled()
     })

@@ -603,7 +603,7 @@ const OperationItem = (props: {
               onClick={() => {
                 const exportDxf = async () => {
                   if (props.item.type !== 'StdLibCall') return
-                  await exportSketchToDxf(props.item, {
+                  const result = await exportSketchToDxf(props.item, {
                     engineCommandManager,
                     kclManager,
                     toast,
@@ -611,6 +611,14 @@ const OperationItem = (props: {
                     base64Decode,
                     browserSaveFile,
                   })
+
+                  if (err(result)) {
+                    // Additional error logging for debugging purposes
+                    // Main error handling (toasts) is already done in exportSketchToDxf
+                    console.error('DXF export failed:', result.message)
+                  } else {
+                    console.log('DXF export completed successfully')
+                  }
                 }
                 void exportDxf()
               }}
