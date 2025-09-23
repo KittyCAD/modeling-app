@@ -1912,7 +1912,7 @@ export const modelingMachine = setup({
         if (!sketchDetails) return
         if (!sketchDetails.sketchEntryNodePath?.length) {
           // When unequipping eg. the three-point arc tool during placement of the 3rd point, sketchEntryNodePath is
-          // empty, but we still need to tear down and cancel the current tool properly.
+          // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
           sceneInfra.resetMouseListeners()
           sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           return
