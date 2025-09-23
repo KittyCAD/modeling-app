@@ -2070,10 +2070,9 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
 
     await u.closeDebugPanel()
 
-    await toolbar.openFeatureTreePane()
     await toolbar.openPane('files')
-
     await toolbar.openFile('good.kcl')
+    await toolbar.openFeatureTreePane()
 
     await expect(
       toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
