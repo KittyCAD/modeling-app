@@ -126,7 +126,10 @@ async fn inner_flatness(
                         dimension: None,
                         feature_control: Some(AnnotationFeatureControl {
                             entity_id: face_id,
-                            entity_pos: Default::default(),
+                            entity_pos: Point2d {
+                                x: center.x.0,
+                                y: center.y.0,
+                            },
                             leader_type: AnnotationLineEnd::None,
                             dimension: None,
                             control_frame: Some(AnnotationMbdControlFrame {
