@@ -6,6 +6,8 @@ import {
   findOperationPlaneArtifact,
   type StdLibCallOp,
 } from '@src/lang/queryAst'
+import type { WebSocketResponse } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 
 // Exports a sketch operation to DXF format
 export async function exportSketchToDxf(
@@ -99,16 +101,24 @@ export async function exportSketchToDxf(
 
     // Helper function to safely extract files from engine response
     const extractExportFiles = (
-      response: any
+      response: WebSocketResponse | [WebSocketResponse] | null
     ): Array<{ contents: string }> | null => {
       try {
+        // Handle null response
+        if (!response) {
+          return null
+        }
+
+        // Extract single response from array if needed
+        const singleResponse = isArray(response) ? response[0] : response
+
         // Basic response validation
-        if (!response?.success || isArray(response)) {
+        if (!singleResponse || !isModelingResponse(singleResponse)) {
           return null
         }
 
         // Navigate to the modeling response
-        const modelingResponse = response.resp?.data?.modeling_response
+        const modelingResponse = singleResponse.resp.data.modeling_response
         if (modelingResponse?.type !== 'export2d') {
           return null
         }
