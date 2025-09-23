@@ -3,31 +3,16 @@ import { exportSketchToDxf } from '@src/lib/exportDxf'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import { err } from '@src/lib/trap'
 
-// Mock all networking and WebSocket connections to prevent real network calls in CI
-vi.mock('@src/lang/std/engineConnection', () => ({
-  EngineCommandManager: vi.fn(() => ({
-    sendSceneCommand: vi.fn(),
-    engineConnection: undefined,
-    pendingCommands: {},
-    sendCommand: vi.fn(),
-    waitForAllCommands: vi.fn().mockResolvedValue([]),
-    rejectAllModelingCommands: vi.fn(),
-  })),
-}))
-
-vi.mock('@src/lib/singletons', () => ({
-  engineCommandManager: {
-    sendSceneCommand: vi.fn(),
-    engineConnection: undefined,
-    pendingCommands: {},
-    sendCommand: vi.fn(),
-    waitForAllCommands: vi.fn().mockResolvedValue([]),
-    rejectAllModelingCommands: vi.fn(),
-  },
-  kclManager: {
-    artifactGraph: new Map(),
-  },
-}))
+// Mock fetch and networking APIs globally before any imports
+vi.stubGlobal(
+  'fetch',
+  vi.fn().mockResolvedValue({
+    ok: true,
+    json: vi.fn().mockResolvedValue({}),
+    text: vi.fn().mockResolvedValue(''),
+    body: null,
+  })
+)
 
 // Mock WebSocket to prevent real connections
 const MockWebSocket = vi.fn(() => ({
@@ -39,16 +24,65 @@ const MockWebSocket = vi.fn(() => ({
 }))
 vi.stubGlobal('WebSocket', MockWebSocket)
 
-// Mock fetch to prevent HTTP requests
-vi.stubGlobal(
-  'fetch',
-  vi.fn().mockResolvedValue({
-    ok: true,
-    json: vi.fn().mockResolvedValue({}),
-    text: vi.fn().mockResolvedValue(''),
-    body: null,
-  })
-)
+// Mock all networking and WebSocket connections to prevent real network calls in CI
+vi.mock('@src/lang/std/engineConnection', () => ({
+  EngineCommandManager: vi.fn().mockImplementation(() => ({
+    sendSceneCommand: vi.fn().mockResolvedValue({ success: true }),
+    engineConnection: undefined,
+    pendingCommands: {},
+    sendCommand: vi.fn().mockResolvedValue([{ success: true }]),
+    waitForAllCommands: vi.fn().mockResolvedValue([]),
+    rejectAllModelingCommands: vi.fn(),
+    tearDown: vi.fn(),
+  })),
+}))
+
+vi.mock('@src/lib/singletons', () => {
+  const mockEngineCommandManager = {
+    sendSceneCommand: vi.fn().mockResolvedValue({ success: true }),
+    engineConnection: undefined,
+    pendingCommands: {},
+    sendCommand: vi.fn().mockResolvedValue([{ success: true }]),
+    waitForAllCommands: vi.fn().mockResolvedValue([]),
+    rejectAllModelingCommands: vi.fn(),
+    tearDown: vi.fn(),
+  }
+  return {
+    engineCommandManager: mockEngineCommandManager,
+    kclManager: {
+      artifactGraph: new Map(),
+      ast: {
+        body: [],
+      },
+    },
+    codeManager: {},
+    rustContext: {},
+    sceneInfra: {},
+    sceneEntitiesManager: {},
+    editorManager: {},
+  }
+})
+
+// Mock any engine connection modules
+vi.mock('@src/lang/wasmUtils', () => ({
+  initPromise: Promise.resolve(),
+}))
+
+// Mock WebRTC and networking
+vi.mock('ws', () => ({
+  WebSocket: MockWebSocket,
+}))
+
+// Mock any HTTP client modules
+vi.mock('@src/lib/kcClient', () => ({
+  default: {},
+}))
+
+// Mock machine state modules that might have networking
+vi.mock('@src/machines/engineStreamMachine', () => ({
+  engineStreamMachine: {},
+  engineStreamContextCreate: vi.fn(() => ({})),
+}))
 
 // Mock window.electron for desktop environment tests
 const mockElectron = {
@@ -71,29 +105,34 @@ Object.defineProperty(globalThis, 'window', {
 })
 
 // Mock dependencies
-const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
-  engineCommandManager: {
-    sendSceneCommand: vi.fn(),
-    engineConnection: undefined,
-    pendingCommands: {},
-    sendCommand: vi.fn().mockResolvedValue([{ success: true }]),
-    waitForAllCommands: vi.fn().mockResolvedValue([]),
-    rejectAllModelingCommands: vi.fn(),
-    tearDown: vi.fn(),
-  } as any,
-  kclManager: {
-    artifactGraph: new Map(),
-  } as any,
-  toast: {
-    error: vi.fn(),
-    loading: vi.fn().mockReturnValue('toast-id'),
-    success: vi.fn(),
-    dismiss: vi.fn(),
-  } as any,
-  uuidv4: vi.fn().mockReturnValue('test-uuid'),
-  base64Decode: vi.fn(),
-  browserSaveFile: vi.fn(),
-})
+const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => {
+  return {
+    engineCommandManager: {
+      sendSceneCommand: vi.fn(),
+      engineConnection: undefined,
+      pendingCommands: {},
+      sendCommand: vi.fn().mockResolvedValue([{ success: true }]),
+      waitForAllCommands: vi.fn().mockResolvedValue([]),
+      rejectAllModelingCommands: vi.fn(),
+      tearDown: vi.fn(),
+    },
+    kclManager: {
+      artifactGraph: new Map(),
+      ast: {
+        body: [],
+      },
+    },
+    toast: {
+      error: vi.fn(),
+      loading: vi.fn().mockReturnValue('toast-id'),
+      success: vi.fn(),
+      dismiss: vi.fn(),
+    },
+    uuidv4: vi.fn().mockReturnValue('test-uuid'),
+    base64Decode: vi.fn().mockReturnValue(new ArrayBuffer(8)),
+    browserSaveFile: vi.fn(),
+  }
+}
 
 const createMockOperation = (): StdLibCallOp =>
   ({
@@ -119,8 +158,13 @@ describe('DXF Export', () => {
     vi.mocked(mockElectron.join).mockReset()
     vi.mocked(mockElectron.mkdir).mockReset()
 
-    // Ensure the mock sendSceneCommand is properly set up
+    // Reset the mock sendSceneCommand for each test
     vi.mocked(mockDeps.engineCommandManager.sendSceneCommand).mockClear()
+
+    // Also mock any global singletons that might interfere
+    if (typeof window !== 'undefined' && window.engineCommandManager) {
+      window.engineCommandManager.sendSceneCommand = mockSendSceneCommand
+    }
   })
 
   describe('exportSketchToDxf', () => {
@@ -142,12 +186,14 @@ describe('DXF Export', () => {
         compositeSolidId: 'solid-1',
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact1 as any)
-      mockDeps.kclManager.artifactGraph.set('path-2', pathArtifact2 as any)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact1)
+      mockDeps.kclManager.artifactGraph.set('path-2', pathArtifact2)
 
       // Mock successful engine response
-      const mockResponse = {
+      vi.mocked(
+        mockDeps.engineCommandManager.sendSceneCommand
+      ).mockResolvedValue({
         success: true,
         resp: {
           type: 'modeling',
@@ -160,10 +206,7 @@ describe('DXF Export', () => {
             },
           },
         },
-      }
-      vi.mocked(
-        mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse)
+      })
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
@@ -214,11 +257,13 @@ describe('DXF Export', () => {
         type: 'path',
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
 
       // Mock successful engine response
-      const mockResponse = {
+      vi.mocked(
+        mockDeps.engineCommandManager.sendSceneCommand
+      ).mockResolvedValue({
         success: true,
         resp: {
           type: 'modeling',
@@ -231,10 +276,7 @@ describe('DXF Export', () => {
             },
           },
         },
-      }
-      vi.mocked(
-        mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse)
+      })
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
@@ -295,10 +337,7 @@ describe('DXF Export', () => {
         type: 'plane',
         codeRef: { nodePath: mockOperation.nodePath },
       }
-      mockDeps.kclManager.artifactGraph.set(
-        'plane-id',
-        planeArtifactNoPathIds as any
-      )
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifactNoPathIds)
 
       let result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -320,10 +359,7 @@ describe('DXF Export', () => {
         pathIds: ['path-1'],
         codeRef: { nodePath: mockOperation.nodePath },
       }
-      mockDeps.kclManager.artifactGraph.set(
-        'plane-id',
-        planeArtifactEmptyPaths as any
-      )
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifactEmptyPaths)
 
       result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -349,17 +385,16 @@ describe('DXF Export', () => {
         type: 'path',
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
 
       // Test case 1: Engine command failure
-      const mockFailedResponse = {
-        success: false,
-        errors: [{ message: 'Engine error', error_code: 'EXPORT_FAILED' }],
-      }
       vi.mocked(
         mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockFailedResponse)
+      ).mockResolvedValue({
+        success: false,
+        errors: [{ message: 'Engine error', error_code: 'internal_api' }],
+      })
 
       let result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -403,11 +438,13 @@ describe('DXF Export', () => {
         type: 'path',
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
 
       // Mock successful engine response
-      const mockResponse = {
+      vi.mocked(
+        mockDeps.engineCommandManager.sendSceneCommand
+      ).mockResolvedValue({
         success: true,
         resp: {
           type: 'modeling',
@@ -420,10 +457,7 @@ describe('DXF Export', () => {
             },
           },
         },
-      }
-      vi.mocked(
-        mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse)
+      })
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
@@ -463,11 +497,13 @@ describe('DXF Export', () => {
         type: 'path',
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
 
       // Mock engine response with multiple files - DXF should be prioritized
-      const mockResponse = {
+      vi.mocked(
+        mockDeps.engineCommandManager.sendSceneCommand
+      ).mockResolvedValue({
         success: true,
         resp: {
           type: 'modeling',
@@ -485,10 +521,7 @@ describe('DXF Export', () => {
             },
           },
         },
-      }
-      vi.mocked(
-        mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse)
+      })
 
       // Mock successful base64 decode for DXF content
       const mockDecodedData = new ArrayBuffer(8)
