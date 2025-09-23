@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import { err } from '@src/lib/trap'
+import type { WebSocketResponse } from '@kittycad/lib'
 
 // Mock window.electron for desktop environment tests
 const mockElectron = {
@@ -36,21 +37,26 @@ const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
     loading: vi.fn().mockReturnValue('toast-id'),
     success: vi.fn(),
     dismiss: vi.fn(),
-  } as any,
+  },
   uuidv4: vi.fn().mockReturnValue('test-uuid'),
   base64Decode: vi.fn(),
   browserSaveFile: vi.fn(),
 })
 
-const createMockOperation = (): StdLibCallOp =>
-  ({
-    id: 'test-operation-id',
-    type: 'StdLibCall',
-    name: 'startSketchOn',
-    nodePath: { steps: [0, 1, 2] },
-    args: {},
-    sourceRange: [0, 0, 0],
-  }) as any
+const createMockOperation = (): StdLibCallOp => ({
+  type: 'StdLibCall',
+  name: 'startSketchOn',
+  unlabeledArg: null,
+  labeledArgs: {},
+  nodePath: {
+    steps: [
+      { type: 'ProgramBodyItem', index: 0 },
+      { type: 'ExpressionStatementExpr' },
+      { type: 'CallCallee' },
+    ],
+  },
+  sourceRange: [0, 0, 0],
+})
 
 describe('DXF Export', () => {
   let mockDeps: Parameters<typeof exportSketchToDxf>[1]
@@ -91,7 +97,7 @@ describe('DXF Export', () => {
       mockDeps.kclManager.artifactGraph.set('path-2', pathArtifact2 as any)
 
       // Mock successful engine response
-      const mockResponse = {
+      const mockResponse: WebSocketResponse = {
         success: true,
         resp: {
           type: 'modeling',
@@ -99,7 +105,7 @@ describe('DXF Export', () => {
             modeling_response: {
               type: 'export2d',
               data: {
-                files: [{ contents: 'base64-content' }],
+                files: [{ contents: 'base64-content', name: 'sketch.dxf' }],
               },
             },
           },
@@ -107,7 +113,7 @@ describe('DXF Export', () => {
       }
       vi.mocked(
         mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse as any)
+      ).mockResolvedValue(mockResponse)
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
@@ -162,7 +168,7 @@ describe('DXF Export', () => {
       mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
 
       // Mock successful engine response
-      const mockResponse = {
+      const mockResponse: WebSocketResponse = {
         success: true,
         resp: {
           type: 'modeling',
@@ -170,7 +176,7 @@ describe('DXF Export', () => {
             modeling_response: {
               type: 'export2d',
               data: {
-                files: [{ contents: 'base64-content' }],
+                files: [{ contents: 'base64-content', name: 'sketch.dxf' }],
               },
             },
           },
@@ -178,7 +184,7 @@ describe('DXF Export', () => {
       }
       vi.mocked(
         mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse as any)
+      ).mockResolvedValue(mockResponse)
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
@@ -297,13 +303,13 @@ describe('DXF Export', () => {
       mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
 
       // Test case 1: Engine command failure
-      const mockFailedResponse = {
+      const mockFailedResponse: WebSocketResponse = {
         success: false,
-        errors: [{ message: 'Engine error', error_code: 'EXPORT_FAILED' }],
+        errors: [{ message: 'Engine error', error_code: 'bad_request' }],
       }
       vi.mocked(
         mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockFailedResponse as any)
+      ).mockResolvedValue(mockFailedResponse)
 
       let result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -351,7 +357,7 @@ describe('DXF Export', () => {
       mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
 
       // Mock successful engine response
-      const mockResponse = {
+      const mockResponse: WebSocketResponse = {
         success: true,
         resp: {
           type: 'modeling',
@@ -359,7 +365,7 @@ describe('DXF Export', () => {
             modeling_response: {
               type: 'export2d',
               data: {
-                files: [{ contents: 'base64-content' }],
+                files: [{ contents: 'base64-content', name: 'sketch.dxf' }],
               },
             },
           },
@@ -367,7 +373,7 @@ describe('DXF Export', () => {
       }
       vi.mocked(
         mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse as any)
+      ).mockResolvedValue(mockResponse)
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
@@ -411,8 +417,9 @@ describe('DXF Export', () => {
       mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
 
       // Mock engine response with multiple files - DXF should be prioritized
-      const mockResponse = {
+      const mockResponse: WebSocketResponse = {
         success: true,
+        request_id: 'test-request-id',
         resp: {
           type: 'modeling',
           data: {
@@ -432,7 +439,7 @@ describe('DXF Export', () => {
       }
       vi.mocked(
         mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse as any)
+      ).mockResolvedValue(mockResponse)
 
       // Mock successful base64 decode for DXF content
       const mockDecodedData = new ArrayBuffer(8)
