@@ -5,10 +5,10 @@ rm -rf rust/kcl-wasm-lib/pkg
 mkdir -p rust/kcl-wasm-lib/pkg
 rm -rf rust/kcl-lib/bindings
 
+cargo_target_wasm32_unknown_unknown_rustflags='--cfg getrandom_backend="wasm_js"'
 cd rust
-export RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
-wasm-pack build kcl-wasm-lib --dev --target web --out-dir pkg
-export RUSTFLAGS=''
+CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUSTFLAGS="$cargo_target_wasm32_unknown_unknown_rustflags" \
+    wasm-pack build kcl-wasm-lib --dev --target web --out-dir pkg
 cargo test -p kcl-lib --features artifact-graph export_bindings
 cd ..
 

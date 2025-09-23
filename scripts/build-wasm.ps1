@@ -11,10 +11,11 @@ if (Test-Path rust/kcl-lib/bindings) {
     rm -Recurse -Force rust/kcl-lib/bindings
 }
 
+$wasmFlags='--cfg getrandom_backend="wasm_js"'
 cd rust
-$env:RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
+$env:CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUSTFLAGS = $wasmFlags
 wasm-pack build kcl-wasm-lib --release --target web --out-dir pkg
-$env:RUSTFLAGS=''
+Remove-Item Env:CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUSTFLAGS
 cargo test -p kcl-lib --features artifact-graph export_bindings
 cd ..
 
