@@ -202,26 +202,6 @@ export function ModelingSidebarRight() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [promptsBelongingToConversation, actuallyNew])
 
-  useEffect(() => {
-    if (!actuallyNew) {
-      setActuallyNew(true)
-      return
-    }
-
-    const newPanes = new Set(
-      modelingContext.store.openPanes.concat('text-to-cad-2')
-    )
-
-    modelingContextSend({
-      type: 'Set context',
-      data: {
-        openPanes: Array.from(newPanes),
-      },
-    })
-    // React doesn't realize that we are updating `modelingContext.store.openPanes` here
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [actuallyNew])
-
   // Prevents rerenders because new array is a new ref.
   const sidebarActions: Ref<SidebarAction[]> = useRef([])
   return (
