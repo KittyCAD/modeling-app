@@ -13,6 +13,34 @@
 ///   |> extrude(length = 5, tagStart = $face1)
 /// gdt::flatness(faces = [face1], tolerance = 0.1mm)
 /// ```
+///
+/// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5, tagEnd = $face1)
+/// gdt::flatness(faces = [face1], tolerance = 0.02mm, offset = [10mm, 20mm], inPlane = XZ)
+/// ```
+///
+/// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0], tag = $face1)
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5)
+/// gdt::flatness(faces = [face1], tolerance = 0.02mm, offset = [10mm, 20mm], inPlane = XZ)
+/// ```
 @(impl = std_rust, experimental = true)
 export fn flatness(
   /// The faces to be annotated.
