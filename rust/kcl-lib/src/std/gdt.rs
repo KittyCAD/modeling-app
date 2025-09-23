@@ -3,9 +3,8 @@ use kittycad_modeling_cmds::{
     self as kcmc,
     ok_response::OkModelingCmdResponse,
     shared::{
-        AnnotationFeatureControl, AnnotationLineEnd, AnnotationMbdControlFrame, AnnotationOptions,
-        AnnotationTextAlignmentX, AnnotationTextAlignmentY, AnnotationTextOptions, AnnotationType, Color, MbdSymbol,
-        Point2d, Point3d,
+        AnnotationFeatureControl, AnnotationLineEnd, AnnotationMbdControlFrame, AnnotationOptions, AnnotationType,
+        Color, MbdSymbol, Point2d,
     },
     websocket::OkWebSocketResponseData,
 };
@@ -18,7 +17,6 @@ use crate::{
         Metadata, Plane, StatementKind, TagIdentifier,
         types::{ArrayLen, RuntimeType},
     },
-    fmt,
     parsing::ast::types as ast,
     std::{Args, args::TyF64, sketch::make_sketch_plane_from_orientation},
 };
@@ -55,12 +53,6 @@ async fn inner_flatness(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<(), KclError> {
-    let tolerance_str = fmt::format_number_value(tolerance.n, tolerance.ty).map_err(|e| {
-        KclError::new_internal(KclErrorDetails::new(
-            format!("Failed to format tolerance value {}: {}", tolerance.n, e),
-            vec![args.source_range],
-        ))
-    })?;
     let in_plane_id = if let Some(plane) = in_plane {
         plane.id
     } else {
@@ -173,42 +165,6 @@ async fn inner_flatness(
                                 .and_then(|s| s.font_point_size.as_ref().map(|n| n.n.round() as u32))
                                 .unwrap_or(36),
                         }),
-                        feature_tag: None,
-                    },
-                    clobber: false,
-                    annotation_type: AnnotationType::T3D,
-                }),
-            )
-            .await?;
-        exec_state
-            .batch_modeling_cmd(
-                args.into(),
-                ModelingCmd::from(mcmd::NewAnnotation {
-                    options: AnnotationOptions {
-                        text: Some(AnnotationTextOptions {
-                            x: AnnotationTextAlignmentX::Center,
-                            y: AnnotationTextAlignmentY::Center,
-                            text: format!("Flatness tolerance {tolerance_str}"),
-                            point_size: 12,
-                        }),
-                        line_ends: None,
-                        line_width: None,
-                        color: Some(Color {
-                            r: 0.1,
-                            g: 0.1,
-                            b: 0.1,
-                            a: 1.0,
-                        }),
-                        // The engine should accept LengthUnit, but it doesn't,
-                        // so we need to do a weird conversion and assume the
-                        // engine responded with millimeters.
-                        position: Some(Point3d {
-                            x: center.x.0 as f32,
-                            y: center.y.0 as f32,
-                            z: center.z.0 as f32,
-                        }),
-                        dimension: None,
-                        feature_control: None,
                         feature_tag: None,
                     },
                     clobber: false,
