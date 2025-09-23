@@ -35,6 +35,8 @@ gdt::flatness(
 ### Examples
 
 ```kcl
+@settings(experimentalFeatures = allow)
+
 startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
@@ -55,6 +57,74 @@ gdt::flatness(faces = [face1], tolerance = 0.1mm)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-gdt-flatness0.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+@settings(experimentalFeatures = allow)
+
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> line(end = [0, -10])
+  |> close()
+  |> extrude(length = 5, tagEnd = $face1)
+gdt::flatness(
+  faces = [face1],
+  tolerance = 0.02mm,
+  offset = [10mm, 20mm],
+  inPlane = XZ,
+)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the gdt::flatness function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-gdt-flatness1_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-gdt-flatness1.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+@settings(experimentalFeatures = allow)
+
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0], tag = $face1)
+  |> line(end = [0, -10])
+  |> close()
+  |> extrude(length = 5)
+gdt::flatness(
+  faces = [face1],
+  tolerance = 0.02mm,
+  offset = [10mm, 20mm],
+  inPlane = XZ,
+)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the gdt::flatness function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-gdt-flatness2_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-gdt-flatness2.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
