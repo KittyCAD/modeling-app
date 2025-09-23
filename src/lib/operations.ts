@@ -879,10 +879,15 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
   }
 
   // 2. Convert the instances argument from a string to a KCL expression
+  const instancesArg = operation.labeledArgs?.['instances']
+  if (!instancesArg || !instancesArg.sourceRange) {
+    return { reason: 'Missing or invalid instances argument' }
+  }
+
   const instances = await stringToKclExpression(
     codeManager.code.slice(
-      operation.labeledArgs?.['instances']?.sourceRange[0],
-      operation.labeledArgs?.['instances']?.sourceRange[1]
+      instancesArg.sourceRange[0],
+      instancesArg.sourceRange[1]
     )
   )
   if (err(instances) || 'errors' in instances) {
@@ -891,20 +896,27 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
 
   // 3. Convert the axis argument from a string to a string value
   // Axis is configured as 'options' inputType, so it should be a string, not a KCL expression
+  const axisArg = operation.labeledArgs?.['axis']
+  if (!axisArg || !axisArg.sourceRange) {
+    return { reason: 'Missing or invalid axis argument' }
+  }
+
   const axisString = codeManager.code.slice(
-    operation.labeledArgs?.['axis']?.sourceRange[0],
-    operation.labeledArgs?.['axis']?.sourceRange[1]
+    axisArg.sourceRange[0],
+    axisArg.sourceRange[1]
   )
   if (!axisString) {
     return { reason: "Couldn't retrieve axis argument" }
   }
 
   // 4. Convert the center argument from a string to a KCL expression
+  const centerArg = operation.labeledArgs?.['center']
+  if (!centerArg || !centerArg.sourceRange) {
+    return { reason: 'Missing or invalid center argument' }
+  }
+
   const center = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs?.['center']?.sourceRange[0],
-      operation.labeledArgs?.['center']?.sourceRange[1]
-    ),
+    codeManager.code.slice(centerArg.sourceRange[0], centerArg.sourceRange[1]),
     true
   )
   if (err(center) || 'errors' in center) {
