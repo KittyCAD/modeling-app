@@ -4,7 +4,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { confirmModal } from '@src/clientSideScene/confirmModal'
 import { executeAstMock } from '@src/lang/langHelpers'
-import { deleteSegmentFromPipeExpression } from '@src/lang/modifyAst'
+import { deleteSegmentOrTopLevelStatementFromPipeExpression } from '@src/lang/modifyAst'
 import { findUsesOfTagInPipe } from '@src/lang/queryAst'
 import type { PathToNode, Program } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
@@ -17,7 +17,7 @@ import {
 import { err } from '@src/lib/trap'
 import type { SketchDetails } from '@src/machines/modelingSharedTypes'
 
-export async function deleteSegment({
+export async function deleteSegmentOrTopLevelStatement({
   pathToNode,
   sketchDetails,
 }: {
@@ -36,7 +36,7 @@ export async function deleteSegment({
 
   if (!shouldContinueSegDelete) return
 
-  modifiedAst = deleteSegmentFromPipeExpression(
+  modifiedAst = deleteSegmentOrTopLevelStatementFromPipeExpression(
     dependentRanges,
     modifiedAst,
     kclManager.variables,
