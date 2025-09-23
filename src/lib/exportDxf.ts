@@ -102,7 +102,7 @@ export async function exportSketchToDxf(
     // Helper function to safely extract files from engine response
     const extractExportFiles = (
       response: WebSocketResponse | [WebSocketResponse] | null
-    ): Array<{ contents: string }> | null => {
+    ): Array<{ name?: string; contents: string }> | null => {
       try {
         // Handle null response
         if (!response) {
@@ -129,15 +129,35 @@ export async function exportSketchToDxf(
           return null
         }
 
-        return files as Array<{ contents: string }>
+        return files as Array<{ name?: string; contents: string }>
       } catch {
         return null
       }
     }
 
+    // Helper function to select the best file from multiple files
+    const selectBestFile = (
+      files: Array<{ name?: string; contents: string }>
+    ) => {
+      if (files.length === 1) return files[0]
+
+      // Prefer files with 'dxf' extension if available
+      const dxfFile = files.find((file) =>
+        file.name?.toLowerCase().includes('.dxf')
+      )
+      return dxfFile || files[0]
+    }
+
     const files = extractExportFiles(response)
-    if (!files?.[0]?.contents) {
+    if (!files?.length) {
       console.error('DXF export failed:', response)
+      toast.error('Failed to export sketch to DXF', { id: toastId })
+      return new Error('Engine command failed')
+    }
+
+    const selectedFile = selectBestFile(files)
+    if (!selectedFile?.contents) {
+      console.error('DXF export failed: no file contents', response)
       toast.error('Failed to export sketch to DXF', { id: toastId })
       return new Error('Engine command failed')
     }
@@ -145,7 +165,7 @@ export async function exportSketchToDxf(
     // Decode (handle throws or Error return)
     let decodedBuf: ArrayBuffer
     try {
-      const decoded = base64Decode(files[0].contents)
+      const decoded = base64Decode(selectedFile.contents)
       if (decoded instanceof Error) {
         console.error('Base64 decode failed:', decoded)
         toast.error('Failed to decode DXF file data', { id: toastId })

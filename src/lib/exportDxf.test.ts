@@ -393,5 +393,69 @@ describe('DXF Export', () => {
       expect(mockDeps.toast.dismiss).toHaveBeenCalledWith('toast-id')
       expect(globalThis.window.electron!.writeFile).not.toHaveBeenCalled()
     })
+
+    it('should prioritize DXF files when multiple files are returned', async () => {
+      // Setup: valid plane artifact with pathIds
+      const planeArtifact = {
+        id: 'plane-id',
+        type: 'plane',
+        pathIds: ['path-1'],
+        codeRef: { nodePath: mockOperation.nodePath },
+      }
+      const pathArtifact = {
+        id: 'path-1',
+        type: 'path',
+      }
+
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
+
+      // Mock engine response with multiple files - DXF should be prioritized
+      const mockResponse = {
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'export2d',
+              data: {
+                files: [
+                  { name: 'sketch.txt', contents: 'dGV4dC1jb250ZW50' },
+                  { name: 'sketch1.dxf', contents: 'Zmlyc3QtZHhmLWNvbnRlbnQ=' }, // This should be selected (first DXF)
+                  { name: 'sketch2.dxf', contents: 'c2Vjb25kLWR4Zi1jb250ZW50' }, // This should NOT be selected
+                  { name: 'sketch.svg', contents: 'c3ZnLWNvbnRlbnQ=' },
+                ],
+              },
+            },
+          },
+        },
+      }
+      vi.mocked(
+        mockDeps.engineCommandManager.sendSceneCommand
+      ).mockResolvedValue(mockResponse as any)
+
+      // Mock successful base64 decode for DXF content
+      const mockDecodedData = new ArrayBuffer(8)
+      vi.mocked(mockDeps.base64Decode).mockReturnValue(mockDecodedData)
+
+      // Mock browser environment
+      // @ts-ignore
+      globalThis.window.electron = undefined
+      vi.mocked(mockDeps.browserSaveFile).mockResolvedValue(undefined)
+
+      const result = await exportSketchToDxf(mockOperation, mockDeps)
+
+      expect(result).toBe(true)
+      // Our logic correctly selects the first DXF file's content (sketch1.dxf)
+      // but the filename comes from the sketch name, not the selected file name
+      expect(mockDeps.base64Decode).toHaveBeenCalledWith(
+        'Zmlyc3QtZHhmLWNvbnRlbnQ='
+      )
+      expect(mockDeps.browserSaveFile).toHaveBeenCalledWith(
+        expect.any(Blob),
+        'sketch.dxf', // Filename from sketch name, not from selected file
+        'toast-id'
+      )
+    })
   })
 })
