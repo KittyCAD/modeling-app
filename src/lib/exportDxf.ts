@@ -46,7 +46,7 @@ export async function exportSketchToDxf(
       kclManager.artifactGraph
     )
 
-    if (!planeArtifact || planeArtifact.type !== 'plane') {
+    if (planeArtifact?.type !== 'plane') {
       toast.error('Could not find sketch for DXF export')
       return new Error('Could not find plane artifact')
     }
@@ -126,7 +126,7 @@ export async function exportSketchToDxf(
     }
 
     const files = extractExportFiles(response)
-    if (!files || !files[0]?.contents) {
+    if (!files?.[0]?.contents) {
       console.error('DXF export failed:', response)
       toast.error('Failed to export sketch to DXF', { id: toastId })
       return new Error('Engine command failed')
