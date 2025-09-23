@@ -3,53 +3,6 @@ import { exportSketchToDxf } from '@src/lib/exportDxf'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import { err } from '@src/lib/trap'
 
-// Mock all networking and WebSocket connections to prevent real network calls in CI
-vi.mock('@src/lang/std/engineConnection', () => ({
-  EngineCommandManager: vi.fn(() => ({
-    sendSceneCommand: vi.fn(),
-    engineConnection: undefined,
-    pendingCommands: {},
-    sendCommand: vi.fn(),
-    waitForAllCommands: vi.fn().mockResolvedValue([]),
-    rejectAllModelingCommands: vi.fn(),
-  })),
-}))
-
-vi.mock('@src/lib/singletons', () => ({
-  engineCommandManager: {
-    sendSceneCommand: vi.fn(),
-    engineConnection: undefined,
-    pendingCommands: {},
-    sendCommand: vi.fn(),
-    waitForAllCommands: vi.fn().mockResolvedValue([]),
-    rejectAllModelingCommands: vi.fn(),
-  },
-  kclManager: {
-    artifactGraph: new Map(),
-  },
-}))
-
-// Mock WebSocket to prevent real connections
-const MockWebSocket = vi.fn(() => ({
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-  send: vi.fn(),
-  close: vi.fn(),
-  readyState: 1, // WebSocket.OPEN
-}))
-vi.stubGlobal('WebSocket', MockWebSocket)
-
-// Mock fetch to prevent HTTP requests
-vi.stubGlobal(
-  'fetch',
-  vi.fn().mockResolvedValue({
-    ok: true,
-    json: vi.fn().mockResolvedValue({}),
-    text: vi.fn().mockResolvedValue(''),
-    body: null,
-  })
-)
-
 // Mock window.electron for desktop environment tests
 const mockElectron = {
   process: {
@@ -74,12 +27,6 @@ Object.defineProperty(globalThis, 'window', {
 const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
   engineCommandManager: {
     sendSceneCommand: vi.fn(),
-    engineConnection: undefined,
-    pendingCommands: {},
-    sendCommand: vi.fn().mockResolvedValue([{ success: true }]),
-    waitForAllCommands: vi.fn().mockResolvedValue([]),
-    rejectAllModelingCommands: vi.fn(),
-    tearDown: vi.fn(),
   } as any,
   kclManager: {
     artifactGraph: new Map(),
@@ -118,9 +65,6 @@ describe('DXF Export', () => {
     vi.mocked(mockElectron.getAppTestProperty).mockReset()
     vi.mocked(mockElectron.join).mockReset()
     vi.mocked(mockElectron.mkdir).mockReset()
-
-    // Ensure the mock sendSceneCommand is properly set up
-    vi.mocked(mockDeps.engineCommandManager.sendSceneCommand).mockClear()
   })
 
   describe('exportSketchToDxf', () => {
@@ -163,7 +107,7 @@ describe('DXF Export', () => {
       }
       vi.mocked(
         mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse)
+      ).mockResolvedValue(mockResponse as any)
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
@@ -234,7 +178,7 @@ describe('DXF Export', () => {
       }
       vi.mocked(
         mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse)
+      ).mockResolvedValue(mockResponse as any)
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
@@ -359,7 +303,7 @@ describe('DXF Export', () => {
       }
       vi.mocked(
         mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockFailedResponse)
+      ).mockResolvedValue(mockFailedResponse as any)
 
       let result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -423,7 +367,7 @@ describe('DXF Export', () => {
       }
       vi.mocked(
         mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse)
+      ).mockResolvedValue(mockResponse as any)
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
@@ -488,7 +432,7 @@ describe('DXF Export', () => {
       }
       vi.mocked(
         mockDeps.engineCommandManager.sendSceneCommand
-      ).mockResolvedValue(mockResponse)
+      ).mockResolvedValue(mockResponse as any)
 
       // Mock successful base64 decode for DXF content
       const mockDecodedData = new ArrayBuffer(8)
