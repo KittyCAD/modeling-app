@@ -5,7 +5,10 @@ import {
   retrieveFaceSelectionsFromOpArgs,
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
-import { retrieveAxisOrEdgeSelectionsFromOpArg } from '@src/lang/modifyAst/sweeps'
+import {
+  retrieveAxisOrEdgeSelectionsFromOpArg,
+  retrieveTagDeclaratorFromOpArg,
+} from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
   retrieveSelectionsFromOpArg,
@@ -165,6 +168,22 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     bidirectionalLength = result
   }
 
+  // tagStart and tagEng arguments
+  let tagStart: string | undefined
+  let tagEnd: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
+    )
+  }
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
+    )
+  }
+
   // twistAngle argument from a string to a KCL expression
   let twistAngle: KclCommandValue | undefined
   if (
@@ -184,6 +203,44 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     twistAngle = result
   }
 
+  // twistAngleStep argument from a string to a KCL expression
+  let twistAngleStep: KclCommandValue | undefined
+  if (
+    'twistAngleStep' in operation.labeledArgs &&
+    operation.labeledArgs.twistAngleStep
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.twistAngleStep.sourceRange[0],
+        operation.labeledArgs.twistAngleStep.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve twistAngleStep argument" }
+    }
+
+    twistAngleStep = result
+  }
+
+  // twistCenter argument from a Point2d to two KCL expression
+  let twistCenter: KclCommandValue | undefined
+  if (
+    'twistCenter' in operation.labeledArgs &&
+    operation.labeledArgs.twistCenter
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.twistCenter.sourceRange[0],
+        operation.labeledArgs.twistCenter.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve twistCenter argument" }
+    }
+
+    twistCenter = result
+  }
+
   // method argument from a string to boolean
   let method: string | undefined
   if ('method' in operation.labeledArgs && operation.labeledArgs.method) {
@@ -201,7 +258,11 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     length,
     symmetric,
     bidirectionalLength,
+    tagStart,
+    tagEnd,
     twistAngle,
+    twistAngleStep,
+    twistCenter,
     method,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
@@ -254,12 +315,64 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
     vDegree = result
   }
 
+  // bezApproximateRational argument from a string to boolean
+  let bezApproximateRational: boolean | undefined
+  if (
+    'bezApproximateRational' in operation.labeledArgs &&
+    operation.labeledArgs.bezApproximateRational
+  ) {
+    bezApproximateRational =
+      codeManager.code.slice(
+        operation.labeledArgs.bezApproximateRational.sourceRange[0],
+        operation.labeledArgs.bezApproximateRational.sourceRange[1]
+      ) === 'true'
+  }
+
+  // baseCurveIndex argument from a string to a KCL expression
+  let baseCurveIndex: KclCommandValue | undefined
+  if (
+    'baseCurveIndex' in operation.labeledArgs &&
+    operation.labeledArgs.baseCurveIndex
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.baseCurveIndex.sourceRange[0],
+        operation.labeledArgs.baseCurveIndex.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve baseCurveIndex argument" }
+    }
+
+    baseCurveIndex = result
+  }
+
+  // tagStart and tagEnd arguments
+  let tagStart: string | undefined
+  let tagEnd: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
+    )
+  }
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Loft'] = {
     sketches,
     vDegree,
+    bezApproximateRational,
+    baseCurveIndex,
+    tagStart,
+    tagEnd,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -594,6 +707,22 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     )
   }
 
+  // tagStart and tagEng arguments
+  let tagStart: string | undefined
+  let tagEnd: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
+    )
+  }
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -602,6 +731,8 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     path,
     sectional,
     relativeTo,
+    tagStart,
+    tagEnd,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -831,6 +962,22 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     bidirectionalAngle = result
   }
 
+  // tagStart and tagEng arguments
+  let tagStart: string | undefined
+  let tagEnd: string | undefined
+  if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
+    tagStart = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagStart,
+      codeManager.code
+    )
+  }
+  if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
+    tagEnd = retrieveTagDeclaratorFromOpArg(
+      operation.labeledArgs.tagEnd,
+      codeManager.code
+    )
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -842,6 +989,8 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     angle,
     symmetric,
     bidirectionalAngle,
+    tagStart,
+    tagEnd,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {

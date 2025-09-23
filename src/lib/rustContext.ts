@@ -50,20 +50,17 @@ export default class RustContext {
     this.engineCommandManager = engineCommandManager
 
     this.ensureWasmInit()
-      .then(async () => {
-        this.ctxInstance = await this.create()
+      .then(() => {
+        this.ctxInstance = this.create()
       })
       .catch(reportRejection)
   }
 
   /** Create a new context instance */
-  async create(): Promise<Context> {
+  create(): Context {
     this.rustInstance = getModule()
 
-    // We need this await here, DO NOT REMOVE it even if your editor says it's
-    // unnecessary. The constructor of the module is async and it will not
-    // resolve if you don't await it.
-    const ctxInstance = await new this.rustInstance.Context(
+    const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
       projectFsManager
     )
@@ -99,7 +96,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     try {
       const result = await instance.execute(
@@ -128,7 +125,7 @@ export default class RustContext {
     path?: string,
     usePrevMemory?: boolean
   ): Promise<ExecState> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     if (usePrevMemory === undefined) {
       usePrevMemory = true
@@ -153,7 +150,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     toastId: string
   ): Promise<ModelingAppFile[] | undefined> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     try {
       return await instance.export(
@@ -195,7 +192,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     try {
       const result = await instance.bustCacheAndResetScene(
@@ -228,7 +225,7 @@ export default class RustContext {
 
   /** Send a response back to the rust side, that we got back from the engine. */
   async sendResponse(response: WebSocketResponse): Promise<void> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     try {
       const serialized = BSON.serialize(response)
@@ -240,10 +237,10 @@ export default class RustContext {
   }
 
   /** Helper to check if context instance exists */
-  private async _checkInstance(): Promise<Context> {
+  private _checkInstance(): Context {
     if (!this.ctxInstance) {
       // Create the context instance.
-      this.ctxInstance = await this.create()
+      this.ctxInstance = this.create()
     }
 
     return this.ctxInstance
