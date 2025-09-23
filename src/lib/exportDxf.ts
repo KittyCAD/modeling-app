@@ -178,7 +178,7 @@ export async function exportSketchToDxf(
       return new Error('Base64 decode failed')
     }
 
-    const uint8Array = new Uint8Array(decodedBuf)
+    const decodedData = new Uint8Array(decodedBuf)
 
     // Generate meaningful filename from sketch name
     const sketchName = getOperationVariableName(operation, kclManager.ast)
@@ -200,7 +200,7 @@ export async function exportSketchToDxf(
         try {
           await window.electron.writeFile(
             window.electron.join(downloadDir, fileName),
-            uint8Array
+            decodedData
           )
         } catch (e: any) {
           console.error('Write file failed:', e)
@@ -228,7 +228,7 @@ export async function exportSketchToDxf(
       }
 
       try {
-        await window.electron.writeFile(filePathMeta.filePath, uint8Array)
+        await window.electron.writeFile(filePathMeta.filePath, decodedData)
       } catch (e: any) {
         console.error('Write file failed:', e)
         toast.error('Failed to save file', { id: toastId })
@@ -239,7 +239,7 @@ export async function exportSketchToDxf(
       return true
     } else {
       // Browser: download file
-      const blob = new Blob([uint8Array], {
+      const blob = new Blob([decodedData], {
         type: 'application/dxf',
       })
       await browserSaveFile(blob, fileName, toastId)
