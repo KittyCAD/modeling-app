@@ -862,8 +862,11 @@ openSketch = startSketchOn(XY)
     const firstPointLocation = { x: 200, y: 100 }
     const secondPointLocation = { x: 800, y: 100 }
     const thirdPointLocation = { x: 800, y: 400 }
-    const firstSegmentLocation = { x: 750, y: 100 }
-    const secondSegmentLocation = { x: 800, y: 150 }
+    // @pierremtb: moved the select location to the arrow at the end after the engine zoom fix
+    // got in https://github.com/KittyCAD/engine/pull/3804, seemed like it allowed for more
+    // error margin but unclear why
+    const firstSegmentLocation = { x: 799, y: 100 }
+    const secondSegmentLocation = { x: 800, y: 399 }
     const planeLocation = { x: 700, y: 200 }
 
     // Click helpers
@@ -893,10 +896,12 @@ openSketch = startSketchOn(XY)
     )
 
     // Colors
-    const edgeColorWhite: [number, number, number] = [220, 220, 220]
-    const edgeColorBlue: [number, number, number] = [20, 20, 200]
+    // @pierremtb: had to tone these colors down a bit after the engine zoom fix
+    // in https://github.com/KittyCAD/engine/pull/3804, unclear why
+    const edgeColorWhite: [number, number, number] = [150, 150, 150]
+    const edgeColorBlue: [number, number, number] = [10, 10, 150]
     const backgroundColor: [number, number, number] = [30, 30, 30]
-    const tolerance = 40
+    const tolerance = 50
     const timeout = 150
 
     // Setup

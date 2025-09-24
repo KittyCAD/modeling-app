@@ -128,7 +128,7 @@ test.describe(
 test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
-  async ({ page }) => {
+  async ({ page, toolbar, editor }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
@@ -140,10 +140,10 @@ test(
     )
 
     // Select a plane
-    await page.mouse.click(700, 200)
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)`
-    )
+    await toolbar.openFeatureTreePane()
+    await page.getByRole('button', { name: 'Front plane' }).click()
+    await toolbar.closeFeatureTreePane()
+    await editor.expectEditor.toContain(`sketch001 = startSketchOn(XZ)`)
 
     // Equip the rectangle tool
     await page.getByTestId('corner-rectangle').click()

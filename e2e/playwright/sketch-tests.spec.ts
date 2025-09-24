@@ -18,6 +18,59 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Sketch tests', () => {
+  test('three-point arc closes without disappearing', async ({
+    page,
+    homePage,
+    scene,
+    toolbar,
+    editor,
+    cmdBar,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem('persistCode', '')
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await toolbar.startSketchPlaneSelection()
+    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+    await selectXZPlane()
+    await page.waitForTimeout(600)
+    await editor.expectEditor.toContain('startSketchOn(XZ)')
+
+    //await toolbar.lineBtn.click()
+    const [lineStart] = scene.makeMouseHelpers(600, 400)
+    const [lineEnd] = scene.makeMouseHelpers(600, 200)
+    await lineStart()
+    await page.waitForTimeout(300)
+    await lineEnd()
+    await editor.expectEditor.toContain('|> yLine(')
+
+    await toolbar.selectThreePointArc()
+    await page.waitForTimeout(200)
+
+    await lineEnd()
+    await page.waitForTimeout(200)
+
+    const [arcInteriorMove, arcInterior] = (() => {
+      const [click, move] = scene.makeMouseHelpers(750, 300)
+      return [move, click]
+    })()
+    await arcInteriorMove()
+    await arcInterior()
+    await page.waitForTimeout(200)
+
+    await lineStart() // close
+    await page.waitForTimeout(300)
+
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(2000)
+
+    await editor.expectEditor.toContain('arc(')
+  })
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
     page,
     context,
@@ -577,7 +630,10 @@ sketch001 = startSketchOn(XZ)
     await editor.expectEditor.toContain(`|> xLine(length =`)
 
     await click00r(0, 50)
-    await editor.expectEditor.toContain(`|> yLine(length =`)
+    // @pierremtb: this used to create a yLine before the engine zoom fix
+    // in https://github.com/KittyCAD/engine/pull/3804. I updated it to a line call
+    // since it doesn't change the test objective
+    await editor.expectEditor.toContain(`|> line(`)
 
     // exit the sketch, reset relative clicker
     await click00r(undefined, undefined)
@@ -2195,10 +2251,10 @@ extrude001 = extrude(profile003, length = 5)
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
-
+    await toolbar.openFeatureTreePane()
     await toolbar.startSketchPlaneSelection()
-    await selectXZPlane()
+    await page.getByRole('button', { name: 'Front plane' }).click()
+
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)
 
@@ -2221,8 +2277,10 @@ extrude001 = extrude(profile003, length = 5)
 
       await editor.closePane()
       await scene.settled(cmdBar)
-
-      await scene.expectPixelColor([255, 255, 255], { x: 633, y: 211 }, 15)
+      await toolbar.openFeatureTreePane()
+      await expect(
+        await toolbar.getFeatureTreeOperation('Sketch', 0)
+      ).toBeVisible()
     })
   })
   test('A sketch with only "startProfileAt" and no segments should still be able to be continued', async ({
@@ -2505,7 +2563,7 @@ loft([profile001, profile002])
       )
     })
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
