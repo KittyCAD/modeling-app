@@ -130,7 +130,7 @@ async fn inner_flatness(
                                 x: center.x.0,
                                 y: center.y.0,
                             },
-                            leader_type: AnnotationLineEnd::None,
+                            leader_type: AnnotationLineEnd::Arrow,
                             dimension: None,
                             control_frame: Some(AnnotationMbdControlFrame {
                                 symbol: MbdSymbol::Flatness,
