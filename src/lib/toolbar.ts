@@ -523,6 +523,16 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               },
             ],
           },
+          {
+            id: 'pattern-linear-3d',
+            onClick: () => console.error('Linear Pattern not yet implemented'),
+            status: 'unavailable',
+            title: 'Linear Pattern',
+            icon: 'patternLinear3d',
+            description:
+              'Create a linear pattern of 3D solids along an axis. This feature is under development.',
+            links: [],
+          },
         ],
       },
     ],
