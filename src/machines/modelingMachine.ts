@@ -230,6 +230,14 @@ export type ModelingMachineEvent =
       type: 'Delete selection'
       data: ModelingCommandSchema['Delete selection']
     }
+  | {
+      type: 'Update sketch details'
+      data: {
+        sketchEntryNodePath: PathToNode
+        sketchNodePaths: PathToNode[]
+        planeNodePath: PathToNode
+      }
+    }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
@@ -955,6 +963,7 @@ export const modelingMachine = setup({
       })
     },
     'update sketchDetails': assign(({ event, context }) => {
+      console.log('>>>> hello?')
       if (
         event.type !== 'xstate.done.actor.actor-circle-three-point' &&
         event.type !== 'xstate.done.actor.set-up-draft-circle' &&
@@ -968,6 +977,9 @@ export const modelingMachine = setup({
       ) {
         return {}
       }
+
+      console.log('>>> update sketchDetails', event.output)
+
       if (!context.sketchDetails) return {}
       return {
         sketchDetails: {
@@ -4836,6 +4848,10 @@ export const modelingMachine = setup({
     'Set Segment Overlays': {
       reenter: false,
       actions: 'Set Segment Overlays',
+    },
+    'Update sketch details': {
+      reenter: false,
+      actions: 'Set sketchDetails',
     },
     'Center camera on selection': {
       reenter: false,

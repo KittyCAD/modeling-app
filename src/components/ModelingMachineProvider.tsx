@@ -292,14 +292,26 @@ export const ModelingMachineProvider = ({
             .catch(reportRejection)
         },
         'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
-          if (event.type !== 'Delete segment') return {}
           if (!sketchDetails) return {}
-          return {
-            sketchDetails: {
-              ...sketchDetails,
-              sketchEntryNodePath: event.data,
-            },
+          if (event.type === 'Delete segment') {
+            return {
+              sketchDetails: {
+                ...sketchDetails,
+                sketchEntryNodePath: event.data,
+              },
+            }
           }
+          if (event.type === 'Update sketch details') {
+            return {
+              sketchDetails: {
+                ...sketchDetails,
+                sketchEntryNodePath: event.data.sketchEntryNodePath,
+                sketchNodePaths: event.data.sketchNodePaths,
+                planeNodePath: event.data.planeNodePath,
+              },
+            }
+          }
+          return {}
         }),
       },
       guards: {
