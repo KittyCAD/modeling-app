@@ -1541,9 +1541,12 @@ export const ModelingMachineProvider = ({
     modelingActor,
     (s) => s.children.sketchSolveMachine
   )
-  const sketchSolveState = useSelector(sketchRef, (s) => s) as StateFrom<
-    typeof sketchSolveMachine
-  > // TODO this shouldn't be needed, but there's some small difference between StateFrom<typeof sketchSolveMachine> and what's returned by useSelector
+  const _sketchSolveState = useSelector(sketchRef, (s) => s)
+  // types shit the bed without this check
+  let sketchSolveState
+  if (_sketchSolveState && 'context' in _sketchSolveState) {
+    sketchSolveState = _sketchSolveState
+  }
 
   return (
     <ModelingMachineContext.Provider
