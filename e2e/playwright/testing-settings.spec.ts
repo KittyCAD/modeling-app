@@ -974,7 +974,7 @@ test.describe(
       const darkBackgroundCss = 'oklch(0.3012 0 264.5)'
       const lightBackgroundCss = 'oklch(0.9911 0 264.5)'
       const darkBackgroundColor = TEST_COLORS.DARK_MODE_BKGD
-      const lightBackgroundColor: [number, number, number] = [245, 245, 245]
+      const lightBackgroundColor: [number, number, number] = [166, 149, 184]
       const streamBackgroundPixelIsColor = async (
         color: [number, number, number]
       ) => {
