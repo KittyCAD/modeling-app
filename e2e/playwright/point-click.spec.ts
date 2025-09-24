@@ -2544,7 +2544,7 @@ extrude001 = extrude(sketch001, length = 30)
 
     // One dumb hardcoded screen pixel value
     // Any idea here how to select a cap without clicking in the scene?
-    const testPoint = { x: 575, y: 200 }
+    const testPoint = { x: 490, y: 200 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
       'shell001 = shell(extrude001, faces = END, thickness = 5)'
