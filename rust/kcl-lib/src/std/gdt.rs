@@ -53,8 +53,8 @@ async fn inner_flatness(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<(), KclError> {
-    let in_plane_id = if let Some(plane) = in_plane {
-        plane.id
+    let in_plane = if let Some(plane) = in_plane {
+        plane
     } else {
         // No plane given. Use one of the default planes by evaluating the `XY`
         // expression.
@@ -80,20 +80,23 @@ async fn inner_flatness(
             .execute_expr(&plane_ast, exec_state, &metadata, &[], StatementKind::Expression)
             .await?
             .clone();
-        let plane = plane_value.as_plane().ok_or_else(|| {
-            KclError::new_internal(KclErrorDetails::new(
-                "Expected XY plane to be defined".to_owned(),
-                vec![args.source_range],
-            ))
-        })?;
-        if plane.value == crate::exec::PlaneType::Uninit {
-            // Create it in the engine.
-            let plane =
-                make_sketch_plane_from_orientation(plane.info.clone().into_plane_data(), exec_state, args).await?;
-            plane.id
-        } else {
-            plane.id
-        }
+        plane_value
+            .as_plane()
+            .ok_or_else(|| {
+                KclError::new_internal(KclErrorDetails::new(
+                    "Expected XY plane to be defined".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?
+            .clone()
+    };
+    let in_plane_id = if in_plane.value == crate::exec::PlaneType::Uninit {
+        // Create it in the engine.
+        let engine_plane =
+            make_sketch_plane_from_orientation(in_plane.info.into_plane_data(), exec_state, args).await?;
+        engine_plane.id
+    } else {
+        in_plane.id
     };
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, true).await?;
