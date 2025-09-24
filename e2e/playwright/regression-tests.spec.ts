@@ -584,8 +584,8 @@ extrude002 = extrude(profile002, length = 150)`
     const u = await getUtils(page)
 
     // Constants and locators
-    const planeColor: [number, number, number] = [100, 100, 100]
-    const bgColor: [number, number, number] = TEST_COLORS.DARK_MODE_BKGD
+    const planeColor: [number, number, number] = [80, 60, 60]
+    const bgColor: [number, number, number] = [30, 30, 30]
     const middlePixelIsColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
     }
