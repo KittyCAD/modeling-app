@@ -1,12 +1,10 @@
 use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds::{
     self as kcmc,
-    ok_response::OkModelingCmdResponse,
     shared::{
         AnnotationFeatureControl, AnnotationLineEnd, AnnotationMbdControlFrame, AnnotationOptions, AnnotationType,
         MbdSymbol, Point2d,
     },
-    websocket::OkWebSocketResponseData,
 };
 
 use crate::{
@@ -100,22 +98,6 @@ async fn inner_flatness(
     };
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, true).await?;
-        // Get the center point of the face.
-        let OkWebSocketResponseData::Modeling {
-            modeling_response:
-                OkModelingCmdResponse::FaceGetCenter(kittycad_modeling_cmds::output::FaceGetCenter { pos: center }),
-        } = exec_state
-            .send_modeling_cmd(
-                args.into(),
-                ModelingCmd::from(mcmd::FaceGetCenter { object_id: face_id }),
-            )
-            .await?
-        else {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Failed to get center of face {face_id}"),
-                vec![args.source_range],
-            )));
-        };
         exec_state
             .batch_modeling_cmd(
                 args.into(),
@@ -129,10 +111,8 @@ async fn inner_flatness(
                         dimension: None,
                         feature_control: Some(AnnotationFeatureControl {
                             entity_id: face_id,
-                            entity_pos: Point2d {
-                                x: center.x.0,
-                                y: center.y.0,
-                            },
+                            // Point to the center of the face.
+                            entity_pos: Point2d { x: 0.5, y: 0.5 },
                             leader_type: AnnotationLineEnd::Arrow,
                             dimension: None,
                             control_frame: Some(AnnotationMbdControlFrame {
