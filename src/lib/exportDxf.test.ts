@@ -28,9 +28,21 @@ Object.defineProperty(globalThis, 'window', {
 const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
   engineCommandManager: {
     sendSceneCommand: vi.fn(),
+    engineConnection: undefined,
+    pendingCommands: {},
+    sendCommand: vi.fn(),
+    waitForAllCommands: vi.fn().mockResolvedValue([]),
+    rejectAllModelingCommands: vi.fn(),
+    tearDown: vi.fn(),
   } as any,
   kclManager: {
     artifactGraph: new Map(),
+    ast: {
+      body: [],
+      start: 0,
+      end: 0,
+      moduleId: 'test-module',
+    },
   } as any,
   toast: {
     error: vi.fn(),
@@ -117,7 +129,10 @@ describe('DXF Export', () => {
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
-      vi.mocked(mockDeps.base64Decode).mockReturnValue(mockDecodedData)
+      vi.mocked(mockDeps.base64Decode).mockImplementation((input: string) => {
+        if (!input) return new Error('Invalid base64 input')
+        return mockDecodedData
+      })
 
       // Mock browser environment - no window.electron
       // @ts-ignore
@@ -188,7 +203,10 @@ describe('DXF Export', () => {
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
-      vi.mocked(mockDeps.base64Decode).mockReturnValue(mockDecodedData)
+      vi.mocked(mockDeps.base64Decode).mockImplementation((input: string) => {
+        if (!input) return new Error('Invalid base64 input')
+        return mockDecodedData
+      })
 
       // Mock desktop environment - restore window.electron
       // @ts-ignore
@@ -377,7 +395,10 @@ describe('DXF Export', () => {
 
       // Mock successful base64 decode
       const mockDecodedData = new ArrayBuffer(8)
-      vi.mocked(mockDeps.base64Decode).mockReturnValue(mockDecodedData)
+      vi.mocked(mockDeps.base64Decode).mockImplementation((input: string) => {
+        if (!input) return new Error('Invalid base64 input')
+        return mockDecodedData
+      })
 
       // Mock desktop environment with user cancellation
       // @ts-ignore
@@ -443,7 +464,10 @@ describe('DXF Export', () => {
 
       // Mock successful base64 decode for DXF content
       const mockDecodedData = new ArrayBuffer(8)
-      vi.mocked(mockDeps.base64Decode).mockReturnValue(mockDecodedData)
+      vi.mocked(mockDeps.base64Decode).mockImplementation((input: string) => {
+        if (!input) return new Error('Invalid base64 input')
+        return mockDecodedData
+      })
 
       // Mock browser environment
       // @ts-ignore
