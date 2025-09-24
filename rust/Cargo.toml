@@ -1,19 +1,19 @@
 [workspace]
 resolver = "2"
 members = [
-  "ezpz",
-  "kcl-api",
-  "kcl-bumper",
-  "kcl-derive-docs",
-  "kcl-directory-test-macro",
-  "kcl-error",
-  "kcl-language-server",
-  "kcl-language-server-release",
-  "kcl-lib",
-  "kcl-python-bindings",
-  "kcl-test-server",
-  "kcl-to-core",
-  "kcl-wasm-lib",
+    "ezpz",
+    "kcl-api",
+    "kcl-bumper",
+    "kcl-derive-docs",
+    "kcl-directory-test-macro",
+    "kcl-error",
+    "kcl-language-server",
+    "kcl-language-server-release",
+    "kcl-lib",
+    "kcl-python-bindings",
+    "kcl-test-server",
+    "kcl-to-core",
+    "kcl-wasm-lib",
 ]
 
 [workspace.dependencies]
