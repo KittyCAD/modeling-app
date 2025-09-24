@@ -351,13 +351,3 @@ export type ft = number(ft)
 export type yd = number(yd)
 export type rad = number(rad)
 export type deg = number(deg)
-
-/// How to display a GD&T annotation.
-///
-/// fontPointSize: The font point size to use for the annotation text.
-/// fontScale: The font scale to use for the annotation text.
-@(experimental = true)
-export type AnnotationStyle = {
-  fontPointSize: number(Count),
-  fontScale: number(Count),
-}

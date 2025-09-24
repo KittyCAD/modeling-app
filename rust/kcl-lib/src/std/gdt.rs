@@ -19,6 +19,7 @@ use crate::{
     std::{Args, args::TyF64, sketch::make_sketch_plane_from_orientation},
 };
 
+/// Bundle of common GD&T annotation style arguments.
 #[derive(Debug, Clone)]
 pub(crate) struct AnnotationStyle {
     pub font_point_size: Option<TyF64>,
@@ -35,9 +36,8 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
     let gdt_position: Option<[TyF64; 2]> = args.get_kw_arg_opt("gdtPosition", &RuntimeType::point2d(), exec_state)?;
     let in_plane: Option<Plane> = args.get_kw_arg_opt("inPlane", &RuntimeType::plane(), exec_state)?;
-    let annotation_style_ty = RuntimeType::from_alias("AnnotationStyle", exec_state, args.source_range)
-        .map_err(|err| KclError::internal(format!("Error getting AnnotationStyle runtime type; {err:?}")))?;
-    let style: Option<AnnotationStyle> = args.get_kw_arg_opt("style", &annotation_style_ty, exec_state)?;
+    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
+    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
     inner_flatness(
         faces,
@@ -45,7 +45,10 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         precision,
         gdt_position,
         in_plane,
-        style,
+        AnnotationStyle {
+            font_point_size,
+            font_scale,
+        },
         exec_state,
         &args,
     )
@@ -60,7 +63,7 @@ async fn inner_flatness(
     precision: Option<TyF64>,
     gdt_position: Option<[TyF64; 2]>,
     in_plane: Option<Plane>,
-    style: Option<AnnotationStyle>,
+    style: AnnotationStyle,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<(), KclError> {
@@ -150,14 +153,8 @@ async fn inner_flatness(
                                 KPoint2d { x: 100.0, y: 100.0 }
                             },
                             precision: precision.as_ref().map(|n| n.n.round() as u32).unwrap_or(3),
-                            font_scale: style
-                                .as_ref()
-                                .and_then(|s| s.font_scale.as_ref().map(|n| n.n as f32))
-                                .unwrap_or(1.0),
-                            font_point_size: style
-                                .as_ref()
-                                .and_then(|s| s.font_point_size.as_ref().map(|n| n.n.round() as u32))
-                                .unwrap_or(36),
+                            font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
+                            font_point_size: style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36),
                         }),
                         feature_tag: None,
                     },
