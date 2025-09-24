@@ -185,7 +185,7 @@ export async function exportSketchToDxf(
     const fileName = `${sketchName || 'sketch'}.dxf`
 
     if (window.electron) {
-      if (window.electron.process.env.NODE_ENV === 'test') {
+      if (window.electron?.process?.env?.NODE_ENV === 'test') {
         // In test environment (Playwright), skip the file picker dialog and save directly
         // to a designated test downloads directory to avoid blocking automated tests
         const testSettingsPath = await window.electron.getAppTestProperty(
