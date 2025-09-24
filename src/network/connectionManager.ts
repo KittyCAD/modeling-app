@@ -22,6 +22,7 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
   promiseFactory,
+  REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
 } from '@src/network/utils'
 import {
   createOnDarkThemeMediaQueryChange,
@@ -937,6 +938,12 @@ export class ConnectionManager extends EventTarget {
     this.started = false
   }
 
+  /**
+   * When an instance of new Connection() invokes .send() the send can be dropped because the websocket
+   * is not opened. When engineCommandManager.connection.send() drops the command it needs to reject it
+   * within the engine command manager. This will reject a specific pendingCommand which will prevent it from
+   * hanging forever
+   */
   rejectPendingCommand({
     cmdId,
   }: {
@@ -950,8 +957,7 @@ export class ConnectionManager extends EventTarget {
           errors: [
             {
               error_code: 'connection_problem',
-              // TODO: Kevin
-              message: `ODDLY SPECIFIC REJECTION!`,
+              message: REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE
             },
           ],
         },

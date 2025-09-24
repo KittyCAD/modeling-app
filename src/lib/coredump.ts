@@ -13,7 +13,7 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { APP_VERSION } from '@src/routes/utils'
-import {EngineDebugger, ILog} from '@src/lib/debugger'
+import { EngineDebugger, ILog } from '@src/lib/debugger'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly
@@ -181,7 +181,7 @@ export class CoreDumpManager {
         engine_connection: { state: { type: '' } },
         default_planes: {},
         scene_command_artifacts: {},
-        connection_logs: [] as ILog[]
+        connection_logs: [] as ILog[],
       },
       kcl_manager: {
         ast: {},

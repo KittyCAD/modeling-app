@@ -8,6 +8,7 @@ import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
 import type { EditorView } from 'codemirror'
 
 export type ToolTip =
@@ -126,7 +127,7 @@ function handleExecuteError(e: any): ExecutionResult {
       e.msg.includes(
         'no connection to send on, connection manager called tearDown()'
       ) ||
-      e.msg.includes('ODDLY SPECIFIC REJECTION!')
+      e.msg.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
     ) {
       isInterrupted = true
     }
@@ -147,7 +148,7 @@ function handleExecuteError(e: any): ExecutionResult {
         e[0].errors[0].message.includes(
           'Failed to wait for promise from send modeling command'
         ) ||
-        e[0].errors[0].message.includes('ODDLY SPECIFIC REJECTION!')
+        e[0].errors[0].message.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
       ) {
         isInterrupted = true
       }

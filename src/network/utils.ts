@@ -425,3 +425,5 @@ export const WebSocketStatusCodes: Readonly<Record<string, string>> =
      */
     '1015': 'TLS handshake failure',
   } as const)
+
+export const REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE = `Rejected because send was too early, WebSocket.readyState was not WebSocket.OPEN`
