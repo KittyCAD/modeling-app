@@ -3857,6 +3857,28 @@ mod double_close {
     }
 }
 
+mod gdt_annotation_flatness {
+    const TEST_NAME: &str = "gdt_annotation_flatness";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
 mod revolve_on_face {
     const TEST_NAME: &str = "revolve_on_face";
 

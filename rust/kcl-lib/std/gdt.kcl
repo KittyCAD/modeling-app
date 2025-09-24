@@ -1,3 +1,8 @@
+/// Functions for working with geometric dimensioning and tolerancing (GD&T).
+
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
 /// GD&T annotation specifying how flat faces should be.
 ///
 /// ```kcl
@@ -11,7 +16,7 @@
 ///   |> line(end = [0, -10])
 ///   |> close()
 ///   |> extrude(length = 5, tagStart = $face1)
-/// gdt::flatness(faces = [face1], tolerance = 0.1mm)
+/// @flatness(faces = [face1], tolerance = 0.1mm)
 /// ```
 ///
 /// ```kcl
@@ -25,7 +30,7 @@
 ///   |> line(end = [0, -10])
 ///   |> close()
 ///   |> extrude(length = 5, tagEnd = $face1)
-/// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], inPlane = XZ)
+/// @flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], inPlane = XZ)
 /// ```
 ///
 /// ```kcl
@@ -39,9 +44,9 @@
 ///   |> line(end = [0, -10])
 ///   |> close()
 ///   |> extrude(length = 5)
-/// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], inPlane = XZ)
+/// @flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], inPlane = XZ)
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust_annotation, experimental = true)
 export fn flatness(
   /// The faces to be annotated.
   @(includeInSnippet = true)

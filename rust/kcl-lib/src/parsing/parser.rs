@@ -51,6 +51,9 @@ const ELSE_MUST_END_IN_EXPR: &str = "This `else` block needs to end in an expres
 
 const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
 
+/// Names of annotation functions that will be parsed as call expressions, like `@flatness`.
+const ANNOTATION_CALL_NAMES: [&str; 1] = ["flatness"];
+
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
@@ -1691,7 +1694,35 @@ fn body_items_within_function(i: &mut TokenSlice) -> ModalResult<WithinFunction>
             non_code_node.map(WithinFunction::NonCode)
         },
         token if token.token_type == TokenType::At => {
-            annotation.map(WithinFunction::Annotation)
+            annotation.map(|node| {
+                match node {
+                    Node { inner: Annotation {name: Some(callee_name), properties, digest: _ }, .. } if ANNOTATION_CALL_NAMES.contains(&callee_name.name.as_str()) => {
+                        // It's `@foo()`. Convert to a call expression.
+                        let arguments = properties.map(|props| props.into_iter().map(|object_property| {
+                            let Node { inner: ObjectProperty { key, value, .. }, .. } = object_property;
+                            LabeledArg {
+                                label: Some(key),
+                                arg: value,
+                            }
+                        }).collect()).unwrap_or_default();
+                        let body_item = BodyItem::ExpressionStatement(Node::new(ExpressionStatement {
+                            expression: Expr::CallExpressionKw(Box::new(Node::new(CallExpressionKw {
+                                is_annotation: true,
+                                callee: callee_name.into(),
+                                unlabeled: None,
+                                arguments,
+                                digest: None,
+                                non_code_meta: Default::default(),
+                            }, node.start, node.end, node.module_id))),
+                            digest: None,
+                        }, node.start, node.end, node.module_id));
+                        WithinFunction::BodyItem((body_item, None))
+                    }
+                    _ => {
+                        WithinFunction::Annotation(node)
+                    }
+                }
+            })
         },
         _ =>
             alt((
@@ -3363,13 +3394,14 @@ fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
     }
 }
 
-fn is_callee_sketch_block(callee: &Name) -> bool {
-    callee.name.name == SketchBlock::CALLEE_NAME && !callee.abs_path && callee.path.is_empty()
+fn is_callee_sketch_block(fn_call: &CallExpressionKw) -> bool {
+    let callee = &fn_call.callee;
+    !fn_call.is_annotation && callee.name.name == SketchBlock::CALLEE_NAME && !callee.abs_path && callee.path.is_empty()
 }
 
 fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_call = fn_call_kw.parse_next(i)?;
-    if is_callee_sketch_block(&fn_call.callee) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
+    if is_callee_sketch_block(&fn_call) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         // We have `sketch() {`. Parse the block.
         ignore_whitespace(i);
         let (_, body, close) = ParseContext::in_sketch_block(|| parse_block(i))?;
@@ -3384,6 +3416,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             outer_attrs,
             inner:
                 CallExpressionKw {
+                    is_annotation: _,
                     callee: _,
                     unlabeled,
                     arguments,
@@ -3441,6 +3474,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
                 end,
                 fn_name.module_id,
                 CallExpressionKw {
+                    is_annotation: false,
                     callee: fn_name,
                     unlabeled: initial_unlabeled_arg,
                     arguments: Default::default(),
@@ -3569,6 +3603,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
         end,
         fn_name.module_id,
         CallExpressionKw {
+            is_annotation: false,
             callee: fn_name,
             unlabeled: initial_unlabeled_arg,
             arguments: args,

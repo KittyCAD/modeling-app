@@ -12,6 +12,8 @@ use crate::{
 };
 
 /// Annotations which should cause re-execution if they change.
+///
+/// Annotation calls are not included here since they get parsed into `CallExpressionKw`.
 pub(super) const SIGNIFICANT_ATTRS: [&str; 3] = [SETTINGS, NO_PRELUDE, WARNINGS];
 
 pub(crate) const SETTINGS: &str = "settings";
@@ -32,11 +34,19 @@ pub(super) const IMPORT_LENGTH_UNIT: &str = "lengthUnit";
 
 pub(crate) const IMPL: &str = "impl";
 pub(crate) const IMPL_RUST: &str = "std_rust";
+pub(crate) const IMPL_RUST_ANNOTATION: &str = "std_rust_annotation";
 pub(crate) const IMPL_CONSTRAINT: &str = "std_rust_constraint";
 pub(crate) const IMPL_CONSTRAINABLE: &str = "std_constrainable";
 pub(crate) const IMPL_KCL: &str = "kcl";
 pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
-pub(super) const IMPL_VALUES: [&str; 5] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE, IMPL_CONSTRAINT, IMPL_CONSTRAINABLE];
+pub(super) const IMPL_VALUES: [&str; 6] = [
+    IMPL_RUST,
+    IMPL_RUST_ANNOTATION,
+    IMPL_KCL,
+    IMPL_PRIMITIVE,
+    IMPL_CONSTRAINT,
+    IMPL_CONSTRAINABLE,
+];
 
 pub(crate) const WARNINGS: &str = "warnings";
 pub(crate) const WARN_ALLOW: &str = "allow";
@@ -96,6 +106,7 @@ pub enum Impl {
     Kcl,
     KclConstrainable,
     Rust,
+    RustAnnotation,
     RustConstraint,
     Primitive,
 }
@@ -106,6 +117,7 @@ impl FromStr for Impl {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             IMPL_RUST => Ok(Self::Rust),
+            IMPL_RUST_ANNOTATION => Ok(Self::RustAnnotation),
             IMPL_CONSTRAINT => Ok(Self::RustConstraint),
             IMPL_CONSTRAINABLE => Ok(Self::KclConstrainable),
             IMPL_KCL => Ok(Self::Kcl),
@@ -229,6 +241,22 @@ pub struct FnAttrs {
     pub impl_: Impl,
     pub deprecated: bool,
     pub experimental: bool,
+}
+
+impl FnAttrs {
+    pub fn annotation(&self) -> bool {
+        match self.impl_ {
+            Impl::RustAnnotation => true,
+            Impl::Kcl | Impl::KclConstrainable | Impl::Rust | Impl::RustConstraint | Impl::Primitive => false,
+        }
+    }
+
+    pub fn is_rust_function_impl(&self) -> bool {
+        match self.impl_ {
+            Impl::Rust | Impl::RustAnnotation | Impl::RustConstraint => true,
+            Impl::Kcl | Impl::KclConstrainable | Impl::Primitive => false,
+        }
+    }
 }
 
 pub(super) fn get_fn_attrs(

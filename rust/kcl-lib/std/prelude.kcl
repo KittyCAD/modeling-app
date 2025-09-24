@@ -14,9 +14,9 @@
 // Note that everything in the prelude is treated as exported.
 
 export import * from "std::types"
-export import "std::gdt"
 export import "std::units"
 export import * from "std::array"
+export import * from "std::gdt"
 export import * from "std::math"
 export import * from "std::sketch"
 @(experimental = true)

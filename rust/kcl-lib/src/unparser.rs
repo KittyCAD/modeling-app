@@ -395,6 +395,7 @@ impl BinaryPart {
 impl CallExpressionKw {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
         recast_call(
+            self.is_annotation,
             &self.callee,
             self.unlabeled.as_ref(),
             &self.arguments,
@@ -428,7 +429,9 @@ fn recast_args(
     arg_list
 }
 
+#[allow(clippy::too_many_arguments)]
 fn recast_call(
+    is_annotation: bool,
     callee: &Name,
     unlabeled: Option<&Expr>,
     arguments: &[LabeledArg],
@@ -471,6 +474,9 @@ fn recast_call(
             options.get_indentation(indentation_level)
         };
         options.write_indentation(buf, smart_indent_level);
+        if is_annotation {
+            buf.push('@');
+        }
         name.write_to(buf).no_fail();
         buf.push('(');
         buf.push('\n');
@@ -481,6 +487,9 @@ fn recast_call(
         buf.push(')');
     } else {
         options.write_indentation(buf, smart_indent_level);
+        if is_annotation {
+            buf.push('@');
+        }
         name.write_to(buf).no_fail();
         buf.push('(');
         write!(buf, "{args}").no_fail();
@@ -1040,7 +1049,16 @@ impl SketchBlock {
             abs_path: false,
             digest: None,
         };
-        recast_call(&name, None, &self.arguments, buf, options, indentation_level, ctxt);
+        recast_call(
+            false,
+            &name,
+            None,
+            &self.arguments,
+            buf,
+            options,
+            indentation_level,
+            ctxt,
+        );
 
         // We don't want to end with a new line inside nested blocks.
         let mut new_options = options.clone();
@@ -1245,6 +1263,18 @@ sdfsdfsdfs */
 @settings(defaultLengthUnit = in)
 
 foo = 42
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_flatness_annotation_call_not_at_top() {
+        let input = r#"@settings(defaultLengthUnit = in)
+
+a = 1
+@flatness()
 "#;
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast_top(&Default::default(), 0);

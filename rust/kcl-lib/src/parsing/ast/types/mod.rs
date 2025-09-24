@@ -2017,6 +2017,8 @@ pub struct ExpressionStatement {
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct CallExpressionKw {
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub is_annotation: bool,
     pub callee: Node<Name>,
     pub unlabeled: Option<Expr>,
     pub arguments: Vec<LabeledArg>,
@@ -2027,6 +2029,10 @@ pub struct CallExpressionKw {
 
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
+}
+
+fn is_false(b: &bool) -> bool {
+    !*b
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -2065,6 +2071,7 @@ impl Node<CallExpressionKw> {
 impl CallExpressionKw {
     pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Result<Node<Self>, KclError> {
         Ok(Node::no_src(Self {
+            is_annotation: false,
             callee: Name::new(name),
             unlabeled,
             arguments,
