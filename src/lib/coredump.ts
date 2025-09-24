@@ -13,7 +13,8 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { APP_VERSION } from '@src/routes/utils'
-import { EngineDebugger, ILog } from '@src/lib/debugger'
+import type { ILog } from '@src/lib/debugger'
+import { EngineDebugger } from '@src/lib/debugger'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly

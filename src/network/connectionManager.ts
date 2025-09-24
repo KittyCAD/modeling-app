@@ -242,8 +242,7 @@ export class ConnectionManager extends EventTarget {
         detail: this.connection,
       })
     )
-    // Gotcha: ^this is a race condition with EngineAvailable but that is life.
-    // TODO: this is called in createWebSocketConnection
+
     this.connection.dispatchEvent(
       new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
         detail: {
@@ -462,7 +461,6 @@ export class ConnectionManager extends EventTarget {
   }
 
   listenToDarkModeMatcher() {
-    // TODO: Keep track of event listener
     const onDarkThemeMediaQueryChange = createOnDarkThemeMediaQueryChange({
       setTheme: this.setTheme.bind(this),
     })
@@ -807,7 +805,6 @@ export class ConnectionManager extends EventTarget {
     delete this.unreliableSubscriptions[event][id]
   }
 
-  // TODO: What workflow triggers this?
   async startFromWasm(token: string): Promise<void> {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -1114,7 +1111,6 @@ export class ConnectionManager extends EventTarget {
     if (this.connection === undefined) {
       return new Error('this.connection is undefined')
     }
-    //TODO isReady() isUsingConnectionLite
     if (id === undefined) {
       return new Error('id is undefined')
     }
@@ -1162,7 +1158,6 @@ export class ConnectionManager extends EventTarget {
     if (!this.kclManager) {
       return Promise.reject(new Error('this.kclManager is undefined'))
     }
-    //TODO isReady() isUsingConnectionLite
     if (id === undefined) {
       return Promise.reject(new Error('id is undefined'))
     }
@@ -1249,7 +1244,6 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    // TODO: Can't send commands if there's no connection
     return await this.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

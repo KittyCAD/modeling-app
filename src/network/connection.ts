@@ -248,7 +248,9 @@ export class Connection extends EventTarget {
     this._pingIntervalId = undefined
   }
 
-  // TODO: Pass reconnect here? or call a function for reconnect
+  /**
+   * Don't call this function twice. Call disconnectAll() and make a new instance.
+   */
   async connect(): Promise<unknown> {
     EngineDebugger.addLog({
       label: 'connection',
@@ -571,17 +573,6 @@ export class Connection extends EventTarget {
       return
     }
 
-    dispatchEvent(
-      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
-        detail: {
-          type: EngineConnectionStateType.Connecting,
-          value: {
-            type: ConnectingType.WebSocketConnecting,
-          },
-        },
-      })
-    )
-
     EngineDebugger.addLog({
       label: 'connection',
       message: 'createWebSocketConnection',
@@ -731,8 +722,6 @@ export class Connection extends EventTarget {
         'cleaned up websocket, unreliable data channel, and peer connection, all event listeners removed',
       metadata: { id: this.id },
     })
-    // TODO: Missing some logic for idle mode and timeouts of websocket??
-    // I think for idle mode we cannot remove all the listeners? Need to manage this.
   }
 
   disconnectWebsocket() {
