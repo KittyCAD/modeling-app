@@ -349,9 +349,11 @@ extrude002 = extrude(profile002, length = 150)`
         'ratio'
       )
 
-      // not sure why old DARK_MODE_BKGD doesn't work anymore
-      const bgColor: [number, number, number] = [30, 30, 30]
-      await scene.expectPixelColor(bgColor, offModelBefore, 15)
+      await scene.expectPixelColor(
+        TEST_COLORS.DARK_MODE_BKGD,
+        offModelBefore,
+        15
+      )
       const standardModelGrey: TestColor = [100, 100, 100]
       await scene.expectPixelColor(standardModelGrey, onModelBefore, 15)
 

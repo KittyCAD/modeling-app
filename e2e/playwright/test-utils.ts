@@ -52,7 +52,7 @@ export const TEST_COLORS: { [key: string]: TestColor } = {
   GREY: [142, 142, 142],
   YELLOW: [255, 255, 0],
   BLUE: [0, 0, 255],
-  DARK_MODE_BKGD: [86, 66, 107],
+  DARK_MODE_BKGD: [27, 27, 27],
   DARK_MODE_PLANE_XZ: [50, 50, 99],
 } as const
 
