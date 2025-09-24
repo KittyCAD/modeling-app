@@ -957,7 +957,7 @@ export class ConnectionManager extends EventTarget {
           errors: [
             {
               error_code: 'connection_problem',
-              message: REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE
+              message: REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
             },
           ],
         },

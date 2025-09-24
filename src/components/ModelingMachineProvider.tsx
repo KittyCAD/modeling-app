@@ -1453,10 +1453,6 @@ export const ModelingMachineProvider = ({
 
   useEffect(() => {
     const onConnectionStateChanged = ({ detail }: CustomEvent) => {
-      // TODO: Kevin Fix this workflow for sketch engine connection.
-      // If we are in sketch mode we need to exit it.
-      // TODO: how do i check if we are in a sketch mode, I only want to call
-      // this then.
       if (detail.type === EngineConnectionStateType.Disconnecting) {
         modelingSend({ type: 'Cancel' })
       }
