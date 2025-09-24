@@ -338,7 +338,8 @@ function CommandBarVector3DInput({
         </div>
       </div>
       <p className="mx-4 mb-4 text-sm text-chalkboard-70 dark:text-chalkboard-40">
-        Enter X, Y, Z coordinates
+        Currently, you need to enter all XYZ values manually. Support for
+        selecting references directly in the 3D scene is in development.
       </p>
     </form>
   )
