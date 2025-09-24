@@ -1,4 +1,5 @@
-import { assign, createMachine, sendTo, setup } from 'xstate'
+import { assign, assertEvent, createMachine, sendTo, setup } from 'xstate'
+import type { AnyActorRef } from 'xstate'
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type {
   ModelingMachineContext,
@@ -25,7 +26,7 @@ export type SketchSolveMachineEvent =
   | { type: 'tool completed' }
 
 type SketchSolveContext = ModelingMachineContext & {
-  toolActor?: any
+  toolActor?: AnyActorRef
   sketchSolveTool: EquipTool | 'moveTool'
 }
 
@@ -35,11 +36,14 @@ export const sketchSolveMachine = setup({
     events: {} as SketchSolveMachineEvent,
   },
   actions: {
-    'send unequip to tool': sendTo(({ context }) => context.toolActor, {
-      type: 'unequip',
-    }),
+    'send unequip to tool': sendTo(
+      ({ context }) => context.toolActor || 'moveTool',
+      {
+        type: 'unequip',
+      }
+    ),
     'send update selection to equipped tool': sendTo(
-      ({ context }) => context.toolActor,
+      ({ context }) => context.toolActor || 'moveTool',
       {
         type: 'update selection',
       }
@@ -48,13 +52,16 @@ export const sketchSolveMachine = setup({
       type: 'update selection',
     }),
     'spawn tool': assign(({ event, spawn }) => {
-      if (event.type !== 'equip tool') return {}
+      assertEvent(event, 'equip tool')
       const actorName =
         event.data.tool === 'dimension'
           ? 'dimensionToolActor'
           : 'centerRectToolActor'
+
+      const spawnedActor = spawn(actorName, { id: `tool-${event.data.tool}` })
+
       return {
-        toolActor: spawn(actorName, { id: `tool-${event.data.tool}` }),
+        toolActor: spawnedActor,
         sketchSolveTool: event.data.tool,
       }
     }),

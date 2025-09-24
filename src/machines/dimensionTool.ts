@@ -3,6 +3,7 @@ import { createMachine, setup } from 'xstate'
 type DimensionToolEvent =
   | { type: 'unequip' }
   | { type: 'add point'; data: [x: number, y: number] }
+  | { type: 'update selection' }
 
 export const machine = setup({
   types: {
@@ -39,6 +40,9 @@ export const machine = setup({
       target: '#Dimension tool.unequipping',
       description:
         "can be requested from the outside, but we want this tool to have the final say on when it's done.",
+    },
+    'update selection': {
+      description: 'Handle selection updates from the sketch solve machine.',
     },
   },
   description:
