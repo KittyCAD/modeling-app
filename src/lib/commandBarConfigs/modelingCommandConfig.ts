@@ -1185,22 +1185,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_DEGREE,
       },
       rotateDuplicates: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        defaultValue: true,
-        options: [
-          { name: 'True', value: true },
-          { name: 'False', value: false },
-        ],
       },
       useOriginal: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        defaultValue: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
     },
   },
