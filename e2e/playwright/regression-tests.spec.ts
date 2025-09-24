@@ -371,7 +371,11 @@ extrude002 = extrude(profile002, length = 150)`
         'ratio'
       )
 
-      await scene.expectPixelColor(bgColor, offModelAfter, 15)
+      await scene.expectPixelColor(
+        TEST_COLORS.DARK_MODE_BKGD,
+        offModelAfter,
+        15
+      )
       await scene.expectPixelColor(standardModelGrey, onModelAfter, 15)
     }
   )
