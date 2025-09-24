@@ -1,4 +1,4 @@
-import { createMachine, fromPromise, sendTo, setup } from 'xstate'
+import { assign, createMachine, sendTo, setup } from 'xstate'
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type {
   ModelingMachineContext,
@@ -10,16 +10,7 @@ import type { PathToNode } from '@src/lang/wasm'
 import { machine as centerRectToolMachine } from '@src/machines/centerRectTool'
 import { machine as dimensionToolMachine } from '@src/machines/dimensionTool'
 
-const toolRegistry = {
-  'center rectangle': centerRectToolMachine,
-  dimension: dimensionToolMachine,
-} as const
-
-type EquipTool = keyof typeof toolRegistry
-
-// Helper function to get tool machine
-const getToolMachine = (tool: EquipTool) =>
-  toolRegistry[tool] || dimensionToolMachine
+type EquipTool = 'dimension' | 'center rectangle'
 
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
@@ -31,35 +22,58 @@ export type SketchSolveMachineEvent =
   | { type: 'Delete segment'; data: PathToNode }
   | { type: 'change tool'; data: { tool: EquipTool } }
   | { type: 'click in scene'; data: [x: number, y: number] }
+  | { type: 'tool completed' }
+
+type SketchSolveContext = ModelingMachineContext & {
+  toolActor?: any
+  sketchSolveTool: EquipTool | 'moveTool'
+}
 
 export const sketchSolveMachine = setup({
   types: {
-    context: {} as ModelingMachineContext,
+    context: {} as SketchSolveContext,
     events: {} as SketchSolveMachineEvent,
   },
   actions: {
-    'send unequip to tool': sendTo('toolInvoker', {
+    'send unequip to tool': sendTo(({ context }) => context.toolActor, {
       type: 'unequip',
     }),
-    'send update selection to equipped tool': sendTo('toolInvoker', {
-      type: 'update selection',
-    }),
+    'send update selection to equipped tool': sendTo(
+      ({ context }) => context.toolActor,
+      {
+        type: 'update selection',
+      }
+    ),
     'send updated selection to move tool': sendTo('moveTool', {
       type: 'update selection',
+    }),
+    'spawn tool': assign(({ event, spawn }) => {
+      if (event.type !== 'equip tool') return {}
+      const actorName =
+        event.data.tool === 'dimension'
+          ? 'dimensionToolActor'
+          : 'centerRectToolActor'
+      return {
+        toolActor: spawn(actorName, { id: `tool-${event.data.tool}` }),
+        sketchSolveTool: event.data.tool,
+      }
+    }),
+    'stop tool': assign(({ context }) => {
+      return { toolActor: undefined }
     }),
   },
   actors: {
     moveToolActor: createMachine({
       /* ... */
     }),
-    toolInvoker: fromPromise(({ input }: { input: { tool: EquipTool } }) =>
-      Promise.resolve(getToolMachine(input.tool))
-    ),
+    dimensionToolActor: dimensionToolMachine,
+    centerRectToolActor: centerRectToolMachine,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwAmAKwAOAHQcAzABZFGgGwBOebL16A7LIA0IAJ6INencs0a7ixTvUdpAXy+W0mXAIScioaegBXPggAQwwKWDBiMCwMEVFOHiQQASFUsQkpBHk1RwV7WTVFWVlFaR0dSxsEAFpqjmVZXT0OWXcTeQMenz90bHwiMgpqWjpw0TAAR3DmPjwMQhIMiRzhfKzCkx15ZSOOHu61fpNGxBM1dqOdGsNXRRNpRWGQfzGgydDaMoALaEELRUQQPAJJIpOgQMRgZTMUSkQjoYGgsAAFQ2xC2WR2eXE+xkFWkylc-SMT3kdWkNwQ1RKHHebxqeiqtXk8i+P0CExC00RILBEKhiWSGAYACdpYRpco+MRYgAzeVAjHkHGbbjbQS7YmgQpyNTkymGcq0nT06wyEwmDo1OQmDTSV33T6+b6jfnBKZhTUUcGQ6GShhLFZrXH4-j6okFWwsxzSHpPWQmDnp+QM6TydqKDg6S5FgxKRRqXk+8Z+gGI8JCURQKMkOEIpEotGI9YkACSHfQ0pj2TjaQTRSLymMlxM5cLprU2dtjOtJw+h08edddUrAWr-yFynryKb3eIMrlCqVqvVylPfdRA6HhNHJPHJSn9tnRekC5zpmUdg6G47xqO40hmBoPheqIYTwFkfJ7oKYR6rkL5Gog6b5pc8gaD0dzdB8DJqHojq1J0Sg1JUrg7r8Ar+oCIpBmKoYpChBpjncJRqAuejEQMhxcjmvTKGYZHaBwWgKP0NG+vuAZHo2zbEGx8avqaKjlv0uHpsRniKERSgAWcP6KHosi5jOnojLufxIYCTDCI2KloZIMjESoroKO5FRFn+Dr1G8ubyGYOFPBWUFAA */
-  context: ({ input }): ModelingMachineContext => ({
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwAmAKwAOAHQcAzABZFGgGwBOebL16A7LIA0IAJ6INencs0a7ixTvUdpAXy+W0mXAIScioaegBXPggAQwwKWDBiMCwMEVFOHiQQASFUsQkpBHk1RwV7WTVFWVlFaR0dSxsEAFpqjmVZXT0OWXcTeQMenz90bHwiMgpqWjpw0TAAR3DmPjwMQhIMiRzhfKzCkx15ZSOOHu61fpNGxBM1dqOdGsNXRRNpRWGQfzGgydDaMoALaEELRUQQPAJJIpOgQMRgZTMUSkQjoYGgsAAFQ2xC2WR2eXE+xkChU0j0Gg4OkqHD0H3eNwQsk8ylc0k09RM9jeei+P0CExC00RILBEKhiWSGAYACdZYRZco+MRYgAzRVAjHkHGbbjbQS7YmgQpyPSyVQcKo6BkmZyya7WUkaNm9RQ9DSdOw1NT80aC4JTMLaijgyHQ6UMJYrNa4-H8Q1Egq2DgmRzSHpPB16Kr9JnSeTtd00w5qAxKRS+3zff3jQMAxHhISiKCxkizebR1brPWZBO5NLJopVRwmExnJ7Sb13JnVaRss4ffTyOyXT7VgV1-4i5RN5GtnvEOiMWAYWKI+HzZTRFKK5SH5oAKnj2UTg5JCHZynkjw0hicGZqEyag6C68gmNo9zVEYtSdD41aiGE8BZJufzCmEBoDnsJqIA6RaXCuPR3N0Hz5i6OhmPIK46Io4GKOaZh+gEW7oYCYqhhKEYpJhRpDtyYE9AWdL1OaDROggGbzocNJWhwzhWh8TG-EKQaAnuLZtsQPFJh+agfGyBFUg6ZaeIowFKMoVKeJU5oFhB64jMxaGqYiTDCC22nvjhEllioGhyMUOYVDS+amCcNHvFRlG6BU8FeEAA */
+  context: ({ input }): SketchSolveContext => ({
     ...modelingMachineDefaultContext,
+    sketchSolveTool: 'moveTool',
   }),
   id: 'Sketch Solve Mode',
   initial: 'move and select',
@@ -88,6 +102,7 @@ export const sketchSolveMachine = setup({
       on: {
         'equip tool': {
           target: 'using tool',
+          actions: ['spawn tool'],
         },
       },
       invoke: {
@@ -105,20 +120,15 @@ export const sketchSolveMachine = setup({
         'The base state of sketch mode is to all the user to move around the scene and select geometry.',
     },
     'using tool': {
-      invoke: {
-        id: 'toolInvoker',
-        input: ({
-          event,
-        }: { event: SketchSolveMachineEvent }): { tool: EquipTool } => ({
-          tool: event.type === 'equip tool' ? event.data.tool : 'dimension',
-        }),
-        onDone: {
+      on: {
+        'xstate.done.actor.tool-*': {
           target: 'move and select',
+          actions: 'stop tool',
         },
-        onError: {
+        'unequip tool': {
           target: 'move and select',
+          actions: 'stop tool',
         },
-        src: 'toolInvoker',
       },
       description:
         'Tools are workflows that create or modify geometry in the sketch scene after conditions are met. Some, like the Dimension, Center Rectangle, and Tangent tools, are finite, which they signal by reaching a final state. Some, like the Spline tool, appear to be infinite. In these cases, it is up to the tool Actor to receive whatever signal (such as the Esc key for Spline) necessary to reach a final state and unequip itself.\n\nTools can request to be unequipped from the outside by a "unequip tool" event sent to the sketch machine. This will sendTo the toolInvoker actor.',

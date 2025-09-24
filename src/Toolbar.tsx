@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useAppState } from '@src/AppState'
@@ -32,7 +32,8 @@ export function Toolbar({
   className = '',
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const { state, send, context } = useModelingContext()
+  const { state, send, context, sketchSolveState } = useModelingContext()
+
   const iconClassName =
     'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
   const bgClassName = '!bg-transparent'
@@ -90,6 +91,7 @@ export function Toolbar({
       modelingSend: send,
       sketchPathId,
       editorHasFocus: editorManager.getEditorView()?.hasFocus,
+      sketchSolveState,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
@@ -97,6 +99,7 @@ export function Toolbar({
       send,
       commandBarActor.send,
       sketchPathId,
+      sketchSolveState,
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       editorManager.getEditorView()?.hasFocus,
     ]
@@ -178,7 +181,10 @@ export function Toolbar({
             : maybeIconConfig.title(configCallbackProps),
         description: maybeIconConfig.description,
         links: maybeIconConfig.links || [],
-        isActive: maybeIconConfig.isActive?.(state),
+        isActive: maybeIconConfig.isActive?.({
+          modelingState: state,
+          sketchSolveState,
+        }),
         hotkey:
           typeof maybeIconConfig.hotkey === 'string'
             ? maybeIconConfig.hotkey
