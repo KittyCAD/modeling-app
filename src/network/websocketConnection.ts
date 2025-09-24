@@ -32,11 +32,12 @@ export const createOnWebSocketOpen = ({
   dispatchEvent: (event: Event) => boolean
 }) => {
   const onWebSocketOpen = (event: Event) => {
-    // TODO: hmmm I do not like this pattern
     // This is required for when the app is running stand-alone / within desktop app.
     // Otherwise when run in a browser, the token is sent implicitly via
     // the Cookie header.
     if (token) {
+      // This logic is correct, once the websocket is opened the server will infinitely spam the client
+      // telling them that there are no headers set. We must send the headers once websocket is opened
       EngineDebugger.addLog({
         label: 'createOnWebSocketOpen',
         message: 'send headers bearer',
@@ -73,9 +74,7 @@ export const createOnWebSocketError = () => {
     })
 
     if (event.target instanceof WebSocket) {
-      // WS error
-      // TODO: this.state = {}
-      // well what the fuck?
+      // NO OP
     }
   }
 
@@ -120,7 +119,6 @@ export const createOnWebSocketMessage = ({
     // be carefully formatted here.
 
     if (typeof event.data !== 'string') {
-      // TODO: What?
       return
     }
 
@@ -198,13 +196,12 @@ export const createOnWebSocketMessage = ({
         const peerConnection = createPeerConnection()
 
         if (!peerConnection) {
-          console.error('unable to create peer connection')
+          console.warn('unable to create peer connection')
           EngineDebugger.addLog({
             label: 'onWebSocketMessage',
             message: 'ice_server_info',
             metadata: { error: 'unable to createPeerConnection' },
           })
-          // TODO: Handle failure case
           return
         }
 

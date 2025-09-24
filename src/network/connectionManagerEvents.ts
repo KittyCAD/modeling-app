@@ -43,7 +43,6 @@ export const createOnEngineOffline = ({
   return onEngineOffline
 }
 
-// TODO: Why settings and jsAppSettings?
 export const createOnEngineConnectionOpened = ({
   rustContext,
   settings,
@@ -245,7 +244,6 @@ export const createOnEngineConnectionStarted = ({
       callback: onDataChannel,
       type: 'peerConnection',
     })
-    // TODO: This event listener would need to be cleaned up if the connection is destroyed
     peerConnection.addEventListener('datachannel', onDataChannel)
 
     EngineDebugger.addLog({
@@ -290,16 +288,10 @@ export const createOnEngineConnectionStarted = ({
       callback: onEngineConnectionNewTrack,
       type: 'connection',
     })
-    // Yikes, thanks for the massive class interface as EventListener it is
     connection.addEventListener(
       EngineConnectionEvents.NewTrack,
       onEngineConnectionNewTrack as EventListener
     )
-    // Start listening!
-    // TODO: Load bearing entry point!
-    // TODO: THIS HAS TO BE WRONG WHAT?? it is a catch 22
-    // connection.connect()
   }
-  // TODO: Multiple event listeners on dependencies of member variables are not cleaned up
   return onEngineConnectionStarted
 }

@@ -170,7 +170,6 @@ export function createOnConnectionStateChange({
       // dance is it safest to connect the video tracks / stream
       case 'connected':
         dispatchEvent(
-          // TODO: Mediastream ???? why the fuck is this here. This is a bad dependency flow.
           new CustomEvent(EngineConnectionEvents.NewTrack, {
             detail: { conn: connection, mediaStream: connection.mediaStream },
           })
@@ -466,7 +465,6 @@ export const createOnDataChannelMessage = ({
   return onDataChannelMessage
 }
 
-// TODO: Maybe this is doubled up from the trackListener?
 export const createOnDataChannelClose = ({
   unreliableDataChannel,
   onDataChannelOpen,
