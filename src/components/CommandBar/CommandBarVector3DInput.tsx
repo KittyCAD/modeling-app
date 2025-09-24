@@ -10,6 +10,64 @@ import { Spinner } from '@src/components/Spinner'
 import { roundOffWithUnits } from '@src/lib/utils'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 
+function CoordinateInput({
+  label,
+  value,
+  onChange,
+  calculation,
+  inputRef,
+  onKeyDown,
+  testId,
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  calculation: ReturnType<typeof useCalculateKclExpression>
+  inputRef: React.RefObject<HTMLInputElement>
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  testId: string
+}) {
+  return (
+    <label className="flex gap-4 items-center border-solid border-b border-chalkboard-50">
+      <span className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
+        {label}
+      </span>
+      <input
+        ref={inputRef}
+        data-testid={testId}
+        type="text"
+        placeholder={`${label} coordinate`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={(e) => e.target.select()}
+        onKeyDown={onKeyDown}
+        className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
+      />
+      <CustomIcon
+        name="equal"
+        className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
+      />
+      <span
+        className={
+          calculation.calcResult === 'NAN'
+            ? 'text-destroy-80 dark:text-destroy-40'
+            : 'text-succeed-80 dark:text-succeed-40'
+        }
+      >
+        {calculation.isExecuting ? (
+          <Spinner className="text-inherit w-4 h-4" />
+        ) : calculation.calcResult === 'NAN' ? (
+          "Can't calculate"
+        ) : calculation.calcResult ? (
+          roundOffWithUnits(calculation.calcResult, 4)
+        ) : (
+          ''
+        )}
+      </span>
+    </label>
+  )
+}
+
 function CommandBarVector3DInput({
   arg,
   stepBack,
@@ -209,117 +267,33 @@ function CommandBarVector3DInput({
           {arg.displayName || arg.name}
         </span>
         <div className="space-y-2">
-          <label className="flex gap-4 items-center border-solid border-b border-chalkboard-50">
-            <span className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
-              X
-            </span>
-            <input
-              ref={xInputRef}
-              data-testid="vector3d-x-input"
-              type="text"
-              placeholder="X coordinate"
-              value={x}
-              onChange={(e) => setX(e.target.value)}
-              onFocus={(e) => e.target.select()}
-              onKeyDown={(e) => handleKeyDown(e, yInputRef)}
-              className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
-            />
-            <CustomIcon
-              name="equal"
-              className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
-            />
-            <span
-              className={
-                xCalculation.calcResult === 'NAN'
-                  ? 'text-destroy-80 dark:text-destroy-40'
-                  : 'text-succeed-80 dark:text-succeed-40'
-              }
-            >
-              {xCalculation.isExecuting ? (
-                <Spinner className="text-inherit w-4 h-4" />
-              ) : xCalculation.calcResult === 'NAN' ? (
-                "Can't calculate"
-              ) : xCalculation.calcResult ? (
-                roundOffWithUnits(xCalculation.calcResult, 4)
-              ) : (
-                ''
-              )}
-            </span>
-          </label>
-          <label className="flex gap-4 items-center border-solid border-b border-chalkboard-50">
-            <span className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
-              Y
-            </span>
-            <input
-              ref={yInputRef}
-              data-testid="vector3d-y-input"
-              type="text"
-              placeholder="Y coordinate"
-              value={y}
-              onChange={(e) => setY(e.target.value)}
-              onFocus={(e) => e.target.select()}
-              onKeyDown={(e) => handleKeyDown(e, zInputRef)}
-              className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
-            />
-            <CustomIcon
-              name="equal"
-              className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
-            />
-            <span
-              className={
-                yCalculation.calcResult === 'NAN'
-                  ? 'text-destroy-80 dark:text-destroy-40'
-                  : 'text-succeed-80 dark:text-succeed-40'
-              }
-            >
-              {yCalculation.isExecuting ? (
-                <Spinner className="text-inherit w-4 h-4" />
-              ) : yCalculation.calcResult === 'NAN' ? (
-                "Can't calculate"
-              ) : yCalculation.calcResult ? (
-                roundOffWithUnits(yCalculation.calcResult, 4)
-              ) : (
-                ''
-              )}
-            </span>
-          </label>
-          <label className="flex gap-4 items-center border-solid border-b border-chalkboard-50">
-            <span className="text-chalkboard-70 dark:text-chalkboard-40 w-4">
-              Z
-            </span>
-            <input
-              ref={zInputRef}
-              data-testid="vector3d-z-input"
-              type="text"
-              placeholder="Z coordinate"
-              value={z}
-              onChange={(e) => setZ(e.target.value)}
-              onFocus={(e) => e.target.select()}
-              onKeyDown={(e) => handleKeyDown(e)}
-              className="flex-1 px-2 py-1 bg-transparent focus:outline-none"
-            />
-            <CustomIcon
-              name="equal"
-              className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
-            />
-            <span
-              className={
-                zCalculation.calcResult === 'NAN'
-                  ? 'text-destroy-80 dark:text-destroy-40'
-                  : 'text-succeed-80 dark:text-succeed-40'
-              }
-            >
-              {zCalculation.isExecuting ? (
-                <Spinner className="text-inherit w-4 h-4" />
-              ) : zCalculation.calcResult === 'NAN' ? (
-                "Can't calculate"
-              ) : zCalculation.calcResult ? (
-                roundOffWithUnits(zCalculation.calcResult, 4)
-              ) : (
-                ''
-              )}
-            </span>
-          </label>
+          <CoordinateInput
+            label="X"
+            value={x}
+            onChange={setX}
+            calculation={xCalculation}
+            inputRef={xInputRef}
+            onKeyDown={(e) => handleKeyDown(e, yInputRef)}
+            testId="vector3d-x-input"
+          />
+          <CoordinateInput
+            label="Y"
+            value={y}
+            onChange={setY}
+            calculation={yCalculation}
+            inputRef={yInputRef}
+            onKeyDown={(e) => handleKeyDown(e, zInputRef)}
+            testId="vector3d-y-input"
+          />
+          <CoordinateInput
+            label="Z"
+            value={z}
+            onChange={setZ}
+            calculation={zCalculation}
+            inputRef={zInputRef}
+            onKeyDown={(e) => handleKeyDown(e)}
+            testId="vector3d-z-input"
+          />
         </div>
       </div>
       <p className="mx-4 mb-4 text-sm text-chalkboard-70 dark:text-chalkboard-40">
