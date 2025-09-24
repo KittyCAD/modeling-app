@@ -32,19 +32,22 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         exec_state,
     )?;
     let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
     let offset: Option<[TyF64; 2]> = args.get_kw_arg_opt("offset", &RuntimeType::point2d(), exec_state)?;
     let in_plane: Option<Plane> = args.get_kw_arg_opt("inPlane", &RuntimeType::plane(), exec_state)?;
     let annotation_style_ty = RuntimeType::from_alias("AnnotationStyle", exec_state, args.source_range)
         .map_err(|err| KclError::internal(format!("Error getting AnnotationStyle runtime type; {err:?}")))?;
     let style: Option<AnnotationStyle> = args.get_kw_arg_opt("style", &annotation_style_ty, exec_state)?;
 
-    inner_flatness(faces, tolerance, offset, in_plane, style, exec_state, &args).await?;
+    inner_flatness(faces, tolerance, precision, offset, in_plane, style, exec_state, &args).await?;
     Ok(KclValue::none())
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn inner_flatness(
     faces: Vec<TagIdentifier>,
     tolerance: TyF64,
+    precision: Option<TyF64>,
     offset: Option<[TyF64; 2]>,
     in_plane: Option<Plane>,
     style: Option<AnnotationStyle>,
@@ -136,7 +139,7 @@ async fn inner_flatness(
                             } else {
                                 KPoint2d { x: 100.0, y: 100.0 }
                             },
-                            precision: 3,
+                            precision: precision.as_ref().map(|n| n.n.round() as u32).unwrap_or(3),
                             font_scale: style
                                 .as_ref()
                                 .and_then(|s| s.font_scale.as_ref().map(|n| n.n as f32))

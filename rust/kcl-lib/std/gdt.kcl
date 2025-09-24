@@ -49,6 +49,9 @@ export fn flatness(
   /// The amount of deviation from a perfect plane that is acceptable.
   @(includeInSnippet = true)
   tolerance: number(Length),
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
   /// The offset of the annotation from the centroid of the faces being annotated. The default is `[100mm, 100mm]`.
   @(includeInSnippet = true)
   offset?: Point2d,
