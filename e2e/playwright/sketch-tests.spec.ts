@@ -18,6 +18,59 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Sketch tests', () => {
+  test('three-point arc closes without disappearing', async ({
+    page,
+    homePage,
+    scene,
+    toolbar,
+    editor,
+    cmdBar,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem('persistCode', '')
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await toolbar.startSketchPlaneSelection()
+    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+    await selectXZPlane()
+    await page.waitForTimeout(600)
+    await editor.expectEditor.toContain('startSketchOn(XZ)')
+
+    //await toolbar.lineBtn.click()
+    const [lineStart] = scene.makeMouseHelpers(600, 400)
+    const [lineEnd] = scene.makeMouseHelpers(600, 200)
+    await lineStart()
+    await page.waitForTimeout(300)
+    await lineEnd()
+    await editor.expectEditor.toContain('|> yLine(')
+
+    await toolbar.selectThreePointArc()
+    await page.waitForTimeout(200)
+
+    await lineEnd()
+    await page.waitForTimeout(200)
+
+    const [arcInteriorMove, arcInterior] = (() => {
+      const [click, move] = scene.makeMouseHelpers(750, 300)
+      return [move, click]
+    })()
+    await arcInteriorMove()
+    await arcInterior()
+    await page.waitForTimeout(200)
+
+    await lineStart() // close
+    await page.waitForTimeout(300)
+
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(2000)
+
+    await editor.expectEditor.toContain('arc(')
+  })
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
     page,
     context,
