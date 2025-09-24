@@ -4,7 +4,7 @@ use kittycad_modeling_cmds::{
     ok_response::OkModelingCmdResponse,
     shared::{
         AnnotationFeatureControl, AnnotationLineEnd, AnnotationMbdControlFrame, AnnotationOptions, AnnotationType,
-        Color, MbdSymbol, Point2d,
+        MbdSymbol, Point2d,
     },
     websocket::OkWebSocketResponseData,
 };
@@ -121,12 +121,7 @@ async fn inner_flatness(
                         text: None,
                         line_ends: None,
                         line_width: None,
-                        color: Some(Color {
-                            r: 0.1,
-                            g: 0.1,
-                            b: 0.1,
-                            a: 1.0,
-                        }),
+                        color: None,
                         position: None,
                         dimension: None,
                         feature_control: Some(AnnotationFeatureControl {
