@@ -1,13 +1,24 @@
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { EngineDebugger } from '@src/lib/debugger'
-import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { useEffect } from 'react'
+
+export interface IUseOnPageExit {
+  callback: () => void
+  engineCommandManager: ConnectionManager
+  sceneInfra: SceneInfra
+}
 
 /**
  * When the router path changes from /file to another path this will be an exit.
  * For example: Going from /file to /home
  * What will not trigger this going from one /file to another /file path. That is not a router exit.
  */
-export const useOnPageExit = ({ callback }: { callback: () => void }) => {
+export const useOnPageExit = ({
+  callback,
+  engineCommandManager,
+  sceneInfra,
+}: IUseOnPageExit) => {
   useEffect(() => {
     return () => {
       EngineDebugger.addLog({
@@ -20,5 +31,5 @@ export const useOnPageExit = ({ callback }: { callback: () => void }) => {
       engineCommandManager.tearDown()
       sceneInfra.camControls.oldCameraState = undefined
     }
-  }, [callback])
+  }, [callback, engineCommandManager, sceneInfra])
 }

@@ -165,6 +165,8 @@ export const ConnectionStream = (props: {
   // Gotcha: If you do it too quickly listenToDarkModeMatcher will complain.
   useOnPageExit({
     callback: resetGlobalEngineCommandManager,
+    engineCommandManager: engineCommandManager,
+    sceneInfra: sceneInfra,
   })
   useOnPageResize({ videoWrapperRef, videoRef, canvasRef })
   useOnPageIdle({
