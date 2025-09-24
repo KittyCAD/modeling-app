@@ -307,6 +307,7 @@ profile001 = startProfile(sketch001, at = [7.49, 9.96])
   test('Deselecting line tool should mean nothing happens on click', async ({
     page,
     homePage,
+    toolbar,
   }) => {
     /**
      * If the line tool is clicked when the state is 'No Points' it will exit Sketch mode.
@@ -334,8 +335,10 @@ profile001 = startProfile(sketch001, at = [7.49, 9.96])
       200
     )
 
-    // Clicks the XZ Plane in the page
-    await page.mouse.click(700, 200)
+    // Clicks the XZ Plane
+    await toolbar.openFeatureTreePane()
+    await page.getByRole('button', { name: 'Front plane' }).click()
+    await toolbar.closeFeatureTreePane()
 
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
