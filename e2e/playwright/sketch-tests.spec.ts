@@ -630,7 +630,10 @@ sketch001 = startSketchOn(XZ)
     await editor.expectEditor.toContain(`|> xLine(length =`)
 
     await click00r(0, 50)
-    await editor.expectEditor.toContain(`|> yLine(length =`)
+    // @pierremtb: this used to create a yLine before the engine zoom fix
+    // in https://github.com/KittyCAD/engine/pull/3804. I updated it to a line call
+    // since it doesn't change the test objective
+    await editor.expectEditor.toContain(`|> line(`)
 
     // exit the sketch, reset relative clicker
     await click00r(undefined, undefined)
