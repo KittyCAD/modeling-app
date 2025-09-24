@@ -33,13 +33,23 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     )?;
     let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
-    let offset: Option<[TyF64; 2]> = args.get_kw_arg_opt("offset", &RuntimeType::point2d(), exec_state)?;
+    let gdt_position: Option<[TyF64; 2]> = args.get_kw_arg_opt("gdtPosition", &RuntimeType::point2d(), exec_state)?;
     let in_plane: Option<Plane> = args.get_kw_arg_opt("inPlane", &RuntimeType::plane(), exec_state)?;
     let annotation_style_ty = RuntimeType::from_alias("AnnotationStyle", exec_state, args.source_range)
         .map_err(|err| KclError::internal(format!("Error getting AnnotationStyle runtime type; {err:?}")))?;
     let style: Option<AnnotationStyle> = args.get_kw_arg_opt("style", &annotation_style_ty, exec_state)?;
 
-    inner_flatness(faces, tolerance, precision, offset, in_plane, style, exec_state, &args).await?;
+    inner_flatness(
+        faces,
+        tolerance,
+        precision,
+        gdt_position,
+        in_plane,
+        style,
+        exec_state,
+        &args,
+    )
+    .await?;
     Ok(KclValue::none())
 }
 
@@ -48,7 +58,7 @@ async fn inner_flatness(
     faces: Vec<TagIdentifier>,
     tolerance: TyF64,
     precision: Option<TyF64>,
-    offset: Option<[TyF64; 2]>,
+    gdt_position: Option<[TyF64; 2]>,
     in_plane: Option<Plane>,
     style: Option<AnnotationStyle>,
     exec_state: &mut ExecState,
@@ -131,7 +141,7 @@ async fn inner_flatness(
                             prefix: None,
                             suffix: None,
                             plane_id: in_plane_id,
-                            offset: if let Some(offset) = &offset {
+                            offset: if let Some(offset) = &gdt_position {
                                 KPoint2d {
                                     x: offset[0].to_mm(),
                                     y: offset[1].to_mm(),
