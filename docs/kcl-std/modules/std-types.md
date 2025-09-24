@@ -13,7 +13,6 @@ Types can (optionally) be used to describe a function's arguments and returned v
 
 ## Types
 
-* [`AnnotationStyle`](/docs/kcl-std/types/std-types-AnnotationStyle)
 * [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d)
 * [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d)
 * [`Edge`](/docs/kcl-std/types/std-types-Edge)
