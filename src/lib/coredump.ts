@@ -13,6 +13,7 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { APP_VERSION } from '@src/routes/utils'
+import {EngineDebugger, ILog} from '@src/lib/debugger'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly
@@ -180,6 +181,7 @@ export class CoreDumpManager {
         engine_connection: { state: { type: '' } },
         default_planes: {},
         scene_command_artifacts: {},
+        connection_logs: [] as ILog[]
       },
       kcl_manager: {
         ast: {},
@@ -227,16 +229,7 @@ export class CoreDumpManager {
         )
       }
 
-      // engine connection state
-      // TODO: Kevin replace with engine debugger logs
-      // if (this.engineCommandManager?.connection?.state) {
-      //   debugLog(
-      //     'CoreDump: Engine Command Manager engine connection state',
-      //     this.engineCommandManager.connection.state
-      //   )
-      //   clientState.engine_command_manager.engine_connection.state =
-      //     this.engineCommandManager.connection.state
-      // }
+      clientState.engine_command_manager.connection_logs = EngineDebugger.logs
 
       // in sequence - this.engineCommandManager.inSequence
       if (this.engineCommandManager?.inSequence) {
