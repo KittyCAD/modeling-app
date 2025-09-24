@@ -1,5 +1,5 @@
 import path, { join } from 'path'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_INSTANCES } from '@src/lib/constants'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
