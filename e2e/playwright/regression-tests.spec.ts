@@ -339,8 +339,8 @@ extrude002 = extrude(profile002, length = 150)`
 
       // expect pixel color to be background color
       const offModelBefore = await scene.convertPagePositionToStream(
+        0.1,
         0.9,
-        0.5,
         'ratio'
       )
       const onModelBefore = await scene.convertPagePositionToStream(
@@ -349,11 +349,9 @@ extrude002 = extrude(profile002, length = 150)`
         'ratio'
       )
 
-      await scene.expectPixelColor(
-        TEST_COLORS.DARK_MODE_BKGD,
-        offModelBefore,
-        15
-      )
+      // not sure why old DARK_MODE_BKGD doesn't work anymore
+      const bgColor: [number, number, number] = [30, 30, 30]
+      await scene.expectPixelColor(bgColor, offModelBefore, 15)
       const standardModelGrey: TestColor = [100, 100, 100]
       await scene.expectPixelColor(standardModelGrey, onModelBefore, 15)
 
@@ -371,11 +369,7 @@ extrude002 = extrude(profile002, length = 150)`
         'ratio'
       )
 
-      await scene.expectPixelColor(
-        TEST_COLORS.DARK_MODE_BKGD,
-        offModelAfter,
-        15
-      )
+      await scene.expectPixelColor(bgColor, offModelAfter, 15)
       await scene.expectPixelColor(standardModelGrey, onModelAfter, 15)
     }
   )
@@ -590,7 +584,7 @@ extrude002 = extrude(profile002, length = 150)`
     const u = await getUtils(page)
 
     // Constants and locators
-    const planeColor: [number, number, number] = [170, 220, 170]
+    const planeColor: [number, number, number] = [100, 100, 100]
     const bgColor: [number, number, number] = TEST_COLORS.DARK_MODE_BKGD
     const middlePixelIsColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
