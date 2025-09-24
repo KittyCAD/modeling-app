@@ -3,7 +3,7 @@ use kittycad_modeling_cmds::{
     self as kcmc,
     shared::{
         AnnotationFeatureControl, AnnotationLineEnd, AnnotationMbdControlFrame, AnnotationOptions, AnnotationType,
-        MbdSymbol, Point2d,
+        MbdSymbol, Point2d as KPoint2d,
     },
 };
 
@@ -112,7 +112,7 @@ async fn inner_flatness(
                         feature_control: Some(AnnotationFeatureControl {
                             entity_id: face_id,
                             // Point to the center of the face.
-                            entity_pos: Point2d { x: 0.5, y: 0.5 },
+                            entity_pos: KPoint2d { x: 0.5, y: 0.5 },
                             leader_type: AnnotationLineEnd::Arrow,
                             dimension: None,
                             control_frame: Some(AnnotationMbdControlFrame {
@@ -129,12 +129,12 @@ async fn inner_flatness(
                             suffix: None,
                             plane_id: in_plane_id,
                             offset: if let Some(offset) = &offset {
-                                Point2d {
+                                KPoint2d {
                                     x: offset[0].to_mm(),
                                     y: offset[1].to_mm(),
                                 }
                             } else {
-                                Point2d { x: 100.0, y: 100.0 }
+                                KPoint2d { x: 100.0, y: 100.0 }
                             },
                             precision: 3,
                             font_scale: style
