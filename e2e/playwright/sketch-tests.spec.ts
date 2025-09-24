@@ -2287,10 +2287,10 @@ extrude001 = extrude(profile003, length = 5)
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
-
+    await toolbar.openFeatureTreePane()
     await toolbar.startSketchPlaneSelection()
-    await selectXZPlane()
+    await page.getByRole('button', { name: 'Front plane' }).click()
+
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)
 
@@ -2313,8 +2313,10 @@ extrude001 = extrude(profile003, length = 5)
 
       await editor.closePane()
       await scene.settled(cmdBar)
-
-      await scene.expectPixelColor([255, 255, 255], { x: 633, y: 211 }, 15)
+      await toolbar.openFeatureTreePane()
+      await expect(
+        await toolbar.getFeatureTreeOperation('Sketch', 0)
+      ).toBeVisible()
     })
   })
   test('A sketch with only "startProfileAt" and no segments should still be able to be continued', async ({
@@ -2597,7 +2599,7 @@ loft([profile001, profile002])
       )
     })
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
