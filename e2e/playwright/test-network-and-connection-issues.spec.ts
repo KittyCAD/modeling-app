@@ -104,14 +104,7 @@ test.describe('Test network related behaviors', () => {
 
       await u.openDebugPanel()
       // click on "Start Sketch" button
-      await u.clearCommandLogs()
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
-      await page.waitForTimeout(100)
-
-      // select a plane
-      await toolbar.openFeatureTreePane()
-      await page.getByRole('button', { name: 'Front plane' }).click()
-      await toolbar.closeFeatureTreePane()
+      await toolbar.startSketchOnDefaultPlane('Front plane')
 
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`

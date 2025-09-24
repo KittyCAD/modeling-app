@@ -329,16 +329,7 @@ profile001 = startProfile(sketch001, at = [7.49, 9.96])
     ).toBeVisible()
 
     // click on "Start Sketch" button
-    await u.clearCommandLogs()
-    await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    )
-
-    // Clicks the XZ Plane
-    await toolbar.openFeatureTreePane()
-    await page.getByRole('button', { name: 'Front plane' }).click()
-    await toolbar.closeFeatureTreePane()
+    await toolbar.startSketchOnDefaultPlane('Front plane')
 
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`

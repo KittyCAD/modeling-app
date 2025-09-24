@@ -1034,8 +1034,7 @@ openSketch = startSketchOn(XY)
         highlightedHeaderArg: 'plane',
         commandName: 'Offset plane',
       })
-      const xz = await toolbar.getFeatureTreeOperation('Front plane', 0)
-      await xz.click()
+      await toolbar.selectDefaultPlane('Front plane')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'offset',
