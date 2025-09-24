@@ -9,17 +9,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import { roundOffWithUnits } from '@src/lib/utils'
-
-// Type guard to safely check if a value is a KclCommandValue
-function isKclCommandValue(value: unknown): value is KclCommandValue {
-  return (
-    value !== null &&
-    typeof value === 'object' &&
-    'valueText' in value &&
-    'valueAst' in value &&
-    'valueCalculated' in value
-  )
-}
+import { isKclCommandValue } from '@src/lib/commandUtils'
 
 function CommandBarVector3DInput({
   arg,
