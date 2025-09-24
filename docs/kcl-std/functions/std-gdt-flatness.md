@@ -13,6 +13,7 @@ GD&T annotation specifying how flat faces should be.
 gdt::flatness(
   faces: [TaggedFace; 1+],
   tolerance: number(Length),
+  precision?: number(_),
   offset?: Point2d,
   inPlane?: Plane,
   style?: AnnotationStyle,
@@ -27,6 +28,7 @@ gdt::flatness(
 |----------|------|-------------|----------|
 | `faces` | [`[TaggedFace; 1+]`](/docs/kcl-std/types/std-types-TaggedFace) | The faces to be annotated. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount of deviation from a perfect plane that is acceptable. | Yes |
+| `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0`. | No |
 | `offset` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The offset of the annotation from the centroid of the faces being annotated. The default is `[100mm, 100mm]`. | No |
 | `inPlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the annotation. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The annotation may be displayed in a plane parallel to the given plane. | No |
 | `style` | [`AnnotationStyle`](/docs/kcl-std/types/std-types-AnnotationStyle) | How to display the annotation. | No |
