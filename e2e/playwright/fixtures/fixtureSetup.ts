@@ -413,13 +413,12 @@ const fixturesBasedOnProcessEnvPlatform = {
   _globalAfterEach: [
     async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
       await use() // <-- runs the actual test
-      // <-- this runs *after every test* in the entire suite
-      // console.log(`[GLOBAL afterEach] ${testInfo.title} => ${testInfo.status}`)
 
-      // if (testInfo.status === 'skipped' || testInfo.status === 'passed') {
-      //   // NO OP
-      //   return
-      // }
+      // <-- this runs *after every test* in the entire suite
+      if (testInfo.status === 'skipped' || testInfo.status === 'passed') {
+        // NO OP
+        return
+      }
 
       const engineLogs: ILog[] = await page.evaluate(
         // @ts-ignore This value is accessible. If it isn't that is not the end of the world
