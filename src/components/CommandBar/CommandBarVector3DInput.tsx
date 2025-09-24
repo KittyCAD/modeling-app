@@ -5,7 +5,6 @@ import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { useModelingContext } from '@src/hooks/useModelingContext'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import { roundOffWithUnits } from '@src/lib/utils'
@@ -66,28 +65,24 @@ function CommandBarVector3DInput({
   // Tracks form readiness based on calculation execution state
   const [canSubmit, setCanSubmit] = useState(true)
 
-  // Get selection
-  const {
-    context: { selectionRanges },
-  } = useModelingContext()
-
   // In the render, each input shows real-time feedback
   // Use calculation hook for each coordinate
+  // Note: Not passing selectionRanges - will default to end-of-file context (all variables available)
   const xCalculation = useCalculateKclExpression({
     value: x,
-    selectionRanges,
+    selectionRanges: { graphSelections: [], otherSelections: [] },
     allowArrays: false,
   })
 
   const yCalculation = useCalculateKclExpression({
     value: y,
-    selectionRanges,
+    selectionRanges: { graphSelections: [], otherSelections: [] },
     allowArrays: false,
   })
 
   const zCalculation = useCalculateKclExpression({
     value: z,
-    selectionRanges,
+    selectionRanges: { graphSelections: [], otherSelections: [] },
     allowArrays: false,
   })
 
