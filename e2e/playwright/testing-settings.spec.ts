@@ -15,7 +15,6 @@ import {
   TEST_SETTINGS_KEY,
 } from '@e2e/playwright/storageStates'
 import {
-  TEST_COLORS,
   createProject,
   executorInputPath,
   getUtils,

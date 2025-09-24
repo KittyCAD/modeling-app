@@ -2275,7 +2275,9 @@ extrude001 = extrude(profile003, length = 5)
       await editor.closePane()
       await scene.settled(cmdBar)
       await toolbar.openFeatureTreePane()
-      expect(await toolbar.getFeatureTreeOperation('Sketch', 0)).toBeVisible()
+      await expect(
+        await toolbar.getFeatureTreeOperation('Sketch', 0)
+      ).toBeVisible()
     })
   })
   test('A sketch with only "startProfileAt" and no segments should still be able to be continued', async ({
