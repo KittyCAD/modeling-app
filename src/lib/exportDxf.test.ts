@@ -104,9 +104,9 @@ describe('DXF Export', () => {
         compositeSolidId: 'solid-1',
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact1)
-      mockDeps.kclManager.artifactGraph.set('path-2', pathArtifact2)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact1 as any)
+      mockDeps.kclManager.artifactGraph.set('path-2', pathArtifact2 as any)
 
       // Mock successful engine response
       const mockResponse: WebSocketResponse = {
@@ -179,8 +179,8 @@ describe('DXF Export', () => {
         type: 'path',
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
 
       // Mock successful engine response
       const mockResponse: WebSocketResponse = {
@@ -263,7 +263,10 @@ describe('DXF Export', () => {
         type: 'plane',
         codeRef: { nodePath: mockOperation.nodePath },
       }
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifactNoPathIds)
+      mockDeps.kclManager.artifactGraph.set(
+        'plane-id',
+        planeArtifactNoPathIds as any
+      )
 
       let result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -285,7 +288,10 @@ describe('DXF Export', () => {
         pathIds: ['path-1'],
         codeRef: { nodePath: mockOperation.nodePath },
       }
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifactEmptyPaths)
+      mockDeps.kclManager.artifactGraph.set(
+        'plane-id',
+        planeArtifactEmptyPaths as any
+      )
 
       result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -311,8 +317,8 @@ describe('DXF Export', () => {
         type: 'path',
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
 
       // Test case 1: Engine command failure
       const mockFailedResponse: WebSocketResponse = {
@@ -365,8 +371,8 @@ describe('DXF Export', () => {
         type: 'path',
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
 
       // Mock successful engine response
       const mockResponse: WebSocketResponse = {
@@ -428,8 +434,8 @@ describe('DXF Export', () => {
         type: 'path',
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
 
       // Mock engine response with multiple files - DXF should be prioritized
       const mockResponse: WebSocketResponse = {
