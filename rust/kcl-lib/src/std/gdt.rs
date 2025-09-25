@@ -129,7 +129,7 @@ async fn inner_flatness(
                             entity_id: face_id,
                             // Point to the center of the face.
                             entity_pos: KPoint2d { x: 0.5, y: 0.5 },
-                            leader_type: AnnotationLineEnd::Arrow,
+                            leader_type: AnnotationLineEnd::Dot,
                             dimension: None,
                             control_frame: Some(AnnotationMbdControlFrame {
                                 symbol: MbdSymbol::Flatness,
