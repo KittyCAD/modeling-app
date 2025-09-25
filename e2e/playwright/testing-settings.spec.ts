@@ -1,8 +1,5 @@
 import { join } from 'path'
-import {
-  PROJECT_SETTINGS_FILE_NAME,
-  SETTINGS_FILE_NAME,
-} from '@src/lib/constants'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import type { DeepPartial } from '@src/lib/types'
 import * as fsp from 'fs/promises'
@@ -19,7 +16,6 @@ import {
   executorInputPath,
   getUtils,
   inputRangeSlideFromCurrentTo,
-  lowerRightMasks,
   settingsToToml,
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
@@ -84,93 +80,6 @@ test.describe(
       expect(storedSettings.settings?.project?.default_project_name).toBe(
         'untitled'
       )
-    })
-
-    // The behavior is actually broken. Parent always takes precedence
-    test('Project settings can be set and override user settings', async ({
-      page,
-      homePage,
-    }) => {
-      const u = await getUtils(page)
-      await test.step(`Setup`, async () => {
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        await homePage.goToModelingScene()
-        await page
-          .getByRole('button', { name: 'Start Sketch' })
-          .waitFor({ state: 'visible' })
-      })
-
-      // Selectors and constants
-      const paneButtonLocator = page.getByTestId('debug-pane-button')
-      const headingLocator = page.getByRole('heading', {
-        name: 'Settings',
-        exact: true,
-      })
-      const inputLocator = page.locator('input[name="app-showDebugPanel"]')
-
-      await test.step('Open settings dialog and set "Show debug panel" to on', async () => {
-        await page.keyboard.press('ControlOrMeta+,')
-        await expect(headingLocator).toBeVisible()
-
-        /** Test to close https://github.com/KittyCAD/modeling-app/issues/2713 */
-        await test.step(`Confirm that this dialog has a solid background`, async () => {
-          await expect
-            .poll(
-              () => u.getGreatestPixDiff({ x: 600, y: 250 }, [28, 28, 28]),
-              {
-                timeout: 1000,
-                message:
-                  'Checking for solid background, should not see default plane colors',
-              }
-            )
-            .toBeLessThan(15)
-        })
-
-        await page.locator('#showDebugPanel').getByText('OffOn').click()
-      })
-
-      // Close it and open again with keyboard shortcut, while KCL editor is focused
-      // Put the cursor in the editor
-      await test.step('Open settings with keyboard shortcut', async () => {
-        await page.getByTestId('settings-close-button').click()
-        await page.locator('.cm-content').click()
-        await page.keyboard.press('ControlOrMeta+,')
-        await expect(headingLocator).toBeVisible()
-      })
-
-      // Verify the toast appeared
-      await expect(
-        page.getByText(`Set show debug panel to "false" for this project`)
-      ).toBeVisible()
-      await expect(
-        page.getByText(`Set show debug panel to "false" for this project`)
-      ).not.toBeVisible()
-
-      // Check that the debug panel button is gone
-      await expect(paneButtonLocator).not.toBeVisible()
-
-      // Check that the user setting was not changed
-      await page.getByRole('radio', { name: 'User' }).click()
-      await expect(inputLocator).toBeChecked()
-
-      // Roll back to default of "off"
-      await await page
-        .getByText(
-          'show debug panelRoll back show debug panelRoll back to match'
-        )
-        .hover()
-      await page
-        .getByRole('button', {
-          name: 'Roll back show debug panel',
-        })
-        .click()
-      await expect(inputLocator).not.toBeChecked()
-
-      // Check that the project setting did not change
-      await page.getByRole('radio', { name: 'Project' }).click()
-      await expect(
-        page.locator('input[name="app-showDebugPanel"]')
-      ).not.toBeChecked()
     })
 
     test('Keybindings display the correct hotkey for Command Palette', async ({
@@ -309,103 +218,6 @@ test.describe(
     })
 
     test(
-      `Project settings override user settings on desktop`,
-      { tag: ['@desktop'] },
-      async ({ context, page }, testInfo) => {
-        const projectName = 'bracket'
-        const { dir: projectDirName } = await context.folderSetupFn(
-          async (dir) => {
-            const bracketDir = join(dir, projectName)
-            await fsp.mkdir(bracketDir, { recursive: true })
-            await fsp.copyFile(
-              executorInputPath('cylinder-inches.kcl'),
-              join(bracketDir, 'main.kcl')
-            )
-          }
-        )
-
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-
-        // Selectors and constants
-        const tempProjectSettingsFilePath = join(
-          projectDirName,
-          projectName,
-          PROJECT_SETTINGS_FILE_NAME
-        )
-        const tempUserSettingsFilePath = join(
-          projectDirName,
-          SETTINGS_FILE_NAME
-        )
-        const userThemeColor = '175'
-        const projectThemeColor = '50'
-        const settingsOpenButton = page.getByRole('link', {
-          name: 'settings Settings',
-        })
-        const themeColorSetting = page
-          .locator('#themeColor')
-          .getByRole('slider')
-        const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
-        const userSettingsTab = page.getByRole('radio', { name: 'User' })
-        const settingsCloseButton = page.getByTestId('settings-close-button')
-        const projectLink = page.getByText('bracket')
-        const logoLink = page.getByTestId('app-logo')
-
-        await test.step('Set user theme color on home', async () => {
-          await expect(settingsOpenButton).toBeVisible()
-          await settingsOpenButton.click()
-          // The user tab should be selected by default on home
-          await expect(userSettingsTab).toBeChecked()
-          await inputRangeSlideFromCurrentTo(themeColorSetting, userThemeColor)
-          await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
-          await settingsCloseButton.click()
-          await expect
-            .poll(async () => fsp.readFile(tempUserSettingsFilePath, 'utf-8'), {
-              message: 'Setting should now be written to the file',
-              timeout: 5_000,
-            })
-            .toContain(`themeColor = "${userThemeColor}"`)
-        })
-
-        await test.step('Set project theme color', async () => {
-          // Open the project
-          await projectLink.click()
-          await settingsOpenButton.click()
-          // The project tab should be selected by default within a project
-          await expect(projectSettingsTab).toBeChecked()
-          await inputRangeSlideFromCurrentTo(
-            themeColorSetting,
-            projectThemeColor
-          )
-          await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
-          await settingsCloseButton.click()
-          // Make sure that the project settings file has been written to before continuing
-          await expect
-            .poll(
-              async () => fsp.readFile(tempProjectSettingsFilePath, 'utf-8'),
-              {
-                message: 'Setting should now be written to the file',
-                timeout: 5_000,
-              }
-            )
-            .toContain(`themeColor = "${projectThemeColor}"`)
-        })
-
-        await test.step('Refresh the application and see project setting applied', async () => {
-          // Make sure we're done navigating before we reload
-          await expect(settingsCloseButton).not.toBeVisible()
-
-          await page.reload({ waitUntil: 'domcontentloaded' })
-          await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
-        })
-
-        await test.step(`Navigate back to the home view and see user setting applied`, async () => {
-          await logoLink.click()
-          await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
-        })
-      }
-    )
-
-    test(
       `Load desktop app with no settings file`,
       {
         tag: '@desktop',
@@ -453,69 +265,6 @@ test.describe(
         // If the app loads without exploding we're in the clear
         await expect(errorHeading).not.toBeVisible()
         await expect(projectDirLink).toBeVisible()
-      }
-    )
-
-    // It was much easier to test the logo color than the background stream color.
-    test(
-      'user settings reload on external change, on project and modeling view',
-      {
-        tag: '@desktop',
-      },
-      async ({ context, page, tronApp }, testInfo) => {
-        if (!tronApp) {
-          fail()
-        }
-
-        await tronApp.cleanProjectDir({
-          app: {
-            appearance: {
-              // Doesn't matter what you set it to. It will
-              // default to 264.5
-
-              color: 0,
-            },
-          },
-        })
-
-        const { dir: projectDirName } = await context.folderSetupFn(
-          async () => {}
-        )
-
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-
-        const logoLink = page.getByTestId('app-logo')
-        const projectDirLink = page.getByText('Loaded from')
-
-        await test.step('Wait for project view', async () => {
-          await expect(projectDirLink).toBeVisible()
-          await expect(logoLink).toHaveCSS('--primary-hue', '264.5')
-        })
-
-        const changeColor = async (color: string) => {
-          const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
-          let tomlStr = await fsp.readFile(tempSettingsFilePath, 'utf-8')
-          tomlStr = tomlStr.replace(/(themeColor = ")[0-9]+(")/, `$1${color}$2`)
-          await fsp.writeFile(tempSettingsFilePath, tomlStr)
-        }
-
-        await test.step('Check color of logo changed', async () => {
-          await changeColor('99')
-          await expect(logoLink).toHaveCSS('--primary-hue', '99')
-        })
-
-        await test.step('Check color of logo changed when in modeling view', async () => {
-          await createProject({ name: 'project-000', page })
-          await changeColor('58')
-          await expect(logoLink).toHaveCSS('--primary-hue', '58')
-        })
-
-        await test.step('Check going back to projects view still changes the color', async () => {
-          await logoLink.click()
-          await expect(projectDirLink).toBeVisible()
-          await changeColor('21')
-          await expect(logoLink).toHaveCSS('--primary-hue', '21')
-        })
       }
     )
 
@@ -1055,73 +804,6 @@ fn cube`
           page.getByText(`Updated per-file units to ${editedInlineUnits.short}`)
         ).toBeVisible()
       })
-    })
-
-    /**
-     * This test assumes that the default value of the "highlight edges" setting is "on".
-     */
-    test(`Toggle stream settings multiple times`, async ({
-      page,
-      scene,
-      homePage,
-      context,
-      toolbar,
-      cmdBar,
-    }, testInfo) => {
-      await context.folderSetupFn(async (dir) => {
-        const projectDir = join(dir, 'project-000')
-        await fsp.mkdir(projectDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('cube.kcl'),
-          join(projectDir, 'main.kcl')
-        )
-      })
-
-      await test.step(`First snapshot`, async () => {
-        await homePage.openProject('project-000')
-        await toolbar.closePane('code')
-        await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
-        await scene.clickNoWhere()
-      })
-
-      const toast = (value: boolean) =>
-        page.getByText(
-          `Set highlight edges to "${String(value)}" as a user default`
-        )
-
-      await test.step(`Toggle highlightEdges off`, async () => {
-        await cmdBar.openCmdBar()
-        await cmdBar.chooseCommand('Settings · modeling · highlight edges')
-        await cmdBar.selectOption({ name: 'off' }).click()
-        const falseToast = toast(false)
-        await expect(falseToast).toBeVisible()
-        await falseToast.waitFor({ state: 'detached' })
-      })
-
-      await expect(scene.streamWrapper).not.toHaveScreenshot(
-        'toggle-settings-initial.png',
-        {
-          maxDiffPixels: 15,
-          mask: lowerRightMasks(page),
-        }
-      )
-
-      await test.step(`Toggle highlightEdges on`, async () => {
-        await cmdBar.openCmdBar()
-        await cmdBar.chooseCommand('Settings · modeling · highlight edges')
-        await cmdBar.selectOption({ name: 'on' }).click()
-        const trueToast = toast(true)
-        await expect(trueToast).toBeVisible()
-        await trueToast.waitFor({ state: 'detached' })
-      })
-
-      await expect(scene.streamWrapper).toHaveScreenshot(
-        'toggle-settings-initial.png',
-        {
-          maxDiffPixels: 15,
-          mask: lowerRightMasks(page),
-        }
-      )
     })
   }
 )

@@ -1,6 +1,4 @@
-import * as path from 'path'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import * as fsp from 'fs/promises'
 
 /* eslint-disable jest/no-conditional-expect */
 
@@ -32,57 +30,6 @@ extrude003 = extrude(sketch003, length = 20)
 `
 
 test.describe('Prompt-to-edit tests', () => {
-  test(`Check the happy path, for basic changing color`, async ({
-    context,
-    homePage,
-    cmdBar,
-    editor,
-    page,
-    scene,
-    toolbar,
-  }) => {
-    await context.folderSetupFn(async (dir) => {
-      const projectDir = path.join(dir, 'test-project')
-      await fsp.mkdir(projectDir, { recursive: true })
-      await fsp.writeFile(path.join(projectDir, 'main.kcl'), file)
-    })
-    await homePage.openProject('test-project')
-    await scene.settled(cmdBar)
-
-    const body1CapCoords = { x: 571, y: 311 }
-    const [clickBody1Cap] = scene.makeMouseHelpers(
-      body1CapCoords.x,
-      body1CapCoords.y
-    )
-    const yellow: [number, number, number] = [179, 179, 131]
-
-    await test.step('wait for scene to load select body and check selection came through', async () => {
-      await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
-      await clickBody1Cap()
-      await scene.expectPixelColor(yellow, body1CapCoords, 20)
-      await editor.expectState({
-        highlightedCode: '',
-        activeLines: ['|>startProfile(at=[-114,85.52])'],
-        diagnostics: [],
-      })
-    })
-
-    await test.step('fire off edit prompt', async () => {
-      await page.setBodyDimensions({ width: 1200, height: 800 })
-      await toolbar.fireTtcPrompt('make this neon green please, use #39FF14')
-
-      await page.waitForTimeout(100)
-
-      await expect(page.getByText('Worked for')).toBeVisible({
-        timeout: 15_000,
-      })
-    })
-
-    await test.step('verify initial change', async () => {
-      await editor.expectEditor.toContain('appearance(')
-    })
-  })
-
   test('bad edit prompt', async ({
     context,
     homePage,

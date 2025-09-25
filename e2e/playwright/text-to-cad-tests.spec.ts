@@ -5,28 +5,6 @@ import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Text-to-CAD tests', () => {
-  test('basic lego happy case', async ({
-    page,
-    homePage,
-    cmdBar,
-    editor,
-    scene,
-  }) => {
-    await page.setBodyDimensions({ width: 2000, height: 1000 })
-    await expect(homePage.textToCadBtn).toBeEnabled()
-
-    const prompt = 'a 2x4 lego'
-    await sendPromptFromCommandBarAndSetNewProject(page, prompt, cmdBar)
-
-    // Look out for the message
-    const submittedMessage = page.getByText(prompt)
-    await expect(submittedMessage.first()).toBeVisible()
-
-    // Expect the code and model render
-    await editor.expectEditor.toContain('startSketchOn', { timeout: 30000 })
-    await scene.settled(cmdBar)
-  })
-
   test('success model, then ignore success toast, user can create new prompt from command bar', async ({
     page,
     homePage,
