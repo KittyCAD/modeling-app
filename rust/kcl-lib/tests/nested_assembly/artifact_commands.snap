@@ -161,6 +161,7 @@ description: Artifact commands nested_assembly.kcl
   "rust/kcl-lib/tests/nested_assembly/nested/foo/bar/main.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

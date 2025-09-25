@@ -215,6 +215,7 @@ description: Artifact commands fillet_duplicate_tags.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

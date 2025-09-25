@@ -5145,6 +5145,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

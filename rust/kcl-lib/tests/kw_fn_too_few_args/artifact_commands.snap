@@ -6,6 +6,7 @@ description: Artifact commands kw_fn_too_few_args.kcl
   "rust/kcl-lib/tests/kw_fn_too_few_args/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

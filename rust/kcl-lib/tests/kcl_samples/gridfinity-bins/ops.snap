@@ -2335,6 +2335,7 @@ description: Operations executed gridfinity-bins.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

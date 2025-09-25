@@ -223,6 +223,7 @@ description: Artifact commands split-washer-spring-version.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

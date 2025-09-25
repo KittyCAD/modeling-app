@@ -147,6 +147,7 @@ description: Operations executed basic_fillet_cube_end.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

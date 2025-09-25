@@ -4014,6 +4014,7 @@ description: Operations executed car-wheel-assembly.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

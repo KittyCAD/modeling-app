@@ -2232,6 +2232,7 @@ description: Operations executed prosthetic-hip.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

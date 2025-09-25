@@ -242,6 +242,7 @@ description: Artifact commands panic_repro_cube.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
