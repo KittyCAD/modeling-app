@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing plane_of_chamfer.kcl
+---
+KCL Engine error
+
+  × engine: No such entity of that type exists
+    ╭─[17:6]
+ 16 │ // Error: no entity of that type exists
+ 17 │ p0 = planeOf(extrude001, face = seg02)
+    ·      ────────────────┬────────────────┬
+    ·                      ╰── tests/plane_of_chamfer/input.kcl
+    ·                      ╰── tests/plane_of_chamfer/input.kcl
+    ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: No such entity of that type exists
+          ╭─[17:6]
+       16 │ // Error: no entity of that type exists
+       17 │ p0 = planeOf(extrude001, face = seg02)
+          ·      ────────────────┬────────────────
+          ·                      ╰── tests/plane_of_chamfer/input.kcl
+          ╰────
