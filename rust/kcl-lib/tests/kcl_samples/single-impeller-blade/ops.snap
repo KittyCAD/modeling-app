@@ -303,6 +303,7 @@ description: Operations executed single-impeller-blade.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

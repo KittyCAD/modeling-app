@@ -858,6 +858,7 @@ description: Operations executed rotate_after_fillet.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -6,6 +6,7 @@ description: Artifact commands array_push_item_wrong_type.kcl
   "rust/kcl-lib/tests/array_push_item_wrong_type/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

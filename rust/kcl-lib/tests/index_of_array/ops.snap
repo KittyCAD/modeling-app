@@ -94,6 +94,7 @@ description: Operations executed index_of_array.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

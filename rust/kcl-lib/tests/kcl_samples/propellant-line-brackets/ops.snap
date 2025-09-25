@@ -1263,6 +1263,7 @@ description: Operations executed propellant-line-brackets.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -1044,6 +1044,7 @@ description: Operations executed pattern_into_union.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

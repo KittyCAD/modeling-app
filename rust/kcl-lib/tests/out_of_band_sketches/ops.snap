@@ -111,6 +111,7 @@ description: Operations executed out_of_band_sketches.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
