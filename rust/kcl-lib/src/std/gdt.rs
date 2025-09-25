@@ -34,7 +34,8 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     )?;
     let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
-    let gdt_position: Option<[TyF64; 2]> = args.get_kw_arg_opt("gdtPosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let in_plane: Option<Plane> = args.get_kw_arg_opt("inPlane", &RuntimeType::plane(), exec_state)?;
     let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
@@ -43,7 +44,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         faces,
         tolerance,
         precision,
-        gdt_position,
+        frame_position,
         in_plane,
         AnnotationStyle {
             font_point_size,
@@ -61,7 +62,7 @@ async fn inner_flatness(
     faces: Vec<TagIdentifier>,
     tolerance: TyF64,
     precision: Option<TyF64>,
-    gdt_position: Option<[TyF64; 2]>,
+    frame_position: Option<[TyF64; 2]>,
     in_plane: Option<Plane>,
     style: AnnotationStyle,
     exec_state: &mut ExecState,
@@ -144,7 +145,7 @@ async fn inner_flatness(
                             prefix: None,
                             suffix: None,
                             plane_id: in_plane_id,
-                            offset: if let Some(offset) = &gdt_position {
+                            offset: if let Some(offset) = &frame_position {
                                 KPoint2d {
                                     x: offset[0].to_mm(),
                                     y: offset[1].to_mm(),

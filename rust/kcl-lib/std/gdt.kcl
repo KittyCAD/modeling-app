@@ -25,7 +25,7 @@
 ///   |> line(end = [0, -10])
 ///   |> close()
 ///   |> extrude(length = 5, tagEnd = $face1)
-/// gdt::flatness(faces = [face1], tolerance = 0.02mm, gdtPosition = [10mm, 20mm], inPlane = XZ)
+/// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], inPlane = XZ)
 /// ```
 ///
 /// ```kcl
@@ -39,7 +39,7 @@
 ///   |> line(end = [0, -10])
 ///   |> close()
 ///   |> extrude(length = 5)
-/// gdt::flatness(faces = [face1], tolerance = 0.02mm, gdtPosition = [10mm, 20mm], inPlane = XZ)
+/// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], inPlane = XZ)
 /// ```
 @(impl = std_rust, experimental = true)
 export fn flatness(
@@ -54,7 +54,7 @@ export fn flatness(
   precision?: number(Count),
   /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
   @(includeInSnippet = true)
-  gdtPosition?: Point2d,
+  framePosition?: Point2d,
   /// The plane in which to display the annotation. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The annotation may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   inPlane?: Plane,
