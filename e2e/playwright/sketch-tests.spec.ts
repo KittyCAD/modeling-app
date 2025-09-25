@@ -1219,6 +1219,7 @@ profile001 = startProfile(sketch001, at=[0, 0])
     await test.step('create two corner rectangles in a row without unequip', async () => {
       await toolbar.rectangleBtn.click()
       await expect(toolbar.rectangleBtn).toHaveAttribute('aria-pressed', 'true')
+      await page.waitForTimeout(300)
 
       await crnRect1point1()
 
@@ -1226,6 +1227,8 @@ profile001 = startProfile(sketch001, at=[0, 0])
         /profile005 = startProfile\(sketch001/
       )
       await editor.closePane()
+
+      await page.waitForTimeout(300)
       await crnRect1point2()
       await editor.expectEditor.toContain(
         /profile005 = startProfile.*angledLine.*angledLine.*angledLine.*line.*close/
