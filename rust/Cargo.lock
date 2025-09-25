@@ -2115,6 +2115,7 @@ dependencies = [
  "hyper 1.6.0",
  "hyper-util",
  "rustls",
+ "rustls-native-certs",
  "rustls-pki-types",
  "tokio",
  "tokio-rustls",
@@ -2523,7 +2524,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.1.4"
+version = "0.1.7"
 dependencies = [
  "indexmap 2.11.4",
  "kcl-error",
@@ -2534,7 +2535,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.97"
+version = "0.1.100"
 dependencies = [
  "anyhow",
  "clap",
@@ -2545,7 +2546,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.97"
+version = "0.1.100"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2554,7 +2555,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.97"
+version = "0.1.100"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2564,7 +2565,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.1.4"
+version = "0.1.7"
 dependencies = [
  "miette",
  "serde",
@@ -2587,7 +2588,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.97"
+version = "0.2.100"
 dependencies = [
  "anyhow",
  "clap",
@@ -2608,7 +2609,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.97"
+version = "0.1.100"
 dependencies = [
  "anyhow",
  "clap",
@@ -2628,7 +2629,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.97"
+version = "0.2.100"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -2708,7 +2709,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.97"
+version = "0.3.100"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2724,7 +2725,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.97"
+version = "0.1.100"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2737,7 +2738,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.97"
+version = "0.1.100"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2751,7 +2752,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.97"
+version = "0.1.100"
 dependencies = [
  "anyhow",
  "bson",
@@ -2782,9 +2783,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.3.37"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b48a9698d68c791df76aa020b596c324177a614e38ff3dd67eedd04db76e222f"
+checksum = "87ad248df3976689e9bd17b93157d7413884c56a59c5c53cdc8aba66d42ea144"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2819,9 +2820,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.137"
+version = "0.2.144"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "749a725dafbe07fca5d655cae814cc8aef82f4e1a1031b5655072299d291e334"
+checksum = "58c575ffec0c363c3cfcffcfcce8891dc365f9cbe7fe79404ed2087e7664f10c"
 dependencies = [
  "anyhow",
  "chrono",
@@ -4471,6 +4472,7 @@ dependencies = [
  "pin-project-lite",
  "quinn",
  "rustls",
+ "rustls-native-certs",
  "rustls-pki-types",
  "serde",
  "serde_json",

@@ -109,7 +109,9 @@ test.describe('Test network related behaviors', () => {
       await page.waitForTimeout(100)
 
       // select a plane
-      await page.mouse.click(700, 200)
+      await toolbar.openFeatureTreePane()
+      await page.getByRole('button', { name: 'Front plane' }).click()
+      await toolbar.closeFeatureTreePane()
 
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
