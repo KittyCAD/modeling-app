@@ -119,6 +119,7 @@ export const ClientSideScene = ({
       // This is called initially too, not just on resize
       sceneInfra.onCanvasResized()
       sceneInfra.camControls.onWindowResize()
+      sceneEntitiesManager.onCamChange()
     })
     observer.observe(container)
 
