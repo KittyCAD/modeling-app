@@ -3,6 +3,7 @@ import { exportSketchToDxf } from '@src/lib/exportDxf'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import { err } from '@src/lib/trap'
 import type { WebSocketResponse } from '@kittycad/lib'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 
 // Mock window.electron for desktop environment tests
 const mockElectron = {
@@ -88,25 +89,43 @@ describe('DXF Export', () => {
   describe('exportSketchToDxf', () => {
     it('should successfully export DXF in browser environment', async () => {
       // Setup: valid plane artifact with pathIds
-      const planeArtifact = {
+      const planeArtifact: Artifact = {
         id: 'plane-id',
         type: 'plane',
         pathIds: ['path-1', 'path-2'],
-        codeRef: { nodePath: mockOperation.nodePath },
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
-      const pathArtifact1 = {
+      const pathArtifact1: Artifact = {
         id: 'path-1',
         type: 'path',
+        planeId: 'plane-id',
+        segIds: [],
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
-      const pathArtifact2 = {
+      const pathArtifact2: Artifact = {
         id: 'path-2',
         type: 'path',
+        planeId: 'plane-id',
+        segIds: [],
         compositeSolidId: 'solid-1',
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact1 as any)
-      mockDeps.kclManager.artifactGraph.set('path-2', pathArtifact2 as any)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact1)
+      mockDeps.kclManager.artifactGraph.set('path-2', pathArtifact2)
 
       // Mock successful engine response
       const mockResponse: WebSocketResponse = {
@@ -168,19 +187,30 @@ describe('DXF Export', () => {
 
     it('should successfully export DXF in desktop environment', async () => {
       // Setup: valid plane artifact with pathIds
-      const planeArtifact = {
+      const planeArtifact: Artifact = {
         id: 'plane-id',
         type: 'plane',
         pathIds: ['path-1'],
-        codeRef: { nodePath: mockOperation.nodePath },
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
-      const pathArtifact = {
+      const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        planeId: 'plane-id',
+        segIds: [],
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
 
       // Mock successful engine response
       const mockResponse: WebSocketResponse = {
@@ -256,17 +286,19 @@ describe('DXF Export', () => {
       )
     })
 
-    it('should return error when plane artifact has invalid data', async () => {
+    it('should return error when plane artifact with empty pathIds', async () => {
       // Test case 1: plane artifact without pathIds
-      const planeArtifactNoPathIds = {
+      const planeArtifactNoPathIds: Artifact = {
         id: 'plane-id',
         type: 'plane',
-        codeRef: { nodePath: mockOperation.nodePath },
+        pathIds: [],
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
-      mockDeps.kclManager.artifactGraph.set(
-        'plane-id',
-        planeArtifactNoPathIds as any
-      )
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifactNoPathIds)
 
       let result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -282,16 +314,17 @@ describe('DXF Export', () => {
       vi.clearAllMocks()
       mockDeps.kclManager.artifactGraph.clear()
 
-      const planeArtifactEmptyPaths = {
+      const planeArtifactEmptyPaths: Artifact = {
         id: 'plane-id',
         type: 'plane',
         pathIds: ['path-1'],
-        codeRef: { nodePath: mockOperation.nodePath },
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
-      mockDeps.kclManager.artifactGraph.set(
-        'plane-id',
-        planeArtifactEmptyPaths as any
-      )
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifactEmptyPaths)
 
       result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -306,19 +339,30 @@ describe('DXF Export', () => {
 
     it('should handle engine command failures and errors', async () => {
       // Setup: valid plane artifact
-      const planeArtifact = {
+      const planeArtifact: Artifact = {
         id: 'plane-id',
         type: 'plane',
         pathIds: ['path-1'],
-        codeRef: { nodePath: mockOperation.nodePath },
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
-      const pathArtifact = {
+      const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        planeId: 'plane-id',
+        segIds: [],
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
 
       // Test case 1: Engine command failure
       const mockFailedResponse: WebSocketResponse = {
@@ -360,19 +404,30 @@ describe('DXF Export', () => {
 
     it('should handle user cancellation in desktop environment', async () => {
       // Setup: valid plane artifact
-      const planeArtifact = {
+      const planeArtifact: Artifact = {
         id: 'plane-id',
         type: 'plane',
         pathIds: ['path-1'],
-        codeRef: { nodePath: mockOperation.nodePath },
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
-      const pathArtifact = {
+      const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        planeId: 'plane-id',
+        segIds: [],
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
 
       // Mock successful engine response
       const mockResponse: WebSocketResponse = {
@@ -423,19 +478,30 @@ describe('DXF Export', () => {
 
     it('should prioritize DXF files when multiple files are returned', async () => {
       // Setup: valid plane artifact with pathIds
-      const planeArtifact = {
+      const planeArtifact: Artifact = {
         id: 'plane-id',
         type: 'plane',
         pathIds: ['path-1'],
-        codeRef: { nodePath: mockOperation.nodePath },
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
-      const pathArtifact = {
+      const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        planeId: 'plane-id',
+        segIds: [],
+        codeRef: {
+          nodePath: mockOperation.nodePath,
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
       }
 
-      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact as any)
-      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact as any)
+      mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
 
       // Mock engine response with multiple files - DXF should be prioritized
       const mockResponse: WebSocketResponse = {
