@@ -202,10 +202,11 @@ export async function exportSketchToDxf(
             window.electron.join(downloadDir, fileName),
             decodedData
           )
-        } catch (e: any) {
+        } catch (e: unknown) {
           console.error('Write file failed:', e)
           toast.error('Failed to save file', { id: toastId })
-          return new Error(e?.message ?? 'Write failed')
+          const message = e instanceof Error ? e.message : 'Write failed'
+          return new Error(message)
         }
 
         toast.success('DXF export completed [TEST]', { id: toastId })
@@ -229,10 +230,11 @@ export async function exportSketchToDxf(
 
       try {
         await window.electron.writeFile(filePathMeta.filePath, decodedData)
-      } catch (e: any) {
+      } catch (e: unknown) {
         console.error('Write file failed:', e)
         toast.error('Failed to save file', { id: toastId })
-        return new Error(e?.message ?? 'Write failed')
+        const message = e instanceof Error ? e.message : 'Write failed'
+        return new Error(message)
       }
 
       toast.success('DXF export completed', { id: toastId })
