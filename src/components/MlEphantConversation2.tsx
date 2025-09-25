@@ -111,7 +111,7 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
         tabIndex={0}
         role="button"
         onClick={() => onClick(tool)}
-        className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-chalkboard-70 p-2 pr-4 rounded-md"
+        className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
       >
         {ML_COPILOT_TOOLS_META[tool].icon({ className: 'w-7 h-7' })}
         {ML_COPILOT_TOOLS_META[tool].pretty}
@@ -123,7 +123,7 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
     <div className="inline-block">
       <div className={`relative ${show ? '' : 'hidden'}`}>
         <div
-          className="flex flex-col gap-2 absolute hover:bg-chalkboard-80 bg-chalkboard-90 mb-1 p-2 border border-chalkboard-70 text-sm rounded-md"
+          className="flex flex-col gap-2 absolute bg-default mb-1 p-2 border border-chalkboard-70 text-sm rounded-md"
           style={{ left: 1, bottom: 0 }}
         >
           {tools}
@@ -131,12 +131,12 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
       </div>
       <button
         onClick={() => setShow(!show)}
-        className="bg-chalkboard-90 flex flex-row items-center p-0 pr-2"
+        className="bg-default flex flex-row items-center p-0 pr-2"
       >
         <CustomIcon name="settings" className="w-7 h-7" />
         <div className="flex flex-row items-center gap-2">
           {props.children}
-          <div className="border-r h-4 border-chalkboard-70"></div>
+          <div className="border-r h-4 b-3"></div>
           <CustomIcon
             onClick={() => setShow(!show)}
             name="plus"
@@ -187,7 +187,7 @@ export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
     <div className="w-full">
       <div className={`relative ${show ? '' : 'hidden'}`}>
         <div
-          className="flex flex-col gap-2 absolute hover:bg-chalkboard-80 bg-chalkboard-90 mb-1 p-2 border border-chalkboard-70 text-sm rounded-md"
+          className="flex flex-col gap-2 absolute hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md"
           style={{ left: 1, bottom: 0 }}
         >
           {tools}
@@ -344,7 +344,7 @@ export const MlEphantConversationInput = (
   return (
     <div className="flex flex-col p-4 gap-2">
       <div className="flex flex-row justify-between">
-        <div className="text-sm text-chalkboard-60">Enter a prompt</div>
+        <div className="text-sm text-3">Enter a prompt</div>
         <BillingStatusBarItem billingContext={props.billingContext} />
       </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
@@ -485,7 +485,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
               {props.isLoading === false ? (
                 <MLEphantConversationStarter />
               ) : (
-                <div className="text-center p-4 text-chalkboard-60 text-md animate-pulse">
+                <div className="text-center p-4 text-3 text-md animate-pulse">
                   Loading history
                 </div>
               )}
