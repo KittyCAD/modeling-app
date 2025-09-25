@@ -70,7 +70,7 @@ const MlCopilotTool = <T extends MlCopilotTool>(props: {
   onRemove: (tool: T) => void
 }) => {
   return (
-    <button className="flex flex-row items-center p-0 pr-2 inline-block">
+    <button className="flex-none flex flex-row items-center p-0 pr-2">
       <div
         tabIndex={0}
         role="button"
@@ -120,7 +120,7 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
   }
 
   return (
-    <div className="inline-block">
+    <div className="flex-none">
       <div className={`relative ${show ? '' : 'hidden'}`}>
         <div
           className="flex flex-col gap-2 absolute bg-default mb-1 p-2 border border-chalkboard-70 text-sm rounded-md"
@@ -184,7 +184,7 @@ export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
   const overflow = false
 
   return (
-    <div className="w-full">
+    <div className="flex-1 flex min-w-0 items-end">
       <div className={`relative ${show ? '' : 'hidden'}`}>
         <div
           className="flex flex-col gap-2 absolute hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md"
@@ -193,11 +193,11 @@ export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
           {tools}
         </div>
       </div>
-      <div className="">
+      <div className="contents">
         <MlCopilotTools onAdd={props.onAdd}>
           <div>{tools.length} Tools</div>
         </MlCopilotTools>
-        <div className="overflow-hidden inline-block">
+        <div className="overflow-hidden flex gap-1">
           {overflow ? <Dots onClick={() => setShow(!show)} /> : tools}
         </div>
       </div>
@@ -214,7 +214,7 @@ enum MlEphantPromptContext {
 export interface MlEphantContextsProps {
   contexts: MlEphantPromptContext[]
 }
-export const MlEphantContexts = (props: MlEphantContextsProps) => {}
+export const MlEphantContexts = (props: MlEphantContextsProps) => { }
 
 interface MlEphantConversationInputProps {
   billingContext: BillingContext
@@ -375,7 +375,7 @@ export const MlEphantConversationInput = (
           {lettersForAnimation}
         </div>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-        <div className="flex justify-between items-center">
+        <div className="flex items-end">
           <MlEphantForcedTools
             inputToMatch={value}
             forcedTools={forcedTools}
@@ -387,7 +387,7 @@ export const MlEphantConversationInput = (
             data-testid="ml-ephant-conversation-input-button"
             disabled={props.disabled}
             onClick={onClick}
-            className="w-10 m-0 bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
+            className="w-10 m-0 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
           >
             <CustomIcon name="arrowUp" className="w-5 h-5 animate-bounce" />
           </button>
