@@ -350,8 +350,6 @@ const fromDataToComponent = (
           </>
         )
       }
-      // Prepare to have this type come down the pipeline.
-      // We have to shut-up tsc.
       case 'markdown': {
         return (
           <>
@@ -438,10 +436,6 @@ const fromDataToComponent = (
     }
   }
 
-  if ('error' in thought) {
-    return <ErroneousThing key={options.key} content={thought.error.detail} />
-  }
-
   return null
 }
 
@@ -485,16 +479,16 @@ export const Thinking = (props: {
     )
   }
 
-  const componentThoughts = props.thoughts.map((thought, index: number) => {
+  const componentThoughts = reasoningThoughts.map((thought, index: number) => {
     return fromDataToComponent(thought, { key: index })
   })
 
   const componentLastGenericThought = (
     <Generic
       content={
-        props.thoughts.findLast(
+        reasoningThoughts.findLast(
           (thought) =>
-            'reasoning' in thought && thought.reasoning?.type === 'text'
+            thought.reasoning.type === 'text'
           // Typescript can't figure out only a `text` type or undefined is found
           // @ts-expect-error
         )?.reasoning?.content ?? 'Thinking...'

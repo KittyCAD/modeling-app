@@ -246,6 +246,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
       <ExchangeCard {...exchange} userAvatar={props.userAvatarSrc} />
     )
   )
+
   return (
     <div className="relative">
       <div className="absolute inset-0">

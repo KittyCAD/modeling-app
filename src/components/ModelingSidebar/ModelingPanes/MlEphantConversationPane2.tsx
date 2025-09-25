@@ -78,7 +78,7 @@ export const MlEphantConversationPane2 = (props: {
 
   const isProcessing = lastExchange[0]
     ? lastExchange[0].responses.some(
-        (x: MlCopilotServerMessage) => 'end_of_stream' in x
+        (x: MlCopilotServerMessage) => 'end_of_stream' in x || 'error' in x
       ) === false
     : false
 
@@ -129,10 +129,9 @@ export const MlEphantConversationPane2 = (props: {
           return
         }
 
-        if (
-          props.mlEphantManagerActor.getSnapshot().context.conversation !==
-          undefined
-        ) {
+        const { context } = props.mlEphantManagerActor.getSnapshot()
+
+        if ( context.conversation !== undefined && !context.problem) {
           return
         }
 
@@ -143,17 +142,20 @@ export const MlEphantConversationPane2 = (props: {
     const subscriptionMlEphantManagerActor =
       props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot2) => {
         const isProcessing =
-          mlEphantManagerActorSnapshot2.matches({
+          (mlEphantManagerActorSnapshot2.matches({
             [MlEphantManagerStates2.Ready]: {
               [MlEphantManagerStates2.Request]: S.Await,
             },
-          }) === false
+          })
+           || mlEphantManagerActorSnapshot2.value === S.Await ) === false
 
-        if (isProcessing) {
+        const { context } = mlEphantManagerActorSnapshot2
+
+        if (isProcessing && !context.problem) {
           return
         }
 
-        if (mlEphantManagerActorSnapshot2.context.conversation !== undefined) {
+        if ( context.conversation !== undefined && !context.problem) {
           return
         }
 

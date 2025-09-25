@@ -213,11 +213,10 @@ function generateReplayResponse(): Extract<
   MlCopilotServerMessage,
   { replay: any }
 > {
-  // @ts-expect-error
   return {
     replay: {
       messages: generateMlServerMessages().map((m: MlCopilotServerMessage) =>
-        BSON.serialize(m)
+        Array.from(BSON.serialize(m))
       ),
     },
   }

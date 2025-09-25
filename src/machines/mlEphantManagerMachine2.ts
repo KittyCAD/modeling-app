@@ -39,6 +39,10 @@ export enum MlEphantManagerTransitions2 {
 
 export type MlEphantManagerEvents2 =
   | {
+    type: 'xstate.done.state.(machine).ready'
+    conversationId: undefined
+  }
+  | {
       type: MlEphantManagerStates2.Setup
       refParentSend: (event: MlEphantManagerEvents2) => void
       // If not present, a new conversation is created.
@@ -60,6 +64,7 @@ export type MlEphantManagerEvents2 =
     }
   | {
       type: MlEphantManagerTransitions2.ConversationClose
+      problem?: MlEphantManagerProblem,
     }
 
 export interface Exchange {
@@ -78,6 +83,14 @@ export type Conversation = {
   exchanges: Exchange[]
 }
 
+export enum MlEphantManagerProblem {
+  NoConversationFound = 'no-conversation-found',
+}
+
+export function isMlEphantManagerProblem(x: unknown): x is MlEphantManagerProblem {
+  return Object.values(MlEphantManagerProblem).some(v => v === x)
+}
+
 export interface MlEphantManagerContext2 {
   apiToken: string
   ws?: WebSocket
@@ -86,6 +99,7 @@ export interface MlEphantManagerContext2 {
   lastMessageId?: number
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
+  problem?: MlEphantManagerProblem,
 }
 
 export const mlEphantDefaultContext2 = (args: {
@@ -99,6 +113,7 @@ export const mlEphantDefaultContext2 = (args: {
   lastMessageId: undefined,
   fileFocusedOnInEditor: undefined,
   projectNameCurrentlyOpened: undefined,
+  problem: undefined,
 })
 
 function isString(x: unknown): x is string {
@@ -175,12 +190,14 @@ export const mlEphantManagerMachine2 = setup({
     [MlEphantManagerStates2.Setup]: fromPromise(async function (
       args: XSInput<MlEphantManagerStates2.Setup>
     ): Promise<Partial<MlEphantManagerContext2>> {
-      assertEvent(args.input.event, [MlEphantManagerStates2.Setup])
+      assertEvent(args.input.event, MlEphantManagerStates2.Setup)
 
       const ws = await Socket(
         WebSocket,
-        '/ws/ml/copilot?' +
-          `conversation_id=${args.input.event.conversationId ?? ''}`,
+        '/ws/ml/copilot' +
+          args.input.event.conversationId
+            ? `?conversation_id=${args.input.event.conversationId}`
+            : '',
         args.input.context.apiToken
       )
 
@@ -206,15 +223,26 @@ export const mlEphantManagerMachine2 = setup({
         )
           return
 
-        // Ignore the dang 'ML-Ephant Copilot' banner
-        if ('info' in response && response.info.text === '🤖 ML-ephant Copilot')
+        // Ignore the session data
+        if ('session_data' in response) {
           return
+        }
+
+        if ('error' in response && response.error.detail.includes('conversation not found')) {
+          args.input.event.refParentSend({
+            type: MlEphantManagerTransitions2.ConversationClose,
+            problem: MlEphantManagerProblem.NoConversationFound,
+          })
+          return 
+        }
+
+        // Ignore the dang 'ML-Ephant Copilot' banner
+        // if ('info' in response && response.info.text === '🤖 ML-ephant Copilot')
+        //   return
 
         // If it's a replay, we'll unravel it and process as if they are real
         // messages being sent from the server.
         if ('replay' in response) {
-          // what? ask jess why `response.replay: unknown`
-          // @ts-expect-error
           for (let bsonMessage of response.replay.messages) {
             const data: Uint8Array = Uint8Array.from(Object.values(bsonMessage))
             const responseReplay = Object.freeze(BSON.deserialize(data))
@@ -256,6 +284,7 @@ export const mlEphantManagerMachine2 = setup({
       })
 
       return {
+        problem: undefined,
         conversation: {
           exchanges: [],
         },
@@ -328,7 +357,8 @@ export const mlEphantManagerMachine2 = setup({
     [MlEphantManagerStates2.Setup]: {
       invoke: {
         input: (args) => {
-          assertEvent(args.event, [MlEphantManagerStates2.Setup])
+          assertEvent(args.event, [MlEphantManagerStates2.Setup, 'xstate.done.state.(machine).ready'])
+
           return {
             event: {
               type: MlEphantManagerStates2.Setup,
@@ -360,6 +390,7 @@ export const mlEphantManagerMachine2 = setup({
                 MlEphantManagerTransitions2.ResponseReceive,
               ]),
             },
+            // Only necessary for one parallel side to return data.
             [MlEphantManagerTransitions2.ConversationClose]: {
               type: 'final',
             },
@@ -386,6 +417,18 @@ export const mlEphantManagerMachine2 = setup({
                       exchanges: Array.from(
                         context.conversation?.exchanges ?? []
                       ),
+                    }
+
+                    // Errors and information are considered their own
+                    // exchanges because they have no end_of_stream signal.
+                    if ('error' in event.response || 'info' in event.response) {
+                      conversation.exchanges.push({
+                        responses: [event.response]
+                      })
+                      return {
+                        conversation,
+                        lastMessageId,
+                      }
                     }
 
                     let lastExchange: Exchange | undefined =
@@ -419,8 +462,13 @@ export const mlEphantManagerMachine2 = setup({
                 MlEphantManagerTransitions2.MessageSend,
               ]),
             },
+            // The parallel side that will return data on close
             [MlEphantManagerTransitions2.ConversationClose]: {
               type: 'final',
+              output: (args) => {
+                assertEvent(args.event, [MlEphantManagerTransitions2.ConversationClose])
+                return args.event.problem
+              },
             },
             [MlEphantManagerTransitions2.MessageSend]: {
               invoke: {
@@ -442,11 +490,26 @@ export const mlEphantManagerMachine2 = setup({
               },
             },
           },
+          onDone: {
+            actions: [
+              (args) => {
+                args.context.ws?.close()
+              },
+              assign((args) => {
+                if (!isMlEphantManagerProblem(args.event.output)) { return {} }
+                return { problem: args.event.output }
+              })
+            ]
+          },
         },
       },
-      onDone: {
-        target: S.Await,
-      },
+      onDone: [
+        {
+          target: MlEphantManagerStates2.Setup,
+          guard: (args) => args.context.problem === MlEphantManagerProblem.NoConversationFound,
+        },
+        { target: S.Await }
+      ]
     },
   },
 })

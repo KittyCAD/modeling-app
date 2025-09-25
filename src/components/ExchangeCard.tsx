@@ -32,18 +32,11 @@ export const ExchangeCardStatus = (props: {
     />
   )
 
-  const isEndOfStream = 'end_of_stream' in (props.responses?.slice(-1)[0] ?? {})
-
-  const MaybeError = () =>
-    props.maybeError ? (
-      <div className="text-rose-400">
-        <CustomIcon
-          name="triangleExclamation"
-          className="w-4 h-4 inline valign"
-        />{' '}
-        {props.maybeError?.error.detail}
-      </div>
-    ) : null
+  // Error and info also signals the end of a stream, because we'll never
+  // see an end_of_stream from them.
+  const isEndOfStream = 
+    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {})
+    || props.responses?.some((x) => 'error' in x || 'info' in x)
 
   return props.onlyShowImmediateThought ? (
     <div className="text-sm text-chalkboard-70">
@@ -165,12 +158,29 @@ type ResponsesCardProp = {
   items: Exchange['responses']
 }
 
+const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
+  props.maybeError ? (
+    <div className="text-rose-400">
+      <CustomIcon
+        name="triangleExclamation"
+        className="w-4 h-4 inline valign"
+      />{' '}
+      {props.maybeError?.error.detail}
+    </div>
+  ) : null
+
 // This can be used to show `delta` or `tool_output`
 export const ResponsesCard = forwardRef((props: ResponsesCardProp) => {
   const items = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
       if ('delta' in response) {
         return <Delta key={index}>{response.delta.delta}</Delta>
+      }
+      if ('info' in response) {
+        return <Delta key={index}>{response.info.text}</Delta>
+      }
+      if ('error' in response) {
+        return <MaybeError key={index} maybeError={response} />
       }
       return null
     }
@@ -207,7 +217,9 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     setUpdatedAt(new Date())
   }, [props.responses.length])
 
-  const isEndOfStream = 'end_of_stream' in (props.responses?.slice(-1)[0] ?? {})
+  const isEndOfStream = 
+    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {})
+    || props.responses?.some((x) => 'error' in x || 'info' in x)
 
   useEffect(() => {
     if (isEndOfStream) {
@@ -238,8 +250,10 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           />
         </div>
       )}
-      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+      { !maybeError &&
       <div
+        tabIndex={0}
+        role="button"
         className="pl-8 flex flex-row items-center cursor-pointer justify-start gap-2"
         onClick={() => onSeeReasoning()}
       >
@@ -263,7 +277,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           startedAt={startedAt}
           updatedAt={updatedAt}
         />
-      </div>
+      </div> }
       <ResponsesCard items={props.responses} />
     </div>
   )
