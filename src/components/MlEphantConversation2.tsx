@@ -87,13 +87,13 @@ const MlCopilotTool = <T extends MlCopilotTool>(props: {
 }
 
 export enum ComponentSize {
-  Compact = 'compact'
+  Compact = 'compact',
 }
 
 export interface MlCopilotToolsProps {
-  size?: ComponentSize.Compact,
+  size?: ComponentSize.Compact
   onAdd: (tool: MlCopilotTool) => void
-  children: ReactNode,
+  children: ReactNode
 }
 const MlCopilotTools = (props: MlCopilotToolsProps) => {
   const [show, setShow] = useState<boolean>(false)
@@ -135,9 +135,13 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
       >
         <CustomIcon name="settings" className="w-7 h-7" />
         <div className="flex flex-row items-center gap-2">
-          { props.children }
+          {props.children}
           <div className="border-r h-4 border-chalkboard-70"></div>
-          <CustomIcon onClick={() => setShow(!show) } name="plus" className="w-5 h-5" />
+          <CustomIcon
+            onClick={() => setShow(!show)}
+            name="plus"
+            className="w-5 h-5"
+          />
         </div>
       </button>
     </div>
@@ -191,10 +195,10 @@ export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
       </div>
       <div className="">
         <MlCopilotTools onAdd={props.onAdd}>
-          <div>{ tools.length } Tools</div>
+          <div>{tools.length} Tools</div>
         </MlCopilotTools>
         <div className="overflow-hidden inline-block">
-          { overflow ? <Dots onClick={() => setShow(!show)} /> : tools}
+          {overflow ? <Dots onClick={() => setShow(!show)} /> : tools}
         </div>
       </div>
     </div>
@@ -204,14 +208,13 @@ export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
 // For now there's only one but in the future there'll be more
 // We'll have a Dummy as a test item
 enum MlEphantPromptContext {
-  Dummy = "o>-<"
+  Dummy = 'o>-<',
 }
 
 export interface MlEphantContextsProps {
   contexts: MlEphantPromptContext[]
 }
-export const MlEphantContexts = (props: MlEphantContextsProps) => {
-}
+export const MlEphantContexts = (props: MlEphantContextsProps) => {}
 
 interface MlEphantConversationInputProps {
   billingContext: BillingContext
