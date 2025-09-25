@@ -35,6 +35,7 @@ import { PATHS } from '@src/lib/paths'
 import type { IndexLoaderData } from '@src/lib/types'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -44,11 +45,11 @@ export const ConnectionStream = (props: {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settings = useSettings()
-  const { setAppState } = useAppState()
+  const { isStreamAcceptingInput, setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
-  const { project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -284,7 +285,13 @@ export const ConnectionStream = (props: {
       })
     },
   })
-  useOnFileRoute()
+  useOnFileRoute({
+    file,
+    isStreamAcceptingInput,
+    engineCommandManager,
+    kclManager,
+    resetCameraPosition,
+  })
   useOnOfflineToExitSketchMode({
     callback: () => {
       modelingSend({ type: 'Cancel' })

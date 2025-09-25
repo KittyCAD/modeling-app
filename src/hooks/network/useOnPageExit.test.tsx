@@ -2,6 +2,8 @@ import { renderHook } from '@testing-library/react'
 import type { IUseOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { vi } from 'vitest'
+import { ConnectionManager } from '@src/network/connectionManager'
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 // Helper function to create callbacks used for spying
 const createCallback = () => {
@@ -9,31 +11,24 @@ const createCallback = () => {
   return callback
 }
 
-const createMockedEngineCommandManager = () => {
-  const engineCommandManager = {
-    tearDown: vi.fn(() => 2),
-  }
-  return engineCommandManager
-}
-
-const DEFAULT_OLD_CAMERA_STATE = 'some-old-state'
-const createMockedSceneInfra = () => {
-  const sceneInfra = {
-    camControls: {
-      oldCameraState: DEFAULT_OLD_CAMERA_STATE,
-    },
-  }
-  return sceneInfra
-}
-
 describe('useOnPageExit tests', () => {
   test('on hook onmounted with mocked global singletons', () => {
     const callback = createCallback()
-    const engineCommandManager = createMockedEngineCommandManager()
-    const sceneInfra = createMockedSceneInfra()
+    const engineCommandManager = new ConnectionManager()
+    vi.spyOn(engineCommandManager, 'tearDown')
+    const sceneInfra = new SceneInfra(engineCommandManager)
+    sceneInfra.camControls.oldCameraState = {
+      eye_offset: 1.0,
+      fov_y: 1.0,
+      ortho_scale_enabled: true,
+      ortho_scale_factor: 1.0,
+      world_coord_system: 'right_handed_up_z',
+      is_ortho: true,
+      pivot_position: { x: 1.0, y: 1.0, z: 1.0 },
+      pivot_rotation: { x: 1.0, y: 1.0, z: 1.0, w: 1.0 },
+    }
     expect(callback).toHaveBeenCalledTimes(0)
     expect(engineCommandManager.tearDown).toHaveBeenCalledTimes(0)
-    expect(sceneInfra.camControls.oldCameraState).toBe(DEFAULT_OLD_CAMERA_STATE)
     const { unmount } = renderHook(() =>
       useOnPageExit({
         callback,

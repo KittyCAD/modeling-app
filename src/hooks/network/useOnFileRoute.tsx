@@ -1,10 +1,16 @@
-import { PATHS } from '@src/lib/paths'
-import type { IndexLoaderData } from '@src/lib/types'
-import { useRouteLoaderData } from 'react-router-dom'
 import { useEffect, useRef } from 'react'
-import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import { useAppState } from '@src/AppState'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import type { FileEntry } from '@src/lib/project'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type { resetCameraPosition } from '@src/lib/resetCameraPosition'
+
+export interface IUseOnFileRoute {
+  file: FileEntry | undefined
+  isStreamAcceptingInput: boolean
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  resetCameraPosition: typeof resetCameraPosition
+}
 
 /**
  * When the router switches from one /file route to another /file route
@@ -12,10 +18,14 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
  *
  * If a connection is established with the engine and a /file route happens we need to execute the code
  */
-export const useOnFileRoute = () => {
+export const useOnFileRoute = ({
+  file,
+  isStreamAcceptingInput,
+  engineCommandManager,
+  kclManager,
+  resetCameraPosition,
+}: IUseOnFileRoute) => {
   const seenFilePath = useRef('')
-  const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
-  const { isStreamAcceptingInput } = useAppState()
   useEffect(() => {
     // This will trigger on page load no matter what. The engine won't be available which will reject the first attempt to execute the file.
     // Execution will happen after the engine connection process.
@@ -53,5 +63,11 @@ export const useOnFileRoute = () => {
      * e.g. We can call `navigate(/file/<>)` or `navigate(/file/<>/settings)` as much as we want and it will
      * trigger this workflow.
      */
-  }, [file, isStreamAcceptingInput])
+  }, [
+    file,
+    isStreamAcceptingInput,
+    engineCommandManager,
+    kclManager,
+    resetCameraPosition,
+  ])
 }
