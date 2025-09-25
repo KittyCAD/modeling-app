@@ -198,8 +198,7 @@ test.describe('Sketch tests', () => {
 
     await test.step('Open feature tree and select Front plane (XZ)', async () => {
       await toolbar.openFeatureTreePane()
-
-      await page.getByRole('button', { name: 'Front plane' }).click()
+      await toolbar.selectDefaultPlane('Front plane')
 
       await page.waitForTimeout(600)
 
@@ -1033,8 +1032,6 @@ profile001 = startProfile(sketch001, at=[0, 0])
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
 
-    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
-
     const [startProfile1] = scene.makeMouseHelpers(568, 150)
     const [endLineStartTanArc] = scene.makeMouseHelpers(701, 158)
     const [endArcStartLine] = scene.makeMouseHelpers(745, 189)
@@ -1087,8 +1084,7 @@ profile001 = startProfile(sketch001, at=[0, 0])
       306
     )
 
-    await toolbar.startSketchPlaneSelection()
-    await selectXZPlane()
+    await toolbar.startSketchOnDefaultPlane('Front plane')
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)
     await editor.expectEditor.toContain('sketch001 = startSketchOn(XZ)')
@@ -1399,8 +1395,7 @@ extrude001 = extrude(profile003, length = 5)
     await scene.settled(cmdBar)
 
     await toolbar.openFeatureTreePane()
-    await toolbar.startSketchPlaneSelection()
-    await page.getByRole('button', { name: 'Front plane' }).click()
+    await toolbar.startSketchOnDefaultPlane('Front plane')
 
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)

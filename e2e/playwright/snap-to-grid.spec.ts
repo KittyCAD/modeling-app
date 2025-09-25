@@ -12,9 +12,7 @@ test.describe('Snap to Grid', () => {
     await homePage.goToModelingScene()
 
     // Enter sketch mode and select a default axis from the Feature Tree
-    await toolbar.startSketchBtn.click()
-    await toolbar.openFeatureTreePane()
-    await page.getByRole('button', { name: 'Front plane' }).click()
+    await toolbar.startSketchOnDefaultPlane('Front plane')
     await page.waitForTimeout(600)
 
     // Ensure the line tool is equipped
