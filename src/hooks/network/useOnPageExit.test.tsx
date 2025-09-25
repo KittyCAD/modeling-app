@@ -27,7 +27,7 @@ const createMockedSceneInfra = () => {
 }
 
 describe('useOnPageExit tests', () => {
-  test('attempt', () => {
+  test('on hook onmounted with mocked global singletons', () => {
     const callback = createCallback()
     const engineCommandManager = createMockedEngineCommandManager()
     const sceneInfra = createMockedSceneInfra()
