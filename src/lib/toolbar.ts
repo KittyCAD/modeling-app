@@ -1063,15 +1063,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         hotkey: 'L',
         description: 'Start drawing straight lines',
         links: [],
-        isActive: ({ sketchSolveState }) => {
-          if (!sketchSolveState) {
-            return false
-          }
-          return (
-            sketchSolveState.matches('using tool') &&
-            sketchSolveState.context.sketchSolveTool === 'dimension'
-          )
-        },
+        isActive: ({ sketchSolveState }) =>
+          !!(
+            sketchSolveState?.matches('using tool') &&
+            sketchSolveState?.context?.sketchSolveTool === 'dimension'
+          ),
       },
     ],
   },
