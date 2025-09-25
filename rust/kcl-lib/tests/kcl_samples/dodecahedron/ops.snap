@@ -7098,6 +7098,7 @@ description: Operations executed dodecahedron.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -631,6 +631,7 @@ description: Operations executed user_reported_union_2_bug.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

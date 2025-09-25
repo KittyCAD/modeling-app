@@ -471,17 +471,13 @@ impl<'a> FromKclValue<'a> for TagIdentifier {
 
 impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        match arg {
-            KclValue::HomArray { value, .. } => {
-                let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
-                Some(tags)
-            }
-            KclValue::Tuple { value, .. } => {
-                let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
-                Some(tags)
-            }
-            _ => None,
-        }
+        let tags = arg
+            .clone()
+            .into_array()
+            .iter()
+            .map(|v| v.get_tag_identifier().unwrap())
+            .collect();
+        Some(tags)
     }
 }
 

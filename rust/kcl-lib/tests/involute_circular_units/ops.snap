@@ -507,6 +507,7 @@ description: Operations executed involute_circular_units.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

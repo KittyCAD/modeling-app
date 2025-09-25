@@ -590,6 +590,7 @@ description: Operations executed router-template-cross-bar.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

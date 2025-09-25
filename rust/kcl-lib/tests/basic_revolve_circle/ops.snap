@@ -138,6 +138,7 @@ description: Operations executed basic_revolve_circle.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

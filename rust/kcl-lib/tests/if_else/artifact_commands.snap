@@ -6,6 +6,7 @@ description: Artifact commands if_else.kcl
   "rust/kcl-lib/tests/if_else/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

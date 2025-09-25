@@ -4834,6 +4834,7 @@ description: Operations executed stylized-dump-truck.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -536,6 +536,7 @@ description: Operations executed router-template-slate.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

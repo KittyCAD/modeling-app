@@ -2646,6 +2646,7 @@ description: Operations executed import_async.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
