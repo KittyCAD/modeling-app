@@ -1,3 +1,5 @@
+// From issue https://github.com/KittyCAD/modeling-app/issues/7832
+
 sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> yLine(length = 1.14)
@@ -14,5 +16,7 @@ extrude001 = extrude(profile001, length = 2, tagEnd = $capEnd001)
      )
 
 p0 = planeOf(extrude001, face = seg02)
+
+// Extra bit to show it working on the rendered model
 sketch002 = startSketchOn(p0)
   |> circle(center = [-0.5, -0.5], radius = 0.1)
