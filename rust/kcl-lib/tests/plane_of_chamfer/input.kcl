@@ -13,5 +13,6 @@ extrude001 = extrude(profile001, length = 2, tagEnd = $capEnd001)
        tag = $seg02,
      )
 
-// Error: no entity of that type exists
 p0 = planeOf(extrude001, face = seg02)
+sketch002 = startSketchOn(p0)
+  |> circle(center = [-0.5, -0.5], radius = 0.1)

@@ -13,6 +13,13 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
     7[Solid2d]
   end
+  subgraph path22 [Path]
+    22["Path<br>[509, 552, 0]"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    23["Segment<br>[509, 552, 0]"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    24[Solid2d]
+  end
   1["Plane<br>[12, 29, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   8["Sweep Extrusion<br>[243, 295, 0]"]
@@ -35,8 +42,10 @@ flowchart LR
   19["SweepEdge Adjacent"]
   20["EdgeCut Chamfer<br>[301, 433, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  21["PlaneOfFace<br>[480, 513, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  21["Plane<br>[509, 552, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+  25["StartSketchOnPlane<br>[486, 503, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -80,5 +89,8 @@ flowchart LR
   16 <--x 13
   18 <--x 13
   14 <--x 20
-  20 <--x 21
+  21 --- 22
+  21 <--x 25
+  22 --- 23
+  22 --- 24
 ```
