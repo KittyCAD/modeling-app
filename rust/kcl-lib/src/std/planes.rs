@@ -62,7 +62,7 @@ pub(crate) async fn inner_plane_of(
 
     // Flush the batch for our fillets/chamfers if there are any.
     exec_state
-        .flush_batch_for_solids(args.into(), &[(solid).clone()])
+        .flush_batch_for_solids(args.into(), std::slice::from_ref(&solid))
         .await?;
 
     // Query the engine to learn what plane, if any, this face is on.
