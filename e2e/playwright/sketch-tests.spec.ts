@@ -1752,7 +1752,6 @@ profile001 = startProfile(sketch001, at=[0, 0])
       // Verify the three-point arc was created correctly
       await editor.expectEditor.toContain('arc(')
       await editor.expectEditor.toContain('interiorAbsolute')
-      //await editor.expectEditor.toContain('')
 
       // Switch back to line tool to continue
       await toolbar.lineBtn.click()
