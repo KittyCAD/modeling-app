@@ -1,12 +1,15 @@
 import fs from 'fs'
 import path from 'path'
-import { DEFAULT_PROJECT_KCL_FILE } from '@src/lib/constants'
+import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import fsp from 'fs/promises'
+import { NIL as uuidNIL } from 'uuid'
 
 import {
   createProject,
   executorInputPath,
   getUtils,
+  isOutOfViewInScrollContainer,
+  runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -1193,3 +1196,602 @@ test(
     })
   }
 )
+
+test(
+  'You can change the root projects directory and nothing is lost',
+  {
+    tag: '@desktop',
+  },
+  async ({ context, page, tronApp, homePage }, testInfo) => {
+    if (!tronApp) {
+      fail()
+    }
+
+    await context.folderSetupFn(async (dir) => {
+      await Promise.all([
+        fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
+        fsp.mkdir(`${dir}/bracket`, { recursive: true }),
+      ])
+      await Promise.all([
+        fsp.copyFile(
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
+          `${dir}/router-template-slate/main.kcl`
+        ),
+        fsp.copyFile(
+          'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_bracket.kcl',
+          `${dir}/bracket/main.kcl`
+        ),
+      ])
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    // we'll grab this from the settings on screen before we switch
+    let originalProjectDirName: string
+    const newProjectDirName = testInfo.outputPath(
+      'electron-test-projects-dir-2'
+    )
+    if (fs.existsSync(newProjectDirName)) {
+      await fsp.rm(newProjectDirName, { recursive: true })
+    }
+
+    await homePage.projectsLoaded()
+
+    await test.step('We can change the root project directory', async () => {
+      // expect to see the project directory settings link
+      await expect(
+        page.getByTestId('project-directory-settings-link')
+      ).toBeVisible()
+
+      await page.getByTestId('project-directory-settings-link').click()
+
+      await expect(page.getByTestId('project-directory-button')).toBeVisible()
+      originalProjectDirName = await page
+        .locator('section#projectDirectory input')
+        .inputValue()
+
+      const handleFile = tronApp.electron.evaluate(
+        async ({ dialog }, filePaths) => {
+          dialog.showOpenDialog = () =>
+            Promise.resolve({ canceled: false, filePaths })
+        },
+        [newProjectDirName]
+      )
+      await page.getByTestId('project-directory-button').click()
+      await handleFile
+
+      await expect
+        .poll(() => page.locator('section#projectDirectory input').inputValue())
+        .toContain(newProjectDirName)
+
+      await page.getByTestId('settings-close-button').click()
+
+      await homePage.projectsLoaded()
+
+      await expect(page.getByText('No projects found')).toBeVisible()
+      await createProject({ name: 'project-000', page, returnHome: true })
+      await expect(
+        page.getByTestId('project-link').filter({ hasText: 'project-000' })
+      ).toBeVisible()
+    })
+
+    await test.step('We can change back to the original root project directory', async () => {
+      await expect(
+        page.getByTestId('project-directory-settings-link')
+      ).toBeVisible()
+
+      await page.getByTestId('project-directory-settings-link').click()
+
+      const handleFile = tronApp.electron.evaluate(
+        async ({ dialog }, filePaths) => {
+          dialog.showOpenDialog = () =>
+            Promise.resolve({ canceled: false, filePaths })
+        },
+        [originalProjectDirName]
+      )
+      await expect(page.getByTestId('project-directory-button')).toBeVisible()
+
+      await page.getByTestId('project-directory-button').click()
+      await handleFile
+
+      await homePage.projectsLoaded()
+      await expect(page.locator('section#projectDirectory input')).toHaveValue(
+        originalProjectDirName
+      )
+
+      await page.getByTestId('settings-close-button').click()
+
+      await expect(page.getByText('bracket')).toBeVisible()
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+    })
+  }
+)
+
+test(
+  'Search projects on desktop home',
+  {
+    tag: '@desktop',
+  },
+  async ({ context, page }, testInfo) => {
+    const projectData = [
+      ['basic bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
+      ['basic-cube', 'basic_fillet_cube_end.kcl'],
+      ['basic-cylinder', 'cylinder.kcl'],
+      ['router-template-slate', 'router-template-slate.kcl'],
+      ['Ancient Temple Block', 'lego.kcl'],
+    ]
+    await context.folderSetupFn(async (dir) => {
+      // Do these serially to ensure the order is correct
+      for (const [name, file] of projectData) {
+        await fsp.mkdir(path.join(dir, name), { recursive: true })
+        await fsp.copyFile(
+          executorInputPath(file),
+          path.join(dir, name, `main.kcl`)
+        )
+      }
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    // Our locator constants
+    const searchInput = page.getByPlaceholder('Search projects')
+    const projectLinks = page.getByTestId('project-link')
+
+    await test.step('Search for "basi"', async () => {
+      await searchInput.fill('basi')
+      await expect(projectLinks).toHaveCount(3)
+
+      // Check each of the "basi" projects are visible
+      for (const [name] of projectData.slice(0, 3)) {
+        await expect(page.getByText(name)).toBeVisible()
+      }
+    })
+
+    await test.step('Clear search to see all projects', async () => {
+      await searchInput.fill('')
+      await expect(projectLinks).toHaveCount(projectData.length)
+    })
+
+    await test.step('Search for "templ"', async () => {
+      await searchInput.fill('templ')
+      await expect(projectLinks).toHaveCount(2)
+
+      // Check the "*templ*" project is visible
+      for (const [name] of projectData.slice(-2)) {
+        await expect(page.getByText(name)).toBeVisible()
+      }
+    })
+  }
+)
+
+test(
+  'file pane is scrollable when there are many files',
+  {
+    tag: '@desktop',
+  },
+  async ({ scene, cmdBar, context, page }, testInfo) => {
+    await context.folderSetupFn(async (dir) => {
+      const testDir = path.join(dir, 'testProject')
+      await fsp.mkdir(testDir, { recursive: true })
+      const fileNames = [
+        'angled_line.kcl',
+        'basic_fillet_cube_close_opposite.kcl',
+        'basic_fillet_cube_end.kcl',
+        'basic_fillet_cube_next_adjacent.kcl',
+        'basic_fillet_cube_previous_adjacent.kcl',
+        'basic_fillet_cube_start.kcl',
+        'broken-code-test.kcl',
+        'circular_pattern3d_a_pattern.kcl',
+        'close_arc.kcl',
+        'computed_var.kcl',
+        'cube-embedded.gltf',
+        'cube.bin',
+        'cube.glb',
+        'cube.gltf',
+        'cube.kcl',
+        'cube.mtl',
+        'cube.obj',
+        'cylinder.kcl',
+        'dimensions_match.kcl',
+        'extrude-custom-plane.kcl',
+        'extrude-inside-fn-with-tags.kcl',
+        'fillet-and-shell.kcl',
+        'focusrite_scarlett_mounting_bracket.kcl',
+        'function_sketch.kcl',
+        'function_sketch_with_position.kcl',
+        'global-tags.kcl',
+        'helix_defaults.kcl',
+        'helix_defaults_negative_extrude.kcl',
+        'helix_with_length.kcl',
+        'kittycad_svg.kcl',
+        'lego.kcl',
+        'lsystem.kcl',
+        'math.kcl',
+        'member_expression_sketch.kcl',
+        'mike_stress_test.kcl',
+        'negative_args.kcl',
+        'order-sketch-extrude-in-order.kcl',
+        'order-sketch-extrude-out-of-order.kcl',
+        'parametric.kcl',
+        'parametric_with_tan_arc.kcl',
+        'pattern_vase.kcl',
+        'pentagon_fillet_sugar.kcl',
+        'pipe_as_arg.kcl',
+        'pipes_on_pipes.kcl',
+        'riddle.kcl',
+        'riddle_small.kcl',
+        'router-template-slate.kcl',
+        'scoped-tags.kcl',
+        'server-rack-heavy.kcl',
+        'server-rack-lite.kcl',
+        'sketch_on_face.kcl',
+        'sketch_on_face_circle_tagged.kcl',
+        'sketch_on_face_end.kcl',
+        'sketch_on_face_end_negative_extrude.kcl',
+        'sketch_on_face_start.kcl',
+        'tan_arc_x_line.kcl',
+        'tangential_arc.kcl',
+      ]
+      for (const fileName of fileNames) {
+        await fsp.copyFile(
+          executorInputPath(fileName),
+          path.join(testDir, fileName)
+        )
+      }
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await test.step('setup, open file pane', async () => {
+      await page.getByText('testProject').click()
+
+      await scene.settled(cmdBar)
+
+      await page.getByTestId('files-pane-button').click()
+    })
+
+    await test.step('check the last file is out of view initially, and can be scrolled to', async () => {
+      const u = await getUtils(page)
+      const element = u.locatorFile('tangential_arc.kcl')
+      const container = page.getByTestId('file-pane-scroll-container')
+
+      await expect(await isOutOfViewInScrollContainer(element, container)).toBe(
+        true
+      )
+      await element.scrollIntoViewIfNeeded()
+      await expect(await isOutOfViewInScrollContainer(element, container)).toBe(
+        false
+      )
+    })
+  }
+)
+
+test(
+  'select all in code editor does not actually select all, just what is visible (regression)',
+  {
+    tag: '@desktop',
+  },
+  async ({ context, page }, testInfo) => {
+    await context.folderSetupFn(async (dir) => {
+      // rust/kcl-lib/e2e/executor/inputs/mike_stress_test.kcl
+      const name = 'mike_stress_test'
+      const testDir = path.join(dir, name)
+      await fsp.mkdir(testDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath(`${name}.kcl`),
+        path.join(testDir, 'main.kcl')
+      )
+    })
+    const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    page.on('console', console.log)
+
+    await page.getByText('mike_stress_test').click()
+
+    await test.step('select all in code editor, check its length', async () => {
+      await u.codeLocator.click()
+      // expect u.codeLocator to have some text
+      await expect(u.codeLocator).toContainText('line(')
+      await page.keyboard.down('ControlOrMeta')
+      await page.keyboard.press('KeyA')
+      await page.keyboard.up('ControlOrMeta')
+
+      // check the length of the selected text
+      const selectedText = await page.evaluate(() => {
+        const selection = window.getSelection()
+        return selection ? selection.toString() : ''
+      })
+      // even though if the user copied the text into their clipboard they would get the full text
+      // it seems that the selection is limited to what is visible
+      // we just want to check we did select something, and later we've verify it's empty
+      expect(selectedText.length).toBeGreaterThan(10)
+    })
+
+    await test.step('delete all the text, select again and verify there are no characters left', async () => {
+      await page.keyboard.press('Backspace')
+
+      await page.keyboard.down('ControlOrMeta')
+      await page.keyboard.press('KeyA')
+      await page.keyboard.up('ControlOrMeta')
+
+      // check the length of the selected text
+      const selectedText = await page.evaluate(() => {
+        const selection = window.getSelection()
+        return selection ? selection.toString() : ''
+      })
+      expect(selectedText.length).toBe(0)
+      await expect(u.codeLocator).toHaveText('')
+    })
+  }
+)
+
+test(
+  'Settings persist across restarts',
+  {
+    tag: '@desktop',
+  },
+  async ({ page, toolbar }, testInfo) => {
+    await test.step('We can change a user setting like theme', async () => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      page.on('console', console.log)
+
+      await toolbar.userSidebarButton.click()
+
+      await page.getByTestId('user-settings').click()
+
+      await expect(page.getByTestId('app-theme')).toHaveValue('dark')
+
+      await page.getByTestId('app-theme').selectOption('light')
+      await expect(page.getByTestId('app-theme')).toHaveValue('light')
+
+      // Give time to system for writing to a persistent store
+      await page.waitForTimeout(1000)
+    })
+
+    await test.step('Starting the app again and we can see the same theme', async () => {
+      await page.reload()
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      page.on('console', console.log)
+      await expect(page.getByTestId('app-theme')).toHaveValue('light')
+    })
+  }
+)
+
+test(
+  'Original project name persist after onboarding',
+  {
+    tag: '@desktop',
+  },
+  async ({ page, toolbar }, testInfo) => {
+    const nextButton = page.getByTestId('onboarding-next')
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    const getAllProjects = () => page.getByTestId('project-link').all()
+    page.on('console', console.log)
+
+    await test.step('Should create and name a project called wrist brace', async () => {
+      await createProject({ name: 'wrist brace', page, returnHome: true })
+    })
+
+    await test.step('Should go through onboarding', async () => {
+      await toolbar.userSidebarButton.click()
+      await page.getByTestId('user-settings').click()
+      await page.getByRole('button', { name: 'Replay Onboarding' }).click()
+
+      while ((await nextButton.innerText()) !== 'Finish') {
+        await nextButton.click()
+      }
+      await nextButton.click()
+
+      await page.getByTestId('project-sidebar-toggle').click()
+    })
+
+    await test.step('Should go home after onboarding is completed', async () => {
+      await page.getByRole('button', { name: 'Go to Home' }).click()
+    })
+
+    await test.step('Should show the original project called wrist brace', async () => {
+      const projectNames = ['tutorial-project', 'wrist brace']
+      for (const [index, projectLink] of (await getAllProjects()).entries()) {
+        await expect(projectLink).toContainText(projectNames[index])
+      }
+    })
+  }
+)
+
+test(
+  'project name with foreign characters should open',
+  { tag: '@desktop' },
+  async ({ context, page, cmdBar, scene, homePage }) => {
+    const projectName = 'العربية'
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'العربية')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
+        path.join(bracketDir, 'main.kcl')
+      )
+    })
+
+    await homePage.openProject(projectName)
+    await scene.settled(cmdBar)
+  }
+)
+
+test(
+  'import from nested directory',
+  { tag: ['@desktop', '@windows', '@macos'] },
+  async ({ homePage, scene, cmdBar, context, page, editor }) => {
+    const lineOfKcl = runningOnWindows()
+      ? `import 'nested\\main.kcl' as thing`
+      : `import 'nested/main.kcl' as thing`
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'bracket')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      const nestedDir = path.join(bracketDir, 'nested')
+      await fsp.mkdir(nestedDir, { recursive: true })
+
+      await fsp.copyFile(
+        executorInputPath('cylinder-inches.kcl'),
+        path.join(nestedDir, 'main.kcl')
+      )
+      await fsp.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        `${lineOfKcl}\n\nthing`
+      )
+    })
+
+    await test.step('Opening the bracket project should load the stream', async () => {
+      // expect to see the text bracket
+      await homePage.openProject('bracket')
+      await scene.settled(cmdBar)
+
+      await editor.expectState({
+        activeLines: [lineOfKcl],
+        diagnostics: [],
+        highlightedCode: '',
+      })
+    })
+  }
+)
+
+test(
+  'segment position changes persist after dragging and reopening project',
+  { tag: '@desktop' },
+  async ({ scene, cmdBar, context, page, editor, toolbar }) => {
+    const projectName = 'segment-drag-test'
+
+    await context.folderSetupFn(async (dir) => {
+      const projectDir = path.join(dir, projectName)
+      await fsp.mkdir(projectDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(projectDir, 'main.kcl'),
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [0, 6])
+  |> line(end = [10, 0])
+  |> line(end = [-8, -5])
+`
+      )
+    })
+    const u = await getUtils(page)
+
+    await test.step('Opening the project and entering sketch mode', async () => {
+      await expect(page.getByText(projectName)).toBeVisible()
+      await page.getByText(projectName).click()
+
+      await scene.settled(cmdBar)
+
+      // go to sketch mode
+      await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+
+      // Without this, "add axis n grid" action runs after editing the sketch and invokes codeManager.writeToFile()
+      // so we wait for that action to run first before we start editing the sketch and making sure it's saving
+      // because of those edits.
+      await page.waitForTimeout(2000)
+    })
+
+    const lineToChange = 'line(end = [-8, -5])'
+    const lineToStay = 'line(end = [10, 0])'
+
+    await test.step('Dragging the line endpoint to modify it', async () => {
+      // Get the last line's endpoint position
+      const lineEnd = await u.getBoundingBox('[data-overlay-index="3"]')
+
+      await page.mouse.move(lineEnd.x, lineEnd.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(lineEnd.x + 80, lineEnd.y)
+      await page.mouse.up()
+
+      await editor.expectEditor.not.toContain(lineToChange)
+      await editor.expectEditor.toContain(lineToStay)
+
+      // Exit sketch mode
+      await page.keyboard.press('Escape')
+      await page.waitForTimeout(100)
+    })
+
+    await test.step('Going back to dashboard', async () => {
+      await page.getByTestId('app-logo').click()
+      await page.waitForTimeout(1000)
+    })
+
+    await test.step('Reopening the project and verifying changes are saved', async () => {
+      await page.getByText(projectName).click()
+
+      // Check if new line coordinates were saved
+      await editor.expectEditor.not.toContain(lineToChange)
+      await editor.expectEditor.toContain(lineToStay)
+    })
+  }
+)
+
+test.describe('Project id', () => {
+  // Should work on both web and desktop.
+  test(
+    'is created on new project',
+    {
+      tag: ['@desktop', '@web'],
+    },
+    async ({ page, toolbar, context, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+
+      const inputProjectId = page.getByTestId('project-id')
+
+      await test.step('Open the project settings modal', async () => {
+        await toolbar.projectSidebarToggle.click()
+        await page.getByTestId('project-settings').click()
+        // Give time to system for writing to a persistent store
+        await page.waitForTimeout(1000)
+      })
+
+      await test.step('Check project id is not the NIL UUID and not empty', async () => {
+        await expect(inputProjectId).not.toHaveValue(uuidNIL)
+        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      })
+    }
+  )
+  test(
+    'is created on existing project without one',
+    { tag: '@desktop' },
+    async ({ page, toolbar, context, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      await context.folderSetupFn(async (rootDir) => {
+        const projectDir = path.join(rootDir, 'hoohee')
+        await fsp.mkdir(projectDir, { recursive: true })
+        await fsp.writeFile(
+          path.join(projectDir, 'project.toml'),
+          `[settings.app]
+themeColor = "255"
+`
+        )
+      })
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+
+      const inputProjectId = page.getByTestId('project-id')
+
+      await test.step('Open the project settings modal', async () => {
+        await toolbar.projectSidebarToggle.click()
+        await page.getByTestId('project-settings').click()
+        // Give time to system for writing to a persistent store
+        await page.waitForTimeout(1000)
+      })
+
+      await test.step('Check project id is not the NIL UUID and not empty', async () => {
+        await expect(inputProjectId).not.toHaveValue(uuidNIL)
+        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      })
+    }
+  )
+})
