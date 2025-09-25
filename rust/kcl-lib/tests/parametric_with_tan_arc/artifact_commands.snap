@@ -261,6 +261,7 @@ description: Artifact commands parametric_with_tan_arc.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

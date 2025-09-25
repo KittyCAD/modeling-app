@@ -1039,6 +1039,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'fillet3d',
     prepareToEdit: prepareToEditEdgeTreatment,
   },
+  'gdt::flatness': {
+    label: 'Flatness',
+    icon: 'gdtFlatness',
+  },
   helix: {
     label: 'Helix',
     icon: 'helix',

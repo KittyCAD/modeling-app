@@ -85,6 +85,7 @@ description: Operations executed execute_engine_error_return.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

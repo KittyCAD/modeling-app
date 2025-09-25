@@ -434,6 +434,7 @@ description: Operations executed import_mesh_clone.kcl
   "rust/kcl-lib/tests/inputs/cube.obj": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

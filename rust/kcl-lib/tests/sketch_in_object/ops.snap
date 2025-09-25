@@ -245,6 +245,7 @@ description: Operations executed sketch_in_object.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

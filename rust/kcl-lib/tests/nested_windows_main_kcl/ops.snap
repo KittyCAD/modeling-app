@@ -130,6 +130,7 @@ description: Operations executed nested_windows_main_kcl.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

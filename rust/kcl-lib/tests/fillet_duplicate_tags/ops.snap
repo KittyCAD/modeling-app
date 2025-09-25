@@ -146,6 +146,7 @@ description: Operations executed fillet_duplicate_tags.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

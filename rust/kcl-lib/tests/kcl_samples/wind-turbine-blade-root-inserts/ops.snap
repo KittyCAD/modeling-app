@@ -3843,6 +3843,7 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

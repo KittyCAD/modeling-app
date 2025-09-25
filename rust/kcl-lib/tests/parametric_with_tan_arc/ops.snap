@@ -345,6 +345,7 @@ description: Operations executed parametric_with_tan_arc.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -145,6 +145,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

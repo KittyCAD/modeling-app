@@ -265,6 +265,7 @@ description: Operations executed double_map_fn.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

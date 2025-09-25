@@ -989,6 +989,7 @@ description: Operations executed linear-shelf-system.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

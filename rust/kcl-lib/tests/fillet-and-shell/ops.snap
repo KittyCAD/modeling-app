@@ -1584,6 +1584,7 @@ description: Operations executed fillet-and-shell.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

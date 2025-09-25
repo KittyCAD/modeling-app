@@ -1101,6 +1101,7 @@ description: Artifact commands bench-for-kids.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
