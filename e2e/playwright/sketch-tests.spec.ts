@@ -1018,6 +1018,319 @@ profile001 = startProfile(sketch001, at=[0, 0])
     })
   })
 
+  test('Can add multiple profiles to a sketch (all tool types)', async ({
+    scene,
+    toolbar,
+    editor,
+    page,
+    homePage,
+  }) => {
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await editor.closePane()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+
+    const [startProfile1] = scene.makeMouseHelpers(568, 150)
+    const [endLineStartTanArc] = scene.makeMouseHelpers(701, 158)
+    const [endArcStartLine] = scene.makeMouseHelpers(745, 189)
+
+    const [startProfile2] = scene.makeMouseHelpers(782, 120)
+    const [profile2Point2] = scene.makeMouseHelpers(921, 130)
+    const [profile2Point3] = scene.makeMouseHelpers(953, 178)
+
+    const [circle1Center] = scene.makeMouseHelpers(842, 147)
+    const [circle1Radius, circle1RadiusMove] = scene.makeMouseHelpers(870, 171)
+
+    const [circle2Center, moveCircle2Center] = scene.makeMouseHelpers(850, 222)
+    const [circle2Radius] = scene.makeMouseHelpers(843, 230)
+
+    const [crnRect1point1] = scene.makeMouseHelpers(583, 205)
+    const [crnRect1point2] = scene.makeMouseHelpers(618, 320)
+
+    const [crnRect2point1] = scene.makeMouseHelpers(663, 215)
+    const [crnRect2point2] = scene.makeMouseHelpers(744, 276)
+
+    const [cntrRect1point1] = scene.makeMouseHelpers(624, 387)
+    const [cntrRect1point2] = scene.makeMouseHelpers(676, 355)
+
+    const [cntrRect2point1] = scene.makeMouseHelpers(785, 332)
+    const [cntrRect2point2] = scene.makeMouseHelpers(808, 286)
+
+    const [circle3Point1p1, circle3Point1p1Move] = scene.makeMouseHelpers(
+      630,
+      465
+    )
+    const [circle3Point1p2, circle3Point1p2Move] = scene.makeMouseHelpers(
+      273,
+      340
+    )
+    const [circle3Point1p3, circle3Point1p3Move] = scene.makeMouseHelpers(
+      334,
+      414
+    )
+
+    const [circle3Point2p1, circle3Point2p1Move] = scene.makeMouseHelpers(
+      376,
+      351
+    )
+    const [circle3Point2p2, circle3Point2p2Move] = scene.makeMouseHelpers(
+      375,
+      279
+    )
+    const [circle3Point2p3, circle3Point2p3Move] = scene.makeMouseHelpers(
+      334,
+      306
+    )
+
+    await toolbar.startSketchPlaneSelection()
+    await selectXZPlane()
+    // timeout wait for engine animation is unavoidable
+    await page.waitForTimeout(600)
+    await editor.expectEditor.toContain('sketch001 = startSketchOn(XZ)')
+    await test.step('Create a close profile stopping mid profile to equip the tangential arc, then three-point arc, and then back to the line tool', async () => {
+      await startProfile1()
+      await editor.expectEditor.toContain('profile001 = startProfile(')
+
+      await endLineStartTanArc()
+      await editor.expectEditor.toContain(/profile001 = startProfile.*\|> line/)
+      await toolbar.selectTangentialArc()
+      await page.waitForTimeout(300)
+      // Purposefully click in a bad spot to see the tan arc warning
+      await page.mouse.click(745, 359)
+      await page.waitForTimeout(300)
+      await endLineStartTanArc({ delay: 544 })
+
+      await endArcStartLine()
+      await editor.expectEditor.toContain(
+        /profile001 = startProfile.*\|> line.*\|> tangentialArc/
+      )
+
+      // Add a three-point arc segment
+      await toolbar.selectThreePointArc()
+      await page.waitForTimeout(300)
+
+      // select end of profile again
+      await endArcStartLine()
+      await page.waitForTimeout(300)
+
+      // Define points for the three-point arc
+      const [threePointInterior, threePointInteriorMove] =
+        scene.makeMouseHelpers(600, 200)
+      const [threePointEnd, threePointEndMove] = scene.makeMouseHelpers(
+        590,
+        270
+      )
+
+      // Create the three-point arc
+      await page.waitForTimeout(300)
+      await threePointInteriorMove()
+      await threePointInterior()
+      await page.waitForTimeout(300)
+      await threePointEndMove()
+      await threePointEnd()
+      await page.waitForTimeout(300)
+
+      // Verify the three-point arc was created correctly
+      await editor.expectEditor.toContain('arc(')
+      await editor.expectEditor.toContain('interiorAbsolute')
+      await editor.expectEditor.toContain('')
+
+      // Switch back to line tool to continue
+      await toolbar.lineBtn.click()
+      await page.waitForTimeout(300)
+
+      // Continue with the original line segment
+      await threePointEnd()
+      await page.waitForTimeout(300)
+
+      const [lineSegmentClick] = scene.makeMouseHelpers(572, 110)
+      await lineSegmentClick()
+
+      await editor.expectEditor.toContain(/arc\(.*\|> line\(/)
+      await startProfile1()
+      await editor.expectEditor.toContain(
+        `|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()`,
+        { shouldNormalise: true }
+      )
+      await page.waitForTimeout(300)
+    })
+
+    await test.step('Without unequipping from the last step, make another profile, and one that is not closed', async () => {
+      await startProfile2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(/profile002 = startProfile/)
+      await profile2Point2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(/profile002 = startProfile.*\|> line/)
+      await profile2Point3()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        /profile002 = startProfile.*\|> line.*\|> line/
+      )
+    })
+
+    await test.step('create two circles in a row without unequip', async () => {
+      await toolbar.circleBtn.click()
+
+      await circle1Center()
+      await page.waitForTimeout(300)
+      await circle1RadiusMove()
+      await circle1Radius({ delay: 500 })
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(/profile003 = circle\(sketch001/)
+
+      await test.step('hover in empty space to wait for overlays to get out of the way', async () => {
+        await scene.moveNoWhere()
+        await page.waitForTimeout(1000)
+      })
+
+      await moveCircle2Center()
+      await circle2Center({ delay: 50 })
+      await page.waitForTimeout(300)
+      await circle2Radius()
+      await editor.expectEditor.toContain(/profile004 = circle\(sketch001/)
+      await page.waitForTimeout(300)
+    })
+    await test.step('create two corner rectangles in a row without unequip', async () => {
+      await toolbar.rectangleBtn.click()
+      await expect(toolbar.rectangleBtn).toHaveAttribute('aria-pressed', 'true')
+
+      await crnRect1point1()
+      await editor.expectEditor.toContain(
+        /profile005 = startProfile\(sketch001/
+      )
+      await editor.closePane()
+      await crnRect1point2()
+      await editor.expectEditor.toContain(
+        /profile005 = startProfile.*angledLine.*angledLine.*angledLine.*line.*close/
+      )
+
+      await crnRect2point1()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(/profile006 = startProfile/)
+      await crnRect2point2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        /profile006 = startProfile.*angledLine.*angledLine.*angledLine.*line.*close/
+      )
+    })
+
+    await test.step('create two center rectangles in a row without unequip', async () => {
+      await toolbar.selectCenterRectangle()
+
+      await cntrRect1point1()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(/profile007 = startProfile/)
+      await editor.closePane()
+      await cntrRect1point2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        /profile007 = startProfile.*angledLine.*angledLine.*angledLine.*line.*close/
+      )
+      await page.waitForTimeout(300)
+
+      await cntrRect2point1()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(/profile008 = startProfile/)
+      await editor.closePane()
+      await cntrRect2point2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        /profile008 = startProfile.*angledLine.*angledLine.*angledLine.*line.*close/
+      )
+    })
+
+    await test.step('create two circle-three-points in a row without an unequip', async () => {
+      await toolbar.selectCircleThreePoint()
+
+      await circle3Point1p1Move()
+      await circle3Point1p1()
+      await page.waitForTimeout(300)
+      await circle3Point1p2Move()
+      await circle3Point1p2()
+      await page.waitForTimeout(300)
+      await circle3Point1p3Move()
+      await circle3Point1p3()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        /profile009 = circleThreePoint\(\s*sketch001/
+      )
+
+      await circle3Point2p1Move()
+      await circle3Point2p1()
+      await page.waitForTimeout(300)
+      await circle3Point2p2Move()
+      await circle3Point2p2()
+      await page.waitForTimeout(300)
+      await circle3Point2p3Move()
+      await circle3Point2p3()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        /profile010 = circleThreePoint\(\s*sketch001/
+      )
+    })
+
+    await test.step('create three-point arcs in a row without an unequip', async () => {
+      // Define points for the first three-point arc
+      const [arc1Point1, arc1Point1Move] = scene.makeMouseHelpers(700, 397)
+      const [arc1Point2, arc1Point2Move] = scene.makeMouseHelpers(724, 346)
+      const [arc1Point3, arc1Point3Move] = scene.makeMouseHelpers(785, 415)
+
+      // Define points for the second three-point arc
+      const [arc2Point1, arc2Point1Move] = scene.makeMouseHelpers(792, 225)
+      const [arc2Point2, arc2Point2Move] = scene.makeMouseHelpers(820, 207)
+      const [arc2Point3, arc2Point3Move] = scene.makeMouseHelpers(905, 229)
+
+      // Select the three-point arc tool
+      await toolbar.selectThreePointArc()
+
+      // Create the first three-point arc
+      await arc1Point1Move()
+      await arc1Point1()
+      await page.waitForTimeout(300)
+      await arc1Point2Move()
+      await arc1Point2()
+      await page.waitForTimeout(300)
+      await arc1Point3Move()
+      await arc1Point3()
+      await page.waitForTimeout(300)
+
+      // Verify the first three-point arc was created correctly
+      await editor.expectEditor.toContain(
+        /profile011 = startProfile.*arc\(interiorAbsolute/
+      )
+
+      // Create the second three-point arc
+      await arc2Point1Move()
+      await arc2Point1()
+      await page.waitForTimeout(300)
+      await arc2Point2Move()
+      await arc2Point2()
+      await page.waitForTimeout(300)
+      await arc2Point3Move()
+      await arc2Point3()
+      await page.waitForTimeout(300)
+
+      // Verify the second three-point arc was created correctly
+      await editor.expectEditor.toContain(
+        /profile011 = startProfile.*arc\(interiorAbsolute.*arc\(interiorAbsolute/
+      )
+    })
+
+    await test.step('double check that three-point arc can be unequipped', async () => {
+      // this was tested implicitly for other tools, but not for three-point arc since it's last
+      await page.waitForTimeout(300)
+      await toolbar.lineBtn.click()
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+    })
+  })
+
   test('can enter sketch when there is an extrude', async ({
     homePage,
     scene,

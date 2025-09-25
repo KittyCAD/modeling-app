@@ -5,6 +5,27 @@ import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Text-to-CAD tests', () => {
+  test('basic lego happy case', async ({
+    page,
+    homePage,
+    cmdBar,
+    editor,
+    scene,
+  }) => {
+    await page.setBodyDimensions({ width: 2000, height: 1000 })
+    await expect(homePage.textToCadBtn).toBeEnabled()
+
+    const prompt = 'a 2x4 lego'
+    await sendPromptFromCommandBarAndSetNewProject(page, prompt, cmdBar)
+
+    // Look out for the message
+    const submittedMessage = page.getByText(prompt)
+    await expect(submittedMessage.first()).toBeVisible()
+
+    // Expect the code and model render
+    await editor.expectEditor.toContain('startSketchOn', { timeout: 30000 })
+    await scene.settled(cmdBar)
+  })
   test('success model, then ignore success toast, user can create new prompt from command bar', async ({
     page,
     homePage,
@@ -56,71 +77,6 @@ test.describe('Text-to-CAD tests', () => {
     // Make sure the new prompt works
     await editor.expectEditor.toContain('startSketchOn', { timeout: 60_000 })
   })
-
-  // TODO: enable once we can do it in the ml elephant pane
-  // test('ensure you can shift+enter in the prompt box', async ({
-  //   page,
-  //   homePage,
-  //   cmdBar,
-  // }) => {
-  //   const u = await getUtils(page)
-
-  //   await page.setBodyDimensions({ width: 1000, height: 500 })
-
-  //   const projectName = await homePage.goToModelingScene()
-  //   await u.waitForPageLoad()
-
-  //   const promptWithNewline = `a 2x4\nlego`
-
-  //   await test.step('Get to the prompt step to test', async () => {
-  //     await cmdBar.openCmdBar()
-  //     await cmdBar.selectOption({ name: 'Text-to-CAD Create' }).click()
-
-  //     await cmdBar.currentArgumentInput.fill('existing')
-  //     await cmdBar.progressCmdBar()
-
-  //     await cmdBar.currentArgumentInput.fill(projectName)
-  //     await cmdBar.progressCmdBar()
-
-  //     await cmdBar.expectState({
-  //       commandName: 'Text-to-CAD Create',
-  //       stage: 'arguments',
-  //       currentArgKey: 'prompt',
-  //       currentArgValue: '',
-  //       highlightedHeaderArg: 'prompt',
-  //       headerArguments: {
-  //         Method: 'Existing project',
-  //         ProjectName: projectName,
-  //         Prompt: '',
-  //       },
-  //     })
-  //   })
-
-  //   // Type the prompt.
-  //   await page.keyboard.type('a 2x4')
-  //   await page.waitForTimeout(1000)
-  //   await page.keyboard.down('Shift')
-  //   await page.keyboard.press('Enter')
-  //   await page.keyboard.up('Shift')
-  //   await page.keyboard.type('lego')
-  //   await page.waitForTimeout(1000)
-  //   await page.keyboard.press('Enter')
-
-  //   // Find the toast.
-  //   // Look out for the toast message
-  //   const submittedMessage = page.getByText('a 2x4')
-  //   await expect(submittedMessage).toBeVisible()
-
-  //   const generatingToastMessage = page.getByText(
-  //     `Generating parametric model...`
-  //   )
-  //   await expect(generatingToastMessage).toBeVisible({ timeout: 10000 })
-
-  //   const successToastMessage = page.getByText(`Text-to-CAD successful`)
-  //   await expect(successToastMessage).toBeVisible({ timeout: 15000 })
-
-  //   await expect(page.getByText(promptWithNewline)).toBeVisible()
-  // })
 })
 
 async function sendPromptFromCommandBarAndSetNewProject(
