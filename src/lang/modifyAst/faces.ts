@@ -23,7 +23,7 @@ import {
   getArtifactOfTypes,
   getCapCodeRef,
   getFaceCodeRef,
-  getSweepArtifactFromSelection,
+  getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
 import type {
   Artifact,
@@ -126,7 +126,10 @@ export function addOffsetPlane({
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
   const hasFaceToOffset = plane.graphSelections.some(
-    (sel) => sel.artifact?.type === 'cap' || sel.artifact?.type === 'wall'
+    (sel) =>
+      sel.artifact?.type === 'cap' ||
+      sel.artifact?.type === 'wall' ||
+      sel.artifact?.type === 'edgeCut'
   )
   if (hasFaceToOffset) {
     const result = buildSolidsAndFacesExprs(
@@ -217,6 +220,10 @@ function getFacesExprsFromSelection(
       }
 
       return createLocalName(tagResult.tag)
+    } else if (artifact.type === 'edgeCut') {
+      console.log('artifact is edgeCut, not implemented yet', artifact)
+      // TODO: figure out how to find the chamfer op and mutate it with a tag
+      return []
     } else {
       console.warn('Face was not a cap or wall', face)
       return []
@@ -372,7 +379,11 @@ function buildSolidsAndFacesExprs(
 ) {
   const solids: Selections = {
     graphSelections: faces.graphSelections.flatMap((f) => {
-      const sweep = getSweepArtifactFromSelection(f, artifactGraph)
+      if (!f.artifact) return []
+      const sweep = getSweepFromSuspectedSweepSurface(
+        f.artifact.id,
+        artifactGraph
+      )
       if (err(sweep) || !sweep) return []
       return {
         artifact: sweep as Artifact,
