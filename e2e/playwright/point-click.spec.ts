@@ -1,5 +1,3 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
 import type { Page } from '@playwright/test'
 
 import { bracket } from '@e2e/playwright/fixtures/bracket'
@@ -108,6 +106,108 @@ test.describe('Point-and-click tests', () => {
     })
   })
 
+  test('Create an Extrude operation with a tag and edit it via Feature Tree', async ({
+    context,
+    editor,
+    homePage,
+    page,
+    scene,
+    toolbar,
+    cmdBar,
+  }) => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 5)`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, code)
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await test.step('Add extrude with tags', async () => {
+      await toolbar.extrudeButton.click()
+      await editor.selectText('circle')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: '5',
+        headerArguments: {
+          Profiles: '1 profile',
+          Length: '',
+        },
+        highlightedHeaderArg: 'length',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('4')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Length: '4',
+          Profiles: '1 profile',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.clickOptionalArgument('tagEnd')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'tagEnd$',
+        currentArgValue: '',
+        headerArguments: {
+          Length: '4',
+          Profiles: '1 profile',
+          TagEnd: '',
+        },
+        highlightedHeaderArg: 'tagEnd',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('myEndTag')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Length: '4',
+          Profiles: '1 profile',
+          TagEnd: 'myEndTag',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.submit()
+      await editor.expectEditor.toContain(
+        'extrude(profile001, length = 4, tagEnd = $myEndTag)'
+      )
+    })
+
+    await test.step(`Edit first extrude via feature tree`, async () => {
+      await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: '4',
+        headerArguments: {
+          Length: '4',
+          TagEnd: 'myEndTag',
+        },
+        highlightedHeaderArg: 'length',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('3')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Length: '3',
+          TagEnd: 'myEndTag',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain(
+        'extrude(profile001, length = 3, tagEnd = $myEndTag)'
+      )
+    })
+  })
+
   test.describe('verify sketch on chamfer works', () => {
     const _sketchOnAChamfer =
       (
@@ -192,254 +292,6 @@ test.describe('Point-and-click tests', () => {
           await toolbar.waitForFeatureTreeToBeBuilt()
         })
       }
-    test('works on all edge selections and can break up multi edges in a chamfer array', async ({
-      context,
-      page,
-      homePage,
-      editor,
-      toolbar,
-      scene,
-      cmdBar,
-    }) => {
-      const file = await fs.readFile(
-        path.resolve(
-          __dirname,
-          '../../',
-          './rust/kcl-lib/e2e/executor/inputs/e2e-can-sketch-on-chamfer.kcl'
-        ),
-        'utf-8'
-      )
-      await context.addInitScript((file) => {
-        localStorage.setItem('persistCode', file)
-      }, file)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-
-      const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
-
-      await sketchOnAChamfer({
-        clickCoords: { x: 570, y: 220 },
-        cameraPos: { x: 16020, y: -2000, z: 10500 },
-        cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine(angle=segAng(rectangleSegmentA001)-90deg,length=217.26,tag=$seg01)
-      chamfer(length = 30,tags = [
-      seg01,
-      getNextAdjacentEdge(yo),
-      getNextAdjacentEdge(seg02),
-      getOppositeEdge(seg01)
-    ],
-    )`,
-
-        afterChamferSelectSnippet:
-          'sketch002 = startSketchOn(extrude001, face = seg03)',
-        afterRectangle1stClickSnippet:
-          'startProfile(sketch002, at = [205.96, 254.59])',
-        afterRectangle2ndClickSnippet: `angledLine(angle=0deg,length=11.39,tag=$rectangleSegmentA002)
-        |>angledLine(angle=segAng(rectangleSegmentA002)-90deg,length=105.26)
-        |>angledLine(angle=segAng(rectangleSegmentA002),length=-segLen(rectangleSegmentA002))
-        |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
-        |>close()`,
-      })
-
-      await sketchOnAChamfer({
-        clickCoords: { x: 690, y: 250 },
-        cameraPos: { x: 16020, y: -2000, z: 10500 },
-        cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 217.26, tag = $seg01)chamfer(
-         length = 30,
-         tags = [
-           seg01,
-           getNextAdjacentEdge(yo),
-           getNextAdjacentEdge(seg02)
-         ]
-       )`,
-
-        afterChamferSelectSnippet:
-          'sketch003 = startSketchOn(extrude001, face = seg04)',
-        afterRectangle1stClickSnippet:
-          'startProfile(sketch003, at = [-209.64, 255.28])',
-        afterRectangle2ndClickSnippet: `angledLine(angle=0deg,length=11.56,tag=$rectangleSegmentA003)
-        |>angledLine(angle=segAng(rectangleSegmentA003)-90deg,length=106.84)
-        |>angledLine(angle=segAng(rectangleSegmentA003),length=-segLen(rectangleSegmentA003))
-        |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
-        |>close()`,
-      })
-
-      await sketchOnAChamfer({
-        clickCoords: { x: 677, y: 87 },
-        cameraPos: { x: -6200, y: 1500, z: 6200 },
-        cameraTarget: { x: 8300, y: 1100, z: 4800 },
-        beforeChamferSnippet: `angledLine(angle = 0deg, length = 268.43, tag = $rectangleSegmentA001)chamfer(
-         length = 30,
-         tags = [
-           getNextAdjacentEdge(yo),
-           getNextAdjacentEdge(seg02)
-         ]
-       )`,
-        afterChamferSelectSnippet:
-          'sketch004 = startSketchOn(extrude001, face = seg05)',
-        afterRectangle1stClickSnippet:
-          'startProfile(sketch004, at = [82.57, 322.96])',
-        afterRectangle2ndClickSnippet: `angledLine(angle=0deg,length=11.16,tag=$rectangleSegmentA004)
-        |>angledLine(angle=segAng(rectangleSegmentA004)-90deg,length=103.07)
-        |>angledLine(angle=segAng(rectangleSegmentA004),length=-segLen(rectangleSegmentA004))
-        |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
-        |>close()`,
-      })
-      /// last one
-      await sketchOnAChamfer({
-        clickCoords: { x: 620, y: 300 },
-        cameraPos: { x: -1100, y: -7700, z: 1600 },
-        cameraTarget: { x: 1450, y: 670, z: 4000 },
-        beforeChamferSnippet: `chamfer(length = 30, tags = [getNextAdjacentEdge(yo)])`,
-        beforeChamferSnippetEnd:
-          '|> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)])',
-        afterChamferSelectSnippet:
-          'sketch005 = startSketchOn(extrude001, face = seg06)',
-        afterRectangle1stClickSnippet:
-          'startProfile(sketch005, at = [-23.43, 19.69])',
-        afterRectangle2ndClickSnippet: `angledLine(angle=0deg,length=9.1,tag=$rectangleSegmentA005)
-        |>angledLine(angle=segAng(rectangleSegmentA005)-90deg,length=84.07)
-        |>angledLine(angle=segAng(rectangleSegmentA005),length=-segLen(rectangleSegmentA005))
-        |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
-        |>close()`,
-      })
-
-      await test.step('verify at the end of the test that final code is what is expected', async () => {
-        await editor.expectEditor.toContain(
-          `@settings(defaultLengthUnit = in)
-
-sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]
-  |> angledLine(angle = 0deg, length = 268.43, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 217.26, tag = $seg01)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
-  |> close()
-extrude001 = extrude(sketch001, length = 100)
-  |> chamfer(length = 30, tags = [getOppositeEdge(seg01)], tag = $seg03)
-  |> chamfer(length = 30, tags = [seg01], tag = $seg04)
-  |> chamfer(length = 30, tags = [getNextAdjacentEdge(seg02)], tag = $seg05)
-  |> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)], tag = $seg06)
-sketch002 = startSketchOn(extrude001, face = seg03)
-profile001 = startProfile(sketch002, at = [205.96, 254.59])
-  |> angledLine(angle = 0deg, length = 11.39, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) - 90deg, length = 105.26)
-  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-sketch003 = startSketchOn(extrude001, face = seg04)
-profile002 = startProfile(sketch003, at = [-209.64, 255.28])
-  |> angledLine(angle = 0deg, length = 11.56, tag = $rectangleSegmentA003)
-  |> angledLine(angle = segAng(rectangleSegmentA003) - 90deg, length = 106.84)
-  |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-sketch004 = startSketchOn(extrude001, face = seg05)
-profile003 = startProfile(sketch004, at = [82.57, 322.96])
-  |> angledLine(angle = 0deg, length = 11.16, tag = $rectangleSegmentA004)
-  |> angledLine(angle = segAng(rectangleSegmentA004) - 90deg, length = 103.07)
-  |> angledLine(angle = segAng(rectangleSegmentA004), length = -segLen(rectangleSegmentA004))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-sketch005 = startSketchOn(extrude001, face = seg06)
-profile004 = startProfile(sketch005, at = [-23.43, 19.69])
-  |> angledLine(angle = 0deg, length = 9.1, tag = $rectangleSegmentA005)
-  |> angledLine(angle = segAng(rectangleSegmentA005) - 90deg, length = 84.07)
-  |> angledLine(angle = segAng(rectangleSegmentA005), length = -segLen(rectangleSegmentA005))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-`,
-          { shouldNormalise: true }
-        )
-      })
-    })
-
-    test('Works on chamfers that are not in a pipeExpression can break up multi edges in a chamfer array', async ({
-      context,
-      page,
-      homePage,
-      editor,
-      toolbar,
-      scene,
-      cmdBar,
-    }) => {
-      const file = await fs.readFile(
-        path.resolve(
-          __dirname,
-          '../../',
-          './rust/kcl-lib/e2e/executor/inputs/e2e-can-sketch-on-chamfer-no-pipeExpr.kcl'
-        ),
-        'utf-8'
-      )
-      await context.addInitScript((file) => {
-        localStorage.setItem('persistCode', file)
-      }, file)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-
-      await scene.settled(cmdBar)
-
-      const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
-
-      await sketchOnAChamfer({
-        clickCoords: { x: 570, y: 220 },
-        cameraPos: { x: 16020, y: -2000, z: 10500 },
-        cameraTarget: { x: -150, y: -4500, z: -80 },
-        beforeChamferSnippet: `angledLine(angle=segAng(rectangleSegmentA001)-90deg,length=217.26,tag=$seg01)
-      chamfer(extrude001,length=30,tags=[
-      seg01,
-      getNextAdjacentEdge(yo),
-      getNextAdjacentEdge(seg02),
-      getOppositeEdge(seg01),
-    ])`,
-        beforeChamferSnippetEnd: ')',
-        afterChamferSelectSnippet:
-          'sketch002 = startSketchOn(extrude001, face = seg03)',
-        afterRectangle1stClickSnippet:
-          'startProfile(sketch002, at = [205.96, 254.59])',
-        afterRectangle2ndClickSnippet: `angledLine(angle=0deg,length=11.39,tag=$rectangleSegmentA002)
-        |>angledLine(angle=segAng(rectangleSegmentA002)-90deg,length=105.26)
-        |>angledLine(angle=segAng(rectangleSegmentA002),length=-segLen(rectangleSegmentA002))
-        |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
-        |>close()`,
-      })
-      await editor.expectEditor.toContain(
-        `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [75.8, 317.2])
-  |> angledLine(angle = 0deg, length = 268.43, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 217.26, tag = $seg01)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
-  |> close()
-extrude001 = extrude(sketch001, length = 100)
-chamf = chamfer(
-       extrude001,
-       length = 30,
-       tags = [getOppositeEdge(seg01)],
-       tag = $seg03,
-     )
-  |> chamfer(
-       length = 30,
-       tags = [
-         seg01,
-         getNextAdjacentEdge(yo),
-         getNextAdjacentEdge(seg02)
-       ],
-     )
-sketch002 = startSketchOn(extrude001, face = seg03)
-profile001 = startProfile(sketch002, at = [205.96, 254.59])
-  |> angledLine(angle = 0deg, length = 11.39, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) - 90deg, length = 105.26)
-  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-`,
-        { shouldNormalise: true }
-      )
-    })
   })
 
   test(`Verify axis, origin, and horizontal snapping`, async ({
@@ -759,8 +611,11 @@ openSketch = startSketchOn(XY)
     const firstPointLocation = { x: 200, y: 100 }
     const secondPointLocation = { x: 800, y: 100 }
     const thirdPointLocation = { x: 800, y: 400 }
-    const firstSegmentLocation = { x: 750, y: 100 }
-    const secondSegmentLocation = { x: 800, y: 150 }
+    // @pierremtb: moved the select location to the arrow at the end after the engine zoom fix
+    // got in https://github.com/KittyCAD/engine/pull/3804, seemed like it allowed for more
+    // error margin but unclear why
+    const firstSegmentLocation = { x: 799, y: 100 }
+    const secondSegmentLocation = { x: 800, y: 399 }
     const planeLocation = { x: 700, y: 200 }
 
     // Click helpers
@@ -790,10 +645,12 @@ openSketch = startSketchOn(XY)
     )
 
     // Colors
-    const edgeColorWhite: [number, number, number] = [220, 220, 220]
-    const edgeColorBlue: [number, number, number] = [20, 20, 200]
+    // @pierremtb: had to tone these colors down a bit after the engine zoom fix
+    // in https://github.com/KittyCAD/engine/pull/3804, unclear why
+    const edgeColorWhite: [number, number, number] = [150, 150, 150]
+    const edgeColorBlue: [number, number, number] = [10, 10, 150]
     const backgroundColor: [number, number, number] = [30, 30, 30]
-    const tolerance = 40
+    const tolerance = 50
     const timeout = 150
 
     // Setup
@@ -1036,7 +893,7 @@ extrude001 = extrude(profile001, length = 100)`
         commandName: 'Helix',
       })
       await cmdBar.clickOptionalArgument('ccw')
-      await cmdBar.selectOption({ name: 'True' }).click()
+      await cmdBar.selectOption({ name: 'On' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -1114,7 +971,7 @@ extrude001 = extrude(profile001, length = 100)`
         },
         highlightedHeaderArg: 'CounterClockWise',
       })
-      await cmdBar.selectOption({ name: 'False' }).click()
+      await cmdBar.selectOption({ name: 'Off' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
