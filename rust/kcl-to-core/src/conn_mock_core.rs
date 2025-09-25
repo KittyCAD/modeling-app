@@ -130,7 +130,7 @@ impl EngineConnection {
                     to.y.0
                 )
             }
-            kcmc::ModelingCmd::ExtendPath(kcmc::ExtendPath { path, segment }) => match segment {
+            kcmc::ModelingCmd::ExtendPath(kcmc::ExtendPath { path, segment, .. }) => match segment {
                 Line { end, relative } => {
                     format!(
                         r#"
