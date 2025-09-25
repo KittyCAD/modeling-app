@@ -53,7 +53,7 @@ export fn flatness(
   @(includeInSnippet = true)
   precision?: number(Count),
   /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
-  @(includeInSnippet = true)
+  @(snippetArray = ["100", "100"])
   framePosition?: Point2d,
   /// The plane in which to display the annotation. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The annotation may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
