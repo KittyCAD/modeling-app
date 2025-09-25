@@ -8,7 +8,7 @@ import {
 } from '@src/lang/queryAst'
 import type { WebSocketResponse } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { ToastOptions } from 'react-hot-toast'
+import type { ToastOptions } from 'react-hot-toast'
 
 // Exports a sketch operation to DXF format
 export async function exportSketchToDxf(
