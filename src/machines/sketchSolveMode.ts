@@ -1,5 +1,5 @@
 import { assign, assertEvent, createMachine, sendTo, setup } from 'xstate'
-import type { AnyActorRef } from 'xstate'
+import type { ActorRefFrom } from 'xstate'
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type {
   ModelingMachineContext,
@@ -25,8 +25,12 @@ export type SketchSolveMachineEvent =
   | { type: 'click in scene'; data: [x: number, y: number] }
   | { type: 'tool completed' }
 
+type ToolActorRef =
+  | ActorRefFrom<typeof dimensionToolMachine>
+  | ActorRefFrom<typeof centerRectToolMachine>
+
 type SketchSolveContext = ModelingMachineContext & {
-  toolActor?: AnyActorRef
+  toolActor?: ToolActorRef
   sketchSolveTool: EquipTool | 'moveTool'
 }
 
@@ -53,15 +57,20 @@ export const sketchSolveMachine = setup({
     }),
     'spawn tool': assign(({ event, spawn }) => {
       assertEvent(event, 'equip tool')
-      const actorName =
-        event.data.tool === 'dimension'
-          ? 'dimensionToolActor'
-          : 'centerRectToolActor'
-
-      const spawnedActor = spawn(actorName, { id: `tool-${event.data.tool}` })
+      let toolActor
+      switch (event.data.tool) {
+        case 'dimension':
+          toolActor = spawn('dimensionToolActor', { id: 'tool' })
+          break
+        case 'center rectangle':
+          toolActor = spawn('centerRectToolActor', { id: 'tool' })
+          break
+        default:
+          const _exhaustiveCheck: never = event.data.tool
+      }
 
       return {
-        toolActor: spawnedActor,
+        toolActor,
         sketchSolveTool: event.data.tool,
       }
     }),
