@@ -487,8 +487,7 @@ export const Thinking = (props: {
     <Generic
       content={
         reasoningThoughts.findLast(
-          (thought) =>
-            thought.reasoning.type === 'text'
+          (thought) => thought.reasoning.type === 'text'
           // Typescript can't figure out only a `text` type or undefined is found
           // @ts-expect-error
         )?.reasoning?.content ?? 'Thinking...'

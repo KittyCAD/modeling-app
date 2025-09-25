@@ -34,9 +34,9 @@ export const ExchangeCardStatus = (props: {
 
   // Error and info also signals the end of a stream, because we'll never
   // see an end_of_stream from them.
-  const isEndOfStream = 
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {})
-    || props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream =
+    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
+    props.responses?.some((x) => 'error' in x || 'info' in x)
 
   return props.onlyShowImmediateThought ? (
     <div className="text-sm text-chalkboard-70">
@@ -217,9 +217,9 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     setUpdatedAt(new Date())
   }, [props.responses.length])
 
-  const isEndOfStream = 
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {})
-    || props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream =
+    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
+    props.responses?.some((x) => 'error' in x || 'info' in x)
 
   useEffect(() => {
     if (isEndOfStream) {
@@ -250,34 +250,35 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           />
         </div>
       )}
-      { !maybeError &&
-      <div
-        tabIndex={0}
-        role="button"
-        className="pl-8 flex flex-row items-center cursor-pointer justify-start gap-2"
-        onClick={() => onSeeReasoning()}
-      >
-        {props.responses.length > 0 && (
-          <div>
-            <button className="flex justify-center items-center flex-none">
-              {showFullReasoning ? (
-                <>
-                  Collapse <CustomIcon name="collapse" className="w-5 h-5" />
-                </>
-              ) : (
-                <>See reasoning</>
-              )}
-            </button>
-          </div>
-        )}
-        <ExchangeCardStatus
-          maybeError={maybeError}
-          responses={props.responses}
-          onlyShowImmediateThought={true}
-          startedAt={startedAt}
-          updatedAt={updatedAt}
-        />
-      </div> }
+      {!maybeError && (
+        <div
+          tabIndex={0}
+          role="button"
+          className="pl-8 flex flex-row items-center cursor-pointer justify-start gap-2"
+          onClick={() => onSeeReasoning()}
+        >
+          {props.responses.length > 0 && (
+            <div>
+              <button className="flex justify-center items-center flex-none">
+                {showFullReasoning ? (
+                  <>
+                    Collapse <CustomIcon name="collapse" className="w-5 h-5" />
+                  </>
+                ) : (
+                  <>See reasoning</>
+                )}
+              </button>
+            </div>
+          )}
+          <ExchangeCardStatus
+            maybeError={maybeError}
+            responses={props.responses}
+            onlyShowImmediateThought={true}
+            startedAt={startedAt}
+            updatedAt={updatedAt}
+          />
+        </div>
+      )}
       <ResponsesCard items={props.responses} />
     </div>
   )

@@ -39,9 +39,9 @@ export enum MlEphantManagerTransitions2 {
 
 export type MlEphantManagerEvents2 =
   | {
-    type: 'xstate.done.state.(machine).ready'
-    conversationId: undefined
-  }
+      type: 'xstate.done.state.(machine).ready'
+      conversationId: undefined
+    }
   | {
       type: MlEphantManagerStates2.Setup
       refParentSend: (event: MlEphantManagerEvents2) => void
@@ -64,7 +64,7 @@ export type MlEphantManagerEvents2 =
     }
   | {
       type: MlEphantManagerTransitions2.ConversationClose
-      problem?: MlEphantManagerProblem,
+      problem?: MlEphantManagerProblem
     }
 
 export interface Exchange {
@@ -87,8 +87,10 @@ export enum MlEphantManagerProblem {
   NoConversationFound = 'no-conversation-found',
 }
 
-export function isMlEphantManagerProblem(x: unknown): x is MlEphantManagerProblem {
-  return Object.values(MlEphantManagerProblem).some(v => v === x)
+export function isMlEphantManagerProblem(
+  x: unknown
+): x is MlEphantManagerProblem {
+  return Object.values(MlEphantManagerProblem).some((v) => v === x)
 }
 
 export interface MlEphantManagerContext2 {
@@ -99,7 +101,7 @@ export interface MlEphantManagerContext2 {
   lastMessageId?: number
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
-  problem?: MlEphantManagerProblem,
+  problem?: MlEphantManagerProblem
 }
 
 export const mlEphantDefaultContext2 = (args: {
@@ -194,10 +196,9 @@ export const mlEphantManagerMachine2 = setup({
 
       const ws = await Socket(
         WebSocket,
-        '/ws/ml/copilot' +
-          args.input.event.conversationId
-            ? `?conversation_id=${args.input.event.conversationId}`
-            : '',
+        '/ws/ml/copilot' + args.input.event.conversationId
+          ? `?conversation_id=${args.input.event.conversationId}`
+          : '',
         args.input.context.apiToken
       )
 
@@ -228,12 +229,15 @@ export const mlEphantManagerMachine2 = setup({
           return
         }
 
-        if ('error' in response && response.error.detail.includes('conversation not found')) {
+        if (
+          'error' in response &&
+          response.error.detail.includes('conversation not found')
+        ) {
           args.input.event.refParentSend({
             type: MlEphantManagerTransitions2.ConversationClose,
             problem: MlEphantManagerProblem.NoConversationFound,
           })
-          return 
+          return
         }
 
         // Ignore the dang 'ML-Ephant Copilot' banner
@@ -357,7 +361,10 @@ export const mlEphantManagerMachine2 = setup({
     [MlEphantManagerStates2.Setup]: {
       invoke: {
         input: (args) => {
-          assertEvent(args.event, [MlEphantManagerStates2.Setup, 'xstate.done.state.(machine).ready'])
+          assertEvent(args.event, [
+            MlEphantManagerStates2.Setup,
+            'xstate.done.state.(machine).ready',
+          ])
 
           return {
             event: {
@@ -423,7 +430,7 @@ export const mlEphantManagerMachine2 = setup({
                     // exchanges because they have no end_of_stream signal.
                     if ('error' in event.response || 'info' in event.response) {
                       conversation.exchanges.push({
-                        responses: [event.response]
+                        responses: [event.response],
                       })
                       return {
                         conversation,
@@ -466,7 +473,9 @@ export const mlEphantManagerMachine2 = setup({
             [MlEphantManagerTransitions2.ConversationClose]: {
               type: 'final',
               output: (args) => {
-                assertEvent(args.event, [MlEphantManagerTransitions2.ConversationClose])
+                assertEvent(args.event, [
+                  MlEphantManagerTransitions2.ConversationClose,
+                ])
                 return args.event.problem
               },
             },
@@ -496,20 +505,23 @@ export const mlEphantManagerMachine2 = setup({
                 args.context.ws?.close()
               },
               assign((args) => {
-                if (!isMlEphantManagerProblem(args.event.output)) { return {} }
+                if (!isMlEphantManagerProblem(args.event.output)) {
+                  return {}
+                }
                 return { problem: args.event.output }
-              })
-            ]
+              }),
+            ],
           },
         },
       },
       onDone: [
         {
           target: MlEphantManagerStates2.Setup,
-          guard: (args) => args.context.problem === MlEphantManagerProblem.NoConversationFound,
+          guard: (args) =>
+            args.context.problem === MlEphantManagerProblem.NoConversationFound,
         },
-        { target: S.Await }
-      ]
+        { target: S.Await },
+      ],
     },
   },
 })

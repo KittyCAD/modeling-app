@@ -131,7 +131,7 @@ export const MlEphantConversationPane2 = (props: {
 
         const { context } = props.mlEphantManagerActor.getSnapshot()
 
-        if ( context.conversation !== undefined && !context.problem) {
+        if (context.conversation !== undefined && !context.problem) {
           return
         }
 
@@ -146,8 +146,7 @@ export const MlEphantConversationPane2 = (props: {
             [MlEphantManagerStates2.Ready]: {
               [MlEphantManagerStates2.Request]: S.Await,
             },
-          })
-           || mlEphantManagerActorSnapshot2.value === S.Await ) === false
+          }) || mlEphantManagerActorSnapshot2.value === S.Await) === false
 
         const { context } = mlEphantManagerActorSnapshot2
 
@@ -155,7 +154,7 @@ export const MlEphantConversationPane2 = (props: {
           return
         }
 
-        if ( context.conversation !== undefined && !context.problem) {
+        if (context.conversation !== undefined && !context.problem) {
           return
         }
 
