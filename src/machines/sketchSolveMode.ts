@@ -137,7 +137,7 @@ export const sketchSolveMachine = setup({
     },
     'using tool': {
       on: {
-        'xstate.done.actor.tool-*': {
+        'xstate.done.actor.tool.*': {
           target: 'move and select',
           actions: 'stop tool',
         },
