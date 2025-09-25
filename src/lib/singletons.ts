@@ -39,8 +39,8 @@ import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 
-export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
+
 export const rustContext = new RustContext(engineCommandManager)
 
 declare global {
@@ -57,6 +57,7 @@ export const sceneInfra = new SceneInfra(engineCommandManager)
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager(engineCommandManager)
+export const codeManager = new CodeManager({ editorManager })
 
 // This needs to be after codeManager is created.
 // (lee: what??? why?)
