@@ -60,6 +60,6 @@ export fn flatness(
   inPlane?: Plane,
   /// The font point size to use for the annotation text rendering. The default is `36`.
   fontPointSize?: number(Count),
-  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`.
+  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
   fontScale?: number(Count),
 ) {}
