@@ -70,18 +70,18 @@ const MlCopilotTool = <T extends MlCopilotTool>(props: {
   onRemove: (tool: T) => void
 }) => {
   return (
-    <button className="flex-none flex flex-row items-center p-0 pr-2">
-      <div
-        tabIndex={0}
-        role="button"
-        onClick={() => props.onRemove(props.tool)}
-      >
-        <CustomIcon name="close" className="w-7 h-7" />
-      </div>
-      <div className="flex flex-row gap-1 items-center">
-        {ML_COPILOT_TOOLS_META[props.tool].icon({ className: 'w-5 h-5' })}
-        {ML_COPILOT_TOOLS_META[props.tool].pretty}
-      </div>
+    <button
+      className="group/tool flex-none flex flex-row gap-1 items-center p-0 pr-2"
+      onClick={() => props.onRemove(props.tool)}
+    >
+      <CustomIcon
+        name="close"
+        className="w-6 h-6 hidden group-hover/tool:block"
+      />
+      {ML_COPILOT_TOOLS_META[props.tool].icon({
+        className: 'w-6 h-6 block group-hover/tool:hidden',
+      })}
+      {ML_COPILOT_TOOLS_META[props.tool].pretty}
     </button>
   )
 }
@@ -131,18 +131,15 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
       </div>
       <button
         onClick={() => setShow(!show)}
-        className="bg-default flex flex-row items-center p-0 pr-2"
+        className="bg-default flex flex-row items-center gap-1 p-0 pr-2"
       >
-        <CustomIcon name="settings" className="w-7 h-7" />
-        <div className="flex flex-row items-center gap-2">
-          {props.children}
-          <div className="border-r h-4 b-3"></div>
-          <CustomIcon
-            onClick={() => setShow(!show)}
-            name="plus"
-            className="w-5 h-5"
-          />
-        </div>
+        <CustomIcon name="settings" className="w-6 h-6" />
+        {props.children}
+        <CustomIcon
+          onClick={() => setShow(!show)}
+          name="plus"
+          className="w-5 h-5"
+        />
       </button>
     </div>
   )
