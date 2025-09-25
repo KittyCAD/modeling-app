@@ -195,7 +195,9 @@ export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
       </div>
       <div className="contents">
         <MlCopilotTools onAdd={props.onAdd}>
-          <div>{tools.length} Tools</div>
+          <div>
+            {tools.length} Tool{tools.length !== 1 ? 's' : ''}
+          </div>
         </MlCopilotTools>
         <div className="overflow-hidden flex gap-1">
           {overflow ? <Dots onClick={() => setShow(!show)} /> : tools}
@@ -214,7 +216,7 @@ enum MlEphantPromptContext {
 export interface MlEphantContextsProps {
   contexts: MlEphantPromptContext[]
 }
-export const MlEphantContexts = (props: MlEphantContextsProps) => { }
+export const MlEphantContexts = (props: MlEphantContextsProps) => {}
 
 interface MlEphantConversationInputProps {
   billingContext: BillingContext
