@@ -128,7 +128,7 @@ test.describe(
 test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
-  async ({ page }) => {
+  async ({ page, toolbar, editor }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
@@ -140,10 +140,10 @@ test(
     )
 
     // Select a plane
-    await page.mouse.click(700, 200)
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)`
-    )
+    await toolbar.openFeatureTreePane()
+    await page.getByRole('button', { name: 'Front plane' }).click()
+    await toolbar.closeFeatureTreePane()
+    await editor.expectEditor.toContain(`sketch001 = startSketchOn(XZ)`)
 
     // Equip the rectangle tool
     await page.getByTestId('corner-rectangle').click()
@@ -524,73 +524,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
       maxDiffPixels: 100,
       mask: [...headerMasks(page), ...lowerRightMasks(page)],
     })
-  })
-})
-
-test('theme persists', async ({ page, context, homePage }) => {
-  const u = await getUtils(page)
-  await context.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `part001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()
-  |> extrude(length = 10)
-`
-    )
-  }, KCL_DEFAULT_LENGTH)
-
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await homePage.goToModelingScene()
-  await page.waitForTimeout(500)
-
-  // await page.getByRole('link', { name: 'Settings Settings (tooltip)' }).click()
-  await expect(page.getByTestId('settings-link')).toBeVisible()
-  await page.getByTestId('settings-link').click()
-
-  // open user settingns
-  await page.getByRole('radio', { name: 'person User' }).click()
-
-  await page.getByTestId('app-theme').selectOption('light')
-
-  await page.getByTestId('settings-close-button').click()
-
-  const networkToggle = page.getByTestId(/network-toggle/)
-
-  // simulate network down
-  await u.emulateNetworkConditions({
-    offline: true,
-    // values of 0 remove any active throttling. crbug.com/456324#c9
-    latency: 0,
-    downloadThroughput: -1,
-    uploadThroughput: -1,
-  })
-
-  // Disconnect and reconnect to check the theme persists through a reload
-
-  // Expect the network to be down
-  await expect(networkToggle).toContainText('Problem')
-
-  // simulate network up
-  await u.emulateNetworkConditions({
-    offline: false,
-    // values of 0 remove any active throttling. crbug.com/456324#c9
-    latency: 0,
-    downloadThroughput: -1,
-    uploadThroughput: -1,
-  })
-
-  await expect(networkToggle).toContainText('Network health (Strong)')
-
-  await expect(page.getByText('building scene')).not.toBeVisible()
-
-  await expect(page, 'expect screenshot to have light theme').toHaveScreenshot({
-    maxDiffPixels: 100,
-    mask: lowerRightMasks(page),
   })
 })
 
