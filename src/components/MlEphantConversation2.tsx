@@ -70,7 +70,7 @@ const MlCopilotTool = <T extends MlCopilotTool>(props: {
   onRemove: (tool: T) => void
 }) => {
   return (
-    <button className="flex flex-row items-center p-0 pr-2">
+    <button className="flex flex-row items-center p-0 pr-2 inline-block">
       <div
         tabIndex={0}
         role="button"
@@ -86,7 +86,16 @@ const MlCopilotTool = <T extends MlCopilotTool>(props: {
   )
 }
 
-const MlCopilotTools = (props: { onAdd: (tool: MlCopilotTool) => void }) => {
+export enum ComponentSize {
+  Compact = 'compact'
+}
+
+export interface MlCopilotToolsProps {
+  size?: ComponentSize.Compact,
+  onAdd: (tool: MlCopilotTool) => void
+  children: ReactNode,
+}
+const MlCopilotTools = (props: MlCopilotToolsProps) => {
   const [show, setShow] = useState<boolean>(false)
 
   const tools = []
@@ -111,7 +120,7 @@ const MlCopilotTools = (props: { onAdd: (tool: MlCopilotTool) => void }) => {
   }
 
   return (
-    <div>
+    <div className="inline-block">
       <div className={`relative ${show ? '' : 'hidden'}`}>
         <div
           className="flex flex-col gap-2 absolute hover:bg-chalkboard-80 bg-chalkboard-90 mb-1 p-2 border border-chalkboard-70 text-sm rounded-md"
@@ -125,10 +134,18 @@ const MlCopilotTools = (props: { onAdd: (tool: MlCopilotTool) => void }) => {
         className="bg-chalkboard-90 flex flex-row items-center p-0 pr-2"
       >
         <CustomIcon name="settings" className="w-7 h-7" />
-        <span>Tools</span>
+        <div className="flex flex-row items-center gap-2">
+          { props.children }
+          <div className="border-r h-4 border-chalkboard-70"></div>
+          <CustomIcon onClick={() => setShow(!show) } name="plus" className="w-5 h-5" />
+        </div>
       </button>
     </div>
   )
+}
+
+const Dots = (props: { onClick: () => void }) => {
+  return <button onClick={props.onClick}>...</button>
 }
 
 export interface MlEphantForcedToolsProps {
@@ -139,6 +156,8 @@ export interface MlEphantForcedToolsProps {
   onAdd: (tool: MlCopilotTool) => void
 }
 export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
+  const [show, setShow] = useState<boolean>(false)
+
   for (let tool of ML_COPILOT_TOOLS) {
     if (props.forcedTools.has(tool)) continue
     if (props.excludedTools.has(tool)) continue
@@ -154,12 +173,44 @@ export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
     )
   ).map((tool) => <MlCopilotTool tool={tool} onRemove={props.onRemove} />)
 
+  if (show === true && tools.length === 0) {
+    setShow(false)
+  }
+
+  const overflow = false
+
   return (
-    <div className="flex flex-row flex-wrap">
-      <MlCopilotTools onAdd={props.onAdd} />
-      {tools}
+    <div className="w-full">
+      <div className={`relative ${show ? '' : 'hidden'}`}>
+        <div
+          className="flex flex-col gap-2 absolute hover:bg-chalkboard-80 bg-chalkboard-90 mb-1 p-2 border border-chalkboard-70 text-sm rounded-md"
+          style={{ left: 1, bottom: 0 }}
+        >
+          {tools}
+        </div>
+      </div>
+      <div className="">
+        <MlCopilotTools onAdd={props.onAdd}>
+          <div>{ tools.length } Tools</div>
+        </MlCopilotTools>
+        <div className="overflow-hidden inline-block">
+          { overflow ? <Dots onClick={() => setShow(!show)} /> : tools}
+        </div>
+      </div>
     </div>
   )
+}
+
+// For now there's only one but in the future there'll be more
+// We'll have a Dummy as a test item
+enum MlEphantPromptContext {
+  Dummy = "o>-<"
+}
+
+export interface MlEphantContextsProps {
+  contexts: MlEphantPromptContext[]
+}
+export const MlEphantContexts = (props: MlEphantContextsProps) => {
 }
 
 interface MlEphantConversationInputProps {
@@ -248,7 +299,7 @@ export const MlEphantConversationInput = (
       setForcedTools(new Set())
       setExcludedTools(new Set())
     }
-  }, [value.length, excludedTools.size, forcedTools.size])
+  }, [value.length])
 
   const onClick = () => {
     if (props.disabled) return
