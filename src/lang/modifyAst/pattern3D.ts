@@ -183,8 +183,8 @@ export function addPatternLinear3D({
   artifactGraph,
   solids,
   instances,
-  axis,
   distance,
+  axis,
   useOriginal,
   nodeToEdit,
 }: {
@@ -192,8 +192,8 @@ export function addPatternLinear3D({
   artifactGraph: ArtifactGraph
   solids: Selections
   instances: KclCommandValue
-  axis: KclCommandValue | string // Can be named axis (X, Y, Z) or array [x, y, z]
   distance: KclCommandValue // number(Length)
+  axis: KclCommandValue | string // Can be named axis (X, Y, Z) or array [x, y, z]
   useOriginal?: boolean
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {

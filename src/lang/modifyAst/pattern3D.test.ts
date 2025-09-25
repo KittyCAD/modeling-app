@@ -501,8 +501,8 @@ example = extrude(exampleSketch, length = -5)
       artifactGraph,
       solids: selections,
       instances: await getKclCommandValue('7'),
-      axis: 'X',
       distance: await getKclCommandValue('6'),
+      axis: 'X',
       useOriginal: false,
     })
 
@@ -536,8 +536,8 @@ example = extrude(exampleSketch, length = -5)
       artifactGraph,
       solids: selections,
       instances: await getKclCommandValue('5'),
-      axis: await getKclCommandValue('[1, 0, 1]'),
       distance: await getKclCommandValue('10'),
+      axis: await getKclCommandValue('[1, 0, 1]'),
       useOriginal: true,
     })
 
@@ -571,8 +571,8 @@ example = extrude(exampleSketch, length = -5)
       artifactGraph,
       solids: selections,
       instances: await getKclCommandValue('3'),
-      axis: 'Y',
       distance: await getKclCommandValue('4'),
+      axis: 'Y',
     })
 
     if (err(result)) {
@@ -605,8 +605,8 @@ example = extrude(exampleSketch, length = -5)
       artifactGraph,
       solids: selections,
       instances: await getKclCommandValue('6'),
-      axis: 'Y',
       distance: await getKclCommandValue('8'),
+      axis: 'Y',
       useOriginal: true,
     })
 
@@ -644,8 +644,8 @@ example = extrude(exampleSketch, length = -5)
       artifactGraph,
       solids: selections,
       instances: await getKclCommandValue('myInstances'),
-      axis: await getKclCommandValue('myAxis'),
       distance: await getKclCommandValue('myDistance'),
+      axis: await getKclCommandValue('myAxis'),
     })
 
     if (err(result)) {
@@ -677,8 +677,8 @@ example = extrude(exampleSketch, length = -5)
       artifactGraph,
       solids: selections,
       instances: await getKclCommandValue('2.5'),
-      axis: await getKclCommandValue('[1, -1, 0.5]'),
       distance: await getKclCommandValue('7.5'),
+      axis: await getKclCommandValue('[1, -1, 0.5]'),
     })
 
     if (err(result)) {
@@ -714,8 +714,8 @@ example = extrude(exampleSketch, length = -5)
       artifactGraph,
       solids: selections,
       instances: await getKclCommandValue('myCount - myOffset'),
-      axis: await getKclCommandValue('[mySpacing * 2, 0, 1]'),
       distance: await getKclCommandValue('mySpacing + myOffset'),
+      axis: await getKclCommandValue('[mySpacing * 2, 0, 1]'),
     })
 
     if (err(result)) {
@@ -761,8 +761,8 @@ example = extrude(exampleSketch, length = -5)
       artifactGraph,
       solids: selections,
       instances: await getKclCommandValue('5'),
-      axis: mockAxisWithBothProperties,
       distance: await getKclCommandValue('8'),
+      axis: mockAxisWithBothProperties,
     })
 
     if (err(result)) {
@@ -795,8 +795,8 @@ exampleSketch = startSketchOn(XZ)
       artifactGraph,
       solids: selections,
       instances: await getKclCommandValue('6'),
-      axis: 'Y',
       distance: await getKclCommandValue('3'),
+      axis: 'Y',
     })
 
     if (err(result)) {
@@ -835,8 +835,8 @@ startSketchOn(XY)
       artifactGraph,
       solids: selections,
       instances: await getKclCommandValue('4'),
-      axis: 'Z',
       distance: await getKclCommandValue('2'),
+      axis: 'Z',
     })
 
     if (err(result)) {
@@ -872,8 +872,8 @@ extrude(exampleSketch, length = -5)
       artifactGraph,
       solids: selections,
       instances: await getKclCommandValue('3'),
-      axis: await getKclCommandValue('[0, 1, 0]'),
       distance: await getKclCommandValue('5'),
+      axis: await getKclCommandValue('[0, 1, 0]'),
     })
 
     if (err(result)) {
