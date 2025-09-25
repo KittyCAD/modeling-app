@@ -1700,7 +1700,9 @@ profile001 = startProfile(sketch001, at=[0, 0])
       await editor.expectEditor.toContain('profile001 = startProfile(')
 
       await endLineStartTanArc()
-      await editor.expectEditor.toContain(/profile001 = startProfile.*\|> xLine/)
+      await editor.expectEditor.toContain(
+        /profile001 = startProfile.*\|> xLine/
+      )
       await toolbar.selectTangentialArc()
       await page.waitForTimeout(300)
       // Purposefully click in a bad spot to see the tan arc warning
@@ -1709,7 +1711,6 @@ profile001 = startProfile(sketch001, at=[0, 0])
       await endLineStartTanArc({ delay: 544 })
 
       await endArcStartLine()
-
 
       await editor.expectEditor.toContain(
         /profile001 = startProfile.*\|> xLine.*\|> tangentialArc/
@@ -1740,12 +1741,10 @@ profile001 = startProfile(sketch001, at=[0, 0])
       await threePointEnd()
       await page.waitForTimeout(300)
 
-
       // Verify the three-point arc was created correctly
       await editor.expectEditor.toContain('arc(')
       await editor.expectEditor.toContain('interiorAbsolute')
       //await editor.expectEditor.toContain('')
-
 
       // Switch back to line tool to continue
       await toolbar.lineBtn.click()
@@ -1776,7 +1775,9 @@ profile001 = startProfile(sketch001, at=[0, 0])
       await profile2Point2()
       await page.waitForTimeout(300)
 
-      await editor.expectEditor.toContain(/profile002 = startProfile.*\|> xLine/)
+      await editor.expectEditor.toContain(
+        /profile002 = startProfile.*\|> xLine/
+      )
       await profile2Point3()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
@@ -1794,7 +1795,6 @@ profile001 = startProfile(sketch001, at=[0, 0])
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(/profile003 = circle\(sketch001/)
 
-
       await page.waitForTimeout(999900)
 
       await test.step('hover in empty space to wait for overlays to get out of the way', async () => {
@@ -1802,21 +1802,13 @@ profile001 = startProfile(sketch001, at=[0, 0])
         await page.waitForTimeout(1000)
       })
 
-
-
       await moveCircle2Center()
       await circle2Center({ delay: 50 })
       await page.waitForTimeout(300)
 
-
-
-
-
       await circle2Radius()
       await editor.expectEditor.toContain(/profile004 = circle\(sketch001/)
       await page.waitForTimeout(300)
-
-
     })
     await test.step('create two corner rectangles in a row without unequip', async () => {
       await toolbar.rectangleBtn.click()
@@ -1824,7 +1816,6 @@ profile001 = startProfile(sketch001, at=[0, 0])
 
       ///await page.waitForTimeout(300) //
       await crnRect1point1()
-
 
       await editor.expectEditor.toContain(
         /profile005 = startProfile\(sketch001/
