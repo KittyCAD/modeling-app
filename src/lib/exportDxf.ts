@@ -8,6 +8,7 @@ import {
 } from '@src/lang/queryAst'
 import type { WebSocketResponse } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { ToastOptions } from 'react-hot-toast'
 
 // Exports a sketch operation to DXF format
 export async function exportSketchToDxf(
@@ -16,9 +17,9 @@ export async function exportSketchToDxf(
     engineCommandManager: EngineCommandManager
     kclManager: KclManager
     toast: {
-      error: (message: string, options?: any) => void
+      error: (message: string, options?: ToastOptions) => void
       loading: (message: string) => string
-      success: (message: string, options?: any) => void
+      success: (message: string, options?: ToastOptions) => void
       dismiss: (toastId: string) => void
     }
     uuidv4: () => string
