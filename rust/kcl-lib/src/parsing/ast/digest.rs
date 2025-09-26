@@ -499,6 +499,7 @@ impl PipeExpression {
 
 impl CallExpressionKw {
     compute_digest!(|slf, hasher| {
+        hasher.update(if slf.is_annotation { [1] } else { [0] });
         hasher.update(slf.callee.compute_digest());
         if let Some(ref mut unlabeled) = slf.unlabeled {
             hasher.update(unlabeled.compute_digest());

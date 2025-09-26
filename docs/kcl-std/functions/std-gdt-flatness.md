@@ -1,5 +1,5 @@
 ---
-title: "gdt::flatness"
+title: "flatness"
 subtitle: "Function in std::gdt"
 excerpt: "GD&T annotation specifying how flat faces should be."
 layout: manual
@@ -10,7 +10,7 @@ layout: manual
 GD&T annotation specifying how flat faces should be.
 
 ```kcl
-gdt::flatness(
+flatness(
   faces: [TaggedFace; 1+],
   tolerance: number(Length),
   precision?: number(_),
@@ -49,14 +49,14 @@ startSketchOn(XY)
   |> line(end = [0, -10])
   |> close()
   |> extrude(length = 5, tagStart = $face1)
-gdt::flatness(faces = [face1], tolerance = 0.1mm)
+@flatness(faces = [face1], tolerance = 0.1mm)
 
 ```
 
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the gdt::flatness function"
+  alt="Example showing a rendered KCL program that uses the flatness function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-gdt-flatness0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -78,7 +78,7 @@ startSketchOn(XY)
   |> line(end = [0, -10])
   |> close()
   |> extrude(length = 5, tagEnd = $face1)
-gdt::flatness(
+@flatness(
   faces = [face1],
   tolerance = 0.02mm,
   framePosition = [10mm, 20mm],
@@ -90,7 +90,7 @@ gdt::flatness(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the gdt::flatness function"
+  alt="Example showing a rendered KCL program that uses the flatness function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-gdt-flatness1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -112,7 +112,7 @@ startSketchOn(XY)
   |> line(end = [0, -10])
   |> close()
   |> extrude(length = 5)
-gdt::flatness(
+@flatness(
   faces = [face1],
   tolerance = 0.02mm,
   framePosition = [10mm, 20mm],
@@ -124,7 +124,7 @@ gdt::flatness(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the gdt::flatness function"
+  alt="Example showing a rendered KCL program that uses the flatness function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-gdt-flatness2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

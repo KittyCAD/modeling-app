@@ -138,6 +138,20 @@ impl Node<CallExpressionKw> {
             )));
         };
 
+        if self.is_annotation && !fn_src.annotation {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("`@{fn_name}` is not an annotation function. Try removing the `@` prefix to call it."),
+                vec![callsite],
+            )));
+        } else if !self.is_annotation && fn_src.annotation {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "`{fn_name}` is an annotation function. Try adding an `@` prefix to call it, as in `@{fn_name}`."
+                ),
+                vec![callsite],
+            )));
+        }
+
         // Build a hashmap from argument labels to the final evaluated values.
         let mut fn_args = IndexMap::with_capacity(self.arguments.len());
         let mut unlabeled = Vec::new();

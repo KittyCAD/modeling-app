@@ -1,0 +1,33 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing gdt_annotation_flatness.kcl
+---
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+
+fn prism(at) {
+  width = 2
+  return startSketchOn(XY)
+    |> startProfile(at)
+    |> line(end = [width, 0])
+    |> line(end = [0, width])
+    |> line(end = [-width, 0])
+    |> line(end = [0, -width])
+    |> close()
+    |> extrude(length = 2 * width, tagEnd = $top)
+}
+
+c1 = prism(at = [0, 0])
+@flatness(
+  faces = [c1.sketch.tags.top],
+  tolerance = 0.1mm,
+  precision = 1,
+  inPlane = XZ,
+)
+
+c2 = prism(at = [8, 0])
+@flatness(
+  faces = [c2.sketch.tags.top],
+  tolerance = 0.2mm,
+  precision = 1,
+  inPlane = XZ,
+)
