@@ -34,7 +34,7 @@ import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDe
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
-import type { Debugger} from '@src/lib/debugger'
+import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 
 export const codeManager = new CodeManager()

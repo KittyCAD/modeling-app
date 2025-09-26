@@ -1,5 +1,4 @@
 import { renderHook } from '@testing-library/react'
-import type { IUseOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { vi } from 'vitest'
 import { ConnectionManager } from '@src/network/connectionManager'
@@ -34,7 +33,7 @@ describe('useOnPageExit tests', () => {
         callback,
         engineCommandManager,
         sceneInfra,
-      } as unknown as IUseOnPageExit)
+      })
     )
     unmount()
     expect(callback).toHaveBeenCalledTimes(1)
