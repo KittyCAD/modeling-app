@@ -421,8 +421,7 @@ const fixturesBasedOnProcessEnvPlatform = {
       }
 
       const engineLogs: ILog[] = await page.evaluate(
-        // @ts-ignore This value is accessible. If it isn't that is not the end of the world
-        () => window?.engineDebugger?.logs || []
+        () => window.engineDebugger.logs || []
       )
       const formattedLogs: IFormattedLog[] = engineLogs.map((log: ILog) => {
         const newLog: IFormattedLog = {

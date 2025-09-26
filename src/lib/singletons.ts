@@ -34,6 +34,8 @@ import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDe
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
+import type { Debugger} from '@src/lib/debugger'
+import { EngineDebugger } from '@src/lib/debugger'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new ConnectionManager()
@@ -43,6 +45,7 @@ declare global {
   interface Window {
     editorManager: EditorManager
     engineCommandManager: ConnectionManager
+    engineDebugger: Debugger
   }
 }
 
@@ -66,8 +69,6 @@ export const kclManager = new KclManager(engineCommandManager, {
 import { initPromise } from '@src/lang/wasmUtils'
 // Initialize KCL version
 import { setKclVersion } from '@src/lib/kclVersion'
-
-import { EngineDebugger } from '@src/lib/debugger'
 
 initPromise
   .then(() => {
