@@ -3026,8 +3026,8 @@ solid001 = extrude(sketch001, length = 5)`
             },
             highlightedHeaderArg: 'rotateDuplicates',
           })
-          // Select True option and auto-progress
-          await cmdBar.selectOption({ name: 'True' }).click()
+          // Select On option and auto-progress
+          await cmdBar.selectOption({ name: 'On' }).click()
           // Review changes to rotate duplicates
           await cmdBar.expectState({
             stage: 'review',
@@ -3061,8 +3061,8 @@ solid001 = extrude(sketch001, length = 5)`
             },
             highlightedHeaderArg: 'useOriginal',
           })
-          // Select False option and auto-progress
-          await cmdBar.selectOption({ name: 'False' }).click()
+          // Select Off option and auto-progress
+          await cmdBar.selectOption({ name: 'Off' }).click()
           // Review changes to use original
           await cmdBar.expectState({
             stage: 'review',
@@ -3275,8 +3275,8 @@ solid001 = extrude(sketch001, length = 5)`
             },
             highlightedHeaderArg: 'rotateDuplicates',
           })
-          // Update rotate duplicates from true to false
-          await cmdBar.selectOption({ name: 'False' }).click()
+          // Update rotate duplicates from On to Off
+          await cmdBar.selectOption({ name: 'Off' }).click()
           // Review changes to rotate duplicates
           await cmdBar.expectState({
             stage: 'review',
@@ -3309,8 +3309,8 @@ solid001 = extrude(sketch001, length = 5)`
             },
             highlightedHeaderArg: 'useOriginal',
           })
-          // Update use original from false to true
-          await cmdBar.selectOption({ name: 'True' }).click()
+          // Update use original from Off to On
+          await cmdBar.selectOption({ name: 'On' }).click()
           // Review changes to use original
           await cmdBar.expectState({
             stage: 'review',
