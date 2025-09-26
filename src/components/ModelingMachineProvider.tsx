@@ -293,21 +293,11 @@ export const ModelingMachineProvider = ({
         },
         'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
           if (!sketchDetails) return {}
-          if (event.type === 'Delete segment') {
-            return {
-              sketchDetails: {
-                ...sketchDetails,
-                sketchEntryNodePath: event.data,
-              },
-            }
-          }
           if (event.type === 'Update sketch details') {
             return {
               sketchDetails: {
                 ...sketchDetails,
-                sketchEntryNodePath: event.data.sketchEntryNodePath,
-                sketchNodePaths: event.data.sketchNodePaths,
-                planeNodePath: event.data.planeNodePath,
+                ...event.data,
               },
             }
           }
