@@ -58,11 +58,17 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
 
+/** The default KCL instances expression */
+export const KCL_DEFAULT_INSTANCES = `3`
+
 /** The default KCL transform arg value that means no transform */
 export const KCL_DEFAULT_TRANSFORM = `0`
 
 /** The default KCL degree expression */
 export const KCL_DEFAULT_DEGREE = `360deg`
+
+/** The default KCL vector3d origin expression */
+export const KCL_DEFAULT_ORIGIN = `[0, 0, 0]`
 
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
@@ -135,6 +141,7 @@ export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 /** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
 export const KCL_AXIS_X = 'X'
 export const KCL_AXIS_Y = 'Y'
+export const KCL_AXIS_Z = 'Z'
 export const KCL_AXIS_NEG_X = '-X'
 export const KCL_AXIS_NEG_Y = '-Y'
 export const KCL_DEFAULT_AXIS = 'X'
