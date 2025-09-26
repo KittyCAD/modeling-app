@@ -1709,8 +1709,6 @@ const CustomIconMap = {
   ),
   brain: (
     <svg
-      width="20"
-      height="20"
       viewBox="-3 0 28 28"
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"

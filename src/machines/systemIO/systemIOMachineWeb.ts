@@ -86,15 +86,13 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           event: { data: { projectId: string; conversationId: string } }
         }
       }) => {
-        const json = mlConversationsToJson(
-          args.input.context.mlEphantConversations
-        )
-        await localStorage.setItem(LOCAL_STORAGE_ML_CONVERSATIONS, json)
         const next = new Map(args.input.context.mlEphantConversations)
         next.set(
           args.input.event.data.projectId,
           args.input.event.data.conversationId
         )
+        const json = mlConversationsToJson(next)
+        await localStorage.setItem(LOCAL_STORAGE_ML_CONVERSATIONS, json)
         return next
       }
     ),

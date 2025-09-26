@@ -147,6 +147,45 @@ test.describe('Sketch tests', () => {
     ).toBeVisible()
   })
 
+  test('delete startProfile removes profile statement', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0.0, 0.0])`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await editor.expectEditor.toContain('startProfile(')
+
+    // Open feature tree and select the first sketch
+    await page.getByRole('button', { name: 'Feature Tree' }).click()
+    await page.getByRole('button', { name: 'sketch001' }).dblclick()
+    await page.waitForTimeout(600)
+
+    // Select the profile by clicking the origin in the canvas, then press Delete
+    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, { format: 'ratio' })
+    await clickCenter()
+
+    await page.waitForTimeout(200)
+
+    await page.keyboard.press('Delete')
+
+    await editor.expectEditor.not.toContain('startProfile(')
+  })
+
   test('Can exit selection of face', async ({ page, homePage }) => {
     // Load the app with the code panes
     await page.addInitScript(async () => {
@@ -405,11 +444,11 @@ sketch001 = startSketchOn(XZ)
 
       const code = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(-XZ)
-profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOff(
-        scale * 34.8
+profile001 = startProfile(sketch001, at = [${roundOff(scale * 76.94)}, ${roundOff(
+        scale * 35.11
       )}])
-    |> xLine(length = ${roundOff(scale * 154.22)})
-    |> yLine(length = -${roundOff(scale * 139.2)})
+    |> xLine(length = ${roundOff(scale * 153.87)})
+    |> yLine(length = -${roundOff(scale * 139.66)})
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()`
 
