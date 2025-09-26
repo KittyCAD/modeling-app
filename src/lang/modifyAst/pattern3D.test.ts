@@ -411,7 +411,6 @@ exampleSketch = startSketchOn(XZ)
   it('should extend pipeline when selection is from unnamed pipeline', async () => {
     const code = `
 sketch001 = startSketchOn(XZ)
-profile001 = circle(sketch001, center = [0, 0], radius = 1)
 
 startSketchOn(XY)
   |> circle(center = [1, 1], radius = 0.5)
@@ -820,7 +819,6 @@ exampleSketch = startSketchOn(XZ)
   it('should extend pipeline when selection is from unnamed pipeline', async () => {
     const code = `
 sketch001 = startSketchOn(XZ)
-profile001 = circle(sketch001, center = [0, 0], radius = 1)
 
 startSketchOn(XY)
   |> circle(center = [1, 1], radius = 0.5)
