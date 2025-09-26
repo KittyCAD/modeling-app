@@ -115,7 +115,7 @@ export const createOnEngineConnectionOpened = ({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
-        type: 'edge_lines_visible' as any, // TODO: update kittycad.ts to use the correct type
+        type: 'edge_lines_visible',
         hidden: !settings.highlightEdges,
       },
     })
