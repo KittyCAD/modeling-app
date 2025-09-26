@@ -182,6 +182,17 @@ export async function listProjects(
 ): Promise<Project[]> {
   // Make sure we have wasm initialized.
   const initializedResult = await initPromise
+
+  // Hack: This is required because of the initialise module load and vitest unit tests spamming this
+  // since it is a global dependency that is spam loaded. This function should never return a string.
+  // If it does during application code something is wrong.
+  if (typeof initializedResult === 'string') {
+    console.error(
+      'TODO: Stop globally importing and spamming lang/wasmUtils/initialise. You should not see this message in the application.'
+    )
+    return Promise.reject(new Error(initializedResult))
+  }
+
   if (err(initializedResult)) {
     return Promise.reject(initializedResult)
   }

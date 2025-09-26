@@ -3,7 +3,6 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclSingleton'
 import CodeManager from '@src/lang/codeManager'
-import { EngineCommandManager } from '@src/lang/std/engineConnection'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 
@@ -25,11 +24,6 @@ import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
-import { commandBarMachine } from '@src/machines/commandBarMachine'
-import {
-  engineStreamContextCreate,
-  engineStreamMachine,
-} from '@src/machines/engineStreamMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
   mlEphantDefaultContext,
@@ -38,15 +32,20 @@ import {
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
+import { ConnectionManager } from '@src/network/connectionManager'
+import type { Debugger } from '@src/lib/debugger'
+import { EngineDebugger } from '@src/lib/debugger'
 
 export const codeManager = new CodeManager()
-export const engineCommandManager = new EngineCommandManager()
+export const engineCommandManager = new ConnectionManager()
 export const rustContext = new RustContext(engineCommandManager)
 
 declare global {
   interface Window {
     editorManager: EditorManager
-    engineCommandManager: EngineCommandManager
+    engineCommandManager: ConnectionManager
+    engineDebugger: Debugger
   }
 }
 
@@ -70,6 +69,7 @@ export const kclManager = new KclManager(engineCommandManager, {
 import { initPromise } from '@src/lang/wasmUtils'
 // Initialize KCL version
 import { setKclVersion } from '@src/lib/kclVersion'
+
 initPromise
   .then(() => {
     setKclVersion(kclManager.kclVersion)
@@ -113,6 +113,7 @@ if (typeof window !== 'undefined') {
   ;(window as any).editorManager = editorManager
   ;(window as any).codeManager = codeManager
   ;(window as any).rustContext = rustContext
+  ;(window as any).engineDebugger = EngineDebugger
   ;(window as any).enableMousePositionLogs = () =>
     document.addEventListener('mousemove', (e) =>
       console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
@@ -132,20 +133,12 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const {
-  AUTH,
-  SETTINGS,
-  SYSTEM_IO,
-  ENGINE_STREAM,
-  MLEPHANT_MANAGER,
-  COMMAND_BAR,
-  BILLING,
-} = ACTOR_IDS
+const { AUTH, SETTINGS, SYSTEM_IO, MLEPHANT_MANAGER, COMMAND_BAR, BILLING } =
+  ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
   [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-  [ENGINE_STREAM]: engineStreamMachine,
   [MLEPHANT_MANAGER]: mlEphantManagerMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
@@ -175,10 +168,6 @@ const appMachine = setup({
     spawnChild(appMachineActors[SETTINGS], {
       systemId: SETTINGS,
       input: createSettings(),
-    }),
-    spawnChild(appMachineActors[ENGINE_STREAM], {
-      systemId: ENGINE_STREAM,
-      input: engineStreamContextCreate(),
     }),
     spawnChild(appMachineActors[MLEPHANT_MANAGER], {
       systemId: MLEPHANT_MANAGER,
@@ -251,10 +240,6 @@ export type SystemIOActor = ActorRefFrom<
 >
 
 export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
-
-export const engineStreamActor = appActor.system.get(
-  ENGINE_STREAM
-) as ActorRefFrom<(typeof appMachineActors)[typeof ENGINE_STREAM]>
 
 export const mlEphantManagerActor = appActor.system.get(
   MLEPHANT_MANAGER

@@ -27,7 +27,6 @@ import {
   Y_AXIS,
 } from '@src/clientSideScene/sceneUtils'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { Coords2d } from '@src/lang/std/sketch'
 import { vec2WithinDistance } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/lib/selections'
@@ -39,6 +38,8 @@ import type {
   MouseState,
   SegmentOverlayPayload,
 } from '@src/machines/modelingSharedTypes'
+
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -287,7 +288,7 @@ export class SceneInfra {
   private isRenderingPaused = false
   private lastFrameTime = 0
 
-  constructor(engineCommandManager: EngineCommandManager) {
+  constructor(engineCommandManager: ConnectionManager) {
     // SCENE
     this.scene = new Scene()
     this.scene.background = new Color(0x000000)
