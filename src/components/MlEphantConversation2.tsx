@@ -1,3 +1,5 @@
+import { getSelectionTypeDisplayText } from '@src/lib/selections'
+import { type Selections } from '@src/lib/selections'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import Tooltip from '@src/components/Tooltip'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -21,6 +23,7 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
+  contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
   onProcess: (request: string, forcedTools: Set<MlCopilotTool>) => void
   disabled?: boolean
@@ -86,12 +89,7 @@ const MlCopilotTool = <T extends MlCopilotTool>(props: {
   )
 }
 
-export enum ComponentSize {
-  Compact = 'compact',
-}
-
 export interface MlCopilotToolsProps {
-  size?: ComponentSize.Compact
   onAdd: (tool: MlCopilotTool) => void
   children: ReactNode
 }
@@ -149,15 +147,21 @@ const Dots = (props: { onClick: () => void }) => {
   return <button onClick={props.onClick}>...</button>
 }
 
-export interface MlEphantForcedToolsProps {
+export interface MlEphantExtraInputsProps {
+  // TODO: Expand to a list with no type restriction
+  context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   inputToMatch: string
   forcedTools: Set<MlCopilotTool>
   excludedTools: Set<MlCopilotTool>
   onRemove: (tool: MlCopilotTool) => void
   onAdd: (tool: MlCopilotTool) => void
 }
-export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
+export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
   const [show, setShow] = useState<boolean>(false)
+  const [overflow, setOverflow] = useState<boolean>(false)
+  const widthFromBeforeCollapse = useRef<number>(0)
+  const refWrap = useRef<HTMLDivElement>(null)
+  const refTools = useRef<HTMLDivElement>(null)
 
   for (let tool of ML_COPILOT_TOOLS) {
     if (props.forcedTools.has(tool)) continue
@@ -178,19 +182,45 @@ export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
     setShow(false)
   }
 
-  const overflow = false
+  useEffect(() => {
+    if (!refWrap.current) return
+    const observer = new ResizeObserver((entries) => {
+      if (!refTools.current) return
+      if (entries.length === 1) {
+        const widthTools = refTools.current.getBoundingClientRect().width
+        if (widthTools > entries[0].contentRect.width && overflow === false) {
+          widthFromBeforeCollapse.current = widthTools
+          setOverflow(true)
+        } else if (
+          (widthFromBeforeCollapse.current < entries[0].contentRect.width ||
+            tools.length === 0) &&
+          overflow === true
+        ) {
+          setOverflow(false)
+        }
+      }
+    })
+    observer.observe(refWrap.current)
+    return () => {
+      observer.disconnect()
+    }
+  }, [overflow, tools.length, props.context])
 
   return (
-    <div className="flex-1 flex min-w-0 items-end">
+    <div ref={refWrap} className="flex-1 flex min-w-0 items-end">
       <div className={`relative ${show ? '' : 'hidden'}`}>
         <div
-          className="flex flex-col gap-2 absolute hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md"
+          className="flex whitespace-nowrap flex-col gap-2 absolute hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md"
           style={{ left: 1, bottom: 0 }}
         >
           {tools}
         </div>
       </div>
-      <div className="contents">
+      <div ref={refTools} className="flex">
+        {/* TODO: Generalize to a MlCopilotContexts component */}
+        {props.context && (
+          <MlCopilotSelectionsContext selections={props.context} />
+        )}
         <MlCopilotTools onAdd={props.onAdd}>
           <div>
             {tools.length} Tool{tools.length !== 1 ? 's' : ''}
@@ -204,18 +234,36 @@ export const MlEphantForcedTools = (props: MlEphantForcedToolsProps) => {
   )
 }
 
-// For now there's only one but in the future there'll be more
-// We'll have a Dummy as a test item
-enum MlEphantPromptContext {
-  Dummy = 'o>-<',
-}
+export const DummyContent = 'o|-<'
+
+export type MlEphantManagerPromptContext =
+  | {
+      type: 'selections'
+      data: Selections
+    }
+  | {
+      type: 'dummy'
+      data: typeof DummyContent
+    }
 
 export interface MlEphantContextsProps {
-  contexts: MlEphantPromptContext[]
+  contexts: MlEphantManagerPromptContext[]
 }
-export const MlEphantContexts = (props: MlEphantContextsProps) => {}
+
+const MlCopilotSelectionsContext = (props: {
+  selections: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
+}) => {
+  const selectionText = getSelectionTypeDisplayText(props.selections.data)
+  return selectionText ? (
+    <button className="group/tool flex-none flex flex-row gap-1 items-center p-0 pr-2">
+      <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
+      {selectionText}
+    </button>
+  ) : null
+}
 
 interface MlEphantConversationInputProps {
+  contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
   onProcess: MlEphantConversationProps['onProcess']
   disabled?: boolean
@@ -301,6 +349,7 @@ export const MlEphantConversationInput = (
       setForcedTools(new Set())
       setExcludedTools(new Set())
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [value.length])
 
   const onClick = () => {
@@ -340,6 +389,10 @@ export const MlEphantConversationInput = (
     }
   }, [isAnimating])
 
+  const selectionsContext:
+    | Extract<MlEphantManagerPromptContext, { type: 'selections' }>
+    | undefined = props.contexts.filter((m) => m.type === 'selections')[0]
+
   return (
     <div className="flex flex-col p-4 gap-2">
       <div className="flex flex-row justify-between">
@@ -375,7 +428,8 @@ export const MlEphantConversationInput = (
         </div>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div className="flex items-end">
-          <MlEphantForcedTools
+          <MlEphantExtraInputs
+            context={selectionsContext}
             inputToMatch={value}
             forcedTools={forcedTools}
             excludedTools={excludedTools}
@@ -493,6 +547,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
           </div>
           <div className="border-t b-4">
             <MlEphantConversationInput
+              contexts={props.contexts}
               disabled={props.disabled || props.isLoading}
               onProcess={onProcess}
               billingContext={props.billingContext}

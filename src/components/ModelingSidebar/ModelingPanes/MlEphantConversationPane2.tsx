@@ -181,6 +181,9 @@ export const MlEphantConversationPane2 = (props: {
   return (
     <MlEphantConversation2
       isLoading={conversation === undefined}
+      contexts={[
+        { type: 'selections', data: props.contextModeling.selectionRanges },
+      ]}
       conversation={conversation}
       billingContext={billingContext}
       onProcess={(request: string, forcedTools: Set<MlCopilotTool>) => {
