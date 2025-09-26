@@ -424,6 +424,7 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -620,6 +620,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

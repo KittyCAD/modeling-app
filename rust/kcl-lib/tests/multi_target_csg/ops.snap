@@ -379,6 +379,7 @@ description: Operations executed multi_target_csg.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

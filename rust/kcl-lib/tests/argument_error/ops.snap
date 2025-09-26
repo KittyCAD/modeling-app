@@ -6,6 +6,7 @@ description: Operations executed argument_error.kcl
   "rust/kcl-lib/tests/argument_error/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -150,6 +150,7 @@ description: Operations executed pipe_as_arg.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

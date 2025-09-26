@@ -352,6 +352,7 @@ description: Artifact commands single-impeller-blade.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
