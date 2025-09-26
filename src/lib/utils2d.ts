@@ -1,4 +1,4 @@
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import { getAngle } from '@src/lib/utils'
 
 export function deg2Rad(deg: number): number {

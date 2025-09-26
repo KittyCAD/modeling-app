@@ -208,3 +208,5 @@ export function crossProduct(a: Point3d, b: Point3d): Point3d {
     z: a.x * b.y - a.y * b.x,
   }
 }
+
+export type Coords2d = [number, number]

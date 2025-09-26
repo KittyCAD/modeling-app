@@ -28,7 +28,7 @@ import {
 } from '@src/clientSideScene/sceneUtils'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import { vec2WithinDistance } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/lib/selections'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'

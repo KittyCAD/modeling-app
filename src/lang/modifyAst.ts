@@ -62,7 +62,7 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { ARG_AT } from '@src/lang/constants'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type { ExtrudeFacePlane } from '@src/machines/modelingSharedTypes'
@@ -830,8 +830,8 @@ export function updateSketchNodePathsWithInsertIndex({
 }
 
 /**
- * 
- * Split the following pipe expression into 
+ *
+ * Split the following pipe expression into
  * ```ts
  * part001 = startSketchOn(XZ)
   |> startProfile(at = [1, 2])
@@ -851,7 +851,7 @@ extrude001 = extrude(part001, length = 5)
 ```
 Notice that the `startSketchOn` is what gets the new variable name, this is so part001 still has the same data as before
 making it safe for later code that uses part001 (the extrude in this example)
- * 
+ *
  */
 export function splitPipedProfile(
   ast: Node<Program>,

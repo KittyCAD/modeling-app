@@ -75,7 +75,7 @@ import {
 } from '@src/clientSideScene/sceneUtils'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
 import type { PathToNode } from '@src/lang/wasm'
 import { getTangentialArcToInfo } from '@src/lang/wasm'

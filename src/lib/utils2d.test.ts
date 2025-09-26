@@ -1,4 +1,4 @@
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import { isPointsCCW } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { closestPointOnRay } from '@src/lib/utils2d'

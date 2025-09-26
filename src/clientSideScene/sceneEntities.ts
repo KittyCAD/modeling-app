@@ -134,7 +134,7 @@ import {
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,
