@@ -44,6 +44,10 @@ import {
   addTagForSketchOnFace,
   getConstraintInfoKw,
 } from '@src/lang/std/sketch'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
 
 beforeAll(async () => {
   await initPromise
@@ -585,7 +589,9 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
       execState.variables,
       code,
       pathToNode,
-      getConstraintInfoKw
+      getConstraintInfoKw,
+      removeSingleConstraint,
+      transformAstSketchLines
     )
     if (err(modifiedAst)) throw modifiedAst
     const newCode = recast(modifiedAst)
@@ -671,7 +677,9 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
         execState.variables,
         code,
         pathToNode,
-        getConstraintInfoKw
+        getConstraintInfoKw,
+        removeSingleConstraint,
+        transformAstSketchLines
       )
       if (err(modifiedAst)) throw modifiedAst
       const newCode = recast(modifiedAst)

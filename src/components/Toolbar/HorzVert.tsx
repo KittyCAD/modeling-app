@@ -2,7 +2,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   getTransformInfos,
   transformAstSketchLines,

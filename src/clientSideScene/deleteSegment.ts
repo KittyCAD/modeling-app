@@ -17,6 +17,10 @@ import {
 import { err } from '@src/lib/trap'
 import type { SketchDetails } from '@src/machines/modelingSharedTypes'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
 
 export async function deleteSegment({
   pathToNode,
@@ -43,7 +47,9 @@ export async function deleteSegment({
     kclManager.variables,
     codeManager.code,
     pathToNode,
-    getConstraintInfoKw
+    getConstraintInfoKw,
+    removeSingleConstraint,
+    transformAstSketchLines
   )
   if (err(modifiedAst)) return Promise.reject(modifiedAst)
 

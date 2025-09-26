@@ -9,6 +9,10 @@ import {
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
 import { type CallExpressionKw, assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import {
@@ -1179,7 +1183,9 @@ p3 = [342.51, 216.38],
             constraint.pathToNode,
             constraint.argPosition,
             ast,
-            kclManager.variables
+            kclManager.variables,
+            removeSingleConstraint,
+            transformAstSketchLines
           )
           if (!mod) {
             throw new Error('Failed to remove constraint info')

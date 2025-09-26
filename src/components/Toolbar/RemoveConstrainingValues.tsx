@@ -3,7 +3,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   getRemoveConstraintsTransforms,
   transformAstSketchLines,

@@ -10,12 +10,12 @@ import {
   createName,
   createVariableDeclaration,
 } from '@src/lang/create'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   isExprBinaryPart,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import type { Expr, Program } from '@src/lang/wasm'
+import { isPathToNode, type Expr, type Program } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selections } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
@@ -190,8 +190,10 @@ export async function applyConstraintAngleLength({
     )
     _modifiedAst.body = newBody
     Object.values(pathToNodeMap).forEach((pathToNode) => {
-      const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
-      pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      if (isPathToNode(pathToNode)) {
+        const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
+        pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      }
     })
   }
   return {

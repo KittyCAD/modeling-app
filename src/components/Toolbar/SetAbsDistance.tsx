@@ -8,14 +8,14 @@ import {
 import { createName, createVariableDeclaration } from '@src/lang/create'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   getTransformInfos,
   isExprBinaryPart,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 import type { TransformInfo } from '@src/lang/std/stdTypes'
-import type { Expr, Program } from '@src/lang/wasm'
+import { isPathToNode, type Expr, type Program } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
@@ -140,8 +140,10 @@ export async function applyConstraintAbsDistance({
     )
     _modifiedAst.body = newBody
     Object.values(pathToNodeMap).forEach((pathToNode) => {
-      const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
-      pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      if (isPathToNode(pathToNode)) {
+        const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
+        pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      }
     })
     exprInsertIndex = newVariableInsertIndex
   }

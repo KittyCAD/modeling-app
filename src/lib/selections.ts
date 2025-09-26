@@ -35,7 +35,7 @@ import {
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   isCursorInSketchCommandRange,
   isTopLevelModule,

@@ -60,7 +60,14 @@ import type {
   SimplifiedArgDetails,
   TransformInfo,
 } from '@src/lang/std/stdTypes'
-import { findKwArg, findKwArgAny } from '@src/lang/util'
+import type {
+  PathToNodeMap} from '@src/lang/util'
+import {
+  findKwArg,
+  findKwArgAny,
+  isLiteralArrayOrStatic,
+  isNotLiteralArrayOrStatic
+} from '@src/lang/util'
 import type {
   BinaryPart,
   CallExpressionKw,
@@ -1807,8 +1814,6 @@ export function getRemoveConstraintsTransforms(
   return theTransforms
 }
 
-export type PathToNodeMap = { [key: number]: PathToNode }
-
 export function transformSecondarySketchLinesTagFirst({
   ast,
   selectionRanges,
@@ -2233,36 +2238,6 @@ export function getConstraintLevelFromSourceRange(
   if (isOneValFree) return { level: 'partial', range: range }
 
   return { level: 'partial', range: range }
-}
-
-export function isLiteralArrayOrStatic(
-  val: Expr | [Expr, Expr] | [Expr, Expr, Expr] | undefined
-): boolean {
-  if (!val) return false
-
-  if (isArray(val)) {
-    const a = val[0]
-    const b = val[1]
-    return isLiteralArrayOrStatic(a) && isLiteralArrayOrStatic(b)
-  }
-  return (
-    val.type === 'Literal' ||
-    (val.type === 'UnaryExpression' && val.argument.type === 'Literal')
-  )
-}
-
-export function isNotLiteralArrayOrStatic(
-  val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
-): boolean {
-  if (isArray(val)) {
-    const a = val[0]
-    const b = val[1]
-    return isNotLiteralArrayOrStatic(a) && isNotLiteralArrayOrStatic(b)
-  }
-  return (
-    (val.type !== 'Literal' && val.type !== 'UnaryExpression') ||
-    (val.type === 'UnaryExpression' && val.argument.type !== 'Literal')
-  )
 }
 
 export function isExprBinaryPart(expr: Expr): expr is BinaryPart {

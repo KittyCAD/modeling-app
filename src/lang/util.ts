@@ -210,3 +210,35 @@ export function crossProduct(a: Point3d, b: Point3d): Point3d {
 }
 
 export type Coords2d = [number, number]
+
+export function isLiteralArrayOrStatic(
+  val: Expr | [Expr, Expr] | [Expr, Expr, Expr] | undefined
+): boolean {
+  if (!val) return false
+
+  if (isArray(val)) {
+    const a = val[0]
+    const b = val[1]
+    return isLiteralArrayOrStatic(a) && isLiteralArrayOrStatic(b)
+  }
+  return (
+    val.type === 'Literal' ||
+    (val.type === 'UnaryExpression' && val.argument.type === 'Literal')
+  )
+}
+
+export function isNotLiteralArrayOrStatic(
+  val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
+): boolean {
+  if (isArray(val)) {
+    const a = val[0]
+    const b = val[1]
+    return isNotLiteralArrayOrStatic(a) && isNotLiteralArrayOrStatic(b)
+  }
+  return (
+    (val.type !== 'Literal' && val.type !== 'UnaryExpression') ||
+    (val.type === 'UnaryExpression' && val.argument.type !== 'Literal')
+  )
+}
+
+export type PathToNodeMap = { [key: number]: PathToNode }

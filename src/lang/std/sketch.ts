@@ -46,10 +46,6 @@ import {
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import {
-  isLiteralArrayOrStatic,
-  isNotLiteralArrayOrStatic,
-} from '@src/lang/std/sketchcombos'
 import type {
   AddTagInfo,
   ArrayItemInput,
@@ -69,6 +65,8 @@ import {
   findKwArgAny,
   findKwArgAnyIndex,
   findKwArgWithIndex,
+  isLiteralArrayOrStatic,
+  isNotLiteralArrayOrStatic,
   topLevelRange,
 } from '@src/lang/util'
 import type {

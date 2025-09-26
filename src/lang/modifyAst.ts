@@ -28,19 +28,16 @@ import {
 } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
-import {
-  isLiteralArrayOrStatic,
-  removeSingleConstraint,
-  transformAstSketchLines,
-} from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import type {
   AddTagInfo,
   ConstrainInfo,
   SimplifiedArgDetails,
+  TransformInfo,
 } from '@src/lang/std/stdTypes'
 import type {
   ArrayExpression,
+  BinaryPart,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
@@ -62,12 +59,13 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { ARG_AT } from '@src/lang/constants'
-import type { Coords2d } from '@src/lang/util'
+import { isLiteralArrayOrStatic, type Coords2d } from '@src/lang/util'
 import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type {
   EdgeCutInfo,
   ExtrudeFacePlane,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
 
 export function startSketchOnDefault(
@@ -693,7 +691,39 @@ export function deleteSegmentFromPipeExpression(
     code: string,
     pathToNode: PathToNode,
     filterValue?: string
-  ) => ConstrainInfo[]
+  ) => ConstrainInfo[],
+  removeSingleConstraint: ({
+    pathToCallExp,
+    inputDetails,
+    ast,
+  }: {
+    pathToCallExp: PathToNode
+    inputDetails: SimplifiedArgDetails
+    ast: Program
+  }) => TransformInfo | false,
+  transformAstSketchLines: ({
+    ast,
+    selectionRanges,
+    transformInfos,
+    memVars,
+    referenceSegName,
+    forceValueUsedInTransform,
+    referencedSegmentRange,
+  }: {
+    ast: Node<Program>
+    selectionRanges: Selections | PathToNode[]
+    transformInfos: TransformInfo[]
+    memVars: VariableMap
+    referenceSegName: string
+    referencedSegmentRange?: SourceRange
+    forceValueUsedInTransform?: BinaryPart
+  }) =>
+    | {
+        modifiedAst: Node<Program>
+        valueUsedInTransform?: string
+        pathToNodeMap: PathToNodeMap
+      }
+    | Error
 ): Node<Program> | Error {
   let _modifiedAst = structuredClone(modifiedAst)
 
@@ -718,7 +748,9 @@ export function deleteSegmentFromPipeExpression(
       callExp.shallowPath,
       constraintInfo.argPosition,
       _modifiedAst,
-      memVars
+      memVars,
+      removeSingleConstraint,
+      transformAstSketchLines
     )
     if (!transform) return
     _modifiedAst = transform.modifiedAst
@@ -768,7 +800,39 @@ export function removeSingleConstraintInfo(
   pathToCallExp: PathToNode,
   argDetails: SimplifiedArgDetails,
   ast: Node<Program>,
-  memVars: VariableMap
+  memVars: VariableMap,
+  removeSingleConstraint: ({
+    pathToCallExp,
+    inputDetails,
+    ast,
+  }: {
+    pathToCallExp: PathToNode
+    inputDetails: SimplifiedArgDetails
+    ast: Program
+  }) => TransformInfo | false,
+  transformAstSketchLines: ({
+    ast,
+    selectionRanges,
+    transformInfos,
+    memVars,
+    referenceSegName,
+    forceValueUsedInTransform,
+    referencedSegmentRange,
+  }: {
+    ast: Node<Program>
+    selectionRanges: Selections | PathToNode[]
+    transformInfos: TransformInfo[]
+    memVars: VariableMap
+    referenceSegName: string
+    referencedSegmentRange?: SourceRange
+    forceValueUsedInTransform?: BinaryPart
+  }) =>
+    | {
+        modifiedAst: Node<Program>
+        valueUsedInTransform?: string
+        pathToNodeMap: PathToNodeMap
+      }
+    | Error
 ):
   | {
       modifiedAst: Node<Program>

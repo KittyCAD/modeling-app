@@ -11,14 +11,19 @@ import {
   isLinesParallelAndConstrained,
 } from '@src/lang/queryAst'
 import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   getTransformInfos,
   isExprBinaryPart,
   transformSecondarySketchLinesTagFirst,
 } from '@src/lang/std/sketchcombos'
 import type { TransformInfo } from '@src/lang/std/stdTypes'
-import type { Expr, Program, VariableDeclarator } from '@src/lang/wasm'
+import {
+  isPathToNode,
+  type Expr,
+  type Program,
+  type VariableDeclarator,
+} from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
@@ -205,8 +210,10 @@ export async function applyConstraintIntersect({
     )
     _modifiedAst.body = newBody
     Object.values(_pathToNodeMap).forEach((pathToNode) => {
-      const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
-      pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      if (isPathToNode(pathToNode)) {
+        const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
+        pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      }
     })
     exprInsertIndex = newVariableInsertIndex
   }
