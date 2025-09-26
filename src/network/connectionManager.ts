@@ -396,6 +396,19 @@ export class ConnectionManager extends EventTarget {
 
   // Set the engine's theme
   async setTheme(theme: Themes) {
+    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setTheme, websocket is not ready',
+        metadata: {
+          readyState: this.connection?.websocket?.readyState,
+        },
+      })
+      return
+    }
+
+    await this.connection.deferredConnection?.promise
+
     // Set the stream background color
     // This takes RGBA values from 0-1
     // So we convert from the conventional 0-255 found in Figma
