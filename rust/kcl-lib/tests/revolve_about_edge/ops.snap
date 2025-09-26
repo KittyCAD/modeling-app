@@ -123,6 +123,7 @@ description: Operations executed revolve_about_edge.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

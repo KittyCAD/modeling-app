@@ -3390,6 +3390,7 @@ description: Operations executed spinning-highrise-tower.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -45,6 +45,7 @@ description: Operations executed kw_fn_too_few_args.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

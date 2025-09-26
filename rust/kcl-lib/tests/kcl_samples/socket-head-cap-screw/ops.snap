@@ -616,6 +616,7 @@ description: Operations executed socket-head-cap-screw.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

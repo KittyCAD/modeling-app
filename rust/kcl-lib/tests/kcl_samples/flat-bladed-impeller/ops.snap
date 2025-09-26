@@ -860,6 +860,7 @@ description: Operations executed flat-bladed-impeller.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

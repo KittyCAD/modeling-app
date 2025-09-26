@@ -6,6 +6,7 @@ description: Artifact commands kw_fn_with_defaults.kcl
   "rust/kcl-lib/tests/kw_fn_with_defaults/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

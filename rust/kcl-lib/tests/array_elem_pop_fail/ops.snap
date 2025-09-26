@@ -6,6 +6,7 @@ description: Operations executed array_elem_pop_fail.kcl
   "rust/kcl-lib/tests/array_elem_pop_fail/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

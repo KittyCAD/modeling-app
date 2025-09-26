@@ -6,6 +6,7 @@ description: Artifact commands non_english_identifiers.kcl
   "rust/kcl-lib/tests/non_english_identifiers/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

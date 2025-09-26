@@ -156,6 +156,7 @@ description: Operations executed elliptic_curve_inches_regression.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
