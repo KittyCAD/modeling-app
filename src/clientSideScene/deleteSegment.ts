@@ -66,46 +66,35 @@ export async function deleteSegmentOrProfile({
     return
   }
 
-  if (!sketchDetails) return
-  try {
-    sketchDetails = updateSketchDetails(
-      modifiedAst,
-      testExecute.execState.artifactGraph,
-      sketchDetails
-    )
-
-    await sceneEntitiesManager.updateAstAndRejigSketch(
-      sketchDetails.sketchEntryNodePath,
-      sketchDetails.sketchNodePaths,
-      sketchDetails.planeNodePath,
-      modifiedAst,
-      sketchDetails.zAxis,
-      sketchDetails.yAxis,
-      sketchDetails.origin
-    )
-    // } else {
-    //   // If there are no sketchNodePaths left, just tear down the sketch because updateAstAndRejigSketch and setupSketch
-    //   // doesn't work well if sketchNodePaths is empty. Similar to:
-    //   // https://github.com/KittyCAD/modeling-app/pull/8368/files#diff-5b3927b16824249515f7aa8762bd6c9c9ba641a023bb6d0a75b75331326cf4aaR1916-R1917
-    //   sceneInfra.resetMouseListeners()
-    //   sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-    // }
-
-    // Update the machine context.sketchDetails so subsequent interactions use fresh paths
-    sceneInfra.modelingSend({
-      type: 'Update sketch details',
-      data: {
-        sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
-        sketchNodePaths: sketchDetails.sketchNodePaths,
-        planeNodePath: sketchDetails.planeNodePath,
-      },
-    })
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (_err) {
-    console.warn(_err)
-    // When deleting the last startProfile in a sketch, the above updateAstAndRejigSketch fails because prepareTruncatedAst
-    // calls getNodeFromPath with a path that no longer exists (we just deleted it)..
+  if (!sketchDetails) {
+    return
   }
+
+  sketchDetails = updateSketchDetails(
+    modifiedAst,
+    testExecute.execState.artifactGraph,
+    sketchDetails
+  )
+
+  await sceneEntitiesManager.updateAstAndRejigSketch(
+    sketchDetails.sketchEntryNodePath,
+    sketchDetails.sketchNodePaths,
+    sketchDetails.planeNodePath,
+    modifiedAst,
+    sketchDetails.zAxis,
+    sketchDetails.yAxis,
+    sketchDetails.origin
+  )
+
+  // Update the machine context.sketchDetails so subsequent interactions use fresh paths
+  sceneInfra.modelingSend({
+    type: 'Update sketch details',
+    data: {
+      sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
+      sketchNodePaths: sketchDetails.sketchNodePaths,
+      planeNodePath: sketchDetails.planeNodePath,
+    },
+  })
 }
 
 // Updates stale sketchDetails after an AST modification, typically when deleting top level statements which can cause
