@@ -43,6 +43,7 @@ describe('MlEphantConversation2', () => {
           conversation={conversation}
           billingContext={billingContext}
           onProcess={handleProcess}
+          contexts={[]}
           disabled={false}
           hasPromptCompleted={hasPromptCompleted}
         />
@@ -59,7 +60,7 @@ describe('MlEphantConversation2', () => {
       fireEvent.input(promptInput, { target: { textContent: promptText } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(handleProcess).toHaveBeenCalledWith(promptText)
+      expect(handleProcess).toHaveBeenCalledWith(promptText, expect.any(Set))
 
       act(() => {
         rerender(renderConversation(latestConversation))
@@ -111,5 +112,56 @@ describe('MlEphantConversation2', () => {
       vi.clearAllTimers()
       vi.useRealTimers()
     }
+  })
+
+  test('does not render unknown response types', () => {
+    const billingContext: BillingContext = {
+      credits: 10,
+      allowance: 100,
+      error: undefined,
+      urlUserService: () => '',
+      lastFetch: undefined,
+    }
+
+    const unknownResponseText = 'this should never be visible'
+
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Render a torus',
+          },
+          responses: [
+            {
+              unexpected_response: {
+                detail: unknownResponseText,
+              },
+            } as any, // we must do this because it's a type that doesn't exist.
+          ],
+        },
+      ],
+    }
+
+    render(
+      <MlEphantConversation2
+        isLoading={false}
+        conversation={conversation}
+        billingContext={billingContext}
+        onProcess={vi.fn()}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+      />
+    )
+
+    const responseBubble = screen.getByTestId('ml-response-chat-bubble')
+
+    expect(
+      within(responseBubble).queryByText(unknownResponseText)
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('ml-response-chat-bubble-thinking')
+    ).toBeInTheDocument()
   })
 })
