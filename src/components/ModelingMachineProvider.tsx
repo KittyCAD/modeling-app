@@ -116,7 +116,7 @@ import {
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import type { sketchSolveMachine } from '@src/machines/sketchSolveMode'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveMode'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 

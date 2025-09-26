@@ -8,8 +8,8 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingSharedTypes'
 import type { PathToNode } from '@src/lang/wasm'
-import { machine as centerRectToolMachine } from '@src/machines/centerRectTool'
-import { machine as dimensionToolMachine } from '@src/machines/dimensionTool'
+import { machine as centerRectToolMachine } from '@src/machines/sketchSolve/tools/centerRectTool'
+import { machine as dimensionToolMachine } from '@src/machines/sketchSolve/tools/dimensionTool'
 
 type EquipTool = 'dimension' | 'center rectangle'
 

@@ -148,7 +148,7 @@ import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import { sketchSolveMachine } from '@src/machines/sketchSolveMode'
+import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveMode'
 
 export type ModelingMachineEvent =
   | {

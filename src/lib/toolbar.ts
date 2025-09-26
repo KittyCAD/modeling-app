@@ -10,7 +10,7 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import type { sketchSolveMachine } from '@src/machines/sketchSolveMode'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveMode'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
