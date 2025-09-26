@@ -28,17 +28,17 @@ import {
 } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import {
-  addTagForSketchOnFace,
-  getConstraintInfoKw,
-} from '@src/lang/std/sketch'
 import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import {
   isLiteralArrayOrStatic,
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
+import type {
+  AddTagInfo,
+  ConstrainInfo,
+  SimplifiedArgDetails,
+} from '@src/lang/std/stdTypes'
 import type {
   ArrayExpression,
   CallExpressionKw,
@@ -65,7 +65,10 @@ import { ARG_AT } from '@src/lang/constants'
 import type { Coords2d } from '@src/lang/util'
 import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import type { ExtrudeFacePlane } from '@src/machines/modelingSharedTypes'
+import type {
+  EdgeCutInfo,
+  ExtrudeFacePlane,
+} from '@src/machines/modelingSharedTypes'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -339,6 +342,16 @@ export function sketchOnExtrudedFace(
   node: Node<Program>,
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
+  addTagForSketchOnFace: (
+    tagInfo: AddTagInfo,
+    expressionName: string,
+    edgeCutMeta: EdgeCutInfo | null
+  ) =>
+    | {
+        modifiedAst: Node<Program>
+        tag: string
+      }
+    | Error,
   info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   let _node = { ...node }
@@ -674,7 +687,13 @@ export function deleteSegmentFromPipeExpression(
   modifiedAst: Node<Program>,
   memVars: VariableMap,
   code: string,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  getConstraintInfoKw: (
+    callExpression: Node<CallExpressionKw>,
+    code: string,
+    pathToNode: PathToNode,
+    filterValue?: string
+  ) => ConstrainInfo[]
 ): Node<Program> | Error {
   let _modifiedAst = structuredClone(modifiedAst)
 

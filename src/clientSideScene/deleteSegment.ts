@@ -16,6 +16,7 @@ import {
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { SketchDetails } from '@src/machines/modelingSharedTypes'
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
 
 export async function deleteSegment({
   pathToNode,
@@ -41,7 +42,8 @@ export async function deleteSegment({
     modifiedAst,
     kclManager.variables,
     codeManager.code,
-    pathToNode
+    pathToNode,
+    getConstraintInfoKw
   )
   if (err(modifiedAst)) return Promise.reject(modifiedAst)
 

@@ -116,6 +116,7 @@ import {
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -571,6 +572,7 @@ export const ModelingMachineProvider = ({
                     kclManager.ast,
                     input.sketchPathToNode,
                     input.extrudePathToNode,
+                    addTagForSketchOnFace,
                     input.faceInfo
                   )
                 : sketchOnOffsetPlane(
