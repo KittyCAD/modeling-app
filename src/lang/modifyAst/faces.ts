@@ -14,6 +14,7 @@ import {
 } from '@src/lang/modifyAst'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
+  getEdgeCutMeta,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
   retrieveSelectionsFromOpArg,
@@ -221,9 +222,27 @@ function getFacesExprsFromSelection(
 
       return createLocalName(tagResult.tag)
     } else if (artifact.type === 'edgeCut') {
-      console.log('artifact is edgeCut, not implemented yet', artifact)
-      // TODO: figure out how to find the chamfer op and mutate it with a tag
-      return []
+      console.log('artifact is edgeCut', artifact)
+      const edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph)
+      if (!edgeCutMeta) {
+        console.warn('No edge cut meta found for face', face)
+        return []
+      }
+
+      const tagResult = mutateAstWithTagForSketchSegment(
+        ast,
+        artifact.codeRef.pathToNode,
+        edgeCutMeta
+      )
+      if (err(tagResult)) {
+        console.warn(
+          'Failed to mutate ast with tag for sketch segment',
+          tagResult
+        )
+        return []
+      }
+
+      return createLocalName(tagResult.tag)
     } else {
       console.warn('Face was not a cap or wall', face)
       return []
