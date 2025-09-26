@@ -3113,6 +3113,7 @@ description: Operations executed utility-sink.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

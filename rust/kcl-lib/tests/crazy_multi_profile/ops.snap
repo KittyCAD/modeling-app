@@ -324,6 +324,7 @@ description: Operations executed crazy_multi_profile.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -384,6 +384,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

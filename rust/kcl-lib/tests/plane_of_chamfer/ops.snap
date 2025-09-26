@@ -183,6 +183,7 @@ description: Operations executed plane_of_chamfer.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -123,6 +123,7 @@ description: Operations executed non_english_identifiers.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

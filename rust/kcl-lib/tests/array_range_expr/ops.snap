@@ -94,6 +94,7 @@ description: Operations executed array_range_expr.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
