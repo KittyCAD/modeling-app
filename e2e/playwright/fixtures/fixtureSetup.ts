@@ -433,6 +433,11 @@ const fixturesBasedOnProcessEnvPlatform = {
       })
 
       await testInfo.attach('logs', {
+        /**
+         * gotcha: this is not actually a string for some unknown reason
+         * testInfo.attachments.logs will have body be body: <Buffer 5b 0a 20 20 ...
+         * even if I set the contentType to text/plain which is the default
+         */
         body: JSON.stringify(formattedLogs, null, 2),
         contentType: 'application/json',
       })
