@@ -173,6 +173,8 @@ export class CoreDumpManager {
 
     console.warn('CoreDump: Gathering client state')
 
+    const connection_logs: ILog[] = []
+
     // Initialize the clientState object
     let clientState = {
       // singletons
@@ -182,7 +184,7 @@ export class CoreDumpManager {
         engine_connection: { state: { type: '' } },
         default_planes: {},
         scene_command_artifacts: {},
-        connection_logs: [] as ILog[],
+        connection_logs: connection_logs,
       },
       kcl_manager: {
         ast: {},
