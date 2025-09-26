@@ -647,6 +647,20 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  gdtFlatness: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M14.2002 14H3L5.7998 6H17L14.2002 14ZM4.41016 13H13.4902L15.5898 7H6.50977L4.41016 13Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   gear: (
     <svg
       viewBox="0 0 20 20"

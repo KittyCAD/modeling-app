@@ -6,6 +6,7 @@ description: Artifact commands boolean_logical_or.kcl
   "rust/kcl-lib/tests/boolean_logical_or/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

@@ -560,6 +560,7 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

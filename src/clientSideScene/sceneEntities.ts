@@ -203,8 +203,6 @@ export class SceneEntities {
 
   getSettings: (() => SettingsType) | null = null
 
-  private canvasResizeObserver: ResizeObserver
-
   constructor(
     engineCommandManager: EngineCommandManager,
     sceneInfra: SceneInfra,
@@ -225,12 +223,6 @@ export class SceneEntities {
 
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     this.sceneInfra.baseUnitChange.add(this.onCamChange)
-
-    const canvas = this.sceneInfra.renderer.domElement
-    this.canvasResizeObserver = new ResizeObserver(() => {
-      this.onCamChange()
-    })
-    this.canvasResizeObserver.observe(canvas)
   }
 
   onCamChange = () => {

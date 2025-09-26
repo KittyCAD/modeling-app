@@ -69,6 +69,7 @@ description: Operations executed artifact_graph_example_code_no_3d.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -255,6 +255,7 @@ description: Operations executed sketch_on_face_end_negative_extrude.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

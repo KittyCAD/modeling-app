@@ -6,6 +6,7 @@ description: Operations executed non_string_key_of_object.kcl
   "rust/kcl-lib/tests/non_string_key_of_object/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
