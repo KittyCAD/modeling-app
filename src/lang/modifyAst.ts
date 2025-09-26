@@ -669,7 +669,7 @@ export function moveValueIntoNewVariable(
  * Deletes a segment from a pipe expression, if the segment has a tag that other segments use, it will remove that value and replace it with the equivalent literal
  * @param dependentRanges - The ranges of the segments that are dependent on the segment being deleted, this is usually the output of `findUsesOfTagInPipe`
  */
-export function deleteSegmentOrTopLevelStatementFromPipeExpression(
+export function deleteSegmentOrProfileFromPipeExpression(
   dependentRanges: SourceRange[],
   modifiedAst: Node<Program>,
   memVars: VariableMap,

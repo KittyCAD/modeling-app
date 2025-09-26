@@ -24,7 +24,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import { deleteSegmentOrTopLevelStatement } from '@src/clientSideScene/deleteSegment'
+import { deleteSegmentOrProfile } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
   quaternionFromUpNForward,
@@ -1074,7 +1074,7 @@ export const modelingMachine = setup({
       if (!sketchDetails || !event.data) return
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deleteSegmentOrTopLevelStatement({
+      deleteSegmentOrProfile({
         pathToNode: event.data,
         sketchDetails,
       }).then(() => {
