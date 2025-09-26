@@ -19,7 +19,7 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import type { SketchDetails } from '@src/machines/modelingSharedTypes'
 import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
 
@@ -128,14 +128,14 @@ function updateSketchDetails(
   let sketchEntryNodePath = sketchDetails.sketchEntryNodePath
 
   try {
-    let entryNode = getNodeFromPath(
+    const entryNode = getNodeFromPath(
       modifiedAst,
       sketchEntryNodePath,
       undefined,
       undefined,
       true
     )
-    if (err(entryNode)) {
+    if (isErr(entryNode)) {
       // sketchEntryNodePath is not valid anymore in the new AST (could have been deleted just now) -> find a valid path
       sketchEntryNodePath =
         artifactGraph.values().find((artifact) => {
