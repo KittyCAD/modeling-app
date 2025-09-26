@@ -352,6 +352,7 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
       otherSelections: [],
     }
   } else if (planeArtifact.type === 'planeOfFace') {
+    // TODO: add test coverage for edgeCut
     const faceArtifact = getArtifactOfTypes(
       { key: planeArtifact.faceId, types: ['cap', 'wall', 'edgeCut'] },
       artifactGraph

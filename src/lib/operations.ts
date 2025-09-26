@@ -554,8 +554,6 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  // TODO: add support for chamfer face
-
   let plane: Selections | undefined
   const maybeDefaultPlaneName = getStringValue(
     codeManager.code,
