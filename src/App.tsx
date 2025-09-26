@@ -148,9 +148,7 @@ export function App() {
     // When leaving the modeling scene, cut the engine stream.
 
     return () => {
-      // When leaving the modeling scene, cut the engine stream.
-      // Stop is more serious than Pause
-      // TODO: engineCommandManager.tearDown()
+      // Add any logic to be called when the page gets unmounted.
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
