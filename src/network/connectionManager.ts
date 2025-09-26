@@ -54,6 +54,10 @@ import {
   isModelingBatchResponse,
   isModelingResponse,
 } from '@src/lib/kcSdkGuards'
+import toast from 'react-hot-toast'
+
+// Global timeout on pending commands, it will be bad if we hit this case.
+const PENDING_COMMAND_TIMEOUT = 60_000
 
 export class ConnectionManager extends EventTarget {
   started: boolean
@@ -630,14 +634,32 @@ export class ConnectionManager extends EventTarget {
       idToRangeMap: message.idToRangeMap,
       isSceneCommand,
     }
-    this.connection.send(message.command)
-    setTimeout(() => {
-      if (!isSettled) {
-        reject(
-          `sendCommand rejected, you hit the timeout. ${JSON.stringify(message.command)}`
-        )
+
+    // For exports do not time out the command
+    let timeoutPendingCommand = true
+    if (message.command.type === 'modeling_cmd_req') {
+      const commandName = message.command.cmd.type
+      if (commandName.includes('export')) {
+        // If the command name includes export of any type do not time it out within 60 seconds
+        timeoutPendingCommand = false
       }
-    }, 12_000)
+    }
+
+    if (timeoutPendingCommand) {
+      setTimeout(() => {
+        if (!isSettled) {
+          toast.error(
+            `command took more than ${PENDING_COMMAND_TIMEOUT} milliseconds to finish, rejecting the command.`
+          )
+          reject(
+            `sendCommand rejected, you hit the timeout. ${JSON.stringify(message.command)}`
+          )
+        }
+      }, PENDING_COMMAND_TIMEOUT)
+    }
+
+    this.connection.send(message.command)
+
     return promise
   }
 
