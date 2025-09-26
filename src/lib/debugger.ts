@@ -5,7 +5,7 @@ export interface ILog {
   message: string
   stack: string
   label: string
-  metadata: any
+  metadata: unknown
 }
 
 export class Debugger {
@@ -36,7 +36,7 @@ export class Debugger {
   }: {
     message: string
     label: string
-    metadata?: any
+    metadata?: unknown
   }) {
     this.logs.push({
       time: this.getNow(),
