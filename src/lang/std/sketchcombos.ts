@@ -60,13 +60,12 @@ import type {
   SimplifiedArgDetails,
   TransformInfo,
 } from '@src/lang/std/stdTypes'
-import type {
-  PathToNodeMap} from '@src/lang/util'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   findKwArg,
   findKwArgAny,
   isLiteralArrayOrStatic,
-  isNotLiteralArrayOrStatic
+  isNotLiteralArrayOrStatic,
 } from '@src/lang/util'
 import type {
   BinaryPart,
