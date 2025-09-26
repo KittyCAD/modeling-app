@@ -93,6 +93,7 @@ import {
   addRevolve,
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
+import { addPatternCircular3D } from '@src/lang/modifyAst/pattern3D'
 import {
   addAppearance,
   addClone,
@@ -214,6 +215,10 @@ export type ModelingMachineEvent =
   | {
       type: 'Boolean Intersect'
       data: ModelingCommandSchema['Boolean Intersect']
+    }
+  | {
+      type: 'Pattern Circular 3D'
+      data: ModelingCommandSchema['Pattern Circular 3D']
     }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
@@ -2994,6 +2999,42 @@ export const modelingMachine = setup({
           artifactGraph,
         })
         if (err(result)) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+
+    patternCircular3dAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Pattern Circular 3D'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addPatternCircular3D({
+          ...input,
+          ast,
+          artifactGraph,
+        })
+        if (err(result)) {
           return Promise.reject(result)
         }
 
@@ -3237,6 +3278,10 @@ export const modelingMachine = setup({
         },
         'Boolean Intersect': {
           target: 'Boolean intersecting',
+          guard: 'no kcl errors',
+        },
+        'Pattern Circular 3D': {
+          target: 'Pattern Circular 3D',
           guard: 'no kcl errors',
         },
       },
@@ -4790,6 +4835,20 @@ export const modelingMachine = setup({
         id: 'boolIntersectAstMod',
         input: ({ event }) =>
           event.type !== 'Boolean Intersect' ? undefined : event.data,
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Pattern Circular 3D': {
+      invoke: {
+        src: 'patternCircular3dAstMod',
+        id: 'patternCircular3dAstMod',
+        input: ({ event }) =>
+          event.type !== 'Pattern Circular 3D' ? undefined : event.data,
         onDone: 'idle',
         onError: {
           target: 'idle',

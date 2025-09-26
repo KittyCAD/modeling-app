@@ -499,6 +499,42 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
+      {
+        id: 'pattern',
+        array: [
+          {
+            id: 'pattern-circular-3d',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Pattern Circular 3D', groupId: 'modeling' },
+              }),
+            status: 'available',
+            title: 'Circular Pattern',
+            icon: 'patternCircular3d',
+            description:
+              'Create a circular pattern of 3D solids around an axis.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-patternCircular3d'
+                ),
+              },
+            ],
+          },
+          {
+            id: 'pattern-linear-3d',
+            onClick: () => console.error('Linear Pattern not yet implemented'),
+            status: 'unavailable',
+            title: 'Linear Pattern',
+            icon: 'patternLinear3d',
+            description:
+              'Create a linear pattern of 3D solids along an axis. This feature is under development.',
+            links: [],
+          },
+        ],
+      },
     ],
   },
   sketching: {
