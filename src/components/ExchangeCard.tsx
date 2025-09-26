@@ -1,10 +1,10 @@
-import type {
-  MlCopilotServerMessage,
-  MlCopilotClientMessage,
-} from '@kittycad/lib'
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Thinking } from '@src/components/Thinking'
-import { type Exchange } from '@src/machines/mlEphantManagerMachine2'
+import {
+  type Exchange,
+  isMlCopilotUserRequest,
+} from '@src/machines/mlEphantManagerMachine2'
 import ms from 'ms'
 import { forwardRef, useEffect, useRef, useState, type ReactNode } from 'react'
 
@@ -28,6 +28,7 @@ export const ExchangeCardStatus = (props: {
   const thinker = (
     <Thinking
       thoughts={props.responses}
+      isDone={props.responses?.some((m) => 'delta' in m) || false}
       onlyShowImmediateThought={props.onlyShowImmediateThought}
     />
   )
@@ -37,6 +38,19 @@ export const ExchangeCardStatus = (props: {
   const isEndOfStream =
     'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
     props.responses?.some((x) => 'error' in x || 'info' in x)
+
+  let timeReasonedFor = 0
+  if (isEndOfStream) {
+    const lastResponse = props.responses?.slice(-1)[0]
+    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
+      timeReasonedFor =
+        new Date(lastResponse.end_of_stream.completed_at ?? 0).getTime() -
+        new Date(lastResponse.end_of_stream.started_at ?? 0).getTime()
+    }
+  } else {
+    timeReasonedFor =
+      (props.updatedAt ?? new Date()).getTime() - props.startedAt.getTime()
+  }
 
   return props.onlyShowImmediateThought ? (
     <div className="text-sm text-chalkboard-70">
@@ -48,10 +62,9 @@ export const ExchangeCardStatus = (props: {
       {thinker}
       {props.updatedAt && (
         <div className="text-chalkboard-70 p-2 pb-0">
-          Reasoned for{' '}
-          {ms(props.updatedAt.getTime() - props.startedAt.getTime(), {
-            long: true,
-          })}
+          {timeReasonedFor ? (
+            <>Reasoned for {ms(timeReasonedFor, { long: true })}</>
+          ) : null}
         </div>
       )}
     </div>
@@ -80,16 +93,6 @@ export const AvatarUser = (props: { src?: string }) => {
 
 type RequestCardProps = Exchange['request'] & {
   userAvatar?: ReactNode
-}
-
-type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
-  type: 'user'
-}
-  ? T
-  : never
-
-function isMlCopilotUserRequest(x: unknown): x is MlCopilotClientMessageUser {
-  return typeof x === 'object' && x !== null && 'type' in x && x.type === 'user'
 }
 
 const hasVisibleChildren = (children: ReactNode) => {
@@ -200,7 +203,7 @@ export const ResponsesCard = forwardRef((props: ResponsesCardProp) => {
 })
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
-  const [startedAt] = useState<Date>(new Date())
+  let [startedAt] = useState<Date>(new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
 
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
@@ -222,12 +225,33 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     props.responses?.some((x) => 'error' in x || 'info' in x)
 
   useEffect(() => {
+    const id = setInterval(() => {
+      if (isEndOfStream) {
+        clearInterval(id)
+      }
+      setUpdatedAt(new Date())
+    }, 1000)
+    return () => {
+      clearInterval(id)
+    }
+  }, [isEndOfStream])
+
+  if (isEndOfStream) {
+    const lastResponse = props.responses?.slice(-1)[0]
+    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
+      startedAt = new Date(lastResponse.end_of_stream.started_at ?? 0)
+    }
+  }
+
+  useEffect(() => {
     if (isEndOfStream) {
       setShowFullReasoning(false)
     }
   }, [isEndOfStream])
 
   const maybeError = props.responses.filter((r) => 'error' in r)[0]
+
+  const reasoningThoughts = props.responses.filter((r) => 'reasoning' in r)
 
   return (
     <div className={cssCard}>
@@ -240,7 +264,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           userAvatar={<AvatarUser src={props.userAvatar} />}
         />
       )}
-      {showFullReasoning && props.responses.length > 0 && (
+      {showFullReasoning && reasoningThoughts.length > 0 && (
         <div>
           <ExchangeCardStatus
             responses={props.responses}
@@ -250,26 +274,24 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           />
         </div>
       )}
-      {!maybeError && (
+      {reasoningThoughts.length > 0 && (
         <div
           tabIndex={0}
           role="button"
           className="pl-8 flex flex-row items-center cursor-pointer justify-start gap-2"
           onClick={() => onSeeReasoning()}
         >
-          {props.responses.length > 0 && (
-            <div>
-              <button className="flex justify-center items-center flex-none">
-                {showFullReasoning ? (
-                  <>
-                    Collapse <CustomIcon name="collapse" className="w-5 h-5" />
-                  </>
-                ) : (
-                  <>See reasoning</>
-                )}
-              </button>
-            </div>
-          )}
+          <div>
+            <button className="flex justify-center items-center flex-none">
+              {showFullReasoning ? (
+                <>
+                  Collapse <CustomIcon name="collapse" className="w-5 h-5" />
+                </>
+              ) : (
+                <>See reasoning</>
+              )}
+            </button>
+          </div>
           <ExchangeCardStatus
             maybeError={maybeError}
             responses={props.responses}

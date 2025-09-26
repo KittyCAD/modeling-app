@@ -335,10 +335,6 @@ const fromDataToComponent = (
   thought: MlCopilotServerMessage,
   options: { key?: string | number }
 ) => {
-  if ('end_of_stream' in thought) {
-    return <End />
-  }
-
   if ('reasoning' in thought) {
     const type = thought.reasoning.type
     switch (type) {
@@ -441,6 +437,7 @@ const fromDataToComponent = (
 
 export const Thinking = (props: {
   thoughts?: MlCopilotServerMessage[]
+  isDone: boolean
   onlyShowImmediateThought: boolean
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)
@@ -483,14 +480,21 @@ export const Thinking = (props: {
     return fromDataToComponent(thought, { key: index })
   })
 
+  if (props.isDone) {
+    componentThoughts.push(<End />)
+  }
+
+  const lastTextualThought = reasoningThoughts.findLast(
+    (thought) => thought.reasoning.type === 'text'
+  )
+
   const componentLastGenericThought = (
     <Generic
       content={
-        reasoningThoughts.findLast(
-          (thought) => thought.reasoning.type === 'text'
-          // Typescript can't figure out only a `text` type or undefined is found
-          // @ts-expect-error
-        )?.reasoning?.content ?? 'Thinking...'
+        lastTextualThought !== undefined &&
+        lastTextualThought.reasoning.type === 'text'
+          ? lastTextualThought.reasoning.content
+          : ''
       }
     />
   )

@@ -131,7 +131,7 @@ export const MlEphantConversationPane2 = (props: {
 
         const { context } = props.mlEphantManagerActor.getSnapshot()
 
-        if (context.conversation !== undefined && !context.problem) {
+        if (context.conversation !== undefined) {
           return
         }
 
@@ -150,11 +150,11 @@ export const MlEphantConversationPane2 = (props: {
 
         const { context } = mlEphantManagerActorSnapshot2
 
-        if (isProcessing && !context.problem) {
+        if (isProcessing) {
           return
         }
 
-        if (context.conversation !== undefined && !context.problem) {
+        if (context.conversation !== undefined) {
           return
         }
 

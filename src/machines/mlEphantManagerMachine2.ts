@@ -24,6 +24,18 @@ import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/pr
 
 import toast from 'react-hot-toast'
 
+type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
+  type: 'user'
+}
+  ? T
+  : never
+
+export function isMlCopilotUserRequest(
+  x: unknown
+): x is MlCopilotClientMessageUser {
+  return typeof x === 'object' && x !== null && 'type' in x && x.type === 'user'
+}
+
 export enum MlEphantManagerStates2 {
   Setup = 'setup',
   Ready = 'ready',
@@ -40,6 +52,10 @@ export enum MlEphantManagerTransitions2 {
 export type MlEphantManagerEvents2 =
   | {
       type: 'xstate.done.state.(machine).ready'
+      conversationId: undefined
+    }
+  | {
+      type: 'xstate.error.actor.0.(machine).setup'
       conversationId: undefined
     }
   | {
@@ -64,7 +80,6 @@ export type MlEphantManagerEvents2 =
     }
   | {
       type: MlEphantManagerTransitions2.ConversationClose
-      problem?: MlEphantManagerProblem
     }
 
 export interface Exchange {
@@ -83,16 +98,6 @@ export type Conversation = {
   exchanges: Exchange[]
 }
 
-export enum MlEphantManagerProblem {
-  NoConversationFound = 'no-conversation-found',
-}
-
-export function isMlEphantManagerProblem(
-  x: unknown
-): x is MlEphantManagerProblem {
-  return Object.values(MlEphantManagerProblem).some((v) => v === x)
-}
-
 export interface MlEphantManagerContext2 {
   apiToken: string
   ws?: WebSocket
@@ -101,7 +106,6 @@ export interface MlEphantManagerContext2 {
   lastMessageId?: number
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
-  problem?: MlEphantManagerProblem
 }
 
 export const mlEphantDefaultContext2 = (args: {
@@ -115,7 +119,6 @@ export const mlEphantDefaultContext2 = (args: {
   lastMessageId: undefined,
   fileFocusedOnInEditor: undefined,
   projectNameCurrentlyOpened: undefined,
-  problem: undefined,
 })
 
 function isString(x: unknown): x is string {
@@ -196,105 +199,155 @@ export const mlEphantManagerMachine2 = setup({
 
       const ws = await Socket(
         WebSocket,
-        '/ws/ml/copilot' + args.input.event.conversationId
-          ? `?conversation_id=${args.input.event.conversationId}`
-          : '',
+        '/ws/ml/copilot' +
+          (args.input.event.conversationId
+            ? `?conversation_id=${args.input.event.conversationId}&replay=true`
+            : ''),
         args.input.context.apiToken
       )
+      ws.binaryType = 'arraybuffer'
 
-      ws.addEventListener('message', function (event: MessageEvent<any>) {
-        if (!isString(event.data))
-          return console.error(new Error('Expected payload to be a string'))
-
-        let response: unknown
-        try {
-          response = JSON.parse(event.data)
-        } catch (e: unknown) {
-          return console.error(e)
-        }
-
-        if (!isMlCopilotServerMessage(response))
-          return new Error('Not a MlCopilotServerMessage')
-
-        // Ignore the authorization bug
+      const addErrorIfInterrupted = (exchanges: Exchange[]) => {
+        const lastExchange = exchanges.slice(-1)[0]
+        const lastResponse = lastExchange?.responses.slice(-1)[0]
         if (
-          'error' in response &&
-          response.error.detail ===
-            'Please send `{ headers: { Authorization: "Bearer <token>" } }` over this websocket.'
-        )
-          return
-
-        // Ignore the session data
-        if ('session_data' in response) {
-          return
-        }
-
-        if (
-          'error' in response &&
-          response.error.detail.includes('conversation not found')
+          lastExchange?.responses?.length > 0 &&
+          lastResponse !== undefined &&
+          !('end_of_stream' in lastResponse)
         ) {
-          args.input.event.refParentSend({
-            type: MlEphantManagerTransitions2.ConversationClose,
-            problem: MlEphantManagerProblem.NoConversationFound,
+          lastExchange.responses.push({
+            error: {
+              detail: 'Interrupted',
+            },
           })
-          return
         }
+      }
 
-        // Ignore the dang 'ML-Ephant Copilot' banner
-        // if ('info' in response && response.info.text === '🤖 ML-ephant Copilot')
-        //   return
+      let maybeReplayedExchanges: Exchange[] = []
 
-        // If it's a replay, we'll unravel it and process as if they are real
-        // messages being sent from the server.
-        if ('replay' in response) {
-          for (let bsonMessage of response.replay.messages) {
-            const data: Uint8Array = Uint8Array.from(Object.values(bsonMessage))
-            const responseReplay = Object.freeze(BSON.deserialize(data))
-            if (!isMlCopilotServerMessage(responseReplay)) continue
-
-            // Don't show deltas because the are aggregated in the end_of_stream
-            if ('delta' in responseReplay) continue
-
-            // Instead we transform a end_of_stream into a delta!
-            if ('end_of_stream' in responseReplay) {
-              const fakeDelta = {
-                delta: {
-                  delta: responseReplay.end_of_stream.whole_response ?? '',
-                },
+      return await new Promise<Partial<MlEphantManagerContext2>>(
+        (onFulfilled, onRejected) => {
+          ws.addEventListener('message', function (event: MessageEvent<any>) {
+            let response: unknown
+            if (!isString(event.data)) {
+              try {
+                response = BSON.deserialize(new Uint8Array(event.data))
+              } catch (e: unknown) {
+                return console.error(e)
               }
-              args.input.event.refParentSend({
-                type: MlEphantManagerTransitions2.ResponseReceive,
-                response: fakeDelta,
-              })
+            } else {
+              try {
+                response = JSON.parse(event.data)
+              } catch (e: unknown) {
+                return console.error(e)
+              }
+            }
 
-              // And we'll send the OG end_of_stream below
+            if (!isMlCopilotServerMessage(response))
+              return new Error('Not a MlCopilotServerMessage')
+
+            // Ignore the authorization bug
+            if (
+              'error' in response &&
+              response.error.detail ===
+                'Please send `{ headers: { Authorization: "Bearer <token>" } }` over this websocket.'
+            )
+              return
+
+            // Ignore the session data
+            if ('session_data' in response) {
+              return
+            }
+
+            if (
+              'error' in response &&
+              response.error.detail.includes('conversation not found')
+            ) {
+              ws.close()
+              onRejected()
+              return
+            }
+
+            // If it's a replay, we'll unravel it and process as if they are real
+            // messages being sent from the server.
+            if ('replay' in response) {
+              for (let byteMessage of response.replay.messages) {
+                const data: Uint8Array = Uint8Array.from(
+                  Object.values(byteMessage)
+                )
+                const responseReplay: unknown = Object.freeze(
+                  JSON.parse(new TextDecoder().decode(data))
+                )
+                if (!isMlCopilotServerMessage(responseReplay)) continue
+
+                // Don't show deltas because they are aggregated in the end_of_stream
+                if ('delta' in responseReplay) continue
+
+                if (
+                  'type' in responseReplay &&
+                  responseReplay.type === 'user'
+                ) {
+                  addErrorIfInterrupted(maybeReplayedExchanges)
+
+                  if (isMlCopilotUserRequest(responseReplay)) {
+                    maybeReplayedExchanges.push({
+                      request: responseReplay,
+                      responses: [],
+                    })
+                  }
+                  continue
+                }
+
+                if ('error' in responseReplay || 'info' in responseReplay) {
+                  maybeReplayedExchanges.push({
+                    responses: [responseReplay],
+                  })
+                  continue
+                }
+
+                const lastExchange = maybeReplayedExchanges.slice(-1)[0] ?? {
+                  responses: [],
+                }
+
+                // Instead we transform a end_of_stream into a delta!
+                if ('end_of_stream' in responseReplay) {
+                  const fakeDelta = {
+                    delta: {
+                      delta: responseReplay.end_of_stream.whole_response ?? '',
+                    },
+                  }
+                  lastExchange.responses.push(fakeDelta)
+                }
+                lastExchange.responses.push(responseReplay)
+              }
+
+              addErrorIfInterrupted(maybeReplayedExchanges)
+            }
+
+            // We're only considered setup when a conversation_id is assigned
+            // to us. That means data is being stored and the system is ready.
+            if ('conversation_id' in response) {
+              onFulfilled({
+                conversation: {
+                  exchanges: maybeReplayedExchanges,
+                },
+                conversationId: response.conversation_id.conversation_id,
+                ws,
+              })
+              return
             }
 
             args.input.event.refParentSend({
               type: MlEphantManagerTransitions2.ResponseReceive,
-              response: responseReplay,
+              response,
             })
-          }
-        } else {
-          args.input.event.refParentSend({
-            type: MlEphantManagerTransitions2.ResponseReceive,
-            response,
+          })
+
+          ws.addEventListener('close', function (event: Event) {
+            console.log(event)
           })
         }
-      })
-
-      ws.addEventListener('close', function (event: Event) {
-        console.log(event)
-      })
-
-      return {
-        problem: undefined,
-        conversation: {
-          exchanges: [],
-        },
-        conversationId: args.input.event.conversationId,
-        ws,
-      }
+      )
     }),
     [MlEphantManagerTransitions2.MessageSend]: fromPromise(async function (
       args: XSInput<MlEphantManagerTransitions2.MessageSend>
@@ -364,6 +417,7 @@ export const mlEphantManagerMachine2 = setup({
           assertEvent(args.event, [
             MlEphantManagerStates2.Setup,
             'xstate.done.state.(machine).ready',
+            'xstate.error.actor.0.(machine).setup',
           ])
 
           return {
@@ -381,9 +435,11 @@ export const mlEphantManagerMachine2 = setup({
           actions: [assign(({ event }) => event.output)],
         },
         onError: {
-          actions: ['toastError'],
+          target: MlEphantManagerStates2.Setup,
+          reenter: true,
         },
       },
+      on: transitions([MlEphantManagerTransitions2.ConversationClose]),
     },
     [MlEphantManagerStates2.Ready]: {
       type: 'parallel',
@@ -393,11 +449,10 @@ export const mlEphantManagerMachine2 = setup({
           states: {
             [S.Await]: {
               on: transitions([
-                MlEphantManagerTransitions2.ConversationClose,
                 MlEphantManagerTransitions2.ResponseReceive,
+                MlEphantManagerTransitions2.ConversationClose,
               ]),
             },
-            // Only necessary for one parallel side to return data.
             [MlEphantManagerTransitions2.ConversationClose]: {
               type: 'final',
             },
@@ -410,13 +465,6 @@ export const mlEphantManagerMachine2 = setup({
                     assertEvent(event, [
                       MlEphantManagerTransitions2.ResponseReceive,
                     ])
-
-                    if ('conversation_id' in event.response) {
-                      return {
-                        conversationId:
-                          event.response.conversation_id.conversation_id,
-                      }
-                    }
 
                     const lastMessageId = (context.lastMessageId ?? -1) + 1
 
@@ -465,19 +513,12 @@ export const mlEphantManagerMachine2 = setup({
           states: {
             [S.Await]: {
               on: transitions([
-                MlEphantManagerTransitions2.ConversationClose,
                 MlEphantManagerTransitions2.MessageSend,
+                MlEphantManagerTransitions2.ConversationClose,
               ]),
             },
-            // The parallel side that will return data on close
             [MlEphantManagerTransitions2.ConversationClose]: {
               type: 'final',
-              output: (args) => {
-                assertEvent(args.event, [
-                  MlEphantManagerTransitions2.ConversationClose,
-                ])
-                return args.event.problem
-              },
             },
             [MlEphantManagerTransitions2.MessageSend]: {
               invoke: {
@@ -499,29 +540,20 @@ export const mlEphantManagerMachine2 = setup({
               },
             },
           },
-          onDone: {
-            actions: [
-              (args) => {
-                args.context.ws?.close()
-              },
-              assign((args) => {
-                if (!isMlEphantManagerProblem(args.event.output)) {
-                  return {}
-                }
-                return { problem: args.event.output }
-              }),
-            ],
-          },
         },
       },
-      onDone: [
-        {
-          target: MlEphantManagerStates2.Setup,
-          guard: (args) =>
-            args.context.problem === MlEphantManagerProblem.NoConversationFound,
-        },
-        { target: S.Await },
-      ],
+      onDone: {
+        target: MlEphantManagerTransitions2.ConversationClose,
+      },
+    },
+    [MlEphantManagerTransitions2.ConversationClose]: {
+      always: {
+        target: S.Await,
+        actions: [
+          assign({ conversation: undefined, conversationId: undefined }),
+          (args) => args.context.ws?.close(),
+        ],
+      },
     },
   },
 })

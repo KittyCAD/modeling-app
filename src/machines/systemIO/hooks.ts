@@ -65,7 +65,6 @@ export const useProjectIdToConversationId = (
       type: MlEphantManagerTransitions.ClearProjectSpecificState,
     })
 
-    // Close the current conversation.
     mlEphantManagerActor2.send({
       type: MlEphantManagerTransitions2.ConversationClose,
     })
