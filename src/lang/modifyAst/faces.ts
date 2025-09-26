@@ -353,7 +353,7 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
     }
   } else if (planeArtifact.type === 'planeOfFace') {
     const faceArtifact = getArtifactOfTypes(
-      { key: planeArtifact.faceId, types: ['cap', 'wall'] },
+      { key: planeArtifact.faceId, types: ['cap', 'wall', 'edgeCut'] },
       artifactGraph
     )
     if (err(faceArtifact)) {
