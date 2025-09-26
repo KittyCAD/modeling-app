@@ -1521,6 +1521,7 @@ export function getEdgeCutMeta(
       },
       artifactGraph
     )
+    console.log('consumedArtifact', consumedArtifact)
     if (err(consumedArtifact)) return null
     if (consumedArtifact.type === 'segment') {
       chamferInfo = {

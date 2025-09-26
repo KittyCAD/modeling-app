@@ -38,6 +38,7 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selection, Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import { type EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 
 export function addShell({
   ast,
@@ -197,41 +198,29 @@ function getFacesExprsFromSelection(
     const artifact = face.artifact
     if (artifact.type === 'cap') {
       return createLiteral(artifact.subType)
-    } else if (artifact.type === 'wall') {
-      const key = artifact.segId
-      const segmentArtifact = getArtifactOfTypes(
-        { key, types: ['segment'] },
-        artifactGraph
-      )
-      if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
-        console.warn('No segment found for face', face)
-        return []
-      }
-
-      const tagResult = mutateAstWithTagForSketchSegment(
-        ast,
-        segmentArtifact.codeRef.pathToNode
-      )
-      if (err(tagResult)) {
-        console.warn(
-          'Failed to mutate ast with tag for sketch segment',
-          tagResult
+    } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
+      let targetArtifact: Artifact | undefined
+      let edgeCutMeta: EdgeCutInfo | null = null
+      if (artifact.type === 'wall') {
+        const key = artifact.segId
+        const segmentArtifact = getArtifactOfTypes(
+          { key, types: ['segment'] },
+          artifactGraph
         )
-        return []
-      }
+        if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
+          console.warn('No segment found for face', face)
+          return []
+        }
 
-      return createLocalName(tagResult.tag)
-    } else if (artifact.type === 'edgeCut') {
-      console.log('artifact is edgeCut', artifact)
-      const edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph)
-      if (!edgeCutMeta) {
-        console.warn('No edge cut meta found for face', face)
-        return []
+        targetArtifact = segmentArtifact
+      } else {
+        targetArtifact = artifact
+        edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph)
       }
 
       const tagResult = mutateAstWithTagForSketchSegment(
         ast,
-        artifact.codeRef.pathToNode,
+        targetArtifact.codeRef.pathToNode,
         edgeCutMeta
       )
       if (err(tagResult)) {
@@ -244,7 +233,7 @@ function getFacesExprsFromSelection(
 
       return createLocalName(tagResult.tag)
     } else {
-      console.warn('Face was not a cap or wall', face)
+      console.warn('Face was not a cap or wall or chamfer', face)
       return []
     }
   })
