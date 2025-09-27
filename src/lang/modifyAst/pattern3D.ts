@@ -177,3 +177,115 @@ export function addPatternCircular3D({
     pathToNode,
   }
 }
+
+export function addPatternLinear3D({
+  ast,
+  artifactGraph,
+  solids,
+  instances,
+  distance,
+  axis,
+  useOriginal,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  solids: Selections
+  instances: KclCommandValue
+  distance: KclCommandValue // number(Length)
+  axis: KclCommandValue | string // Can be named axis (X, Y, Z) or array [x, y, z]
+  useOriginal?: boolean
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // Clone the AST to avoid mutating the original
+  const modifiedAst = structuredClone(ast)
+
+  // Prepare function arguments from selected solids
+  const lastChildLookup = true
+  const vars = getVariableExprsFromSelection(
+    solids,
+    modifiedAst,
+    nodeToEdit,
+    lastChildLookup,
+    artifactGraph
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  // Handle axis parameter - can be named axis or Point3d array
+  let axisExpr
+  if (typeof axis === 'string') {
+    // Named axis like 'X', 'Y', 'Z'
+    axisExpr = createLocalName(axis)
+  } else if ('value' in axis && isArray(axis.value)) {
+    // Direct array value [x, y, z]
+    const arrayElements = []
+    for (const val of axis.value) {
+      if (
+        typeof val === 'number' ||
+        typeof val === 'string' ||
+        typeof val === 'boolean'
+      ) {
+        arrayElements.push(createLiteral(val))
+      } else {
+        return new Error('Invalid axis value type')
+      }
+    }
+    axisExpr = createArrayExpression(arrayElements)
+  } else if ('variableName' in axis && axis.variableName) {
+    // Variable reference
+    axisExpr = valueOrVariable(axis)
+  } else {
+    // Fallback to valueOrVariable
+    axisExpr = valueOrVariable(axis)
+  }
+
+  // Optional labeled arguments
+  const useOriginalExpr =
+    useOriginal !== undefined
+      ? [createLabeledArg('useOriginal', createLiteral(useOriginal))]
+      : []
+
+  const solidsExpr = createVariableExpressionsArray(vars.exprs)
+  const call = createCallExpressionStdLibKw('patternLinear3d', solidsExpr, [
+    createLabeledArg('instances', valueOrVariable(instances)),
+    createLabeledArg('distance', valueOrVariable(distance)),
+    createLabeledArg('axis', axisExpr),
+    ...useOriginalExpr,
+  ])
+
+  // Insert variables for labeled arguments only when we actually use the variable
+  if ('variableName' in instances && instances.variableName) {
+    insertVariableAndOffsetPathToNode(instances, modifiedAst, nodeToEdit)
+  }
+  if ('variableName' in distance && distance.variableName) {
+    insertVariableAndOffsetPathToNode(distance, modifiedAst, nodeToEdit)
+  }
+  // Only insert axis variable if we used valueOrVariable (not for strings or arrays)
+  if (
+    typeof axis !== 'string' &&
+    !('value' in axis && isArray(axis.value)) &&
+    'variableName' in axis &&
+    axis.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(axis, modifiedAst, nodeToEdit)
+  }
+
+  // Insert the function call into the AST at the appropriate location
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PATTERN,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}

@@ -253,6 +253,7 @@ description: Artifact commands pipe-with-bend.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

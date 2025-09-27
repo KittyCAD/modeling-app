@@ -819,6 +819,7 @@ description: Operations executed parametric-shelf-unit.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

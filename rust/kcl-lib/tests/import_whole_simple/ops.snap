@@ -140,6 +140,7 @@ description: Operations executed import_whole_simple.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

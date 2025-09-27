@@ -2139,6 +2139,7 @@ description: Operations executed food-service-spatula.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

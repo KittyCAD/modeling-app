@@ -689,6 +689,9 @@ const onlyConsecutivePaths = (
   originalPath: PathToNode,
   ast: Program
 ): PathToNode[] => {
+  if (!orderedNodePaths.length) {
+    return []
+  }
   const isExprSafe = (index: number, ast: Program): boolean => {
     // we allow expressions between profiles, but only basic math expressions 5 + 6 etc
     // because 5 + doSomeMath() might be okay, but we can't know if it's an abstraction on a stdlib

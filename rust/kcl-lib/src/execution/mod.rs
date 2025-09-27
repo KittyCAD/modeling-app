@@ -60,7 +60,7 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-enum StatementKind<'a> {
+pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
 }

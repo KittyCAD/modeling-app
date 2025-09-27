@@ -1278,6 +1278,7 @@ description: Artifact commands cold-plate.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

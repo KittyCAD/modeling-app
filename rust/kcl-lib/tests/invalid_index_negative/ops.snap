@@ -36,6 +36,7 @@ description: Operations executed invalid_index_negative.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

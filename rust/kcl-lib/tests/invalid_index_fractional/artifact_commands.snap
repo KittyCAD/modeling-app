@@ -6,6 +6,7 @@ description: Artifact commands invalid_index_fractional.kcl
   "rust/kcl-lib/tests/invalid_index_fractional/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
