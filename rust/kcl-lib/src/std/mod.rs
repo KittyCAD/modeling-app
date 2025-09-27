@@ -63,6 +63,10 @@ impl StdFnProps {
 
 pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
     match (path, fn_name) {
+        ("gdt", "datum") => (
+            |e, a| Box::pin(crate::std::gdt::datum(e, a)),
+            StdFnProps::default("std::gdt::datum").include_in_feature_tree(),
+        ),
         ("gdt", "flatness") => (
             |e, a| Box::pin(crate::std::gdt::flatness(e, a)),
             StdFnProps::default("std::gdt::flatness").include_in_feature_tree(),
