@@ -368,6 +368,7 @@ description: Operations executed any_type.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

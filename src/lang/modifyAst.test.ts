@@ -17,7 +17,7 @@ import {
   addSketchTo,
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
-  deleteSegmentFromPipeExpression,
+  deleteSegmentOrProfileFromPipeExpression,
   moveValueIntoNewVariable,
   setCallInAst,
   sketchOnExtrudedFace,
@@ -571,7 +571,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
       code.indexOf(lineOfInterest) + lineOfInterest.length
     )
     const pathToNode = getNodePathFromSourceRange(ast, range)
-    const modifiedAst = deleteSegmentFromPipeExpression(
+    const modifiedAst = deleteSegmentOrProfileFromPipeExpression(
       [],
       ast,
       execState.variables,
@@ -656,7 +656,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
       const range = topLevelRange(start, start + lineOfInterest.length)
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
-      const modifiedAst = deleteSegmentFromPipeExpression(
+      const modifiedAst = deleteSegmentOrProfileFromPipeExpression(
         dependentSegments,
         ast,
         execState.variables,

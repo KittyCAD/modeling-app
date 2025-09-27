@@ -2387,6 +2387,7 @@ description: Artifact commands modular-shelf-grid.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

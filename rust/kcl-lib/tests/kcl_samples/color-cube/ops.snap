@@ -1406,6 +1406,7 @@ description: Operations executed color-cube.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

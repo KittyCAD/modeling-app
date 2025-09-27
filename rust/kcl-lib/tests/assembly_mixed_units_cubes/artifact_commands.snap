@@ -420,6 +420,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   "rust/kcl-lib/tests/assembly_mixed_units_cubes/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

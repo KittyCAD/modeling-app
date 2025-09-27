@@ -1144,6 +1144,7 @@ description: Operations executed angle-gauge.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

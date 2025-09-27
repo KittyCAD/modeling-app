@@ -313,6 +313,7 @@ description: Operations executed array_concat_non_array.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -203,8 +203,6 @@ export class SceneEntities {
 
   getSettings: (() => SettingsType) | null = null
 
-  private canvasResizeObserver: ResizeObserver
-
   constructor(
     engineCommandManager: EngineCommandManager,
     sceneInfra: SceneInfra,
@@ -225,12 +223,6 @@ export class SceneEntities {
 
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     this.sceneInfra.baseUnitChange.add(this.onCamChange)
-
-    const canvas = this.sceneInfra.renderer.domElement
-    this.canvasResizeObserver = new ResizeObserver(() => {
-      this.onCamChange()
-    })
-    this.canvasResizeObserver.observe(canvas)
   }
 
   onCamChange = () => {
@@ -3852,6 +3844,13 @@ function prepareTruncatedAst(
     Number(sketchNodePaths[sketchNodePaths.length - 1]?.[1]?.[0]) ||
     ast.body.length
   const _ast = structuredClone(ast)
+
+  if (!sketchNodePaths.length) {
+    return {
+      truncatedAst: _ast,
+      variableDeclarationName: '',
+    }
+  }
 
   const _node = getNodeFromPath<Node<VariableDeclaration>>(
     _ast,

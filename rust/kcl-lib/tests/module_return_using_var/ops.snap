@@ -119,6 +119,7 @@ description: Operations executed module_return_using_var.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
