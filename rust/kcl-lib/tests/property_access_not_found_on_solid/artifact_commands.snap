@@ -195,6 +195,7 @@ description: Artifact commands property_access_not_found_on_solid.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

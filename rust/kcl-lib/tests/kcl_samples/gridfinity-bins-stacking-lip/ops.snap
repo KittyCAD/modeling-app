@@ -4046,6 +4046,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

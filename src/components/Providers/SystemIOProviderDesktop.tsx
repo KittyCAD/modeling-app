@@ -25,6 +25,7 @@ import {
   useToken,
 } from '@src/lib/singletons'
 import { type PromptMeta } from '@src/machines/mlEphantManagerMachine'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,
@@ -237,8 +238,11 @@ export function SystemIOMachineLogicListenerDesktop() {
     )
   }
 
+  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
+
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
+    mlEphantManagerActor2,
     billingActor,
     token,
     (prompt: Prompt, promptMeta: PromptMeta) => {
@@ -318,11 +322,69 @@ export function SystemIOMachineLogicListenerDesktop() {
           },
         })
       }
+    },
+
+    (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
+      if (
+        toolOutput.type !== 'text_to_cad' &&
+        toolOutput.type !== 'edit_kcl_code'
+      ) {
+        return
+      }
+      const outputsRecord: Record<string, string> = {
+        ...(toolOutput.outputs ?? {}),
+      }
+      const requestedFiles: RequestedKCLFile[] = Object.entries(
+        outputsRecord
+      ).map(([relativePath, fileContents]) => {
+        const lastSep = relativePath.lastIndexOf(window.electron?.sep ?? '')
+        let pathPart = relativePath.slice(0, lastSep)
+        let filePart = relativePath.slice(lastSep)
+        if (lastSep < 0) {
+          pathPart = ''
+          filePart = relativePath
+        }
+        return {
+          requestedCode: fileContents,
+          requestedFileName: filePart,
+          requestedProjectName:
+            projectNameCurrentlyOpened + window.electron?.sep + pathPart,
+        }
+      })
+
+      // I know, it's confusing as hell.
+      const targetFilePathWithoutFileAndRelativeToProjectDir =
+        fileFocusedOnInEditor?.path.slice(
+          fileFocusedOnInEditor?.path.indexOf(projectNameCurrentlyOpened) ?? 0
+        ) ?? ''
+
+      const requestedProjectNameNext =
+        targetFilePathWithoutFileAndRelativeToProjectDir.slice(
+          0,
+          targetFilePathWithoutFileAndRelativeToProjectDir.lastIndexOf(
+            window.electron?.sep ?? ''
+          )
+        )
+
+      systemIOActor.send({
+        type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+        data: {
+          files: requestedFiles,
+          override: true,
+          requestedProjectName: requestedProjectNameNext,
+          requestedFileNameWithExtension: fileFocusedOnInEditor?.name ?? '',
+        },
+      })
     }
   )
 
   // Save the conversation id for the project id if necessary.
-  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
+  useProjectIdToConversationId(
+    mlEphantManagerActor,
+    mlEphantManagerActor2,
+    systemIOActor,
+    settings
+  )
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()

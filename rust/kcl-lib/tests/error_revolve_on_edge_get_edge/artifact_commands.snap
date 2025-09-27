@@ -334,6 +334,7 @@ description: Artifact commands error_revolve_on_edge_get_edge.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

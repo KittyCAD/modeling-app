@@ -166,6 +166,16 @@ export function ModelingSidebarRight() {
   )
   const [actuallyNew, setActuallyNew] = useState<boolean>(false)
 
+  // We need to filter out text-to-cad-2 if the setting enable_copilot is false.
+  // Because sidebars are constructed at import time, it's not possible to do
+  // this before, so we do it now.
+  const sidebarPanesRightFiltered = sidebarPanesRight.filter((x) => {
+    if (settings.modeling.enableCopilot.current === false) {
+      return !(x.id === 'text-to-cad-2')
+    }
+    return true
+  })
+
   useEffect(() => {
     if (promptsBelongingToConversation === undefined) {
       return
@@ -197,7 +207,7 @@ export function ModelingSidebarRight() {
   return (
     <ModelingSidebar
       id="right-sidebar"
-      sidebarPanes={sidebarPanesRight || []}
+      sidebarPanes={sidebarPanesRightFiltered || []}
       sidebarActions={sidebarActions.current || []}
       settings={settings}
       align={Alignment.Right}

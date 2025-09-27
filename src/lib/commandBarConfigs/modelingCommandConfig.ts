@@ -12,8 +12,13 @@ import type {
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_INSTANCES,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
+  KCL_DEFAULT_ORIGIN,
+  KCL_AXIS_X,
+  KCL_AXIS_Y,
+  KCL_AXIS_Z,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
@@ -75,9 +80,16 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     length: KclCommandValue
+    // TODO: add `to` as Selections arg here
     symmetric?: boolean
     bidirectionalLength?: KclCommandValue
+    tagStart?: string
+    tagEnd?: string
     twistAngle?: KclCommandValue
+    twistAngleStep?: KclCommandValue
+    twistCenter?: KclCommandValue
+    // TODO: figure out if we should expose `tolerance` or not
+    // @pierremtb: I don't even think it should be in KCL
     method?: string
   }
   Sweep: {
@@ -87,7 +99,10 @@ export type ModelingCommandSchema = {
     sketches: Selections
     path: Selections
     sectional?: boolean
+    // TODO: figure out if we should expose `tolerance` or not
     relativeTo?: string
+    tagStart?: string
+    tagEnd?: string
   }
   Loft: {
     // Enables editing workflow
@@ -95,6 +110,11 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments
     sketches: Selections
     vDegree?: KclCommandValue
+    bezApproximateRational?: boolean
+    baseCurveIndex?: KclCommandValue
+    // TODO: figure out if we should expose `tolerance` or not
+    tagStart?: string
+    tagEnd?: string
   }
   Revolve: {
     // Enables editing workflow
@@ -103,9 +123,12 @@ export type ModelingCommandSchema = {
     axisOrEdge: 'Axis' | 'Edge'
     // KCL stdlib arguments
     sketches: Selections
-    angle: KclCommandValue
     axis: string | undefined
     edge: Selections | undefined
+    angle: KclCommandValue
+    // TODO: figure out if we should expose `tolerance` or not
+    tagStart?: string
+    tagEnd?: string
     symmetric?: boolean
     bidirectionalAngle?: KclCommandValue
   }
@@ -209,6 +232,16 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     objects: Selections
     variableName: string
+  }
+  'Pattern Circular 3D': {
+    nodeToEdit?: PathToNode
+    solids: Selections
+    instances: KclCommandValue
+    axis: string
+    center: KclCommandValue
+    arcDegrees?: KclCommandValue
+    rotateDuplicates?: boolean
+    useOriginal?: boolean
   }
   'Boolean Subtract': {
     solids: Selections
@@ -426,19 +459,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
       },
       symmetric: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
       bidirectionalLength: {
         inputType: 'kcl',
         required: false,
       },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+        // TODO: add validation like for Clone command
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
       twistAngle: {
         inputType: 'kcl',
+        required: false,
+      },
+      twistAngleStep: {
+        inputType: 'kcl',
+        required: false,
+      },
+      twistCenter: {
+        inputType: 'kcl',
+        allowArrays: true,
         required: false,
       },
       method: {
@@ -476,12 +523,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       sectional: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
       relativeTo: {
         inputType: 'options',
@@ -490,6 +533,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'sketchPlane', value: 'sketchPlane' },
           { name: 'trajectoryCurve', value: 'trajectoryCurve' },
         ],
+      },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
+        required: false,
       },
     },
   },
@@ -511,6 +562,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       vDegree: {
         inputType: 'kcl',
+        required: false,
+      },
+      bezApproximateRational: {
+        inputType: 'boolean',
+        required: false,
+      },
+      baseCurveIndex: {
+        inputType: 'kcl',
+        required: false,
+      },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
         required: false,
       },
     },
@@ -570,15 +637,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
       },
       symmetric: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
       bidirectionalAngle: {
         inputType: 'kcl',
+        required: false,
+      },
+      tagStart: {
+        inputType: 'tagDeclarator',
+        required: false,
+      },
+      tagEnd: {
+        inputType: 'tagDeclarator',
         required: false,
       },
     },
@@ -758,13 +829,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         // No need for hidden here, as it works with all modes
       },
       ccw: {
-        inputType: 'options',
-        required: false,
         displayName: 'CounterClockWise',
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
+        inputType: 'boolean',
+        required: false,
       },
     },
   },
@@ -959,12 +1026,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       global: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
     },
   },
@@ -999,12 +1062,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       global: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
     },
   },
@@ -1039,12 +1098,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       global: {
-        inputType: 'options',
+        inputType: 'boolean',
         required: false,
-        options: [
-          { name: 'False', value: false },
-          { name: 'True', value: true },
-        ],
       },
     },
   },
@@ -1086,6 +1141,56 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
 
           return true
         },
+      },
+    },
+  },
+  'Pattern Circular 3D': {
+    description: 'Create a circular pattern of 3D solids around an axis.',
+    icon: 'patternCircular3d',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      solids: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      instances: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: KCL_DEFAULT_INSTANCES,
+      },
+      axis: {
+        inputType: 'options',
+        required: true,
+        defaultValue: KCL_AXIS_Z,
+        options: [
+          { name: 'X-axis', value: KCL_AXIS_X },
+          { name: 'Y-axis', value: KCL_AXIS_Y },
+          { name: 'Z-axis', isCurrent: true, value: KCL_AXIS_Z },
+        ],
+      },
+      center: {
+        inputType: 'vector3d',
+        required: true,
+        defaultValue: KCL_DEFAULT_ORIGIN,
+      },
+      arcDegrees: {
+        inputType: 'kcl',
+        required: false,
+        defaultValue: KCL_DEFAULT_DEGREE,
+      },
+      rotateDuplicates: {
+        inputType: 'boolean',
+        required: false,
+      },
+      useOriginal: {
+        inputType: 'boolean',
+        required: false,
       },
     },
   },

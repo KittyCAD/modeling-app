@@ -400,6 +400,7 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

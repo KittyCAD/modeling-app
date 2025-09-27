@@ -12,6 +12,7 @@ pub mod csg;
 pub mod edge;
 pub mod extrude;
 pub mod fillet;
+pub mod gdt;
 pub mod helix;
 pub mod loft;
 pub mod math;
@@ -62,6 +63,10 @@ impl StdFnProps {
 
 pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
     match (path, fn_name) {
+        ("gdt", "flatness") => (
+            |e, a| Box::pin(crate::std::gdt::flatness(e, a)),
+            StdFnProps::default("std::gdt::flatness").include_in_feature_tree(),
+        ),
         ("math", "cos") => (
             |e, a| Box::pin(crate::std::math::cos(e, a)),
             StdFnProps::default("std::math::cos"),

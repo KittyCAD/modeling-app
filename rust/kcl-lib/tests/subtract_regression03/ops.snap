@@ -382,6 +382,7 @@ description: Operations executed subtract_regression03.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

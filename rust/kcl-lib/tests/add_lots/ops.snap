@@ -6195,6 +6195,7 @@ description: Operations executed add_lots.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

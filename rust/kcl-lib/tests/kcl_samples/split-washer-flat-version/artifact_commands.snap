@@ -505,6 +505,7 @@ description: Artifact commands split-washer-flat-version.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

@@ -201,6 +201,7 @@ description: Operations executed function_sketch_with_position.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

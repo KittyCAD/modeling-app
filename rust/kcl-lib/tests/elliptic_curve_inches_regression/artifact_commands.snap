@@ -228,6 +228,7 @@ description: Artifact commands elliptic_curve_inches_regression.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

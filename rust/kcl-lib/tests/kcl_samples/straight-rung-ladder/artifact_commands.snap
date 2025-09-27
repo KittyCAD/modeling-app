@@ -786,6 +786,7 @@ description: Artifact commands straight-rung-ladder.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

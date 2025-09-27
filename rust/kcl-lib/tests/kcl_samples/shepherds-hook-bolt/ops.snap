@@ -1094,6 +1094,7 @@ description: Operations executed shepherds-hook-bolt.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

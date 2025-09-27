@@ -6,6 +6,7 @@ description: Operations executed comparisons_multiple.kcl
   "rust/kcl-lib/tests/comparisons_multiple/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

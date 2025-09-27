@@ -670,6 +670,7 @@ description: Operations executed desk-edge-stopper.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

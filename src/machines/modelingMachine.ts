@@ -24,7 +24,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import { deleteSegment } from '@src/clientSideScene/deleteSegment'
+import { deleteSegmentOrProfile } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
   quaternionFromUpNForward,
@@ -93,6 +93,7 @@ import {
   addRevolve,
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
+import { addPatternCircular3D } from '@src/lang/modifyAst/pattern3D'
 import {
   addAppearance,
   addClone,
@@ -152,36 +153,36 @@ import { sketchSolveMachine } from '@src/machines/sketchSolveMode'
 
 export type ModelingMachineEvent =
   | {
-    type: 'Enter sketch'
-    data?: {
-      forceNewSketch?: boolean
+      type: 'Enter sketch'
+      data?: {
+        forceNewSketch?: boolean
+      }
     }
-  }
   | { type: 'Sketch On Face' }
   | {
-    type: 'Select sketch plane'
-    data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
-  }
+      type: 'Select sketch plane'
+      data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
+    }
   | {
-    type: 'Select sketch solve plane'
-    data: ArtifactId
-  }
+      type: 'Select sketch solve plane'
+      data: ArtifactId
+    }
   | {
-    type: 'Set selection'
-    data: SetSelections
-  }
+      type: 'Set selection'
+      data: SetSelections
+    }
   | {
-    type: 'Delete selection'
-  }
+      type: 'Delete selection'
+    }
   | { type: 'Sketch no face' }
   | { type: 'Cancel'; cleanup?: () => void }
   | {
-    type: 'Add start point' | 'Continue existing profile'
-    data: {
-      sketchNodePaths: PathToNode[]
-      sketchEntryNodePath: PathToNode
+      type: 'Add start point' | 'Continue existing profile'
+      data: {
+        sketchNodePaths: PathToNode[]
+        sketchEntryNodePath: PathToNode
+      }
     }
-  }
   | { type: 'Close sketch' }
   | { type: 'Make segment horizontal' }
   | { type: 'Make segment vertical' }
@@ -196,25 +197,29 @@ export type ModelingMachineEvent =
   | { type: 'Constrain snap to X' }
   | { type: 'Constrain snap to Y' }
   | {
-    type: 'Constrain length'
-    data: ModelingCommandSchema['Constrain length']
-  }
+      type: 'Constrain length'
+      data: ModelingCommandSchema['Constrain length']
+    }
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
   | { type: 'Constrain remove constraints'; data?: PathToNode }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | {
-    type: 'Boolean Subtract'
-    data: ModelingCommandSchema['Boolean Subtract']
-  }
+      type: 'Boolean Subtract'
+      data: ModelingCommandSchema['Boolean Subtract']
+    }
   | {
-    type: 'Boolean Union'
-    data: ModelingCommandSchema['Boolean Union']
-  }
+      type: 'Boolean Union'
+      data: ModelingCommandSchema['Boolean Union']
+    }
   | {
-    type: 'Boolean Intersect'
-    data: ModelingCommandSchema['Boolean Intersect']
-  }
+      type: 'Boolean Intersect'
+      data: ModelingCommandSchema['Boolean Intersect']
+    }
+  | {
+      type: 'Pattern Circular 3D'
+      data: ModelingCommandSchema['Pattern Circular 3D']
+    }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
@@ -227,79 +232,83 @@ export type ModelingMachineEvent =
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
-    type: 'Delete selection'
-    data: ModelingCommandSchema['Delete selection']
-  }
+      type: 'Delete selection'
+      data: ModelingCommandSchema['Delete selection']
+    }
+  | {
+      type: 'Update sketch details'
+      data: Partial<SketchDetails>
+    }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
-    type:
-    | 'Add circle origin'
-    | 'Add circle center'
-    | 'Add center rectangle origin'
-    | 'click in scene'
-    | 'Add first point'
-    data: [x: number, y: number]
-  }
-  | {
-    type: 'Add second point'
-    data: {
-      p1: [x: number, y: number]
-      p2: [x: number, y: number]
+      type:
+        | 'Add circle origin'
+        | 'Add circle center'
+        | 'Add center rectangle origin'
+        | 'click in scene'
+        | 'Add first point'
+      data: [x: number, y: number]
     }
-  }
   | {
-    type: 'xstate.done.actor.animate-to-face'
-    output: SketchDetails
-  }
+      type: 'Add second point'
+      data: {
+        p1: [x: number, y: number]
+        p2: [x: number, y: number]
+      }
+    }
+  | {
+      type: 'xstate.done.actor.animate-to-face'
+      output: SketchDetails
+    }
   | { type: 'xstate.done.actor.animate-to-sketch'; output: SketchDetails }
   | { type: `xstate.done.actor.do-constrain${string}`; output: SetSelections }
   | {
-    type:
-    | 'xstate.done.actor.set-up-draft-circle'
-    | 'xstate.done.actor.set-up-draft-rectangle'
-    | 'xstate.done.actor.set-up-draft-center-rectangle'
-    | 'xstate.done.actor.set-up-draft-circle-three-point'
-    | 'xstate.done.actor.set-up-draft-arc'
-    | 'xstate.done.actor.set-up-draft-arc-three-point'
-    | 'xstate.done.actor.split-sketch-pipe-if-needed'
-    | 'xstate.done.actor.actor-circle-three-point'
-    | 'xstate.done.actor.reeval-node-paths'
+      type:
+        | 'xstate.done.actor.set-up-draft-circle'
+        | 'xstate.done.actor.set-up-draft-rectangle'
+        | 'xstate.done.actor.set-up-draft-center-rectangle'
+        | 'xstate.done.actor.set-up-draft-circle-three-point'
+        | 'xstate.done.actor.set-up-draft-arc'
+        | 'xstate.done.actor.set-up-draft-arc-three-point'
+        | 'xstate.done.actor.split-sketch-pipe-if-needed'
+        | 'xstate.done.actor.actor-circle-three-point'
+        | 'xstate.done.actor.reeval-node-paths'
 
-    output: SketchDetailsUpdate
-  }
+      output: SketchDetailsUpdate
+    }
   | {
-    type: 'xstate.done.actor.setup-client-side-sketch-segments9'
-  }
+      type: 'xstate.done.actor.setup-client-side-sketch-segments9'
+    }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'Set context'; data: Partial<Store> }
   | {
-    type: 'Set Segment Overlays'
-    data: SegmentOverlayPayload
-  }
-  | {
-    type: 'Center camera on selection'
-  }
-  | {
-    type: 'Delete segment'
-    data: PathToNode
-  }
-  | {
-    type: 'code edit during sketch'
-  }
-  | {
-    type: 'Constrain with named value'
-    data: ModelingCommandSchema['Constrain with named value']
-  }
-  | {
-    type: 'change tool'
-    data: {
-      tool: SketchTool
+      type: 'Set Segment Overlays'
+      data: SegmentOverlayPayload
     }
-  }
+  | {
+      type: 'Center camera on selection'
+    }
+  | {
+      type: 'Delete segment'
+      data: PathToNode
+    }
+  | {
+      type: 'code edit during sketch'
+    }
+  | {
+      type: 'Constrain with named value'
+      data: ModelingCommandSchema['Constrain with named value']
+    }
+  | {
+      type: 'change tool'
+      data: {
+        tool: SketchTool
+      }
+    }
   | { type: 'Finish rectangle' }
   | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
@@ -309,18 +318,18 @@ export type ModelingMachineEvent =
   | { type: 'Artifact graph emptied' }
   | { type: 'Artifact graph initialized' }
   | {
-    type: 'Toggle default plane visibility'
-    planeId: string
-    planeKey: keyof PlaneVisibilityMap
-  }
+      type: 'Toggle default plane visibility'
+      planeId: string
+      planeKey: keyof PlaneVisibilityMap
+    }
   | {
-    type: 'Save default plane visibility'
-    planeId: string
-    planeKey: keyof PlaneVisibilityMap
-  }
+      type: 'Save default plane visibility'
+      planeId: string
+      planeKey: keyof PlaneVisibilityMap
+    }
   | {
-    type: 'Restore default plane visibility'
-  }
+      type: 'Restore default plane visibility'
+    }
 
 // export type MoveDesc = { line: number; snippet: string }
 
@@ -551,8 +560,8 @@ export const modelingMachine = setup({
       const pathToNodes = event.data
         ? [event.data]
         : selectionRanges.graphSelections.map(({ codeRef }) => {
-          return codeRef.pathToNode
-        })
+            return codeRef.pathToNode
+          })
       const info = removeConstrainingValuesInfo(pathToNodes)
       if (err(info)) return false
       return info.enabled
@@ -968,6 +977,7 @@ export const modelingMachine = setup({
       ) {
         return {}
       }
+
       if (!context.sketchDetails) return {}
       return {
         sketchDetails: {
@@ -1062,7 +1072,7 @@ export const modelingMachine = setup({
       if (!sketchDetails || !event.data) return
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deleteSegment({
+      deleteSegmentOrProfile({
         pathToNode: event.data,
         sketchDetails,
       }).then(() => {
@@ -1171,8 +1181,8 @@ export const modelingMachine = setup({
         },
       }
     }),
-    'enable copilot': () => { },
-    'disable copilot': () => { },
+    'enable copilot': () => {},
+    'disable copilot': () => {},
     'Set selection': assign(
       ({ context: { selectionRanges, sketchDetails }, event }) => {
         // this was needed for ts after adding 'Set selection' action to on done modal events
@@ -1378,11 +1388,11 @@ export const modelingMachine = setup({
         return {}
       }
     ),
-    'Set mouse state': () => { },
-    'Set Segment Overlays': () => { },
-    'Center camera on selection': () => { },
-    'Submit to Text-to-CAD API': () => { },
-    'Set sketchDetails': () => { },
+    'Set mouse state': () => {},
+    'Set Segment Overlays': () => {},
+    'Center camera on selection': () => {},
+    'Submit to Text-to-CAD API': () => {},
+    'Set sketchDetails': () => {},
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
     },
@@ -1910,10 +1920,16 @@ export const modelingMachine = setup({
         }
       }) => {
         if (!sketchDetails) return
-        if (!sketchDetails.sketchEntryNodePath?.length) return
+        if (!sketchDetails.sketchEntryNodePath?.length) {
+          // When unequipping eg. the three-point arc tool during placement of the 3rd point, sketchEntryNodePath is
+          // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
+          sceneInfra.resetMouseListeners()
+          sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+          return
+        }
         sceneInfra.resetMouseListeners()
         await sceneEntitiesManager.setupSketch({
-          sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
+          sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           sketchNodePaths: sketchDetails.sketchNodePaths,
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
@@ -1924,7 +1940,7 @@ export const modelingMachine = setup({
         sceneInfra.resetMouseListeners()
 
         sceneEntitiesManager.setupSketchIdleCallbacks({
-          sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
+          sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
@@ -2249,7 +2265,7 @@ export const modelingMachine = setup({
         input,
       }: {
         input: ModelingCommandSchema['Prompt-to-edit']
-      }) => { }
+      }) => {}
     ),
 
     /* Below are recent modeling codemods that are using updateModelinState,
@@ -2882,12 +2898,12 @@ export const modelingMachine = setup({
       }
     ),
     exportFromEngine: fromPromise(
-      async ({ }: { input?: ModelingCommandSchema['Export'] }) => {
+      async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
       }
     ),
     makeFromEngine: fromPromise(
-      async ({ }: {
+      async ({}: {
         input?: {
           machineManager: MachineManager
         } & ModelingCommandSchema['Make']
@@ -2978,6 +2994,42 @@ export const modelingMachine = setup({
         const ast = kclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addIntersect({
+          ...input,
+          ast,
+          artifactGraph,
+        })
+        if (err(result)) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+
+    patternCircular3dAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Pattern Circular 3D'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addPatternCircular3D({
           ...input,
           ast,
           artifactGraph,
@@ -3226,6 +3278,10 @@ export const modelingMachine = setup({
         },
         'Boolean Intersect': {
           target: 'Boolean intersecting',
+          guard: 'no kcl errors',
+        },
+        'Pattern Circular 3D': {
+          target: 'Pattern Circular 3D',
           guard: 'no kcl errors',
         },
       },
@@ -4305,7 +4361,10 @@ export const modelingMachine = setup({
                   actions: 'reset deleteIndex',
                 },
 
-                'Close sketch': 'Finish profile',
+                'Close sketch': {
+                  target: 'Finish profile',
+                  actions: 'reset deleteIndex',
+                },
               },
             },
 
@@ -4354,7 +4413,7 @@ export const modelingMachine = setup({
 
         'Delete segment': {
           reenter: false,
-          actions: ['Delete segment', 'Set sketchDetails', 'reset selections'],
+          actions: ['Delete segment', 'reset selections'],
         },
         'code edit during sketch': '.clean slate',
         'Constrain with named value': {
@@ -4784,6 +4843,20 @@ export const modelingMachine = setup({
       },
     },
 
+    'Pattern Circular 3D': {
+      invoke: {
+        src: 'patternCircular3dAstMod',
+        id: 'patternCircular3dAstMod',
+        input: ({ event }) =>
+          event.type !== 'Pattern Circular 3D' ? undefined : event.data,
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
     'animating to sketch solve mode': {
       invoke: {
         src: 'animate-to-sketch-solve',
@@ -4827,6 +4900,10 @@ export const modelingMachine = setup({
     'Set Segment Overlays': {
       reenter: false,
       actions: 'Set Segment Overlays',
+    },
+    'Update sketch details': {
+      reenter: false,
+      actions: 'Set sketchDetails',
     },
     'Center camera on selection': {
       reenter: false,

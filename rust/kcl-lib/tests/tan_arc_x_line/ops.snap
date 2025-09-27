@@ -180,6 +180,7 @@ description: Operations executed tan_arc_x_line.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
