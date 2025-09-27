@@ -2420,67 +2420,132 @@ extrude001 = extrude(sketch001, length = 30)
   |> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
-  |> circle(center = [-11.34, 10.0], radius = 8.69)
+  |> circle(center = [-11.34, 10.0], radius = 8.69)`
+    const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = rectangleSegmentA001)`
 
-`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
-    // select line of code
-    const codeToSelection = `center = [-11.34, 10.0]`
-    // revolve
-    await editor.scrollToText(codeToSelection)
-    await page.getByText(codeToSelection).click()
-    await toolbar.revolveButton.click()
-    await cmdBar.progressCmdBar()
-    await page.getByText('Edge', { exact: true }).click()
-    const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
-    await editor.selectText(lineCodeToSelection)
-    await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
+    await test.step('Add revolve feature via point-and-click', async () => {
+      // select line of code
+      const codeToSelection = `center = [-11.34, 10.0]`
+      // revolve
+      await editor.scrollToText(codeToSelection)
+      await page.getByText(codeToSelection).click()
+      await toolbar.revolveButton.click()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '',
+          AxisOrEdge: '',
+          Angle: '',
+        },
+        highlightedHeaderArg: 'Profiles',
+        stage: 'arguments',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'axisOrEdge',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '1 profile',
+          AxisOrEdge: '',
+          Angle: '',
+        },
+        highlightedHeaderArg: 'axisOrEdge',
+        stage: 'arguments',
+      })
+      await cmdBar.selectOption({ name: 'Edge' }).click()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'edge',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '1 profile',
+          Angle: '',
+          AxisOrEdge: 'Edge',
+          Edge: '',
+        },
+        highlightedHeaderArg: 'edge',
+        stage: 'arguments',
+      })
+      const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
+      await editor.selectText(lineCodeToSelection)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'angle',
+        currentArgValue: '360deg',
+        headerArguments: {
+          Profiles: '1 profile',
+          Angle: '',
+          AxisOrEdge: 'Edge',
+          Edge: '1 segment',
+        },
+        highlightedHeaderArg: 'angle',
+        stage: 'arguments',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        headerArguments: {
+          Profiles: '1 profile',
+          Angle: '360deg',
+          AxisOrEdge: 'Edge',
+          Edge: '1 segment',
+        },
+        stage: 'review',
+      })
+      await cmdBar.submit()
 
-    const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = rectangleSegmentA001)`
-    await editor.expectEditor.toContain(newCodeToFind)
+      await editor.expectEditor.toContain(newCodeToFind)
+    })
 
-    // Edit flow
-    const newAngle = '180deg'
-    await toolbar.openPane('feature-tree')
-    const operationButton = await toolbar.getFeatureTreeOperation('Revolve', 0)
-    await operationButton.dblclick({ button: 'left' })
-    await cmdBar.expectState({
-      commandName: 'Revolve',
-      currentArgKey: 'angle',
-      currentArgValue: '360deg',
-      headerArguments: {
-        Angle: '360deg',
-      },
-      highlightedHeaderArg: 'angle',
-      stage: 'arguments',
+    await test.step('Edit revolve feature via feature tree selection', async () => {
+      const newAngle = '180deg'
+      await toolbar.openPane('feature-tree')
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Revolve',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'angle',
+        currentArgValue: '360deg',
+        headerArguments: {
+          Angle: '360deg',
+        },
+        highlightedHeaderArg: 'angle',
+        stage: 'arguments',
+      })
+      await page.keyboard.insertText(newAngle)
+      await cmdBar.variableCheckbox.click()
+      await expect(page.getByPlaceholder('Variable name')).toHaveValue(
+        'angle001'
+      )
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Angle: newAngle,
+        },
+        commandName: 'Revolve',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane('feature-tree')
+      await editor.expectEditor.toContain('angle001 = ' + newAngle)
+      await editor.expectEditor.toContain(
+        newCodeToFind.replace('angle = 360deg', 'angle = angle001')
+      )
     })
-    await page.keyboard.insertText(newAngle)
-    await cmdBar.variableCheckbox.click()
-    await expect(page.getByPlaceholder('Variable name')).toHaveValue('angle001')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      headerArguments: {
-        Angle: newAngle,
-      },
-      commandName: 'Revolve',
-    })
-    await cmdBar.progressCmdBar()
-    await toolbar.closePane('feature-tree')
-    await editor.expectEditor.toContain('angle001 = ' + newAngle)
-    await editor.expectEditor.toContain(
-      newCodeToFind.replace('angle = 360deg', 'angle = angle001')
-    )
-    expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
   })
 
   test(`Appearance point-and-click`, async ({
