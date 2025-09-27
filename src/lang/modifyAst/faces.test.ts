@@ -6,7 +6,7 @@ import {
   retrieveFaceSelectionsFromOpArgs,
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
-import type { StdLibCallOp } from '@src/lang/queryAst'
+import { getEdgeCutMeta, type StdLibCallOp } from '@src/lang/queryAst'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import {
   type Artifact,
@@ -125,6 +125,38 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> close()
 extrude001 = extrude(profile001, length = 10)`
 
+const boxWithOneTagAndChamfer = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 1,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )`
+
+const boxWithOneTagAndChamferAndPlane = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 1,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+       tag = $seg02,
+     )
+plane001 = offsetPlane(planeOf(extrude001, face = seg02), offset = 1)`
+
 const boxWithTwoTags = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 10, tag = $seg01)
@@ -133,6 +165,21 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 10)`
+
+const boxWithTwoTagsAndChamfer = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10, tag = $seg02)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 1,
+       tags = [
+         getCommonEdge(faces = [seg01, seg02])
+       ],
+     )`
 
 function getCapFromCylinder(artifactGraph: ArtifactGraph) {
   const endFace = [...artifactGraph.values()].find(
@@ -400,6 +447,23 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
     )
     expect(selections.graphSelections[0].artifact!.id).toEqual(cap!.id)
   })
+
+  it('should find an offset plane on a chamfer face', async () => {
+    const { artifactGraph, operations } = await getAstAndArtifactGraph(
+      boxWithOneTagAndChamferAndPlane
+    )
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
+    ) as StdLibCallOp
+    const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
+      op.unlabeledArg!,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact!.type).toEqual('edgeCut')
+  })
 })
 
 describe('Testing addOffsetPlane', () => {
@@ -580,5 +644,78 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
     expect(newCode2).toContain(`${boxWithOneTag}
 plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
     await enginelessExecutor(result2.modifiedAst)
+  })
+
+  it('should add an offset plane call on chamfer face and allow edits', async () => {
+    const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
+      boxWithOneTagAndChamfer
+    )
+    const chamfer = [...artifactGraph.values()].find(
+      (a) => a.type === 'edgeCut'
+    )
+    const plane = createSelectionFromArtifacts([chamfer!], artifactGraph)
+    const offset = (await stringToKclExpression('1')) as KclCommandValue
+    const result = addOffsetPlane({
+      ast,
+      artifactGraph,
+      variables,
+      plane,
+      offset,
+    })
+    if (err(result)) {
+      throw result
+    }
+
+    const newCode = recast(result.modifiedAst)
+    expect(newCode).toContain(boxWithOneTagAndChamferAndPlane)
+    await enginelessExecutor(ast)
+
+    const newOffset = (await stringToKclExpression('2')) as KclCommandValue
+    const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
+    const result2 = addOffsetPlane({
+      ast: result.modifiedAst,
+      artifactGraph,
+      variables,
+      plane,
+      offset: newOffset,
+      nodeToEdit,
+    })
+    if (err(result2)) {
+      throw result2
+    }
+    const newCode2 = recast(result2.modifiedAst)
+    expect(newCode2).not.toContain(`offset = 1`)
+    expect(newCode2).toContain(
+      `plane001 = offsetPlane(planeOf(extrude001, face = seg02), offset = 2)`
+    )
+    await enginelessExecutor(result2.modifiedAst)
+  })
+})
+
+describe('Testing getEdgeCutMeta', () => {
+  it('should find the edge cut meta info on a wall-cap chamfer', async () => {
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
+      boxWithOneTagAndChamfer
+    )
+    const artifact = [...artifactGraph.values()].find(
+      (a) => a.type === 'edgeCut'
+    )
+    const result = getEdgeCutMeta(artifact!, ast, artifactGraph)
+    expect(result?.type).toEqual('edgeCut')
+    expect(result?.subType).toEqual('opposite')
+    expect(result?.tagName).toEqual('seg01')
+  })
+
+  it('should find the edge cut meta info on a wall-wall chamfer', async () => {
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
+      boxWithTwoTagsAndChamfer
+    )
+    const artifact = [...artifactGraph.values()].find(
+      (a) => a.type === 'edgeCut'
+    )
+    const result = getEdgeCutMeta(artifact!, ast, artifactGraph)
+    expect(result?.type).toEqual('edgeCut')
+    expect(result?.subType).toEqual('adjacent')
+    expect(result?.tagName).toEqual('seg01')
   })
 })

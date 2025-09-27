@@ -739,7 +739,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       plane: {
         inputType: 'selection',
-        selectionTypes: ['plane', 'cap', 'wall'],
+        selectionTypes: ['plane', 'cap', 'wall', 'edgeCut'],
         multiple: false,
         required: true,
         skip: true,
