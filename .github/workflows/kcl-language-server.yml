@@ -279,40 +279,40 @@ jobs:
           node-version-file: ".nvmrc"
       - run: echo "HEAD_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
       - run: 'echo "HEAD_SHA: $HEAD_SHA"'
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-aarch64-apple-darwin
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-x86_64-apple-darwin
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-x86_64-unknown-linux-gnu
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-x86_64-unknown-linux-musl
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-aarch64-unknown-linux-gnu
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-arm-unknown-linux-gnueabihf
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-x86_64-pc-windows-msvc
           path: rust/build
-          #- uses: actions/download-artifact@v4
+          #- uses: actions/download-artifact@v5
           #with:
           #name: release-i686-pc-windows-msvc
           #path:
           #build
-          #- uses: actions/download-artifact@v4
+          #- uses: actions/download-artifact@v5
           #with:
           #name: release-aarch64-pc-windows-msvc
           #path: rust/build

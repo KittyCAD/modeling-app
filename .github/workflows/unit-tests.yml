@@ -36,7 +36,7 @@ jobs:
           tool: wasm-pack
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
 
       - name: Copy prepared wasm
         run: |
