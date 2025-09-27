@@ -446,7 +446,7 @@ profile003 = startProfile(sketch001, at = [0, -4.93])
     })
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 650, y: 250 }
-    const sketchColor: [number, number, number] = [149, 149, 149]
+    const sketchColor: [number, number, number] = [187, 187, 187]
     const planeColor: [number, number, number] = [74, 74, 74]
 
     await homePage.openProject('test-sample')

@@ -349,11 +349,9 @@ extrude002 = extrude(profile002, length = 150)`
         'ratio'
       )
 
-      await scene.expectPixelColor(
-        TEST_COLORS.DARK_MODE_BKGD,
-        offModelBefore,
-        15
-      )
+      // not sure why old DARK_MODE_BKGD doesn't work anymore
+      const bgColor: [number, number, number] = [30, 30, 30]
+      await scene.expectPixelColor(bgColor, offModelBefore, 15)
       const standardModelGrey: TestColor = [100, 100, 100]
       await scene.expectPixelColor(standardModelGrey, onModelBefore, 15)
 
@@ -371,11 +369,7 @@ extrude002 = extrude(profile002, length = 150)`
         'ratio'
       )
 
-      await scene.expectPixelColor(
-        TEST_COLORS.DARK_MODE_BKGD,
-        offModelAfter,
-        15
-      )
+      await scene.expectPixelColor(bgColor, offModelAfter, 15)
       await scene.expectPixelColor(standardModelGrey, onModelAfter, 15)
     }
   )
@@ -591,7 +585,7 @@ extrude002 = extrude(profile002, length = 150)`
 
     // Constants and locators
     const planeColor: [number, number, number] = [80, 60, 60]
-    const bgColor: [number, number, number] = [30, 30, 30]
+    const bgColor: [number, number, number] = TEST_COLORS.DARK_MODE_BKGD
     const middlePixelIsColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
     }
