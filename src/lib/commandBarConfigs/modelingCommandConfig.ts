@@ -1245,4 +1245,4 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
 }
 
-modelingMachineCommandConfig
+modelingMachineCommandConfig // TODO: update with satisfies?
