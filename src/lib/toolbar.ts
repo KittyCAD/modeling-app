@@ -1055,7 +1055,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         onClick: ({ modelingSend }) =>
           modelingSend({
             type: 'equip tool',
-            data: { tool: 'dimension' },
+            data: { tool: 'dimensionTool' },
           }),
         icon: 'line',
         status: 'available',
@@ -1066,7 +1066,26 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         isActive: ({ sketchSolveState }) =>
           !!(
             sketchSolveState?.matches('using tool') &&
-            sketchSolveState?.context?.sketchSolveTool === 'dimension'
+            sketchSolveState?.context?.sketchSolveTool === 'dimensionTool'
+          ),
+      },
+      {
+        id: 'point',
+        onClick: ({ modelingSend }) =>
+          modelingSend({
+            type: 'equip tool',
+            data: { tool: 'pointTool' },
+          }),
+        icon: 'arrowDown',
+        status: 'available',
+        title: 'Point',
+        hotkey: 'L',
+        description: 'Start drawing straight points',
+        links: [],
+        isActive: ({ sketchSolveState }) =>
+          !!(
+            sketchSolveState?.matches('using tool') &&
+            sketchSolveState?.context?.sketchSolveTool === 'pointTool'
           ),
       },
     ],

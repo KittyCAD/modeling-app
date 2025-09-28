@@ -8,10 +8,17 @@ import type {
   SegmentOverlayPayload,
 } from '@src/machines/modelingSharedTypes'
 import type { PathToNode } from '@src/lang/wasm'
-import { machine as centerRectToolMachine } from '@src/machines/sketchSolve/tools/centerRectTool'
-import { machine as dimensionToolMachine } from '@src/machines/sketchSolve/tools/dimensionTool'
+import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
+import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
+import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 
-type EquipTool = 'dimension' | 'center rectangle'
+const equipTools = {
+  centerRectTool,
+  dimensionTool,
+  pointTool,
+} as const
+
+export type EquipTool = keyof typeof equipTools
 
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
@@ -26,8 +33,9 @@ export type SketchSolveMachineEvent =
   | { type: 'tool completed' }
 
 type ToolActorRef =
-  | ActorRefFrom<typeof dimensionToolMachine>
-  | ActorRefFrom<typeof centerRectToolMachine>
+  | ActorRefFrom<typeof dimensionTool>
+  | ActorRefFrom<typeof centerRectTool>
+  | ActorRefFrom<typeof pointTool>
 
 type SketchSolveContext = ModelingMachineContext & {
   toolActor?: ToolActorRef
@@ -59,11 +67,14 @@ export const sketchSolveMachine = setup({
       assertEvent(event, 'equip tool')
       let toolActor
       switch (event.data.tool) {
-        case 'dimension':
-          toolActor = spawn('dimensionToolActor', { id: 'tool' })
+        case 'dimensionTool':
+          toolActor = spawn(event.data.tool, { id: 'tool' })
           break
-        case 'center rectangle':
-          toolActor = spawn('centerRectToolActor', { id: 'tool' })
+        case 'centerRectTool':
+          toolActor = spawn(event.data.tool, { id: 'tool' })
+          break
+        case 'pointTool':
+          toolActor = spawn(event.data.tool, { id: 'tool' })
           break
         default:
           const _exhaustiveCheck: never = event.data.tool
@@ -82,8 +93,7 @@ export const sketchSolveMachine = setup({
     moveToolActor: createMachine({
       /* ... */
     }),
-    dimensionToolActor: dimensionToolMachine,
-    centerRectToolActor: centerRectToolMachine,
+    ...equipTools,
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwAmAKwAOAHQcAzABZFGgGwBOebL16A7LIA0IAJ6INencs0a7ixTvUdpAXy+W0mXAIScioaegBXPggAQwwKWDBiMCwMEVFOHiQQASFUsQkpBHk1RwV7WTVFWVlFaR0dSxsEAFpqjmVZXT0OWXcTeQMenz90bHwiMgpqWjpw0TAAR3DmPjwMQhIMiRzhfKzCkx15ZSOOHu61fpNGxBM1dqOdGsNXRRNpRWGQfzGgydDaMoALaEELRUQQPAJJIpOgQMRgZTMUSkQjoYGgsAAFQ2xC2WR2eXE+xkChU0j0Gg4OkqHD0H3eNwQsk8ylc0k09RM9jeei+P0CExC00RILBEKhiWSGAYACdZYRZco+MRYgAzRVAjHkHGbbjbQS7YmgQpyPSyVQcKo6BkmZyya7WUkaNm9RQ9DSdOw1NT80aC4JTMLaijgyHQ6UMJYrNa4-H8Q1Egq2DgmRzSHpPB16Kr9JnSeTtd00w5qAxKRS+3zff3jQMAxHhISiKCxkizebR1brPWZBO5NLJopVRwmExnJ7Sb13JnVaRss4ffTyOyXT7VgV1-4i5RN5GtnvEOiMWAYWKI+HzZTRFKK5SH5oAKnj2UTg5JCHZynkjw0hicGZqEyag6C68gmNo9zVEYtSdD41aiGE8BZJufzCmEBoDnsJqIA6RaXCuPR3N0Hz5i6OhmPIK46Io4GKOaZh+gEW7oYCYqhhKEYpJhRpDtyYE9AWdL1OaDROggGbzocNJWhwzhWh8TG-EKQaAnuLZtsQPFJh+agfGyBFUg6ZaeIowFKMoVKeJU5oFhB64jMxaGqYiTDCC22nvjhEllioGhyMUOYVDS+amCcNHvFRlG6BU8FeEAA */
