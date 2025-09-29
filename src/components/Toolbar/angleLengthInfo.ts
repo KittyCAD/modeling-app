@@ -1,10 +1,10 @@
 import type { KclManager } from '@src/lang/KclSingleton'
-import { toolTips } from '@src/lang/langHelpers'
+import { isToolTip } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getTransformInfos } from '@src/lang/std/sketchcombos'
 import type { TransformInfo } from '@src/lang/std/stdTypes'
 import type { Expr } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 
 export function angleLengthInfo({
@@ -33,7 +33,7 @@ export function angleLengthInfo({
     if (err(meta)) return false
     return (
       meta.node?.type === 'CallExpressionKw' &&
-      toolTips.includes(meta.node.callee.name.name as any)
+      isToolTip(meta.node.callee.name.name)
     )
   })
 

@@ -44,7 +44,7 @@ import {
   type VariableDeclarator,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selection, Selections } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 
 // Edge Treatment Types

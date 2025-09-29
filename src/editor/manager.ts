@@ -29,7 +29,7 @@ import type CodeManager from '@src/lang/codeManager'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { isTopLevelModule } from '@src/lang/util'
 import { markOnce } from '@src/lib/performance'
-import type { Selection, Selections } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { processCodeMirrorRanges } from '@src/lib/selections'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type {

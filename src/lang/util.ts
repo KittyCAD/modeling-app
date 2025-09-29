@@ -10,7 +10,7 @@ import type {
   NumericSuffix,
   PathToNode,
 } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { isArray, isOverlap } from '@src/lib/utils'
 
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'

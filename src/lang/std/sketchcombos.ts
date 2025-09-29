@@ -81,7 +81,7 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { isErr as _isErr, isNotErr as _isNotErr, err } from '@src/lib/trap'
 import {
   allLabels,

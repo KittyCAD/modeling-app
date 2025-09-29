@@ -45,7 +45,6 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/lib/selections'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
@@ -56,6 +55,7 @@ import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.

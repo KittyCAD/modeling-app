@@ -52,6 +52,10 @@ export const toolTips: Array<ToolTip> = [
   'startProfile',
 ]
 
+export function isToolTip(value: string): value is ToolTip {
+  return toolTips.includes(value as ToolTip)
+}
+
 interface ExecutionResult {
   logs: string[]
   errors: KCLError[]

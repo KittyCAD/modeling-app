@@ -160,7 +160,7 @@ import {
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
 import { updateExtraSegments } from '@src/lib/selections'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getEventForSegmentSelection } from '@src/lib/selections'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Themes, getResolvedTheme } from '@src/lib/theme'

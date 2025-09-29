@@ -19,7 +19,7 @@ import { initPromise } from '@src/lang/wasmUtils'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import type { Selection, Selections } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import {
   engineCommandManager,
   kclManager,

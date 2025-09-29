@@ -35,7 +35,6 @@ import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
-import type { Selections } from '@src/lib/selections'
 import { handleSelectionBatch } from '@src/lib/selections'
 import type {
   BaseUnit,
@@ -46,7 +45,10 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, uuidv4 } from '@src/lib/utils'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
+import type {
+  PlaneVisibilityMap,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 
 interface ExecuteArgs {
   ast?: Node<Program>

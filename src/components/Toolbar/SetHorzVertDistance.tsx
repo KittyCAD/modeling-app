@@ -22,7 +22,7 @@ import {
   type Program,
   type VariableDeclarator,
 } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { kclManager } from '@src/lib/singletons'
 import { cleanErrs, err } from '@src/lib/trap'
 

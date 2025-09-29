@@ -16,7 +16,7 @@ import {
   KCL_DEFAULT_TRANSFORM,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type {

@@ -134,7 +134,7 @@ import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingC
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { EXECUTION_TYPE_REAL, VALID_PANE_IDS } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
 import {
   codeManager,

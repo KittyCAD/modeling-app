@@ -3,7 +3,7 @@ import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
-import type { Selection } from '@src/lib/selections'
+import type { Selection } from '@src/machines/modelingSharedTypes'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 

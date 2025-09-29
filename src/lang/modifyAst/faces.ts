@@ -35,8 +35,8 @@ import type {
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import type { Selection, Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export function addShell({
   ast,
@@ -288,13 +288,27 @@ export function retrieveFaceSelectionsFromOpArgs(
   const graphSelections: Selection[] = []
   for (const v of faceValues) {
     if (v.type === 'String' && v.value && candidates.has(v.value)) {
-      graphSelections.push(candidates.get(v.value)!)
+      const result = candidates.get(v.value)
+      if (result) {
+        graphSelections.push(result)
+      } else {
+        console.warn(
+          'retrieveFaceSelectionsFromOpArgs result is missing and not a selection'
+        )
+      }
     } else if (
       v.type === 'TagIdentifier' &&
       v.artifact_id &&
       candidates.has(v.artifact_id)
     ) {
-      graphSelections.push(candidates.get(v.artifact_id)!)
+      const result = candidates.get(v.artifact_id)
+      if (result) {
+        graphSelections.push(result)
+      } else {
+        console.warn(
+          'retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection'
+        )
+      }
     } else {
       console.warn('Face value is not a String or TagIdentifier', v)
       continue
