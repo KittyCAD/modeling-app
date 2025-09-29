@@ -98,7 +98,8 @@ export function App() {
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool') || env().POOL || null
+  // const pool = searchParams.get('pool') || env().POOL || null
+  const pool = 'pr-3811'
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
