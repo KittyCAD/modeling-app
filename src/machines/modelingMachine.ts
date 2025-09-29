@@ -478,6 +478,7 @@ export const modelingMachine = setup({
       const angleLength = angleLengthInfo({
         selectionRanges,
         angleOrLength: 'setAngle',
+        kclManager,
       })
       if (err(angleLength)) return false
       return angleBetween.enabled || angleLength.enabled
@@ -485,6 +486,7 @@ export const modelingMachine = setup({
     'Can constrain length': ({ context: { selectionRanges } }) => {
       const angleLength = angleLengthInfo({
         selectionRanges,
+        kclManager,
       })
       if (err(angleLength)) return false
       return angleLength.enabled

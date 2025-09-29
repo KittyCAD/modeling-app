@@ -93,6 +93,7 @@ import type {
 import toast from 'react-hot-toast'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { ActorRefFrom } from 'xstate'
+import type { KclManager } from '@src/lang/KclSingleton'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -108,6 +109,7 @@ interface CreateSegmentArgs {
   sceneInfra: SceneInfra
   selection?: Selections
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  kclManager: KclManager
 }
 
 interface UpdateSegmentArgs {
@@ -158,6 +160,7 @@ class StraightSegment implements SegmentUtils {
     prevSegment,
     selection,
     commandBarActor,
+    kclManager,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -216,6 +219,7 @@ class StraightSegment implements SegmentUtils {
         scale,
         sceneInfra,
         commandBarActor,
+        kclManager,
       })
       segmentGroup.add(arrowGroup)
       segmentGroup.add(lengthIndicatorGroup)
@@ -598,6 +602,7 @@ class CircleSegment implements SegmentUtils {
     isSelected,
     sceneInfra,
     commandBarActor,
+    kclManager,
   }) => {
     if (input.type !== 'arc-segment') {
       return new Error('Invalid segment type')
@@ -643,6 +648,7 @@ class CircleSegment implements SegmentUtils {
       scale,
       sceneInfra,
       commandBarActor,
+      kclManager,
     })
 
     arcMesh.userData.type = meshType
@@ -1060,6 +1066,7 @@ class ArcSegment implements SegmentUtils {
     isSelected,
     sceneInfra,
     commandBarActor,
+    kclManager,
   }) => {
     if (input.type !== 'arc-segment') {
       return new Error('Invalid segment type')
@@ -1101,6 +1108,7 @@ class ArcSegment implements SegmentUtils {
       scale,
       sceneInfra,
       commandBarActor,
+      kclManager,
     })
 
     const grey = 0xaaaaaa
@@ -1155,6 +1163,7 @@ class ArcSegment implements SegmentUtils {
       scale,
       sceneInfra,
       commandBarActor,
+      kclManager,
     })
     endAngleLengthIndicator.name = 'endAngleLengthIndicator'
 
@@ -1770,6 +1779,7 @@ function createLengthIndicator({
   length = 0.1,
   sceneInfra,
   commandBarActor,
+  kclManager,
 }: {
   from: Coords2d
   to: Coords2d
@@ -1777,6 +1787,7 @@ function createLengthIndicator({
   length?: number
   sceneInfra: SceneInfra
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  kclManager: KclManager
 }) {
   const lengthIndicatorGroup = new Group()
   lengthIndicatorGroup.name = SEGMENT_LENGTH_LABEL
@@ -1813,6 +1824,7 @@ function createLengthIndicator({
         graphSelections: [selection.graphSelections[0]],
       },
       angleOrLength: 'setLength',
+      kclManager: kclManager,
     })
     if (err(canConstrainLength) || !canConstrainLength.enabled) {
       toast.error(

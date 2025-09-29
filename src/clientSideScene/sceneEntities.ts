@@ -1001,6 +1001,7 @@ export class SceneEntities {
           sceneInfra: this.sceneInfra,
           selection,
           commandBarActor: this.commandBarActor,
+          kclManager: this.kclManager,
         })
         if (err(result)) return
         const { group: _group, updateOverlaysCallback } = result

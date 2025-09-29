@@ -887,6 +887,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           const angleLength = angleLengthInfo({
             selectionRanges,
             angleOrLength: 'setLength',
+            kclManager,
           })
           if (err(angleLength)) return KCL_DEFAULT_LENGTH
           const { transforms } = angleLength
