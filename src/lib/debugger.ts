@@ -8,6 +8,15 @@ export interface ILog {
   metadata: unknown
 }
 
+/**
+ * A global runtime class that will live for the runtime of the application
+ * that any part of the code base can push logs with addLog
+ * 
+ * This is used in many locations to track the flow of code and events 
+ * that happen for the engine while the application is running.
+ * 
+ * This is very useful when debugging the engine connection process.
+ */
 export class Debugger {
   logs: ILog[]
   constructor() {
