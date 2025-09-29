@@ -20,6 +20,7 @@ export const machine = setup({
       // ...
     },
     'remove point listener': () => {
+      console.log('should be exiting point tool now')
       // Add your action code here
       // ...
     },
@@ -28,7 +29,7 @@ export const machine = setup({
     modAndSolve: fromPromise(async () => {}),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAUD2BLAdgFwATdVQBsBiAV0zAEcz0AHAbQAYBdRUO1WdbdVTdiAAeiAIwAmcaIB0AZgCcANlniAHAHZZAVkXilAGhABPRABZp61VvWnFW8Uy0KdogL6vDaLHgLFydCABDbDBcWDAiMABjXn5mNiQQTm5YgUSRBAVxaUVRJlU1JwL5UWtDEwQAWkLpJiZxbVN1ayY7VUV3TwwcfEIiaQAnMECII1wAM1QB3DJw6aiidCiAaxIRiFxOb3jBZJ4+NNAMxVNzeW1xHVNRRXl5dXKxVXNmurzTe3Vb006QLx7fP0AML8cboAYAWywUFwEHQELAmG4-FgJAg-DA0iwADdUMtMf8fH1pCDMGDIdDYfDEcikQgcagosEDvEdok9qlBBkdPJamolPI6g5lKZHghBdI1M1tCdVHKFLJfoTesQSaDwVDMDC4QikQdUWABgMptI6ERgpNIdJlYC1WSNZSdTT9fTMLimalWaxdlx9vwuWJHKppO1FF8vrIPoo5WLRO1JaY7vJVEwlKpRPItO4PCBMKgIHBBDa+j6UgcA5lROoLMLTCn7KIq+IHsZEJUJNWpKZxKYmM0q+p1Eold0iaqhiMxpaZnNcAslstS37DsJELI7DXWnXHFImy2KjcZJchS067JRN2R94VcD1RStVTdbT4OzfZz0ogCkfTJGq1pBVoqaiLGuSSoB9RDrIqhJsmV4AsSFDULQdB0NCS7vkcYjNryDSSCcTDXKmXyxqcYF1EwHbFB84jZq4QA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QAUD2BLAdgFwATdVQBsBiAV0zAEcz0AHAbQAYBdRUO1WdbdVTdiAAeiAIwAmcaIB0AZgCcANlniAHAHZZAVkXilAGhABPRABZp61VvWnFW8Uy0KdogL6vDaLHgLFydCABDbDBcWDAiMABjXn5mNiQQTm5YgUSRBAVxaUVRJlU1JwL5UWtDEwQAWkLpJiZxbVN1ayY7VUV3TwwcfEIiaQBhfgAzdAAnAFssKFwIdAmwTG5+WBIIfjBpLAA3VABrTa8e336hzFHJ6dn5xeWlhB3UKOC+THj4wWSeV8EMnXlamolPI6g5lKZyogQdI1M1tIpTKokQpZJ0QEcfH1BiNxlNMDM5gslq9VmAxmNUGNpHQiMFhpSJtIMb1iNjzriroTbiSHphds9Uu9WJ8uN9+L8xI5VNJ2op1HLwTokZCEKJ2jDTPItaomEpVKJ5Fo0cyTtIxmBAhAjLh6WNcGRwnaokR0FE9iRLRBcJxvB9El9UhKELppYa1KVSvlVAoVWrzM06rII5otR00ZhUBA4IITX0RSkfulEEn1BYwYjHFJROpxOoVZUJKWpKZxLktPJZDX1ExTMbupjWebLdbbfbHbhna69vmxWlQBlZHYy60K-ZRNXa7HcjCtKCWoiky2+94WaccZd8dciXd4P7RYGiwgCjJxKZZKZq+3HLrRFuX7v6nUDtVC1bVj2OLEKGoWg6DoaYZwfecxFrAEGkkBEezyeR5VjUxzHEACmEbYpTHsdx3CAA */
   context: {},
   id: 'Point tool',
   initial: 'ready for user click',
@@ -46,6 +47,10 @@ export const machine = setup({
   states: {
     'ready for user click': {
       entry: 'add point listener',
+
+      on: {
+        'add point': 'Confirming dimensions',
+      },
     },
 
     'Confirming dimensions': {
