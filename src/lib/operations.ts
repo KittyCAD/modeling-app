@@ -1175,6 +1175,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'fillet3d',
     prepareToEdit: prepareToEditEdgeTreatment,
   },
+  'gdt::datum': {
+    label: 'Datum',
+    icon: 'gdtDatum',
+  },
   'gdt::flatness': {
     label: 'Flatness',
     icon: 'gdtFlatness',
