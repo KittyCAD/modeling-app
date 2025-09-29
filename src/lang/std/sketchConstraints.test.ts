@@ -353,7 +353,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
         callToSwap: 'angledLine(angle = 217deg, endAbsoluteY = angledLineToYy)',
         constraintType: 'horizontal',
       })
-    await expect(illegalConvert).rejects.toThrowError('no callback helper')
+    await expect(illegalConvert).toThrow('no callback helper')
   })
 })
 
