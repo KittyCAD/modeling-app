@@ -58,7 +58,6 @@ vi.mock('three', async () => {
       setSize() {}
       render() {}
       dispose() {}
-      dogdog() {}
       // Engine Connection needs this in the modelingMachine.test.ts files
       getDrawingBufferSize() {
         return new Vector2()
