@@ -77,24 +77,8 @@ async fn inner_datum(
     let frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
-        // No plane given. Use one of the default planes by evaluating the `XY`
-        // expression.
-        let plane_ast = plane_ast("XY", args.source_range);
-        let metadata = Metadata::from(args.source_range);
-        let plane_value = args
-            .ctx
-            .execute_expr(&plane_ast, exec_state, &metadata, &[], StatementKind::Expression)
-            .await?
-            .clone();
-        plane_value
-            .as_plane()
-            .ok_or_else(|| {
-                KclError::new_internal(KclErrorDetails::new(
-                    "Expected XY plane to be defined".to_owned(),
-                    vec![args.source_range],
-                ))
-            })?
-            .clone()
+        // No plane given. Use one of the standard planes.
+        xy_plane(exec_state, args).await?
     };
     let frame_plane_id = if frame_plane.value == crate::exec::PlaneType::Uninit {
         // Create it in the engine.
@@ -194,24 +178,8 @@ async fn inner_flatness(
     let frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
-        // No plane given. Use one of the default planes by evaluating the `XY`
-        // expression.
-        let plane_ast = plane_ast("XY", args.source_range);
-        let metadata = Metadata::from(args.source_range);
-        let plane_value = args
-            .ctx
-            .execute_expr(&plane_ast, exec_state, &metadata, &[], StatementKind::Expression)
-            .await?
-            .clone();
-        plane_value
-            .as_plane()
-            .ok_or_else(|| {
-                KclError::new_internal(KclErrorDetails::new(
-                    "Expected XY plane to be defined".to_owned(),
-                    vec![args.source_range],
-                ))
-            })?
-            .clone()
+        // No plane given. Use one of the standard planes.
+        xy_plane(exec_state, args).await?
     };
     let frame_plane_id = if frame_plane.value == crate::exec::PlaneType::Uninit {
         // Create it in the engine.
@@ -276,12 +244,36 @@ async fn inner_flatness(
     Ok(())
 }
 
+/// Get the XY plane by evaluating the `XY` expression so that it's the same as
+/// if the user specified `XY`.
+async fn xy_plane(exec_state: &mut ExecState, args: &Args) -> Result<Plane, KclError> {
+    let plane_ast = plane_ast("XY", args.source_range);
+    let metadata = Metadata::from(args.source_range);
+    let plane_value = args
+        .ctx
+        .execute_expr(&plane_ast, exec_state, &metadata, &[], StatementKind::Expression)
+        .await?
+        .clone();
+    Ok(plane_value
+        .as_plane()
+        .ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                "Expected XY plane to be defined".to_owned(),
+                vec![args.source_range],
+            ))
+        })?
+        .clone())
+}
+
+/// An AST node for a plane with the given name.
 fn plane_ast(plane_name: &str, range: SourceRange) -> ast::Node<ast::Expr> {
     ast::Node::new(
         ast::Expr::Name(Box::new(ast::Node::new(
             ast::Name {
                 name: ast::Identifier::new(plane_name),
                 path: Vec::new(),
+                // TODO: We may want to set this to true once we implement it to
+                // prevent it breaking if users redefine the identifier.
                 abs_path: false,
                 digest: None,
             },
