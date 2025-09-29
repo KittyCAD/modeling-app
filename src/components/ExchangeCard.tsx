@@ -107,6 +107,8 @@ export const ChatBubble = (props: {
   userAvatar?: ReactNode
   wfull?: true
   children: ReactNode
+  dataTestId?: string
+  placeholderTestId?: string
 }) => {
   const cssRequest =
     `${props.wfull ? 'w-full ' : ''} select-text whitespace-pre-line hyphens-auto shadow-sm ${props.side === 'left' ? 'bg-1' : 'bg-2'} text-default border b-4 rounded-t-md pl-4 pr-4 pt-2 pb-2 ` +
@@ -115,13 +117,17 @@ export const ChatBubble = (props: {
   return (
     <div
       className={`flex justify-end items-end gap-2 w-full ${props.side === 'right' ? 'flex-row' : 'flex-row-reverse'}`}
+      data-testid={props.dataTestId}
     >
       <div className="flex flex-col items-end gap-2 w-full">
         <div style={{ wordBreak: 'break-word' }} className={cssRequest}>
           {hasVisibleChildren(props.children) ? (
             props.children
           ) : (
-            <div className="animate-pulse animate-shimmer h-4 w-full p-1 bg-chalkboard-80 rounded"></div>
+            <div
+              className="animate-pulse animate-shimmer h-4 w-full p-1 bg-chalkboard-80 rounded"
+              data-testid={props.placeholderTestId}
+            ></div>
           )}
         </div>
       </div>
@@ -136,7 +142,11 @@ export const RequestCard = (props: RequestCardProps) => {
   }
 
   return (
-    <ChatBubble side={'right'} userAvatar={props.userAvatar}>
+    <ChatBubble
+      side={'right'}
+      userAvatar={props.userAvatar}
+      dataTestId="ml-request-chat-bubble"
+    >
       {props.content}
     </ChatBubble>
   )
@@ -196,6 +206,8 @@ export const ResponsesCard = forwardRef((props: ResponsesCardProp) => {
       side={'left'}
       wfull={true}
       userAvatar={<AvatarUser src="/public/mleyphun.jpg" />}
+      dataTestId="ml-response-chat-bubble"
+      placeholderTestId="ml-response-chat-bubble-thinking"
     >
       {itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null}
     </ChatBubble>
