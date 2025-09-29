@@ -11,7 +11,7 @@ const createCallback = () => {
 }
 
 describe('useOnPageExit tests', () => {
-  test('on hook onmounted with mocked global singletons', () => {
+  test('on hook unmounted with mocked global singletons', () => {
     const callback = createCallback()
     const engineCommandManager = new ConnectionManager()
     vi.spyOn(engineCommandManager, 'tearDown')
