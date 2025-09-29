@@ -15,39 +15,39 @@ export function useOnPeerConnectionClose({
 }: { callback: () => void }) {
   useEffect(() => {
     // same failure handler for all for now
-    const onFailure = () => {
+    const onFailure: EventListener = () => {
       callback()
     }
 
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.peerConnectionClosed,
-      onFailure as EventListener
+      onFailure
     )
 
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.peerConnectionDisconnected,
-      onFailure as EventListener
+      onFailure
     )
 
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.peerConnectionFailed,
-      onFailure as EventListener
+      onFailure
     )
 
     return () => {
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.peerConnectionClosed,
-        onFailure as EventListener
+        onFailure
       )
 
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.peerConnectionDisconnected,
-        onFailure as EventListener
+        onFailure
       )
 
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.peerConnectionFailed,
-        onFailure as EventListener
+        onFailure
       )
     }
   }, [callback])
