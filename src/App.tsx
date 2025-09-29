@@ -70,8 +70,6 @@ import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 
 // CYCLIC REF
-// TODO: It is gone.
-// sceneInfra.camControls.engineStreamActor = engineStreamActor
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
