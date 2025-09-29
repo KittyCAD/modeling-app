@@ -255,6 +255,7 @@ description: Operations executed sketch_on_face_end.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

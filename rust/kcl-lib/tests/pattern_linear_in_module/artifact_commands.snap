@@ -1435,6 +1435,7 @@ description: Artifact commands pattern_linear_in_module.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

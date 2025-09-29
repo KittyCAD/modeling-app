@@ -113,7 +113,7 @@ export function modelingMenuCallbackMostActions(
     } else if (data.menuLabel === 'Edit.Edit parameter') {
       commandBarActor.send({
         type: 'Find and select command',
-        data: { name: 'event.parameter.edit', groupId: 'modeling' },
+        data: { name: 'parameter.edit', groupId: 'code' },
       })
     } else if (data.menuLabel === 'Edit.Format code') {
       commandBarActor.send({
@@ -218,7 +218,7 @@ export function modelingMenuCallbackMostActions(
     } else if (data.menuLabel === 'Design.Create a parameter') {
       commandBarActor.send({
         type: 'Find and select command',
-        data: { name: 'event.parameter.create', groupId: 'modeling' },
+        data: { name: 'parameter.create', groupId: 'code' },
       })
     } else if (data.menuLabel === 'Design.Create an additive feature.Extrude') {
       commandBarActor.send({

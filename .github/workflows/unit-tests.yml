@@ -23,7 +23,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v4
         with:
@@ -74,26 +74,11 @@ jobs:
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: unit
 
-      - name: Check for changes
+      - name: Commit generated files
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        id: git-check
-        run: |
-            git add src/lang/std/artifactMapGraphs
-            if git status src/lang/std/artifactMapGraphs | grep -q "Changes to be committed"
-            then echo "modified=true" >> $GITHUB_OUTPUT
-            else echo "modified=false" >> $GITHUB_OUTPUT
-            fi
+        uses: KittyCAD/gha-actions-public/pr-commit@main
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          commit-message: "Look at this (photo)Graph *in the voice of Nickelback*"
 
-      - name: Commit changes, if any
-        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' && steps.git-check.outputs.modified == 'true' }}
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git fetch origin
-          echo ${{ github.head_ref }}
-          git checkout ${{ github.head_ref }}
-          # TODO when webkit works on ubuntu remove the os part of the commit message
-          git commit -am "Look at this (photo)Graph *in the voice of Nickelback*" || true
-          git push
-          git push origin ${{ github.head_ref }}

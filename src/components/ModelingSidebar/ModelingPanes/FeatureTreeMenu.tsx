@@ -36,8 +36,8 @@ export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
                 commandBarActor.send({
                   type: 'Find and select command',
                   data: {
-                    groupId: 'modeling',
-                    name: 'event.parameter.create',
+                    groupId: 'code',
+                    name: 'parameter.create',
                   },
                 })
               }

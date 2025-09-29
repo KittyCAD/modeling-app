@@ -17,10 +17,8 @@ import {
   kclManager,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import {
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from '@src/machines/modelingMachine'
+import { modelingMachine } from '@src/machines/modelingMachine'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { vi } from 'vitest'
 import { createActor } from 'xstate'
 

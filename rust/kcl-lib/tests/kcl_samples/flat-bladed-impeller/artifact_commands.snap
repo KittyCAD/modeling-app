@@ -682,6 +682,7 @@ description: Artifact commands flat-bladed-impeller.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

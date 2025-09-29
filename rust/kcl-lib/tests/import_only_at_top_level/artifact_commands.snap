@@ -7,6 +7,7 @@ description: Artifact commands import_only_at_top_level.kcl
   "rust/kcl-lib/tests/import_only_at_top_level/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

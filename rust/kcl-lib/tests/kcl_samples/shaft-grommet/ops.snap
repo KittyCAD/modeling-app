@@ -333,6 +333,7 @@ description: Operations executed shaft-grommet.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -1675,6 +1675,7 @@ description: Artifact commands linear_pattern3d_a_pattern.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

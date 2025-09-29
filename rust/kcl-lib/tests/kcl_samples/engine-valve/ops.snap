@@ -1189,6 +1189,7 @@ description: Operations executed engine-valve.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

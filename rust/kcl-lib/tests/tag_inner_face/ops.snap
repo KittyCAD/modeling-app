@@ -115,6 +115,7 @@ description: Operations executed tag_inner_face.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

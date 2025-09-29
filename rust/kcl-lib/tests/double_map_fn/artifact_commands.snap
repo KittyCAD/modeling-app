@@ -6,6 +6,7 @@ description: Artifact commands double_map_fn.kcl
   "rust/kcl-lib/tests/double_map_fn/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

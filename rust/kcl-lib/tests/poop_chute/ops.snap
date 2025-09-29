@@ -501,6 +501,7 @@ description: Operations executed poop_chute.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
